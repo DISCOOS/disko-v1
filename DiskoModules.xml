@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DiskoApplikasjon>
+	<DiskoRolle name="nl" title="Nestleder">
+		<DiskoModule classname="org.redcross.sar.wp.DiskoWpMapImpl"/>
+		<DiskoModule classname="org.redcross.sar.wp.DiskoWpTackticsImpl"/>
+	</DiskoRolle>
+	<DiskoRolle name="al" title="Aksjonsleder">
+		<DiskoModule classname="org.redcross.sar.wp.DiskoWpMapImpl"/>
+	</DiskoRolle>
+	<DiskoRolle name="sb" title="Sambandsleder">
+		<DiskoModule classname="org.redcross.sar.wp.DiskoWpMapImpl"/>
+	</DiskoRolle>
+	<DiskoRolle name="adm" title="Administrator">
+		<DiskoModule classname="org.redcross.sar.wp.DiskoWpMapImpl"/>
+	</DiskoRolle>
+</DiskoApplikasjon>
