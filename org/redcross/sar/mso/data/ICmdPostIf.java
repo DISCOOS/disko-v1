@@ -82,15 +82,11 @@ public interface ICmdPostIf extends IMsoObjectIf
 
     public IAttributeIf.IMsoEnumIf<CmdPostStatus> getStateAttribute();
 
-    public void addAreaList(IAreaIf anIAreaIf) throws DuplicateIdException;
-
     public IAreaListIf getAreaList();
 
     public IMsoModelIf.ModificationState getAreaListState(IAreaIf anIAreaIf);
 
     public Collection<IAreaIf> getAreaListItems();
-
-    public void addAssignmentList(IAssignmentIf anIAssignmentIf) throws DuplicateIdException;
 
     public IAssignmentListIf getAssignmentList();
 
@@ -98,15 +94,11 @@ public interface ICmdPostIf extends IMsoObjectIf
 
     public Collection<IAssignmentIf> getAssignmentListItems();
 
-    public void addAttendanceList(IPersonnelIf anIPersonnelIf) throws DuplicateIdException;
-
     public IPersonnelListIf getAttendanceList();
 
     public IMsoModelIf.ModificationState getAttendanceListState(IPersonnelIf anIPersonnelIf);
 
     public Collection<IPersonnelIf> getAttendanceListItems();
-
-    public void addBriefingList(IBriefingIf anIBriefingIf) throws DuplicateIdException;
 
     public IBriefingListIf getBriefingList();
 
@@ -114,15 +106,11 @@ public interface ICmdPostIf extends IMsoObjectIf
 
     public Collection<IBriefingIf> getBriefingListItems();
 
-    public void addCalloutList(ICalloutIf anICalloutIf) throws DuplicateIdException;
-
     public ICalloutListIf getCalloutList();
 
     public IMsoModelIf.ModificationState getCalloutListState(ICalloutIf anICalloutIf);
 
     public Collection<ICalloutIf> getCalloutListItems();
-
-    public void addCheckpointList(ICheckpointIf anICheckpointIf) throws DuplicateIdException;
 
     public ICheckpointListIf getCheckpointList();
 
@@ -130,15 +118,11 @@ public interface ICmdPostIf extends IMsoObjectIf
 
     public Collection<ICheckpointIf> getCheckpointListItems();
 
-    public void addDataSourceList(IDataSourceIf anIDataSourceIf) throws DuplicateIdException;
-
     public IDataSourceListIf getDataSourceList();
 
     public IMsoModelIf.ModificationState getDataSourceListState(IDataSourceIf anIDataSourceIf);
 
     public Collection<IDataSourceIf> getDataSourceListItems();
-
-    public void addEnvironmentList(IEnvironmentIf anIEnvironmentIf) throws DuplicateIdException;
 
     public IEnvironmentListIf getEnvironmentList();
 
@@ -146,15 +130,11 @@ public interface ICmdPostIf extends IMsoObjectIf
 
     public Collection<IEnvironmentIf> getEnvironmentListItems();
 
-    public void addEquipmentList(IEquipmentIf anIEquipmentIf) throws DuplicateIdException;
-
     public IEquipmentListIf getEquipmentList();
 
     public IMsoModelIf.ModificationState getEquipmentListState(IEquipmentIf anIEquipmentIf);
 
     public Collection<IEquipmentIf> getEquipmentListItems();
-
-    public void addEventLog(IEventIf anIEventIf) throws DuplicateIdException;
 
     public IEventLogIf getEventLog();
 
@@ -162,15 +142,11 @@ public interface ICmdPostIf extends IMsoObjectIf
 
     public Collection<IEventIf> getEventLogItems();
 
-    public void addForecastList(IForecastIf anIForecastIf) throws DuplicateIdException;
-
     public IForecastListIf getForecastList();
 
     public IMsoModelIf.ModificationState getForecastListState(IForecastIf anIForecastIf);
 
     public Collection<IForecastIf> getForecastListItems();
-
-    public void addHypothesisList(IHypothesisIf anIHypothesisIf) throws DuplicateIdException;
 
     public IHypothesisListIf getHypothesisList();
 
@@ -178,15 +154,11 @@ public interface ICmdPostIf extends IMsoObjectIf
 
     public Collection<IHypothesisIf> getHypothesisListItems();
 
-    public void addIntelligenceList(IIntelligenceIf anIIntelligenceIf) throws DuplicateIdException;
-
     public IIntelligenceListIf getIntelligenceList();
 
     public IMsoModelIf.ModificationState getIntelligenceListState(IIntelligenceIf anIIntelligenceIf);
 
     public Collection<IIntelligenceIf> getIntelligenceListItems();
-
-    public void addMessageLog(IMessageIf anIMessageIf) throws DuplicateIdException;
 
     public IMessageLogIf getMessageLog();
 
@@ -194,15 +166,11 @@ public interface ICmdPostIf extends IMsoObjectIf
 
     public Collection<IMessageIf> getMessageLogItems();
 
-    public void addOperationAreaList(IOperationAreaIf anIOperationAreaIf) throws DuplicateIdException;
-
     public IOperationAreaListIf getOperationAreaList();
 
     public IMsoModelIf.ModificationState getOperationAreaListState(IOperationAreaIf anIOperationAreaIf);
 
     public Collection<IOperationAreaIf> getOperationAreaListItems();
-
-    public void addPOIList(IPOIIf anIPOIIf) throws DuplicateIdException;
 
     public IPOIListIf getPOIList();
 
@@ -210,15 +178,11 @@ public interface ICmdPostIf extends IMsoObjectIf
 
     public Collection<IPOIIf> getPOIListItems();
 
-    public void addRouteList(IRouteIf anIRouteIf) throws DuplicateIdException;
-
     public IRouteListIf getRouteList();
 
     public IMsoModelIf.ModificationState getRouteListState(IRouteIf anIRouteIf);
 
     public Collection<IRouteIf> getRouteListItems();
-
-    public void addSearchAreaList(ISearchAreaIf anISearchAreaIf) throws DuplicateIdException;
 
     public ISearchAreaListIf getSearchAreaList();
 
@@ -226,15 +190,11 @@ public interface ICmdPostIf extends IMsoObjectIf
 
     public Collection<ISearchAreaIf> getSearchAreaListItems();
 
-    public void addSketchList(ISketchIf anISketchIf) throws DuplicateIdException;
-
     public ISketchListIf getSketchList();
 
     public IMsoModelIf.ModificationState getSketchListState(ISketchIf anISketchIf);
 
     public Collection<ISketchIf> getSketchListItems();
-
-    public void addSubjectList(ISubjectIf anISubjectIf) throws DuplicateIdException;
 
     public ISubjectListIf getSubjectList();
 
@@ -242,15 +202,11 @@ public interface ICmdPostIf extends IMsoObjectIf
 
     public Collection<ISubjectIf> getSubjectListItems();
 
-    public void addTaskList(ITaskIf anITaskIf) throws DuplicateIdException;
-
     public ITaskListIf getTaskList();
 
     public IMsoModelIf.ModificationState getTaskListState(ITaskIf anITaskIf);
 
     public Collection<ITaskIf> getTaskListItems();
-
-    public void addTrackList(ITrackIf anITrackIf) throws DuplicateIdException;
 
     public ITrackListIf getTrackList();
 
@@ -258,13 +214,12 @@ public interface ICmdPostIf extends IMsoObjectIf
 
     public Collection<ITrackIf> getTrackListItems();
 
-    public void addUnitList(IUnitIf anIUnitIf) throws DuplicateIdException;
-
     public IUnitListIf getUnitList();
 
     public IMsoModelIf.ModificationState getUnitListState(IUnitIf anIUnitIf);
 
     public Collection<IUnitIf> getUnitListItems();
+
 
     public AbstractDerivedList<ICommunicatorIf> getCcommunicatorList();
 
