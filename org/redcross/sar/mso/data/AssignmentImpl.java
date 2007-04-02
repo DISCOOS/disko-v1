@@ -3,6 +3,7 @@ package org.redcross.sar.mso.data;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.DuplicateIdException;
+import org.redcross.sar.util.except.MsoCastException;
 
 import java.util.Collection;
 
@@ -10,7 +11,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
 {
     private final AttributeImpl.MsoInteger m_priority = new AttributeImpl.MsoInteger(this, "Priority");
     private final AttributeImpl.MsoString m_remarks = new AttributeImpl.MsoString(this, "Remarks");
-    private final AttributeImpl.MsoInteger m_status = new AttributeImpl.MsoInteger(this, "Status");
+    private final AttributeImpl.MsoEnum<AssignmentStatus> m_status = new AttributeImpl.MsoEnum<AssignmentStatus>(this, "Status", AssignmentStatus.EMPTY);
 
     private final EquipmentListImpl m_assignmentEquipment = new EquipmentListImpl(this, "AssignmentEquipment", false);
     private final POIListImpl m_assignmentFindings = new POIListImpl(this, "AssignmentFindings", false);
@@ -47,10 +48,60 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         addReference(m_reportedArea);
     }
 
+    public static AssignmentImpl implementationOf(IAssignmentIf anInterface) throws MsoCastException
+    {
+        try
+        {
+            return (AssignmentImpl) anInterface;
+        }
+        catch (ClassCastException e)
+        {
+            throw new MsoCastException("Illegal cast to CmdPostImpl");
+        }
+    }
+
+    public IMsoManagerIf.MsoClassCode getMsoClassCode()
+    {
+        return IMsoManagerIf.MsoClassCode.CLASSCODE_ASSIGNMENT;
+    }
+
     public int POICount()
     {
         return m_assignmentFindings.size();
     }
+
+    /*-------------------------------------------------------------------------------------------
+    * Methods for ENUM attributes
+    *-------------------------------------------------------------------------------------------*/
+
+    public void setStatus(AssignmentStatus aStatus)
+    {
+        m_status.setValue(aStatus);
+    }
+
+    public void setStatus(String aStatus)
+    {
+        m_status.setValue(aStatus);
+    }
+
+    public AssignmentStatus getStatus()
+    {
+        return m_status.getValue();
+    }
+
+    public IMsoModelIf.ModificationState getStatusState()
+    {
+        return m_status.getState();
+    }
+
+    public IAttributeIf.IMsoEnumIf<AssignmentStatus> getStatusAttribute()
+    {
+        return m_status;
+    }
+
+    /*-------------------------------------------------------------------------------------------
+    * Methods for attributes
+    *-------------------------------------------------------------------------------------------*/
 
     public void setPriority(int aPriority)
     {
@@ -92,25 +143,9 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         return m_remarks;
     }
 
-    public void setStatus(int aStatus)
-    {
-        m_status.setValue(aStatus);
-    }
-
-    public int getStatus()
-    {
-        return m_status.intValue();
-    }
-
-    public IMsoModelIf.ModificationState getStatusState()
-    {
-        return m_status.getState();
-    }
-
-    public IAttributeIf.IMsoIntegerIf getStatusAttribute()
-    {
-        return m_status;
-    }
+    /*-------------------------------------------------------------------------------------------
+    * Methods for lists
+    *-------------------------------------------------------------------------------------------*/
 
     public void addAssignmentEquipment(IEquipmentIf anIEquipmentIf) throws DuplicateIdException
     {
@@ -151,6 +186,10 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
     {
         return m_assignmentFindings.getItems();
     }
+
+    /*-------------------------------------------------------------------------------------------
+    * Methods for references
+    *-------------------------------------------------------------------------------------------*/
 
     public void setAssignmentBriefing(IBriefingIf aBriefing)
     {
@@ -230,10 +269,5 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
     public IMsoReferenceIf<IAreaIf> getReportedAreaAttribute()
     {
         return m_reportedArea;
-    }
-
-    public IMsoManagerIf.MsoClassCode getMsoClassCode()
-    {
-        return IMsoManagerIf.MsoClassCode.CLASSCODE_ASSIGNMENT;
     }
 }

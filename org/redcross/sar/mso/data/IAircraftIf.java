@@ -7,6 +7,9 @@ import org.redcross.sar.mso.IMsoModelIf;
  */
 public interface IAircraftIf extends ITransportIf
 {
+    /**
+     * Aircraft type enum
+     */
     public enum AircraftType
     {
         LIGHT_AIRCRAFT,
@@ -18,6 +21,26 @@ public interface IAircraftIf extends ITransportIf
         AIRBALLOON,
         OTHER
     }
+
+    /*-------------------------------------------------------------------------------------------
+    * Methods for ENUM attributes
+    *-------------------------------------------------------------------------------------------*/
+
+    public void setType(AircraftType aType);
+
+    public void setType(String aType);
+
+    public AircraftType getType();
+
+    public IMsoModelIf.ModificationState getTypeState();
+
+    public IAttributeIf.IMsoEnumIf<AircraftType> getTypeAttribute();
+
+    public String getTypeName();
+
+    /*-------------------------------------------------------------------------------------------
+    * Methods for attributes
+    *-------------------------------------------------------------------------------------------*/
 
     public void setAverageSpeed(int anAverageSpeed);
 
@@ -99,13 +122,4 @@ public interface IAircraftIf extends ITransportIf
 
     public IAttributeIf.IMsoIntegerIf getVisibilityAttribute();
 
-    public String getTypeName();
-
-    public void setType(int aType);
-
-    public int getType();
-
-    public IMsoModelIf.ModificationState getTypeState();
-
-    public IAttributeIf.IMsoIntegerIf getTypeAttribute();
 }

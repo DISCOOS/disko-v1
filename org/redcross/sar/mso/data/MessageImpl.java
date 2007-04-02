@@ -1,47 +1,60 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoManagerIf;
+import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.except.MsoException;
+import org.redcross.sar.util.except.DuplicateIdException;
 
 import java.util.Calendar;
+import java.util.Collection;
 
 public class MessageImpl extends AbstractTimeItem implements IMessageIf
 {
-    private final TaskListImpl m_taskList = new TaskListImpl(this, "MessageTasks", false);
-    private final MsoListImpl<ICommunicatorIf> m_broadcastNotAccepted = new MsoListImpl<ICommunicatorIf>(this, "BroadcastReceivers", false);
-    private final MsoListImpl<ICommunicatorIf> m_broadcastAcccepted = new MsoListImpl<ICommunicatorIf>(this, "BroadcastAccepted", false);
+    private final AttributeImpl.MsoBoolean m_broadcast = new AttributeImpl.MsoBoolean(this, "Broadcast");
+    private final AttributeImpl.MsoCalendar m_created = new AttributeImpl.MsoCalendar(this, "Created");
+    private final AttributeImpl.MsoInteger m_number = new AttributeImpl.MsoInteger(this, "Number");
+    private final AttributeImpl.MsoEnum<MessageStatus> m_status = new AttributeImpl.MsoEnum<MessageStatus>(this, "Status", MessageStatus.UNCONFIRMED);
 
-    protected final AttributeImpl.MsoBoolean m_isBroadcast = new AttributeImpl.MsoBoolean(this, "isBroadcast");
+    private final MsoListImpl<ICommunicatorIf> m_confirmedReceivers = new MsoListImpl<ICommunicatorIf>(this, "ConfirmedReceivers", false);
+    private final TaskListImpl m_messageTasks = new TaskListImpl(this, "MessageTasks", false);
+    private final MsoListImpl<ICommunicatorIf> m_unconfirmedReceivers = new MsoListImpl<ICommunicatorIf>(this, "UnconfirmedReceivers", false);
 
+    private final MsoReferenceImpl<ICmdPostIf> m_sender = new MsoReferenceImpl<ICmdPostIf>(this, "Sender", false);
 
     public MessageImpl(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         super(anObjectId);
+        setCreated(Calendar.getInstance());
     }
 
     public MessageImpl(IMsoObjectIf.IObjectIdIf anObjectId, Calendar aCalendar)
     {
         super(anObjectId, aCalendar);
+        setCreated(Calendar.getInstance());
     }
 
     protected void defineAttributes()
     {
         super.defineAttributes();
-        addAttribute(m_isBroadcast);
+        addAttribute(m_broadcast);
+        addAttribute(m_created);
+        addAttribute(m_number);
+        addAttribute(m_status);
     }
 
     protected void defineLists()
     {
         super.defineLists();
-        addList(m_taskList);
-        addList(m_broadcastNotAccepted);
-        addList(m_broadcastAcccepted);
+        addList(m_confirmedReceivers);
+        addList(m_messageTasks);
+        addList(m_unconfirmedReceivers);
     }
 
     protected void defineReferences()
     {
         super.defineReferences();
+        addReference(m_sender);
     }
 
     public static MessageImpl implementationOf(IMessageIf anInterface) throws MsoCastException
@@ -56,54 +69,247 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
         }
     }
 
-    public boolean addBroadcastNotAccepted(ICommunicatorIf aReceiver)
+    public IMsoManagerIf.MsoClassCode getMsoClassCode()
     {
-        try
-        {
-            m_broadcastNotAccepted.add(aReceiver);
-            return true;
-        }
-        catch (MsoException e)
-        {
-            return false;
-        }
+        return IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGE;
     }
 
-    public boolean acceptBroadcastReceiver(ICommunicatorIf aReceiver)
+    /*-------------------------------------------------------------------------------------------
+    * Methods for ENUM attributes
+    *-------------------------------------------------------------------------------------------*/
+
+    public void setStatus(MessageStatus aStatus)
     {
-        if (!m_broadcastNotAccepted.removeReference(aReceiver))
-        {
-            return false;
-        }
-        try
-        {
-            m_broadcastAcccepted.add(aReceiver);
-            return true;
-        }
-        catch (MsoException e)
-        {
-            return false;
-        }
+        m_status.setValue(aStatus);
     }
 
-    public MsoListImpl<ICommunicatorIf> getBroadcastReceivers()
+    public void setStatus(String aStatus)
     {
-        return m_broadcastNotAccepted;
+        m_status.setValue(aStatus);
     }
 
-    public MsoListImpl<ICommunicatorIf> getBroadcastAccepted()
+    public MessageStatus getStatus()
     {
-        return m_broadcastAcccepted;
+        return m_status.getValue();
+    }
+
+    public IMsoModelIf.ModificationState getStatusState()
+    {
+        return m_status.getState();
+    }
+
+    public IAttributeIf.IMsoEnumIf<MessageStatus> getStatusAttribute()
+    {
+        return m_status;
+    }
+
+    /*-------------------------------------------------------------------------------------------
+    * Methods for attributes
+    *-------------------------------------------------------------------------------------------*/
+
+    public void setBroadcast(boolean aBroadcast)
+    {
+        m_broadcast.setValue(aBroadcast);
     }
 
     public boolean isBroadcast()
     {
-        return m_isBroadcast.booleanValue();
+        return m_broadcast.booleanValue();
     }
 
-
-    public IMsoManagerIf.MsoClassCode getMsoClassCode()
+    public IMsoModelIf.ModificationState getBroadcastState()
     {
-        return IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGE;
+        return m_broadcast.getState();
+    }
+
+    public IAttributeIf.IMsoBooleanIf getBroadcastAttribute()
+    {
+        return m_broadcast;
+    }
+
+    public void setCreated(Calendar aCreated)
+    {
+        m_created.setValue(aCreated);
+    }
+
+    public Calendar getCreated()
+    {
+        return m_created.getCalendar();
+    }
+
+    public IMsoModelIf.ModificationState getCreatedState()
+    {
+        return m_created.getState();
+    }
+
+    public IAttributeIf.IMsoCalendarIf getCreatedAttribute()
+    {
+        return m_created;
+    }
+
+    public void setNumber(int aNumber)
+    {
+        m_number.setValue(aNumber);
+    }
+
+    public int getNumber()
+    {
+        return m_number.intValue();
+    }
+
+    public IMsoModelIf.ModificationState getNumberState()
+    {
+        return m_number.getState();
+    }
+
+    public IAttributeIf.IMsoIntegerIf getNumberAttribute()
+    {
+        return m_number;
+    }
+
+    /*-------------------------------------------------------------------------------------------
+    * Methods for lists
+    *-------------------------------------------------------------------------------------------*/
+
+    public void addConfirmedReceivers(ICommunicatorIf anICommunicatorIf) throws DuplicateIdException
+    {
+        m_confirmedReceivers.add(anICommunicatorIf);
+    }
+
+    public IMsoListIf<ICommunicatorIf> getConfirmedReceivers()
+    {
+        return m_confirmedReceivers;
+    }
+
+    public IMsoModelIf.ModificationState getConfirmedReceiversState(ICommunicatorIf anICommunicatorIf)
+    {
+        return m_confirmedReceivers.getState(anICommunicatorIf);
+    }
+
+    public Collection<ICommunicatorIf> getConfirmedReceiversItems()
+    {
+        return m_confirmedReceivers.getItems();
+    }
+
+    public void addMessageTasks(ITaskIf anITaskIf) throws DuplicateIdException
+    {
+        m_messageTasks.add(anITaskIf);
+    }
+
+    public ITaskListIf getMessageTasks()
+    {
+        return m_messageTasks;
+    }
+
+    public IMsoModelIf.ModificationState getMessageTasksState(ITaskIf anITaskIf)
+    {
+        return m_messageTasks.getState(anITaskIf);
+    }
+
+    public Collection<ITaskIf> getMessageTasksItems()
+    {
+        return m_messageTasks.getItems();
+    }
+
+    public void addUnconfirmedReceivers(ICommunicatorIf anICommunicatorIf) throws DuplicateIdException
+    {
+        m_unconfirmedReceivers.add(anICommunicatorIf);
+    }
+
+    public IMsoListIf<ICommunicatorIf> getUnconfirmedReceivers()
+    {
+        return m_unconfirmedReceivers;
+    }
+
+    public IMsoModelIf.ModificationState getUnconfirmedReceiversState(ICommunicatorIf anICommunicatorIf)
+    {
+        return m_unconfirmedReceivers.getState(anICommunicatorIf);
+    }
+
+    public Collection<ICommunicatorIf> getUnconfirmedReceiversItems()
+    {
+        return m_unconfirmedReceivers.getItems();
+    }
+
+    /*-------------------------------------------------------------------------------------------
+    * Methods for references
+    *-------------------------------------------------------------------------------------------*/
+
+    public void setSender(ICmdPostIf aCommunicator)
+    {
+        m_sender.setReference(aCommunicator);
+    }
+
+    public ICmdPostIf getSender()
+    {
+        return m_sender.getReference();
+    }
+
+    public IMsoModelIf.ModificationState getSenderState()
+    {
+        return m_sender.getState();
+    }
+
+    public IMsoReferenceIf<ICmdPostIf> getSenderAttribute()
+    {
+        return m_sender;
+    }
+
+    /*-------------------------------------------------------------------------------------------
+    * Other specified methods
+    *-------------------------------------------------------------------------------------------*/
+
+    public Calendar getOccuredTime()
+    {
+        return null; /*todo*/
+    }
+
+    public void setOccuredTime()
+    {
+    }
+
+    /*-------------------------------------------------------------------------------------------
+    * Other methods
+    *-------------------------------------------------------------------------------------------*/
+
+
+    public boolean addBroadcastNotAccepted(ICommunicatorIf aReceiver)
+    {
+        try
+        {
+            m_unconfirmedReceivers.add(aReceiver);
+            return true;
+        }
+        catch (MsoException e)
+        {
+            return false;
+        }
+    }
+
+    public boolean confirmReceiver(ICommunicatorIf anICommunicatorIf)
+    {
+        if (!m_unconfirmedReceivers.removeReference(anICommunicatorIf))
+        {
+            return false;
+        }
+        try
+        {
+            m_confirmedReceivers.add(anICommunicatorIf);
+            return true;
+        }
+        catch (MsoException e)
+        {
+            return false;
+        }
+    }
+
+    public MsoListImpl<ICommunicatorIf> getBroadcastUnconfirmed()
+    {
+        return m_unconfirmedReceivers;
+    }
+
+    public MsoListImpl<ICommunicatorIf> getBroadcastConfirmed()
+    {
+        return m_confirmedReceivers;
     }
 }

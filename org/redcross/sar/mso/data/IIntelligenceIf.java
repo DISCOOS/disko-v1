@@ -3,26 +3,104 @@ package org.redcross.sar.mso.data;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.MsoCastException;
 
+import java.util.Calendar;
+
 public interface IIntelligenceIf extends IMsoObjectIf
 {
 
-    public void setPOI(IPOIIf aPoi) throws MsoCastException;
-    public IMsoReferenceIf<IPOIIf> getPOIReference();
-    public IMsoModelIf.ModificationState getPOIState();
-    public IPOIIf getPOI();
+    /**
+     * Status enum is
+     */
+    public enum IntelligenceStatus
+    {
+        UNCONFIRMED,
+        REJECTED,
+        CONFIRMED
+    }
 
-    public void setSubject(ISubjectIf aSubject) throws MsoCastException;
-    public IMsoReferenceIf<ISubjectIf> getSubjectReference();
-    public IMsoModelIf.ModificationState getSubjectState();
-    public ISubjectIf getSubject();
+    /*-------------------------------------------------------------------------------------------
+    * Methods for ENUM attributes
+    *-------------------------------------------------------------------------------------------*/
 
-    public void setRoute(IRouteIf aRoute) throws MsoCastException;
-    public IMsoReferenceIf<IRouteIf>getRouteReference();
-    public IMsoModelIf.ModificationState getRouteState();
-    public IRouteIf getRoute();
+    public void setStatus(IntelligenceStatus aStatus);
 
-    public void setTrack(ITrackIf aTrack) throws MsoCastException;
-    public IMsoReferenceIf<ITrackIf>getTrackReference();
-    public IMsoModelIf.ModificationState getTrackState();
-    public ITrackIf getTrack();
+    public void setStatus(String aStatus);
+
+    public IntelligenceStatus getStatus();
+
+    public IMsoModelIf.ModificationState getStatusState();
+
+    public IAttributeIf.IMsoEnumIf<IntelligenceStatus> getStatusAttribute();
+
+    /*-------------------------------------------------------------------------------------------
+    * Methods for attributes
+    *-------------------------------------------------------------------------------------------*/
+
+    public void setDescription(String aDescription);
+
+    public String getDescription();
+
+    public IMsoModelIf.ModificationState getDescriptionState();
+
+    public IAttributeIf.IMsoStringIf getDescriptionAttribute();
+
+    public void setPriority(int aPriority);
+
+    public int getPriority();
+
+    public IMsoModelIf.ModificationState getPriorityState();
+
+    public IAttributeIf.IMsoIntegerIf getPriorityAttribute();
+
+    public void setSource(String aSource);
+
+    public String getSource();
+
+    public IMsoModelIf.ModificationState getSourceState();
+
+    public IAttributeIf.IMsoStringIf getSourceAttribute();
+
+    public void setTime(Calendar aTime);
+
+    public Calendar getTime();
+
+    public IMsoModelIf.ModificationState getTimeState();
+
+    public IAttributeIf.IMsoCalendarIf getTimeAttribute();
+
+    /*-------------------------------------------------------------------------------------------
+    * Methods for references
+    *-------------------------------------------------------------------------------------------*/
+
+    public void setIntelligencePOI(IPOIIf aPOI);
+
+    public IPOIIf getIntelligencePOI();
+
+    public IMsoModelIf.ModificationState getIntelligencePOIState();
+
+    public IMsoReferenceIf<IPOIIf> getIntelligencePOIAttribute();
+
+    public void setIntelligenceRoute(IRouteIf aRoute);
+
+    public IRouteIf getIntelligenceRoute();
+
+    public IMsoModelIf.ModificationState getIntelligenceRouteState();
+
+    public IMsoReferenceIf<IRouteIf> getIntelligenceRouteAttribute();
+
+    public void setIntelligenceSubject(ISubjectIf aSubject);
+
+    public ISubjectIf getIntelligenceSubject();
+
+    public IMsoModelIf.ModificationState getIntelligenceSubjectState();
+
+    public IMsoReferenceIf<ISubjectIf> getIntelligenceSubjectAttribute();
+
+    public void setIntelligenceTrack(ITrackIf aTrack);
+
+    public ITrackIf getIntelligenceTrack();
+
+    public IMsoModelIf.ModificationState getIntelligenceTrackState();
+
+    public IMsoReferenceIf<ITrackIf> getIntelligenceTrackAttribute();
 }

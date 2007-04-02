@@ -1,6 +1,7 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.util.except.MsoCastException;
 
 public class BoatImpl extends AbstractTransportUnit implements IBoatIf
 {
@@ -11,7 +12,7 @@ public class BoatImpl extends AbstractTransportUnit implements IBoatIf
     private final AttributeImpl.MsoInteger m_height = new AttributeImpl.MsoInteger(this, "Height");
     private final AttributeImpl.MsoInteger m_length = new AttributeImpl.MsoInteger(this, "Length");
     private final AttributeImpl.MsoInteger m_maxSpeed = new AttributeImpl.MsoInteger(this, "MaxSpeed");
-    private final AttributeImpl.MsoInteger m_type = new AttributeImpl.MsoInteger(this, "Type");
+    private final AttributeImpl.MsoEnum<BoatType> m_type = new AttributeImpl.MsoEnum<BoatType>(this, "Type", BoatType.SEARCH_AND_RESCUE);
 
 
     public BoatImpl(IMsoObjectIf.IObjectIdIf anObjectId, long aNumber, String aKjennetegn, int aHastighet)
@@ -41,6 +42,56 @@ public class BoatImpl extends AbstractTransportUnit implements IBoatIf
     {
         super.defineReferences();
     }
+
+    public static BoatImpl implementationOf(IBoatIf anInterface) throws MsoCastException
+    {
+        try
+        {
+            return (BoatImpl) anInterface;
+        }
+        catch (ClassCastException e)
+        {
+            throw new MsoCastException("Illegal cast to CmdPostImpl");
+        }
+    }
+
+    /*-------------------------------------------------------------------------------------------
+    * Methods for ENUM attributes
+    *-------------------------------------------------------------------------------------------*/
+
+    public void setType(BoatType aType)
+    {
+        m_type.setValue(aType);
+    }
+
+    public void setType(String aType)
+    {
+        m_type.setValue(aType);
+    }
+
+    public BoatType getType()
+    {
+        return m_type.getValue();
+    }
+
+    public IMsoModelIf.ModificationState getTypeState()
+    {
+        return m_type.getState();
+    }
+
+    public IAttributeIf.IMsoEnumIf<BoatType> getTypeAttribute()
+    {
+        return m_type;
+    }
+
+    public String getTypeName()
+    {
+        return null; /*todo*/
+    }
+
+    /*-------------------------------------------------------------------------------------------
+    * Methods for attributes
+    *-------------------------------------------------------------------------------------------*/
 
     public void setAverageSpeed(int anAverageSpeed)
     {
@@ -182,32 +233,9 @@ public class BoatImpl extends AbstractTransportUnit implements IBoatIf
         return m_maxSpeed;
     }
 
-    public void setType(int aType)
-    {
-        m_type.setValue(aType);
-    }
-
-    public int getType()
-    {
-        return m_type.intValue();
-    }
-
-    public IMsoModelIf.ModificationState getTypeState()
-    {
-        return m_type.getState();
-    }
-
-    public IAttributeIf.IMsoIntegerIf getTypeAttribute()
-    {
-        return m_type;
-    }
-
-
-    public String getTypeName()
-    {
-        return null; /*todo*/
-    }
-
+    /*-------------------------------------------------------------------------------------------
+    * Other methods
+    *-------------------------------------------------------------------------------------------*/
 
     public String toString()
     {

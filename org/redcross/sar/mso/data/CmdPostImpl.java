@@ -20,7 +20,6 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     private final AttributeImpl.MsoString m_telephone3 = new AttributeImpl.MsoString(this, "Telephone3");
     private final AttributeImpl.MsoEnum<CmdPostStatus> m_status = new AttributeImpl.MsoEnum<CmdPostStatus>(this, "Status", CmdPostStatus.IDLE);
 
-
     private final AbstractDerivedList<ICommunicatorIf> m_communicatorList;
     private final TimeLineImpl m_timeLine = new TimeLineImpl();
 
@@ -47,30 +46,6 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     private final TaskListImpl m_taskList = new TaskListImpl(this, "TaskList", true, 100);
     private final TrackListImpl m_trackList = new TrackListImpl(this, "TrackList", true, 100);
     private final UnitListImpl m_unitList = new UnitListImpl(this, "UnitList", true, 100);
-
-//    private final HypothesisListImpl m_hypothesisList = new HypothesisListImpl(this, "", true, 100);
-//    private final BriefingListImpl m_BriefingList = new BriefingListImpl(this, "", true, 100);
-//    private final SubjectListImpl m_subjectList = new SubjectListImpl(this, "", true, 100);
-//    private final IntelligenceListImpl m_intelligenceList = new IntelligenceListImpl(this, "", true, 100);
-//    private final POIListImpl m_POIlist = new POIListImpl(this, "", true, 100);
-//    private final TrackListImpl m_trackList = new TrackListImpl(this, "", true, 100);
-//    private final RouteListImpl m_routeList = new RouteListImpl(this, "", true, 100);
-//    private final CalloutListImpl m_calloutList = new CalloutListImpl(this, "", true, 100);
-//    private final PersonnelListImpl m_peronellList = new PersonnelListImpl(this, "", true, 100);
-//    private final UnitListImpl m_unitList = new UnitListImpl(this, "", true, 100);
-//    private final SketchListImpl m_sketchList = new SketchListImpl(this, "", true, 100);
-//    private final EquipmentListImpl m_equipmentList = new EquipmentListImpl(this, "", true, 100);
-//    private final AssignmentListImpl m_assignmentList = new AssignmentListImpl(this, "", true, 100);
-//    private final AreaListImpl m_AreaList = new AreaListImpl(this, "", true, 100);
-//    private final SearchAreaListImpl m_earchAreaList = new SearchAreaListImpl(this, "", true, 100);
-//    private final OperationAreaListImpl m_operationAreaList = new OperationAreaListImpl(this, "", true, 100);
-//    private final TaskListImpl m_taskList = new TaskListImpl(this, "", true, 100);
-//    private final CheckpointListImpl m_checkList = new CheckpointListImpl(this, "", true, 100);
-//    private final EventLogImpl m_eventLog = new EventLogImpl(this, "", true, 100);
-//    private final MessageLogImpl m_messageLog = new MessageLogImpl(this, "", true, 100);
-//    private final ForecastListImpl m_forecastList = new ForecastListImpl(this, "", true, 100);
-//    private final EnvironmentListImpl m_environmentList = new EnvironmentListImpl(this, "", true, 100);
-//    private final DataSourceListImpl m_dataSourceList = new DataSourceListImpl(this, "", true, 100);
 
     public CmdPostImpl(IMsoObjectIf.IObjectIdIf anObjectId)
     {
@@ -156,6 +131,44 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
             throw new MsoCastException("Illegal cast to CmdPostImpl");
         }
     }
+
+    public IMsoManagerIf.MsoClassCode getMsoClassCode()
+    {
+        return IMsoManagerIf.MsoClassCode.CLASSCODE_CMDPOST;
+    }
+
+    /*-------------------------------------------------------------------------------------------
+    * Methods for ENUM attributes
+    *-------------------------------------------------------------------------------------------*/
+
+    public void setStatus(CmdPostStatus aStatus)
+    {
+        m_status.setValue(aStatus);
+    }
+
+    public void setStatus(String aStatus)
+    {
+        m_status.setValue(aStatus);
+    }
+
+    public CmdPostStatus getStatus()
+    {
+        return m_status.getValue();
+    }
+
+    public IMsoModelIf.ModificationState getStatusState()
+    {
+        return m_status.getState();
+    }
+
+    public IAttributeIf.IMsoEnumIf<CmdPostStatus> getStatusAttribute()
+    {
+        return m_status;
+    }
+
+    /*-------------------------------------------------------------------------------------------
+    * Methods for attributes
+    *-------------------------------------------------------------------------------------------*/
 
     public void setEstablished(Calendar anEstablished)
     {
@@ -297,35 +310,14 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
         return m_telephone3;
     }
 
-    public void setState(CmdPostStatus aState)
-    {
-        m_status.setValue(aState);
-    }
-
-    public void setState(String aState)
-    {
-        m_status.setValue(aState);
-    }
-
-    public CmdPostStatus getState()
-    {
-        return m_status.getValue();
-    }
-
-    public IMsoModelIf.ModificationState getStateState()
-    {
-        return m_status.getState();
-    }
-
-    public IAttributeIf.IMsoEnumIf<CmdPostStatus> getStateAttribute()
-    {
-        return m_status;
-    }
-
     public void addAreaList(IAreaIf anIAreaIf) throws DuplicateIdException
     {
         m_areaList.add(anIAreaIf);
     }
+
+    /*-------------------------------------------------------------------------------------------
+    * Methods for lists
+    *-------------------------------------------------------------------------------------------*/
 
     public IAreaListIf getAreaList()
     {
@@ -340,11 +332,6 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     public Collection<IAreaIf> getAreaListItems()
     {
         return m_areaList.getItems();
-    }
-
-    public void addAssignmentList(IAssignmentIf anIAssignmentIf) throws DuplicateIdException
-    {
-        m_assignmentList.add(anIAssignmentIf);
     }
 
     public IAssignmentListIf getAssignmentList()
@@ -362,11 +349,6 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
         return m_assignmentList.getItems();
     }
 
-    public void addAttendanceList(IPersonnelIf anIPersonnelIf) throws DuplicateIdException
-    {
-        m_attendanceList.add(anIPersonnelIf);
-    }
-
     public IPersonnelListIf getAttendanceList()
     {
         return m_attendanceList;
@@ -380,11 +362,6 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     public Collection<IPersonnelIf> getAttendanceListItems()
     {
         return m_attendanceList.getItems();
-    }
-
-    public void addBriefingList(IBriefingIf anIBriefingIf) throws DuplicateIdException
-    {
-        m_briefingList.add(anIBriefingIf);
     }
 
     public IBriefingListIf getBriefingList()
@@ -402,11 +379,6 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
         return m_briefingList.getItems();
     }
 
-    public void addCalloutList(ICalloutIf anICalloutIf) throws DuplicateIdException
-    {
-        m_calloutList.add(anICalloutIf);
-    }
-
     public ICalloutListIf getCalloutList()
     {
         return m_calloutList;
@@ -420,11 +392,6 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     public Collection<ICalloutIf> getCalloutListItems()
     {
         return m_calloutList.getItems();
-    }
-
-    public void addCheckpointList(ICheckpointIf anICheckpointIf) throws DuplicateIdException
-    {
-        m_checkpointList.add(anICheckpointIf);
     }
 
     public ICheckpointListIf getCheckpointList()
@@ -442,11 +409,6 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
         return m_checkpointList.getItems();
     }
 
-    public void addDataSourceList(IDataSourceIf anIDataSourceIf) throws DuplicateIdException
-    {
-        m_dataSourceList.add(anIDataSourceIf);
-    }
-
     public IDataSourceListIf getDataSourceList()
     {
         return m_dataSourceList;
@@ -460,11 +422,6 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     public Collection<IDataSourceIf> getDataSourceListItems()
     {
         return m_dataSourceList.getItems();
-    }
-
-    public void addEnvironmentList(IEnvironmentIf anIEnvironmentIf) throws DuplicateIdException
-    {
-        m_environmentList.add(anIEnvironmentIf);
     }
 
     public IEnvironmentListIf getEnvironmentList()
@@ -482,11 +439,6 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
         return m_environmentList.getItems();
     }
 
-    public void addEquipmentList(IEquipmentIf anIEquipmentIf) throws DuplicateIdException
-    {
-        m_equipmentList.add(anIEquipmentIf);
-    }
-
     public IEquipmentListIf getEquipmentList()
     {
         return m_equipmentList;
@@ -500,11 +452,6 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     public Collection<IEquipmentIf> getEquipmentListItems()
     {
         return m_equipmentList.getItems();
-    }
-
-    public void addEventLog(IEventIf anIEventIf) throws DuplicateIdException
-    {
-        m_eventLog.add(anIEventIf);
     }
 
     public IEventLogIf getEventLog()
@@ -522,11 +469,6 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
         return m_eventLog.getItems();
     }
 
-    public void addForecastList(IForecastIf anIForecastIf) throws DuplicateIdException
-    {
-        m_forecastList.add(anIForecastIf);
-    }
-
     public IForecastListIf getForecastList()
     {
         return m_forecastList;
@@ -540,11 +482,6 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     public Collection<IForecastIf> getForecastListItems()
     {
         return m_forecastList.getItems();
-    }
-
-    public void addHypothesisList(IHypothesisIf anIHypothesisIf) throws DuplicateIdException
-    {
-        m_hypothesisList.add(anIHypothesisIf);
     }
 
     public IHypothesisListIf getHypothesisList()
@@ -562,11 +499,6 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
         return m_hypothesisList.getItems();
     }
 
-    public void addIntelligenceList(IIntelligenceIf anIIntelligenceIf) throws DuplicateIdException
-    {
-        m_intelligenceList.add(anIIntelligenceIf);
-    }
-
     public IIntelligenceListIf getIntelligenceList()
     {
         return m_intelligenceList;
@@ -580,11 +512,6 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     public Collection<IIntelligenceIf> getIntelligenceListItems()
     {
         return m_intelligenceList.getItems();
-    }
-
-    public void addMessageLog(IMessageIf anIMessageIf) throws DuplicateIdException
-    {
-        m_messageLog.add(anIMessageIf);
     }
 
     public IMessageLogIf getMessageLog()
@@ -602,11 +529,6 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
         return m_messageLog.getItems();
     }
 
-    public void addOperationAreaList(IOperationAreaIf anIOperationAreaIf) throws DuplicateIdException
-    {
-        m_operationAreaList.add(anIOperationAreaIf);
-    }
-
     public IOperationAreaListIf getOperationAreaList()
     {
         return m_operationAreaList;
@@ -620,11 +542,6 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     public Collection<IOperationAreaIf> getOperationAreaListItems()
     {
         return m_operationAreaList.getItems();
-    }
-
-    public void addPOIList(IPOIIf anIPOIIf) throws DuplicateIdException
-    {
-        m_pOIList.add(anIPOIIf);
     }
 
     public IPOIListIf getPOIList()
@@ -642,11 +559,6 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
         return m_pOIList.getItems();
     }
 
-    public void addRouteList(IRouteIf anIRouteIf) throws DuplicateIdException
-    {
-        m_routeList.add(anIRouteIf);
-    }
-
     public IRouteListIf getRouteList()
     {
         return m_routeList;
@@ -660,11 +572,6 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     public Collection<IRouteIf> getRouteListItems()
     {
         return m_routeList.getItems();
-    }
-
-    public void addSearchAreaList(ISearchAreaIf anISearchAreaIf) throws DuplicateIdException
-    {
-        m_searchAreaList.add(anISearchAreaIf);
     }
 
     public ISearchAreaListIf getSearchAreaList()
@@ -682,11 +589,6 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
         return m_searchAreaList.getItems();
     }
 
-    public void addSketchList(ISketchIf anISketchIf) throws DuplicateIdException
-    {
-        m_sketchList.add(anISketchIf);
-    }
-
     public ISketchListIf getSketchList()
     {
         return m_sketchList;
@@ -700,11 +602,6 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     public Collection<ISketchIf> getSketchListItems()
     {
         return m_sketchList.getItems();
-    }
-
-    public void addSubjectList(ISubjectIf anISubjectIf) throws DuplicateIdException
-    {
-        m_subjectList.add(anISubjectIf);
     }
 
     public ISubjectListIf getSubjectList()
@@ -722,11 +619,6 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
         return m_subjectList.getItems();
     }
 
-    public void addTaskList(ITaskIf anITaskIf) throws DuplicateIdException
-    {
-        m_taskList.add(anITaskIf);
-    }
-
     public ITaskListIf getTaskList()
     {
         return m_taskList;
@@ -740,11 +632,6 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     public Collection<ITaskIf> getTaskListItems()
     {
         return m_taskList.getItems();
-    }
-
-    public void addTrackList(ITrackIf anITrackIf) throws DuplicateIdException
-    {
-        m_trackList.add(anITrackIf);
     }
 
     public ITrackListIf getTrackList()
@@ -762,11 +649,6 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
         return m_trackList.getItems();
     }
 
-    public void addUnitList(IUnitIf anIUnitIf) throws DuplicateIdException
-    {
-        m_unitList.add(anIUnitIf);
-    }
-
     public IUnitListIf getUnitList()
     {
         return m_unitList;
@@ -782,57 +664,23 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
         return m_unitList.getItems();
     }
 
-//    public IIntelligenceListIf getIntelligenceList()
-//    {
-//        return m_intelligenceList;
-//    }
-
-//    public IUnitListIf getUnitList()
-//    {
-//        return m_unitList;
-//    }
-//
-//    public IAssignmentListIf getAssignmentList()
-//    {
-//        return m_assignmentList;
-//    }
-//
-//    public IPOIListIf getPOIList()
-//    {
-//        return m_POIlist;
-//    }
-//
-//    public IBriefingListIf getBriefingList()
-//    {
-//        return m_BriefingList;
-//    }
-//
-//    public IHypothesisListIf getHypothesisList()
-//    {
-//        return m_hypothesisList;
-//    }
-
-//    public IEventLogIf getEventLog()
-//    {
-//        return m_eventLog;
-//    }
-//
-//    public ITaskListIf getTaskList()
-//    {
-//        return m_taskList;
-//    }
-
-    //
+    /*-------------------------------------------------------------------------------------------
+    * Other List accessor methods
+    *-------------------------------------------------------------------------------------------*/
 
     public ITimeLineIf getTimeLine()
     {
         return m_timeLine;
     }
 
-    public AbstractDerivedList<ICommunicatorIf> getCcommunicatorList()
+    public AbstractDerivedList<ICommunicatorIf> getCommunicatorList()
     {
         return m_communicatorList;
     }
+
+    /*-------------------------------------------------------------------------------------------
+    *  Methods from IHierarchicalUnitIf
+    *-------------------------------------------------------------------------------------------*/
 
     public boolean setSuperior(IHierarchicalUnitIf aUnit)
     {
@@ -848,22 +696,4 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     {
         return AbstractUnit.getSubOrdinates(this);
     }
-
-    public IMsoManagerIf.MsoClassCode getMsoClassCode()
-    {
-        return IMsoManagerIf.MsoClassCode.CLASSCODE_CMDPOST;
-    }
-
-//    public void setCallSign(String aCallsign)
-//    {
-//        m_callSign.setValue(aCallsign);
-//    }
-//
-//    public String getCallSign()
-//    {
-//        return m_callSign.getString();
-//    }
-//
-
-
 }

@@ -8,6 +8,9 @@ import java.util.Collection;
 
 public interface ICmdPostIf extends IMsoObjectIf
 {
+    /**
+     * Command post status enum
+     */
     public enum CmdPostStatus
     {
         IDLE,
@@ -15,6 +18,24 @@ public interface ICmdPostIf extends IMsoObjectIf
         PAUSED,
         RELEASED
     }
+
+    /*-------------------------------------------------------------------------------------------
+    * Methods for ENUM attributes
+    *-------------------------------------------------------------------------------------------*/
+
+    public void setStatus(CmdPostStatus aStatus);
+
+    public void setStatus(String aStatus);
+
+    public CmdPostStatus getStatus();
+
+    public IMsoModelIf.ModificationState getStatusState();
+
+    public IAttributeIf.IMsoEnumIf<CmdPostStatus> getStatusAttribute();
+
+    /*-------------------------------------------------------------------------------------------
+    * Methods for attributes
+    *-------------------------------------------------------------------------------------------*/
 
     public void setEstablished(Calendar anEstablished);
 
@@ -72,15 +93,9 @@ public interface ICmdPostIf extends IMsoObjectIf
 
     public IAttributeIf.IMsoStringIf getTelephone3Attribute();
 
-    public void setState(CmdPostStatus aState);
-
-    public void setState(String aState);
-
-    public CmdPostStatus getState();
-
-    public IMsoModelIf.ModificationState getStateState();
-
-    public IAttributeIf.IMsoEnumIf<CmdPostStatus> getStateAttribute();
+    /*-------------------------------------------------------------------------------------------
+    * Methods for lists
+    *-------------------------------------------------------------------------------------------*/
 
     public IAreaListIf getAreaList();
 
@@ -220,8 +235,11 @@ public interface ICmdPostIf extends IMsoObjectIf
 
     public Collection<IUnitIf> getUnitListItems();
 
+    /*-------------------------------------------------------------------------------------------
+    * Other List accessor methods
+    *-------------------------------------------------------------------------------------------*/
 
-    public AbstractDerivedList<ICommunicatorIf> getCcommunicatorList();
+    public AbstractDerivedList<ICommunicatorIf> getCommunicatorList();
 
     public ITimeLineIf getTimeLine();
 }

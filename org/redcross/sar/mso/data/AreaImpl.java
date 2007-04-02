@@ -2,10 +2,13 @@ package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.util.except.DuplicateIdException;
 import org.redcross.sar.util.except.MsoCastException;
+import org.redcross.sar.util.mso.Selector;
 
 import java.util.Collection;
+import java.util.List;
 
 public class AreaImpl extends AbstractMsoObject implements IAreaIf
 {
@@ -33,6 +36,23 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
     {
     }
 
+    public static AreaImpl implementationOf(IAreaIf anInterface) throws MsoCastException
+    {
+        try
+        {
+            return (AreaImpl) anInterface;
+        }
+        catch (ClassCastException e)
+        {
+            throw new MsoCastException("Illegal cast to AreaImpl");
+        }
+    }
+
+    public IMsoManagerIf.MsoClassCode getMsoClassCode()
+    {
+        return IMsoManagerIf.MsoClassCode.CLASSCODE_AREA;
+    }
+
     // todo    public void setGeodata(geodata aGeodata)
 //    public void setGeodata(geodata aGeodata)
 //    {
@@ -46,7 +66,7 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
 //
 //    public IMsoModelIf.ModificationState getGeodataState()
 //    {
-//        return m_geodata.getState();
+//        return m_geodata.getStatus();
 //    }
 //
 //    public IAttributeIf.IMsoGeodataIf getGeodataAttribute()
@@ -74,15 +94,9 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
         return m_remarks;
     }
 
-    public IAssignmentIf getAssignment()
-    {
-        return null; /*todo*/
-    }
-
-    public IHypothesisIf getHypotesis()
-    {
-        return null; /*todo*/
-    }
+    /*-------------------------------------------------------------------------------------------
+    * Methods for lists
+    *-------------------------------------------------------------------------------------------*/
 
     public void addAreaPOIs(IPOIIf anIPOIIf) throws DuplicateIdException
     {
@@ -104,21 +118,38 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
         return m_areaPOIs.getItems();
     }
 
-    public static AreaImpl implementationOf(IAreaIf anInterface) throws MsoCastException
+    /*-------------------------------------------------------------------------------------------
+    * Other specified methods
+    *-------------------------------------------------------------------------------------------*/
+
+    public IAssignmentIf getAssignment()
     {
-        try
+        List<IAssignmentIf> result = MsoModelImpl.getInstance().getMsoManager().getCmdPost().getAssignmentList().selectItems(
+                new AbstractMsoObject.SelfSelector<IAreaIf, IAssignmentIf>(this)
+                {
+                    public boolean select(IAssignmentIf anObject)
+                    {
+                        return (anObject.getPlannedArea() == m_object || anObject.getReportedArea() == m_object); // todo Check status as well?
+                    }
+                }, null);
+        if (result.size() == 0)
         {
-            return (AreaImpl) anInterface;
-        }
-        catch (ClassCastException e)
+            return null;
+        } else if (result.size() == 0)
         {
-            throw new MsoCastException("Illegal cast to AreaImpl");
+            System.out.println("Area "+ getObjectId() + " is referred by more than one assignment.");
         }
+        return result.get(0);
     }
 
-    public IMsoManagerIf.MsoClassCode getMsoClassCode()
+    public IMsoReferenceIf<IHypothesisIf> getHypotesisAttribute()
     {
-        return IMsoManagerIf.MsoClassCode.CLASSCODE_AREA;
+        return getAssignment().getAssignmentHypothesisAttribute();
+    }
+
+    public void setHypothesis(IHypothesisIf anHypothesis)
+    {
+        getAssignment().setAssignmentHypothesis(anHypothesis);
     }
 
 }

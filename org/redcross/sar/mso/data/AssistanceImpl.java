@@ -3,8 +3,13 @@ package org.redcross.sar.mso.data;
 /**
  *
  */
+
 public class AssistanceImpl extends AssignmentImpl implements IAssistanceIf
 {
+    /*-------------------------------------------------------------------------------------------
+    * Other specified methods
+    *-------------------------------------------------------------------------------------------*/
+
     public AssistanceImpl(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         super(anObjectId);
@@ -12,19 +17,21 @@ public class AssistanceImpl extends AssignmentImpl implements IAssistanceIf
 
     public IAreaIf getPlannedIncidentScene()
     {
-        return null; /*todo*/
+        return getPlannedArea();
     }
 
     public IAreaIf getReportedIncidentScene()
     {
-        return null; /*todo*/
+        return getReportedArea();
     }
 
-    public void setPlannedIncidentScene()
+    public void setPlannedIncidentScene(IAreaIf anArea)
     {
+        setPlannedArea(anArea);
     }
 
-    public void setReportedIncidentScene()
+    public void setReportedIncidentScene(IAreaIf anArea)
     {
+        setReportedArea(anArea);
     }
 }

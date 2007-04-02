@@ -22,6 +22,24 @@ public interface IAssignmentIf extends IMsoObjectIf
         REPORTED
     }
 
+    /*-------------------------------------------------------------------------------------------
+    * Methods for ENUM attributes
+    *-------------------------------------------------------------------------------------------*/
+
+    public void setStatus(AssignmentStatus aStatus);
+
+    public void setStatus(String aStatus);
+
+    public AssignmentStatus getStatus();
+
+    public IMsoModelIf.ModificationState getStatusState();
+
+    public IAttributeIf.IMsoEnumIf<AssignmentStatus> getStatusAttribute();
+
+    /*-------------------------------------------------------------------------------------------
+    * Methods for attributes
+    *-------------------------------------------------------------------------------------------*/
+
     public void setPriority(int aPriority);
 
     public int getPriority();
@@ -38,13 +56,9 @@ public interface IAssignmentIf extends IMsoObjectIf
 
     public IAttributeIf.IMsoStringIf getRemarksAttribute();
 
-    public void setStatus(int aStatus);
-
-    public int getStatus();
-
-    public IMsoModelIf.ModificationState getStatusState();
-
-    public IAttributeIf.IMsoIntegerIf getStatusAttribute();
+    /*-------------------------------------------------------------------------------------------
+    * Methods for lists
+    *-------------------------------------------------------------------------------------------*/
 
     public void addAssignmentEquipment(IEquipmentIf anIEquipmentIf) throws DuplicateIdException;
 
@@ -61,6 +75,10 @@ public interface IAssignmentIf extends IMsoObjectIf
     public IMsoModelIf.ModificationState getAssignmentFindingsState(IPOIIf anIPOIIf);
 
     public Collection<IPOIIf> getAssignmentFindingsItems();
+
+    /*-------------------------------------------------------------------------------------------
+    * Methods for references
+    *-------------------------------------------------------------------------------------------*/
 
     public void setAssignmentBriefing(IBriefingIf aBriefing);
 

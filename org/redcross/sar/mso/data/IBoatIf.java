@@ -9,7 +9,6 @@ public interface IBoatIf extends ITransportIf
 {
     public enum BoatType
     {
-
         SEARCH_AND_RESCUE,
         MOTOR_BOAT,
         SPEED_BOAT,
@@ -18,6 +17,26 @@ public interface IBoatIf extends ITransportIf
         CRUISER,
         OTHER
     }
+
+    /*-------------------------------------------------------------------------------------------
+    * Methods for ENUM attributes
+    *-------------------------------------------------------------------------------------------*/
+
+    public void setType(BoatType aType);
+
+    public void setType(String aType);
+
+    public BoatType getType();
+
+    public IMsoModelIf.ModificationState getTypeState();
+
+    public IAttributeIf.IMsoEnumIf<BoatType> getTypeAttribute();
+
+    public String getTypeName();
+
+    /*-------------------------------------------------------------------------------------------
+    * Methods for attributes
+    *-------------------------------------------------------------------------------------------*/
 
     public void setAverageSpeed(int anAverageSpeed);
 
@@ -74,16 +93,4 @@ public interface IBoatIf extends ITransportIf
     public IMsoModelIf.ModificationState getMaxSpeedState();
 
     public IAttributeIf.IMsoIntegerIf getMaxSpeedAttribute();
-
-    public void setType(int aType);
-
-    public int getType();
-
-    public IMsoModelIf.ModificationState getTypeState();
-
-    public IAttributeIf.IMsoIntegerIf getTypeAttribute();
-
-    public String getTypeName();
-
-
 }

@@ -7,6 +7,10 @@ import java.util.Collection;
 
 public interface IAreaIf extends IMsoObjectIf
 {
+    /*-------------------------------------------------------------------------------------------
+    * Methods for attributes
+    *-------------------------------------------------------------------------------------------*/
+
 // todo     public void setGeodata(geodata aGeodata);
 
 //    public void setGeodata(geodata aGeodata);
@@ -25,9 +29,9 @@ public interface IAreaIf extends IMsoObjectIf
 
     public IAttributeIf.IMsoStringIf getRemarksAttribute();
 
-    public IAssignmentIf getAssignment();
-
-    public IHypothesisIf getHypotesis();
+    /*-------------------------------------------------------------------------------------------
+    * Methods for lists
+    *-------------------------------------------------------------------------------------------*/
 
     public void addAreaPOIs(IPOIIf anIPOIIf) throws DuplicateIdException;
 
@@ -36,4 +40,14 @@ public interface IAreaIf extends IMsoObjectIf
     public IMsoModelIf.ModificationState getAreaPOIsState(IPOIIf anIPOIIf);
 
     public Collection<IPOIIf> getAreaPOIsItems();
+
+    /*-------------------------------------------------------------------------------------------
+    * Other specified methods
+    *-------------------------------------------------------------------------------------------*/
+
+    public IAssignmentIf getAssignment();
+
+    public IMsoReferenceIf<IHypothesisIf> getHypotesisAttribute();
+
+    public void setHypothesis(IHypothesisIf anHypothesis);
 }

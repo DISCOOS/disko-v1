@@ -8,6 +8,7 @@ import org.redcross.sar.mso.event.MsoEvent;
 import org.redcross.sar.util.error.MsoError;
 import org.redcross.sar.util.except.IllegalDeleteException;
 import org.redcross.sar.util.except.MsoNullPointerException;
+import org.redcross.sar.util.mso.Selector;
 
 import java.util.*;
 
@@ -723,9 +724,6 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     }
 
 
-
-
-
     /**
      * Notify listeners (both server and clients);
      *
@@ -788,11 +786,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     public Collection<CommittableImpl.CommitReference> getCommittableRelations()
     {
         Vector<CommittableImpl.CommitReference> result = new Vector<CommittableImpl.CommitReference>();
-        for (MsoListImpl list: m_referenceLists)
+        for (MsoListImpl list : m_referenceLists)
         {
             result.addAll(list.getCommittableRelations());
         }
-        for (MsoReferenceImpl reference: m_referenceObjects)
+        for (MsoReferenceImpl reference : m_referenceObjects)
         {
             result.addAll(reference.getCommittableRelations());
         }
@@ -802,7 +800,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
 
     /**
      * Class for holding Object ID Strings
-     *
+     * <p/>
      * Is merely a wrapper around a String, used in order not to mismatch with other String objects.
      */
     public static class ObjectId implements IObjectIdIf
@@ -817,6 +815,16 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         public String getId()
         {
             return m_id;
+        }
+    }
+
+    public abstract static class SelfSelector<T extends IMsoObjectIf, M extends IMsoObjectIf> implements Selector<M>
+    {
+        T m_object;
+
+        public SelfSelector(T myObject)
+        {
+            m_object = myObject;
         }
     }
 }

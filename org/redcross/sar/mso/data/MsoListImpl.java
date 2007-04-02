@@ -116,7 +116,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         }
         if (m_items.containsKey(anObject.getObjectId()) || m_added.containsKey(anObject.getObjectId()) || m_deleted.containsKey(anObject.getObjectId()))
         {
-            throw new DuplicateIdException("ObjectId already existst");
+            throw new DuplicateIdException("ObjectId already added to list");
         }
         if (!((AbstractMsoObject)anObject).isSetup())
         {

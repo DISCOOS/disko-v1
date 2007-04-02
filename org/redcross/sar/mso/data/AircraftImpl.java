@@ -14,7 +14,7 @@ public class AircraftImpl extends AbstractTransportUnit implements IAircraftIf
     private final AttributeImpl.MsoInteger m_seats = new AttributeImpl.MsoInteger(this, "Seats");
     private final AttributeImpl.MsoBoolean m_video = new AttributeImpl.MsoBoolean(this, "Video");
     private final AttributeImpl.MsoInteger m_visibility = new AttributeImpl.MsoInteger(this, "Visibility");
-    private final AttributeImpl.MsoInteger m_type = new AttributeImpl.MsoInteger(this, "Type");
+    private final AttributeImpl.MsoEnum<AircraftType> m_type = new AttributeImpl.MsoEnum<AircraftType>(this, "Type", AircraftType.LIGHT_AIRCRAFT);
 
     public AircraftImpl(IMsoObjectIf.IObjectIdIf anObjectId, long aNumber, String aKjennetegn, int aHastighet)
     {
@@ -47,6 +47,44 @@ public class AircraftImpl extends AbstractTransportUnit implements IAircraftIf
         super.defineReferences();
     }
 
+    /*-------------------------------------------------------------------------------------------
+    * Methods for ENUM attributes
+    *-------------------------------------------------------------------------------------------*/
+
+    public void setType(AircraftType aType)
+    {
+        m_type.setValue(aType);
+    }
+
+    public void setType(String aType)
+    {
+        m_type.setValue(aType);
+    }
+
+    public AircraftType getType()
+    {
+        return m_type.getValue();
+    }
+
+    public IMsoModelIf.ModificationState getTypeState()
+    {
+        return m_type.getState();
+    }
+
+    public IAttributeIf.IMsoEnumIf<AircraftType> getTypeAttribute()
+    {
+        return m_type;
+    }
+
+    public String getTypeName()
+    {
+        return null; /*todo*/
+    }
+
+
+    /*-------------------------------------------------------------------------------------------
+    * Methods for attributes
+    *-------------------------------------------------------------------------------------------*/
 
     public void setAverageSpeed(int anAverageSpeed)
     {
@@ -247,31 +285,5 @@ public class AircraftImpl extends AbstractTransportUnit implements IAircraftIf
     {
         return m_visibility;
     }
-
-    public String getTypeName()
-    {
-        return null; /*todo*/
-    }
-
-    public void setType(int aType)
-    {
-        m_type.setValue(aType);
-    }
-
-    public int getType()
-    {
-        return m_type.intValue();
-    }
-
-    public IMsoModelIf.ModificationState getTypeState()
-    {
-        return m_type.getState();
-    }
-
-    public IAttributeIf.IMsoIntegerIf getTypeAttribute()
-    {
-        return m_type;
-    }
-
 
 }
