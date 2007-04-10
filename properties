@@ -1,5 +1,4 @@
 MxdDocument.path=C:\\DISKO\\Disko.mxd
-PersonalGeodatabase.path=C:\\DISKO\\Database\\DISKO.mdb
 BasicLine.featureClass.Name=Basislinje
 BufferPath.featureClass.Name=Søk
 PUI.featureClass.Name=PUI
@@ -9,21 +8,22 @@ LargeButton.height=80
 SmallButton.width=50
 SmallButton.height=50
 
-MapZoomInTool.icon=icons/zoom_in_tool_1.gif
-MapZoomOutTool.icon=icons/zoom_out_tool_1.gif
-MapPanTool.icon=icons/pan_1.gif
-MapIdentifyTool.icon=icons/information.gif
+MapZoomInTool.icon=icons/zoomin.gif
+MapZoomOutTool.icon=icons/zoomout.gif
+MapPanTool.icon=icons/pan.gif
+MapIdentifyTool.icon=icons/info.gif
 MapMeasureTool.icon=icons/compass_large.gif
 MapZoomInFixedCommand.icon=icons/plus.gif
 MapZoomOutFixedCommand.icon=icons/minus.gif
-MapFullExtentCommand.icon=icons/globe_4.gif
+MapFullExtentCommand.icon=icons/fullextent.gif
 MapRefreshViewCommand.icon=icons/ArcView_switch_selection.gif
-MapZoomToLastExtentForwardCommand.icon=icons/arrow_right.gif
+MapZoomToLastExtentForwardCommand.icon=icons/forward.gif
 MapZoomToLastExtentBackCommand.icon=icons/arrow_left.gif
-MapDrawLineTool.icon=icons/pencil_fat.gif
-MapDrawPointTool.icon=icons/point.gif
+MapDrawLineTool.icon=icons/draw.gif
+MapDrawPointTool.icon=icons/pui.gif
 MapSnappingEnvCommand.icon=icons/line_with_vertices_and_hand.gif
-MapSelectionTool.icon=icons/pointer_with_selection.gif
+MapSelectionTool.icon=icons/selection.gif
+MapEraseTool.icon=icons/erase.gif
 
 ApplyButton.text=Utfør
 OkButton.text=OK
