@@ -5,10 +5,11 @@ import java.awt.geom.Point2D;
 /**
  *
  */
-public class Position extends GeoPos implements IGeodataIf
+public class Position implements IGeodataIf
 {
     private final String m_id;
     private String m_layout;
+    private GeoPos m_position;
 
     /**
      * Constructor, no point defined.
@@ -18,8 +19,8 @@ public class Position extends GeoPos implements IGeodataIf
 
     public Position(String anId)
     {
-        super();
         m_id = anId;
+        m_position = new GeoPos();
     }
 
     /**
@@ -30,8 +31,9 @@ public class Position extends GeoPos implements IGeodataIf
      */
     public Position(String anId, Point2D.Double aPosition)
     {
-        super(aPosition);
         m_id = anId;
+        m_position = new GeoPos(aPosition);
+
     }
 
     /**
@@ -43,8 +45,8 @@ public class Position extends GeoPos implements IGeodataIf
      */
     public Position(String anId, double aLong, double aLat)
     {
-        super(aLong, aLat);
         m_id = anId;
+        m_position = new GeoPos(aLong, aLat);
     }
 
     public String getId()
@@ -61,5 +63,81 @@ public class Position extends GeoPos implements IGeodataIf
     {
         return m_layout;
     }
+
+    /**
+     * Set position at a point
+     *
+     * @param aPosition The point's coordinates
+     */
+    public void setPosition(Point2D.Double aPosition)
+    {
+        m_position.setPosition(aPosition);
+    }
+
+    /**
+     * Set position at a given long/lat
+     *
+     * @param aLong The point's longitude
+     * @param aLat  The point's latitude
+     */
+    public void setPosition(double aLong, double aLat)
+    {
+        m_position.setPosition(aLong, aLat);
+    }
+
+    /**
+     * Get position as a point
+     */
+    public Point2D.Double getPosition()
+    {
+        return m_position.getPosition();
+    }
+
+    /**
+     * Calculate distance to another position.
+     *
+     * @param aPos The other position.
+     * @return The distance (in kilometers)
+     */
+    public double distance(Position aPos)
+    {
+        return distance(this, aPos);
+    }
+
+    /**
+     * Calculate distance between two positions.
+     *
+     * @param aPos1 The first position.
+     * @param aPos2 The other position.
+     * @return The distance (in kilometers)
+     */
+    public static double distance(Position aPos1, Position aPos2)
+    {
+        return GeoPos.distance(aPos1.m_position, aPos2.m_position);
+    }
+
+    /**
+     * Calculate bearing (in degrees) to another position.
+     *
+     * @param aPos The other position.
+     * @return The bearing (in degrees)
+     */
+    public int bearing(Position aPos)
+    {
+        return bearing(this, aPos);
+    }
+
+    /**
+     * Calculate bearing between two positions.
+     *
+     * @param aPos1 The first position.
+     * @param aPos2 The other position.
+     * @return The bearing (in degrees)
+     */
+    public static int bearing(Position aPos1, Position aPos2)
+    {
+        return GeoPos.bearing(aPos1.m_position, aPos2.m_position);
+    }
+
 
 }

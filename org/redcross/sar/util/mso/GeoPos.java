@@ -112,6 +112,4 @@ public class GeoPos
     {
         return 0;  // todo fix
     }
-
-
 }
