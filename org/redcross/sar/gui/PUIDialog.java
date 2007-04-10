@@ -1,9 +1,19 @@
 package org.redcross.sar.gui;
 
+import org.redcross.sar.map.DiskoMap;
+
+import com.esri.arcgis.display.IDraw;
+import com.esri.arcgis.display.IScreenDisplay;
+import com.esri.arcgis.display.RgbColor;
+import com.esri.arcgis.display.SimpleMarkerSymbol;
+
+import java.io.IOException;
+
 import javax.swing.JPanel;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Point;
 import javax.swing.JButton;
 import com.borland.jbcl.layout.VerticalFlowLayout;
 import org.redcross.sar.app.IDiskoApplication;
@@ -49,6 +59,9 @@ public class PUIDialog extends DiskoDialog {
 	private JScrollPane jScrollPane = null;
 	private JLabel txtAreaLabel = null;
 	private JTextArea txtArea = null;
+	private JButton showPointButton = null;
+	private JLabel showPointLabel = null;
+	private SimpleMarkerSymbol drawSymbol = null;
 	
 	public PUIDialog(IDiskoApplication app) {
 		super(app.getFrame());
@@ -64,8 +77,38 @@ public class PUIDialog extends DiskoDialog {
         this.setSize(new Dimension(223, 486));
         this.setContentPane(getContentPanel());
         this.pack();
-			
+	
 	}
+	
+	private void showPoint(String x, String y) throws IOException{
+		DiskoMap map = app.getCurrentMap();
+		IScreenDisplay screendisplay = map.getActiveView().getScreenDisplay();
+		
+		//må få tak i kartet
+		//tegne acetate punkt i kartet.
+		//lagre punktet i en variabel 
+	}
+	
+	/**
+	 * This method sets color and style of acetate point marked in map.	
+	 * 	
+	 */
+	private void setDrawPointSymbol() throws IOException{		 
+		RgbColor drawColor = new RgbColor();
+		drawColor.setRed(255);
+		this.drawSymbol.setColor(drawColor);		
+	}
+	
+	/**
+	 * This method gets acetate point marked in map.	
+	 * 	
+	 * @return com.esri.arcgis.display.SimpleMarkerSymbol
+	 */
+	private SimpleMarkerSymbol getDrawPointSymbol(){
+		return this.drawSymbol;
+		
+	}
+	
 	
 	/**
 	 * This method initializes contentPanel	
@@ -194,6 +237,16 @@ public class PUIDialog extends DiskoDialog {
 		}
 		return puiInfoPanel;
 	}
+	
+	/**
+	 * This method sets textvalue for xCoordTextField	
+	 * 	
+	 */
+	public void setXCoordFieldText(String s){
+		s = s.substring(0,s.indexOf("."));//ikke helt elegant, burde ligge i en util klasse som sjekker for locale komma/punktum settinger?
+		this.xCoordTextField.setText(s);
+	}
+	
 	/**
 	 * This method initializes xCoordTextField	
 	 * 	
@@ -204,18 +257,32 @@ public class PUIDialog extends DiskoDialog {
 			xCoordTextField = new JTextField();
 			
 			xCoordTextField.addMouseListener(new java.awt.event.MouseAdapter() {
-				public void mouseClicked(java.awt.event.MouseEvent e) {
-					System.out.println("mouseClicked()"); // TODO Auto-generated Event stub mouseClicked()
-					//e.
-					numPadDialog = app.getUIFactory().getNumPadDialog();
-					numPadDialog.setLocation(xCoordTextField.getLocationOnScreen());
-					numPadDialog.setVisible(true);
-					
+				public void mouseClicked(java.awt.event.MouseEvent e) {					
+					System.out.println("mouseClicked()"); 
+					if (e.getClickCount() == 2){
+						numPadDialog = app.getUIFactory().getNumPadDialog();
+						Point p = xCoordTextField.getLocationOnScreen();
+						p.setLocation(p.x + (xCoordTextField.getWidth()/4), p.y + xCoordTextField.getHeight());
+						numPadDialog.setLocation(p);
+						//numPadDialog.setLocation(xCoordTextField.getLocationOnScreen());						
+						numPadDialog.setTextField(xCoordTextField);
+						numPadDialog.setVisible(true);	
+						
+					}
 				}
-			});
+			});	
 			
 		}
 		return xCoordTextField;
+	}
+	
+	/**
+	 * This method sets textvalue for yCoordTextField	
+	 * 	
+	 */	
+	public void setYCoordFieldText(String s){
+		s = s.substring(0,s.indexOf("."));
+		this.yCoordTextField.setText(s);
 	}
 	/**
 	 * This method initializes yCoordTextField	
@@ -225,10 +292,26 @@ public class PUIDialog extends DiskoDialog {
 	private JTextField getYCoordTextField() {
 		if (yCoordTextField == null) {
 			yCoordTextField = new JTextField();
-			//add actionListener
+			
+			yCoordTextField.addMouseListener(new java.awt.event.MouseAdapter() {
+				public void mouseClicked(java.awt.event.MouseEvent e) {
+					System.out.println("mouseClicked() " + e.getClickCount());
+					if (e.getClickCount() == 2){										
+						numPadDialog = app.getUIFactory().getNumPadDialog();
+						Point p = yCoordTextField.getLocationOnScreen();
+						p.setLocation(p.x + (yCoordTextField.getWidth()/4), p.y + yCoordTextField.getHeight());
+						numPadDialog.setLocation(p);
+						//numPadDialog.setLocation(xCoordTextField.getLocationOnScreen());
+						numPadDialog.setTextField(yCoordTextField);
+						numPadDialog.setVisible(true);
+					}
+				}
+			});
 		}
 		return yCoordTextField;
 	}
+	
+	
 	/**
 	 * This method initializes typeComboBox	
 	 * 	
@@ -237,6 +320,9 @@ public class PUIDialog extends DiskoDialog {
 	private JComboBox getTypeComboBox() {
 		if (typeComboBox == null) {
 			typeComboBox = new JComboBox();
+			typeComboBox.addItem("type 1");
+			typeComboBox.addItem("type 2");
+			typeComboBox.addItem("type 3");
 		}
 		return typeComboBox;
 	}
@@ -252,7 +338,7 @@ public class PUIDialog extends DiskoDialog {
 			coordsPanel1 = new JPanel();
 						
 			GridLayout gridLayout = new GridLayout();
-			gridLayout.setRows(3);
+			gridLayout.setRows(4);
 			gridLayout.setColumns(2);
 			coordsPanel1.setLayout(gridLayout);
 			
@@ -265,6 +351,13 @@ public class PUIDialog extends DiskoDialog {
 			yCoordLabel.setText("Y koordinat");
 			coordsPanel1.add(yCoordLabel, null);
 			coordsPanel1.add(getYCoordTextField(), null);
+			
+
+			
+			showPointLabel = new JLabel();
+			showPointLabel.setText("");
+			coordsPanel1.add(showPointLabel, null);
+			coordsPanel1.add(getShowPointButton(), null);
 			
 			typeLabel = new JLabel();
 			typeLabel.setText("Type");
@@ -322,6 +415,26 @@ public class PUIDialog extends DiskoDialog {
 			txtArea.setColumns(1);
 		}
 		return txtArea;
+	}
+	/**
+	 * This method initializes showPointButton	
+	 * 	
+	 * @return javax.swing.JButton	
+	 */
+	private JButton getShowPointButton() {
+		if (showPointButton == null) {
+			showPointButton = new JButton();
+			showPointButton.setText("Vis Punkt");
+			showPointButton.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					System.out.println("actionPerformed()"); // TODO Auto-generated Event stub actionPerformed()
+					//showPoint(xCoordTextField.getText(), yCoordTextField.getText());
+					
+				}
+			});
+			
+		}
+		return showPointButton;
 	}	
 	
 	
