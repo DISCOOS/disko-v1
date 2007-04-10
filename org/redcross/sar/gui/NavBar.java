@@ -354,10 +354,10 @@ public class NavBar extends JPanel {
 		if (splitToggleButton == null) {
 			try {
 				Dimension size = app.getUIFactory().getSmallButtonSize();
-				//String iconName = "MapSelectionTool.icon";
-				//Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
-				splitToggleButton = new JToggleButton("Sp");
-				//splitToggleButton.setIcon(icon);
+				String iconName = "MapSelectionTool.icon";
+				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
+				splitToggleButton = new JToggleButton();
+				splitToggleButton.setIcon(icon);
 				splitToggleButton.setPreferredSize(size);
 				splitToggleButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -377,10 +377,10 @@ public class NavBar extends JPanel {
 		if (eraseToggleButton == null) {
 			try {
 				Dimension size = app.getUIFactory().getSmallButtonSize();
-				//String iconName = "MapSelectionTool.icon";
-				//Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
-				eraseToggleButton = new JToggleButton("Vi");
-				//eraseToggleButton.setIcon(icon);
+				String iconName = "MapEraseTool.icon";
+				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
+				eraseToggleButton = new JToggleButton();
+				eraseToggleButton.setIcon(icon);
 				eraseToggleButton.setPreferredSize(size);
 				eraseToggleButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -400,10 +400,10 @@ public class NavBar extends JPanel {
 		if (puiToggleButton == null) {
 			try {
 				Dimension size = app.getUIFactory().getSmallButtonSize();
-				//String iconName = "MapDrawPointTool.icon";
-				//Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
-				puiToggleButton = new JToggleButton("Pui");
-				//puiToggleButton.setIcon(icon);
+				String iconName = "MapDrawPointTool.icon";
+				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
+				puiToggleButton = new JToggleButton();
+				puiToggleButton.setIcon(icon);
 				puiToggleButton.setPreferredSize(size);
 				puiToggleButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
