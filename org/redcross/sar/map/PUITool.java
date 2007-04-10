@@ -31,12 +31,14 @@ public class PUITool extends AbstractCommandTool {
 	private Point p1 = null;
 	private FeatureLayer editLayer = null;
 	private SimpleMarkerSymbol drawSymbol = null;
+	private PUIDialog puiDialog = null;
 		
 	/**
 	 * Constructs the DrawTool
 	 */
 	public PUITool(IDiskoApplication app) throws IOException {
 		//symbol to draw with
+		//drawSymbol
 		drawSymbol = new SimpleMarkerSymbol();	
 		RgbColor drawColor = new RgbColor();
 		drawColor.setRed(255);
@@ -44,13 +46,14 @@ public class PUITool extends AbstractCommandTool {
 		
 		dialog = new PUIDialog(app);
 		dialog.setIsToggable(true);
+		//this.drawSymbol = 
 	}
 
 	public void onCreate(Object obj) throws IOException, AutomationException {
 		if (obj instanceof DiskoMap) {
 			map = (DiskoMap)obj;
 			map.addDiskoMapEventListener(this);
-			PUIDialog puiDialog = (PUIDialog)dialog;
+			puiDialog = (PUIDialog)dialog;
 			puiDialog.setLocationRelativeTo(map, DiskoDialog.POS_WEST, true);
 			setEditLayer(map.getEditLayer());
 		}
@@ -64,6 +67,9 @@ public class PUITool extends AbstractCommandTool {
 
 	public void onMouseDown(int button, int shift, int x, int y)
 			throws IOException, AutomationException {
+		//sjekker om det allerede finnes et tegnet punkt. 
+		//sletter evt dette fra 
+		
 		//IMap map = hookHelper.getFocusMap();
 		p1 = transform(x,y);
 		
@@ -72,10 +78,15 @@ public class PUITool extends AbstractCommandTool {
 		//save p to editlayer		
 		IFeature digFeature = editLayer.getFeatureClass().createFeature();
 		digFeature.setShapeByRef(p1);
+		
 		digFeature.store();
 					
 		//draw this feature
 		draw();
+		
+		//sets x and y value in PUI dialog
+		puiDialog.setYCoordFieldText(Double.toString(p1.getY()));
+		puiDialog.setXCoordFieldText(Double.toString(p1.getX()));
 		
 		//set this feature selected
 		QueryFilter qfilter = new QueryFilter();
@@ -95,7 +106,7 @@ public class PUITool extends AbstractCommandTool {
 		
 		draw.setSymbol(drawSymbol);
 		draw.draw(p1);
-		
+		//screenDisplay.g
 		screenDisplay.finishDrawing();
 	}
 	
