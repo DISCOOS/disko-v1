@@ -2,6 +2,7 @@ package org.redcross.sar.gui;
 
 import java.awt.Frame;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.JDialog;
 import javax.swing.JRootPane;
 import java.awt.Dimension;
@@ -23,20 +24,57 @@ public class NumPadDialog extends JDialog {
 	private JButton nineButton = null;
 	private JButton zeroButton = null;
 	private JButton delButton = null;
-	private JButton okButton = null;
+	private JButton okButton = null;	
+	private JTextField jtf = null;
 
 	public NumPadDialog(Frame owner) {
 		super(owner);
 		initialize();
-		this.getRootPane().setWindowDecorationStyle(JRootPane.NONE);
+		this.getRootPane().setWindowDecorationStyle(JRootPane.NONE);		
 	}
 	
 	private void initialize(){
 		this.setSize(new Dimension(200, 200));
         this.setContentPane(getComponentPanel());
+        this.setUndecorated(true);
+        this.addFocusListener(new java.awt.event.FocusAdapter() {
+        	public void focusLost(java.awt.event.FocusEvent e) {
+        		System.out.println("focusLost()"); // TODO Auto-generated Event stub focusLost()        		
+        	}
+        });
+        this.setAlwaysOnTop(true);
+        
         this.pack();
 	}
+	
+	public void setTextField(JTextField jtf){
+		System.out.println("kult skjult");
+		this.jtf = jtf;
+		System.out.println(":" + jtf.getText() + ":");
+	}
 
+	//test
+	public void setTextField(String s){
+		System.out.println(s);
+	}
+	
+	private void subtractTextFieldValue(){
+		if (jtf.getText().length() > 0){			
+				jtf.setText(jtf.getText().substring(0, jtf.getText().length()-1));
+		}		
+	}
+	
+	private void addTextFieldValue(String s){
+		System.out.println("skal sette textverdi");
+		if (jtf.getText().length() == 0){
+			jtf.setText(s);
+		}
+		else{ 
+			jtf.setText(jtf.getText()+s);			
+		}
+		System.out.println(jtf.getText());
+	}
+	
 	/**
 	 * This method initializes componentPanel	
 	 * 	
@@ -79,10 +117,12 @@ public class NumPadDialog extends JDialog {
 			oneButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					System.out.println("1, tallet er 1"); // TODO Auto-generated Event stub actionPerformed()
-					
+					//setTextFieldValue("1", true);
 				}
 			});
+			
 			oneButton.doClick();
+			
 		}
 		return oneButton;
 	}
@@ -99,7 +139,7 @@ public class NumPadDialog extends JDialog {
 			twoButton.setText("2");
 			twoButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					System.out.println("2, tallet er 2"); // TODO Auto-generated Event stub actionPerformed()
+					addTextFieldValue("2");
 				}
 			});
 		}
@@ -117,7 +157,7 @@ public class NumPadDialog extends JDialog {
 			threeButton.setText("3");
 			threeButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					System.out.println("3, tallet er 3()"); // TODO Auto-generated Event stub actionPerformed()
+					addTextFieldValue("3");
 				}
 			});
 		}
@@ -135,7 +175,7 @@ public class NumPadDialog extends JDialog {
 			fourButton.setText("4");
 			fourButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					System.out.println("4, tallet er 4()"); // TODO Auto-generated Event stub actionPerformed()
+					addTextFieldValue("4");
 				}
 			});
 		}
@@ -153,7 +193,7 @@ public class NumPadDialog extends JDialog {
 			fiveButton.setText("5");
 			fiveButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					System.out.println("5, tallet er 5()"); // TODO Auto-generated Event stub actionPerformed()
+					addTextFieldValue("5");
 				}
 			});
 		}
@@ -171,7 +211,7 @@ public class NumPadDialog extends JDialog {
 			sixButton.setText("6");
 			sixButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					System.out.println("6, tallet er 6"); // TODO Auto-generated Event stub actionPerformed()
+					addTextFieldValue("6");
 				}
 			});
 		}
@@ -190,7 +230,7 @@ public class NumPadDialog extends JDialog {
 			sevenjButton.setText("7");
 			sevenjButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					System.out.println("7, tallet er 7"); // TODO Auto-generated Event stub actionPerformed()
+					addTextFieldValue("7");
 				}
 			});
 		}
@@ -208,7 +248,7 @@ public class NumPadDialog extends JDialog {
 			eightButton.setText("8");
 			eightButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					System.out.println("8, tallet er 8"); // TODO Auto-generated Event stub actionPerformed()
+					addTextFieldValue("8");
 				}
 			});
 		}
@@ -226,7 +266,7 @@ public class NumPadDialog extends JDialog {
 			nineButton.setText("9");
 			nineButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					System.out.println("9, tallet er 9"); // TODO Auto-generated Event stub actionPerformed()
+					addTextFieldValue("9");
 				}
 			});
 		}
@@ -245,7 +285,7 @@ public class NumPadDialog extends JDialog {
 			zeroButton.setText("0");
 			zeroButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					System.out.println("0, tallet er 0"); // TODO Auto-generated Event stub actionPerformed()
+					addTextFieldValue("0");
 				}
 			});
 		}
@@ -263,7 +303,7 @@ public class NumPadDialog extends JDialog {
 			delButton.setText("Del");
 			delButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					System.out.println("Slett"); // TODO Auto-generated Event stub actionPerformed()
+					subtractTextFieldValue();
 				}
 			});
 		}
@@ -282,12 +322,13 @@ public class NumPadDialog extends JDialog {
 			okButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					System.out.println("ok"); // TODO Auto-generated Event stub actionPerformed()
+					setVisible(false);
 				}
 			});
 		}
 		return okButton;
 	}
 	
-	
 
-}
+
+}  //  @jve:decl-index=0:visual-constraint="43,48"
