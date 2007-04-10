@@ -12,7 +12,7 @@ public class TimeLineImpl extends AbstractDerivedList<ITimeItemIf> implements IT
 
     public TimeLineImpl()
     {
-        MsoModelImpl.getInstance().getEventManager().addItemListener(this);
+        super();
     }
 
     public List<ITimeItemIf> getTimeItems()

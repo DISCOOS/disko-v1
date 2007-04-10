@@ -45,14 +45,6 @@ public interface IHypothesisIf extends IMsoObjectIf
 
     public IAttributeIf.IMsoStringIf getDescriptionAttribute();
 
-    public void setNumber(int aNumber);
-
-    public int getNumber();
-
-    public IMsoModelIf.ModificationState getNumberState();
-
-    public IAttributeIf.IMsoIntegerIf getNumberAttribute();
-
     public void setPriority(int aPriority);
 
     public int getPriority();

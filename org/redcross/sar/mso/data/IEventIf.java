@@ -11,13 +11,6 @@ public interface IEventIf extends ITimeItemIf
     /*-------------------------------------------------------------------------------------------
     * Methods for attributes
     *-------------------------------------------------------------------------------------------*/
-    public void setNumber(int aNumber);
-
-    public int getNumber();
-
-    public IMsoModelIf.ModificationState getNumberState();
-
-    public IAttributeIf.IMsoIntegerIf getNumberAttribute();
 
     /*-------------------------------------------------------------------------------------------
     * Methods for lists

@@ -6,6 +6,7 @@ import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent;
 import org.redcross.sar.util.except.*;
 import org.redcross.sar.util.error.MsoError;
+import org.redcross.sar.util.mso.*;
 
 import java.util.Calendar;
 
@@ -58,7 +59,7 @@ public class MsoManagerImpl implements IMsoManagerIf
         });
     }
 
-    public OperationImpl createOperation() throws DuplicateIdException
+    public IOperationIf createOperation() throws DuplicateIdException
     {
         if (m_operation != null)
         {
@@ -69,7 +70,7 @@ public class MsoManagerImpl implements IMsoManagerIf
         return m_operation;
     }
 
-    public OperationImpl getOperation()
+    public IOperationIf getOperation()
     {
         return m_operation;
     }
@@ -172,14 +173,14 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getCalloutList().createCallout(anObjectId);
     }
 
-    public ICheckpointIf createCheckPoint()
+    public ICheckpointIf createCheckpoint()
     {
-        return getExistingCmdPost().getCheckpointList().createCheckPoint();
+        return getExistingCmdPost().getCheckpointList().createCheckpoint();
     }
 
-    public ICheckpointIf createCheckPoint(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public ICheckpointIf createCheckpoint(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
     {
-        return getExistingCmdPost().getCheckpointList().createCheckPoint(
+        return getExistingCmdPost().getCheckpointList().createCheckpoint(
                 anObjectId);
     }
 
@@ -244,11 +245,6 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getEquipmentList().createEquipment(anObjectId);
     }
 
-    public IForecastIf createForecast(String aText)
-    {
-        return getExistingCmdPost().getForecastList().createForecast(aText);
-    }
-
     public IForecastIf createForecast(Calendar aCalendar, String aText)
     {
         return getExistingCmdPost().getForecastList().createForecast(aCalendar, aText);
@@ -262,11 +258,6 @@ public class MsoManagerImpl implements IMsoManagerIf
     public IForecastIf createForecast(long aDTG, String aText) throws IllegalMsoArgumentException
     {
         return getExistingCmdPost().getForecastList().createForecast(aDTG, aText);
-    }
-
-    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId, String aText) throws DuplicateIdException
-    {
-        return getExistingCmdPost().getForecastList().createForecast(anObjectId, aText);
     }
 
     public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId, Calendar aCalendar, String aText) throws DuplicateIdException
@@ -289,10 +280,9 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getHypothesisList().createHypothesis();
     }
 
-    public IHypothesisIf createHypothesis(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public IHypothesisIf createHypothesis(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber) throws DuplicateIdException
     {
-        return getExistingCmdPost().getHypothesisList().createHypothesis(
-                anObjectId);
+        return getExistingCmdPost().getHypothesisList().createHypothesis(anObjectId, aNumber);
     }
 
     public IIntelligenceIf createIntelligence()
@@ -334,19 +324,27 @@ public class MsoManagerImpl implements IMsoManagerIf
 
     public IPOIIf createPOI(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
     {
-        return getExistingCmdPost().getPOIList().createPOI(
-                anObjectId);
+        return getExistingCmdPost().getPOIList().createPOI(anObjectId);
     }
 
-    public IRouteIf createRoute()
+    public IPOIIf createPOI(IPOIIf.POIType aType, Position aPosition)
     {
-        return getExistingCmdPost().getRouteList().createRoute();
+        return getExistingCmdPost().getPOIList().createPOI(aType, aPosition);
     }
 
-    public IRouteIf createRoute(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public IPOIIf createPOI(IMsoObjectIf.IObjectIdIf anObjectId, IPOIIf.POIType aType, Position aPosition) throws DuplicateIdException
     {
-        return getExistingCmdPost().getRouteList().createRoute(
-                anObjectId);
+        return getExistingCmdPost().getPOIList().createPOI(anObjectId, aType, aPosition);
+    }
+
+    public IRouteIf createRoute(Route aRoute)
+    {
+        return getExistingCmdPost().getRouteList().createRoute(aRoute);
+    }
+
+    public IRouteIf createRoute(IMsoObjectIf.IObjectIdIf anObjectId, Route aRoute) throws DuplicateIdException
+    {
+        return getExistingCmdPost().getRouteList().createRoute(anObjectId, aRoute);
     }
 
     public ISearchAreaIf createSearchArea()
@@ -401,14 +399,24 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getTrackList().createTrack(anObjectId);
     }
 
-    public VehicleImpl createVehicle(long aNumber, String aKjennetegn, int aSpeed)
+    public ITrackIf createTrack(Track aTrack)
     {
-        return getExistingCmdPost().getUnitList().createVehicle(aNumber, aKjennetegn, aSpeed);
+        return getExistingCmdPost().getTrackList().createTrack(aTrack);
     }
 
-    public VehicleImpl createVehicle(IMsoObjectIf.IObjectIdIf anObjectId, long aNumber, String aKjennetegn, int aSpeed) throws DuplicateIdException
+    public ITrackIf createTrack(IMsoObjectIf.IObjectIdIf anObjectId, Track aTrack) throws DuplicateIdException
     {
-        return getExistingCmdPost().getUnitList().createVehicle(anObjectId, aNumber, aKjennetegn, aSpeed);
+        return getExistingCmdPost().getTrackList().createTrack(anObjectId, aTrack);
+    }
+
+    public IVehicleIf createVehicle(String anIdentifier)
+    {
+        return getExistingCmdPost().getUnitList().createVehicle(anIdentifier);
+    }
+
+    public IVehicleIf createVehicle(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber, String anIdentifier) throws DuplicateIdException
+    {
+        return getExistingCmdPost().getUnitList().createVehicle(anObjectId, aNumber, anIdentifier);
     }
 
 }

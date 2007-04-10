@@ -6,40 +6,49 @@ import java.util.Vector;
 /**
  * Class for holding route information
  */
-public class Route
+public class Route implements IGeodataIf
 {
+    private final String m_id;
+    private String m_layout;
+
     private final String m_name;
-    private final Vector<Position> m_route;
+    private final Vector<GeoPos> m_route;
 
     /**
      * Constructor, default collection size
+     *
+     * @param anId Object Id
      */
-    public Route()
+    public Route(String anId)
     {
-        this("");
+        this(anId, "");
     }
 
     /**
      * Constructor, default collection size
      *
+     * @param anId  Object Id
      * @param aName Name of route
      */
-    public Route(String aName)
+    public Route(String anId, String aName)
     {
+        m_id = anId;
         m_name = aName;
-        m_route = new Vector<Position>();
+        m_route = new Vector<GeoPos>();
     }
 
     /**
      * Constructor, parameter for collection size
      *
+     * @param anId  Object Id
      * @param aName Name of route
      * @param aSize The collection size
      */
-    public Route(String aName, int aSize)
+    public Route(String anId, String aName, int aSize)
     {
+        m_id = anId;
         m_name = aName;
-        m_route = new Vector<Position>(aSize);
+        m_route = new Vector<GeoPos>(aSize);
     }
 
     /**
@@ -47,7 +56,7 @@ public class Route
      *
      * @param aPosition The point to add.
      */
-    public void add(Position aPosition)
+    public void add(GeoPos aPosition)
     {
         m_route.add(aPosition);
     }
@@ -60,16 +69,16 @@ public class Route
      */
     public void add(double aLongPosition, double aLatPosition)
     {
-        add(new Position(aLongPosition, aLatPosition));
+        add(new GeoPos(aLongPosition, aLatPosition));
     }
 
 
     /**
      * Get the collection of points in the route
      *
-     * @return The Position collection.
+     * @return The GeoPos collection.
      */
-    public Collection<Position> getPositions()
+    public Collection<GeoPos> getPositions()
     {
         return m_route;
     }
@@ -83,4 +92,20 @@ public class Route
     {
         return m_name;
     }
+
+    public String getId()
+    {
+        return m_id;
+    }
+
+    public void setLayout(String aLayout)
+    {
+        m_layout = aLayout;
+    }
+
+    public String getLayout()
+    {
+        return m_layout;
+    }
+
 }

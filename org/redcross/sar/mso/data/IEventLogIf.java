@@ -8,5 +8,5 @@ public interface IEventLogIf extends IMsoListIf<IEventIf>
 {
     public IEventIf createEvent(Calendar aCalendar);
 
-    public IEventIf createEvent(IMsoObjectIf.IObjectIdIf anObjectId, Calendar aCalendar) throws DuplicateIdException;
+    public IEventIf createEvent(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber, Calendar aCalendar) throws DuplicateIdException;
 }

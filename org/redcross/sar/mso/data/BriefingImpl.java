@@ -14,7 +14,7 @@ public class BriefingImpl extends AbstractMsoObject implements IBriefingIf
     private final EnvironmentListImpl m_briefingEnvironments = new EnvironmentListImpl(this, "BriefingEnvironments", false);
     private final SubjectListImpl m_briefingSubjects = new SubjectListImpl(this, "BriefingSubjects", false);
 
-    private final MsoReferenceImpl<IHypothesisIf> m_briefingHypothesis = new MsoReferenceImpl<IHypothesisIf>(this, "BriefingHypothesis", false);
+    private final MsoReferenceImpl<IHypothesisIf> m_briefingHypothesis = new MsoReferenceImpl<IHypothesisIf>(this, "BriefingHypothesis", true);
 
     private final AttributeImpl.MsoBoolean m_active = new AttributeImpl.MsoBoolean(this, "Active");
     private final AttributeImpl.MsoString m_channel1 = new AttributeImpl.MsoString(this, "Channel1");
@@ -22,7 +22,6 @@ public class BriefingImpl extends AbstractMsoObject implements IBriefingIf
     private final AttributeImpl.MsoCalendar m_closure = new AttributeImpl.MsoCalendar(this, "Closure");
     private final AttributeImpl.MsoString m_commsProcedure = new AttributeImpl.MsoString(this, "CommsProcedure");
     private final AttributeImpl.MsoString m_findingsProcedure = new AttributeImpl.MsoString(this, "FindingsProcedure");
-    private final AttributeImpl.MsoString m_iD = new AttributeImpl.MsoString(this, "ID");
     private final AttributeImpl.MsoString m_importantClues = new AttributeImpl.MsoString(this, "ImportantClues");
     private final AttributeImpl.MsoString m_mediaProcedure = new AttributeImpl.MsoString(this, "MediaProcedure");
     private final AttributeImpl.MsoString m_other = new AttributeImpl.MsoString(this, "Other");
@@ -46,7 +45,6 @@ public class BriefingImpl extends AbstractMsoObject implements IBriefingIf
         addAttribute(m_closure);
         addAttribute(m_commsProcedure);
         addAttribute(m_findingsProcedure);
-        addAttribute(m_iD);
         addAttribute(m_importantClues);
         addAttribute(m_mediaProcedure);
         addAttribute(m_other);
@@ -91,12 +89,12 @@ public class BriefingImpl extends AbstractMsoObject implements IBriefingIf
     * Methods for attributes
     *-------------------------------------------------------------------------------------------*/
 
-    public void setActive(boolean aActive)
+    public void setActive(boolean anActive)
     {
-        m_active.setValue(aActive);
+        m_active.setValue(anActive);
     }
 
-    public boolean getActive()
+    public boolean isActive()
     {
         return m_active.booleanValue();
     }
@@ -209,26 +207,6 @@ public class BriefingImpl extends AbstractMsoObject implements IBriefingIf
     public IAttributeIf.IMsoStringIf getFindingsProcedureAttribute()
     {
         return m_findingsProcedure;
-    }
-
-    public void setID(String aID)
-    {
-        m_iD.setValue(aID);
-    }
-
-    public String getID()
-    {
-        return m_iD.getString();
-    }
-
-    public IMsoModelIf.ModificationState getIDState()
-    {
-        return m_iD.getState();
-    }
-
-    public IAttributeIf.IMsoStringIf getIDAttribute()
-    {
-        return m_iD;
     }
 
     public void setImportantClues(String aImportantClues)

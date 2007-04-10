@@ -13,18 +13,30 @@ import java.util.List;
 public class CommitWrapper implements ICommitWrapperIf
 {
     private final ArrayList<ICommittableIf.ICommitObjectIf> m_commitObjects = new ArrayList<ICommittableIf.ICommitObjectIf>();
-    private final ArrayList<ICommittableIf.ICommitReferenceIf> m_commitReferences = new ArrayList<ICommittableIf.ICommitReferenceIf>();
+    private final ArrayList<ICommittableIf.ICommitReferenceIf> m_commitAttributeReferences = new ArrayList<ICommittableIf.ICommitReferenceIf>();
+    private final ArrayList<ICommittableIf.ICommitReferenceIf> m_commitListReferences = new ArrayList<ICommittableIf.ICommitReferenceIf>();
 
     public List<ICommittableIf.ICommitObjectIf> getObjects()
     {
         return m_commitObjects;
     }
 
-    public List<ICommittableIf.ICommitReferenceIf> getReferences()
+    public List<ICommittableIf.ICommitReferenceIf> getAttributeReferences()
     {
-        return m_commitReferences;
+        return m_commitAttributeReferences;
     }
 
+    public List<ICommittableIf.ICommitReferenceIf> getListReferences()
+    {
+        return m_commitListReferences;
+    }
+
+    /**
+    * Add an object to the wrapper.
+    *
+    * @param anObject The modified object.
+    * @param aMask A combination of {@link org.redcross.sar.mso.event.MsoEvent.EventType} values.
+    */
     public void add(IMsoObjectIf anObject, int aMask)
     {
         boolean createdObject = (aMask & MsoEvent.EventType.CREATED_OBJECT_EVENT.maskValue()) != 0;
@@ -41,13 +53,15 @@ public class CommitWrapper implements ICommitWrapperIf
         if (createdObject)
         {
             m_commitObjects.add(new CommittableImpl.CommitObject(anObject, CommitManager.CommitType.COMMIT_CREATED));
-            m_commitReferences.addAll(anObject.getCommittableRelations());
+            m_commitAttributeReferences.addAll(anObject.getCommittableAttributeRelations());
+            m_commitListReferences.addAll(anObject.getCommittableListRelations());
             return;
         }
         if (deletedObject)
         {
             m_commitObjects.add(new CommittableImpl.CommitObject(anObject, CommitManager.CommitType.COMMIT_DELETED));
-            m_commitReferences.addAll(anObject.getCommittableRelations());
+            m_commitAttributeReferences.addAll(anObject.getCommittableAttributeRelations());
+            m_commitListReferences.addAll(anObject.getCommittableListRelations());
             return;
         }
         if (modifiedObject)
@@ -56,7 +70,8 @@ public class CommitWrapper implements ICommitWrapperIf
         }
         if (modifiedReference)
         {
-            m_commitReferences.addAll(anObject.getCommittableRelations());
+            m_commitAttributeReferences.addAll(anObject.getCommittableAttributeRelations());
+            m_commitListReferences.addAll(anObject.getCommittableListRelations());
         }
     }
 }

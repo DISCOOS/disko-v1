@@ -8,7 +8,7 @@ import org.redcross.sar.util.except.DuplicateIdException;
 import java.util.Calendar;
 import java.util.Collection;
 
-public class EventImpl extends AbstractTimeItem implements IEventIf
+public class EventImpl extends AbstractTimeItem implements IEventIf, ISerialNumberedIf
 {
 
     private final AttributeImpl.MsoInteger m_number = new AttributeImpl.MsoInteger(this, "Number");
@@ -18,9 +18,10 @@ public class EventImpl extends AbstractTimeItem implements IEventIf
      */
     private final TaskListImpl m_eventTasks = new TaskListImpl(this, "EventTasks", false);
 
-    public EventImpl(IMsoObjectIf.IObjectIdIf anObjectId, Calendar aCalendar)
+    public EventImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber, Calendar aCalendar)
     {
         super(anObjectId, aCalendar);
+        setNumber(aNumber);
     }
 
     protected void defineAttributes()
@@ -60,6 +61,7 @@ public class EventImpl extends AbstractTimeItem implements IEventIf
     /*-------------------------------------------------------------------------------------------
     * Methods for attributes
     *-------------------------------------------------------------------------------------------*/
+    // From ISerialNumberedIf
     public void setNumber(int aNumber)
     {
         m_number.setValue(aNumber);

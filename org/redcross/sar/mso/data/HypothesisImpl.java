@@ -13,9 +13,10 @@ public class HypothesisImpl extends AbstractMsoObject implements IHypothesisIf
     private final AttributeImpl.MsoEnum<HypothesisStatus> m_status = new AttributeImpl.MsoEnum<HypothesisStatus>(this, "Status", HypothesisStatus.ACTIVE);
 
 
-    public HypothesisImpl(IMsoObjectIf.IObjectIdIf anObjectId)
+    public HypothesisImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
     {
         super(anObjectId);
+        setNumber(aNumber);
     }
 
     protected void defineAttributes()
@@ -104,21 +105,6 @@ public class HypothesisImpl extends AbstractMsoObject implements IHypothesisIf
         return m_description;
     }
 
-    public void setNumber(int aNumber)
-    {
-        m_number.setValue(aNumber);
-    }
-
-    public int getNumber()
-    {
-        return m_number.intValue();
-    }
-
-    public IMsoModelIf.ModificationState getNumberState()
-    {
-        return m_number.getState();
-    }
-
     public IAttributeIf.IMsoIntegerIf getNumberAttribute()
     {
         return m_number;
@@ -143,4 +129,21 @@ public class HypothesisImpl extends AbstractMsoObject implements IHypothesisIf
     {
         return m_priority;
     }
+
+    // From ISerialNumberedIf
+    public void setNumber(int aNumber)
+    {
+        m_number.setValue(aNumber);
+    }
+
+    public int getNumber()
+    {
+        return m_number.intValue();
+    }
+
+    public IMsoModelIf.ModificationState getNumberState()
+    {
+        return m_number.getState();
+    }
+
 }

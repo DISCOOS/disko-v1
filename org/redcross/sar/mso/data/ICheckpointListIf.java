@@ -4,7 +4,7 @@ import org.redcross.sar.util.except.DuplicateIdException;
 
 public interface ICheckpointListIf extends IMsoListIf<ICheckpointIf>
 {
-    public ICheckpointIf createCheckPoint();
+    public ICheckpointIf createCheckpoint();
 
-    public ICheckpointIf createCheckPoint(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException;
+    public ICheckpointIf createCheckpoint(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException;
 }

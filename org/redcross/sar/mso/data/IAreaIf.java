@@ -2,6 +2,7 @@ package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.DuplicateIdException;
+import org.redcross.sar.util.mso.*;
 
 import java.util.Collection;
 
@@ -11,15 +12,13 @@ public interface IAreaIf extends IMsoObjectIf
     * Methods for attributes
     *-------------------------------------------------------------------------------------------*/
 
-// todo     public void setGeodata(geodata aGeodata);
+    public void setGeodata(GeoCollection aGeodata);
 
-//    public void setGeodata(geodata aGeodata);
-//
-//    public geodata getGeodata();
-//
-//    public IMsoModelIf.ModificationState getGeodataState();
-//
-//    public IAttributeIf.IMsoGeodataIf getGeodataAttribute();
+    public GeoCollection getGeodata();
+
+    public IMsoModelIf.ModificationState getGeodataState();
+
+    public IAttributeIf.IMsoGeoCollectionIf getGeodataAttribute();
 
     public void setRemarks(String aRemarks);
 

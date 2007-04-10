@@ -7,7 +7,7 @@ import org.redcross.sar.mso.IMsoModelIf;
  */
 public interface IBoatIf extends ITransportIf
 {
-    public enum BoatType
+    public enum BoatSubType
     {
         SEARCH_AND_RESCUE,
         MOTOR_BOAT,
@@ -22,17 +22,17 @@ public interface IBoatIf extends ITransportIf
     * Methods for ENUM attributes
     *-------------------------------------------------------------------------------------------*/
 
-    public void setType(BoatType aType);
+    public void setSubType(BoatSubType aSubType);
 
-    public void setType(String aType);
+    public void setSubType(String aSubType);
 
-    public BoatType getType();
+    public BoatSubType getSubType();
 
-    public IMsoModelIf.ModificationState getTypeState();
+    public IMsoModelIf.ModificationState getSubTypeState();
 
-    public IAttributeIf.IMsoEnumIf<BoatType> getTypeAttribute();
+    public IAttributeIf.IMsoEnumIf<BoatSubType> getSubTypeAttribute();
 
-    public String getTypeName();
+    public String getSubTypeName();
 
     /*-------------------------------------------------------------------------------------------
     * Methods for attributes

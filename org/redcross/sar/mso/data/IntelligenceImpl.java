@@ -15,10 +15,10 @@ public class IntelligenceImpl extends AbstractMsoObject implements IIntelligence
     private final AttributeImpl.MsoCalendar m_time = new AttributeImpl.MsoCalendar(this, "Time");
     private final AttributeImpl.MsoEnum<IntelligenceStatus> m_status = new AttributeImpl.MsoEnum<IntelligenceStatus>(this, "Status", IntelligenceStatus.UNCONFIRMED);
 
-    private final MsoReferenceImpl<IPOIIf> m_intelligencePOI = new MsoReferenceImpl<IPOIIf>(this, "IntelligencePOI", false);
-    private final MsoReferenceImpl<IRouteIf> m_intelligenceRoute = new MsoReferenceImpl<IRouteIf>(this, "IntelligenceRoute", false);
-    private final MsoReferenceImpl<ISubjectIf> m_intelligenceSubject = new MsoReferenceImpl<ISubjectIf>(this, "IntelligenceSubject", false);
-    private final MsoReferenceImpl<ITrackIf> m_intelligenceTrack = new MsoReferenceImpl<ITrackIf>(this, "IntelligenceTrack", false);
+    private final MsoReferenceImpl<IPOIIf> m_intelligencePOI = new MsoReferenceImpl<IPOIIf>(this, "IntelligencePOI", true);
+    private final MsoReferenceImpl<IRouteIf> m_intelligenceRoute = new MsoReferenceImpl<IRouteIf>(this, "IntelligenceRoute", true);
+    private final MsoReferenceImpl<ISubjectIf> m_intelligenceSubject = new MsoReferenceImpl<ISubjectIf>(this, "IntelligenceSubject", true);
+    private final MsoReferenceImpl<ITrackIf> m_intelligenceTrack = new MsoReferenceImpl<ITrackIf>(this, "IntelligenceTrack", true);
 
     public IntelligenceImpl(IMsoObjectIf.IObjectIdIf anObjectId)
     {

@@ -7,6 +7,9 @@ import org.redcross.sar.util.except.MsoCastException;
 
 import java.util.Collection;
 
+/**
+ * Unit assignments
+ */
 public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
 {
     private final AttributeImpl.MsoInteger m_priority = new AttributeImpl.MsoInteger(this, "Priority");
@@ -16,10 +19,10 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
     private final EquipmentListImpl m_assignmentEquipment = new EquipmentListImpl(this, "AssignmentEquipment", false);
     private final POIListImpl m_assignmentFindings = new POIListImpl(this, "AssignmentFindings", false);
 
-    private final MsoReferenceImpl<IBriefingIf> m_assignmentBriefing = new MsoReferenceImpl<IBriefingIf>(this, "AssignmentBriefing", false);
-    private final MsoReferenceImpl<IHypothesisIf> m_assignmentHypothesis = new MsoReferenceImpl<IHypothesisIf>(this, "AssignmentHypothesis", false);
-    private final MsoReferenceImpl<IAreaIf> m_plannedArea = new MsoReferenceImpl<IAreaIf>(this, "PlannedArea", false);
-    private final MsoReferenceImpl<IAreaIf> m_reportedArea = new MsoReferenceImpl<IAreaIf>(this, "ReportedArea", false);
+    private final MsoReferenceImpl<IBriefingIf> m_assignmentBriefing = new MsoReferenceImpl<IBriefingIf>(this, "AssignmentBriefing", true);
+    private final MsoReferenceImpl<IHypothesisIf> m_assignmentHypothesis = new MsoReferenceImpl<IHypothesisIf>(this, "AssignmentHypothesis", true);
+    private final MsoReferenceImpl<IAreaIf> m_plannedArea = new MsoReferenceImpl<IAreaIf>(this, "PlannedArea", true);
+    private final MsoReferenceImpl<IAreaIf> m_reportedArea = new MsoReferenceImpl<IAreaIf>(this, "ReportedArea", true);
 
 
     public AssignmentImpl(IMsoObjectIf.IObjectIdIf anObjectId)

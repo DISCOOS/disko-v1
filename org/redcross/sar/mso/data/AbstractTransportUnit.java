@@ -2,20 +2,19 @@ package org.redcross.sar.mso.data;
 
 public abstract class AbstractTransportUnit extends AbstractUnit implements ITransportIf
 {
-    protected AttributeImpl.MsoString m_kjennetegn = new AttributeImpl.MsoString(this, "kjennetegn");
+    protected AttributeImpl.MsoString m_identifier = new AttributeImpl.MsoString(this, "identifier");
     protected AttributeImpl.MsoInteger m_speed = new AttributeImpl.MsoInteger(this, "speed");
 
-    public AbstractTransportUnit(IMsoObjectIf.IObjectIdIf anObjectId, Long aNumber, String aKjennetegn, int aHastighet)
+    public AbstractTransportUnit(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber, String anIdentifier)
     {
         super(anObjectId, aNumber);
-        m_kjennetegn.setValue(aKjennetegn);
-        m_speed.setValue(aHastighet);
+        m_identifier.setValue(anIdentifier);
     }
 
     protected void defineAttributes()
     {
         super.defineAttributes();
-        addAttribute(m_kjennetegn);
+        addAttribute(m_identifier);
         addAttribute(m_speed);
     }
 
@@ -31,6 +30,6 @@ public abstract class AbstractTransportUnit extends AbstractUnit implements ITra
 
     public String toString()
     {
-        return super.toString() + " " + m_kjennetegn.getString() + " " + m_speed.intValue();
+        return super.toString() + " " + m_identifier.getString() + " " + m_speed.intValue();
     }
 }

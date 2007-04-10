@@ -10,9 +10,10 @@ import org.redcross.sar.mso.event.MsoEvent;
 import java.util.Vector;
 
 /**
- * The purpose of the commit manager is to catch Server update events, gather them, and when a commit is fired,
- * provide commit events and to give access to data structures
- * for handling the events and sending data to the SARA server.
+ * The purpose of the commit manager is to catch Server update events, accumulate them, and when a commit is executed,
+ * fire {@link org.redcross.sar.mso.event.MsoEvent.Commit} events.
+ * The event provides access to MSO data structures that shall be committed  by passing a {@link org.redcross.sar.mso.committer.ICommitWrapperIf} object
+ * to the listeners.
  */
 public class CommitManager
 {
@@ -26,14 +27,18 @@ public class CommitManager
         COMMIT_DELETED
     }
 
+    /**
+     * Reference to the owning MsoModel
+     */
     private final IMsoModelIf m_ownerModel;
 
+    /**
+     * Vector for accumulating {@link UpdateHolder} objects that tell which objects that shall be commited, and their update types.
+     */
     private final Vector<UpdateHolder> m_updates = new Vector<UpdateHolder>(50);
 
     /**
-     * Constructor
-     *
-     * @param theModel Reference to the singleton MSO model object holding the manager.
+     * @param theModel Reference to the singleton MSO model object holding the MsoModel object.
      */
     public CommitManager(IMsoModelIf theModel)
     {
@@ -53,12 +58,12 @@ public class CommitManager
         });
     }
 
-    private IMsoModelIf getMsoModel()
+    public IMsoModelIf getMsoModel()
     {
         return m_ownerModel;
     }
 
-    public ICommitWrapperIf createCommitWrapper()
+    private ICommitWrapperIf createCommitWrapper()
     {
         CommitWrapper wrapper = new CommitWrapper();
         for (UpdateHolder updateItem : m_updates)
@@ -86,13 +91,18 @@ public class CommitManager
     /**
      * Perform commit.
      * <p/>
-     * Will generate a {@link org.redcross.sar.mso.event.MsoEvent.Commit} event.
+     * Generates a {@link org.redcross.sar.mso.event.MsoEvent.Commit} event.
      */
     public void commit()
     {
         m_ownerModel.getEventManager().notifyCommit(createCommitWrapper());
     }
 
+    /**
+     * Perform rollback.
+     * <p/>
+     * Clears all accumulated information.
+     */
     public void rollback()
     {
         m_updates.clear();

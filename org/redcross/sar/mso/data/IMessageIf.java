@@ -49,14 +49,6 @@ public interface IMessageIf extends ITimeItemIf
 
     public IAttributeIf.IMsoCalendarIf getCreatedAttribute();
 
-    public void setNumber(int aNumber);
-
-    public int getNumber();
-
-    public IMsoModelIf.ModificationState getNumberState();
-
-    public IAttributeIf.IMsoIntegerIf getNumberAttribute();
-
     /*-------------------------------------------------------------------------------------------
     * Methods for lists
     *-------------------------------------------------------------------------------------------*/

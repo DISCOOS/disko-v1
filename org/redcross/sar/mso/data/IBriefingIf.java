@@ -12,9 +12,9 @@ public interface IBriefingIf extends IMsoObjectIf
     * Methods for attributes
     *-------------------------------------------------------------------------------------------*/
 
-    public void setActive(boolean aActive);
+    public void setActive(boolean anActive);
 
-    public boolean getActive();
+    public boolean isActive();
 
     public IMsoModelIf.ModificationState getActiveState();
 
@@ -59,14 +59,6 @@ public interface IBriefingIf extends IMsoObjectIf
     public IMsoModelIf.ModificationState getFindingsProcedureState();
 
     public IAttributeIf.IMsoStringIf getFindingsProcedureAttribute();
-
-    public void setID(String aID);
-
-    public String getID();
-
-    public IMsoModelIf.ModificationState getIDState();
-
-    public IAttributeIf.IMsoStringIf getIDAttribute();
 
     public void setImportantClues(String aImportantClues);
 

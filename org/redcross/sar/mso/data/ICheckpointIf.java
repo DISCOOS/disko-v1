@@ -9,7 +9,7 @@ public interface ICheckpointIf extends IMsoObjectIf
     *-------------------------------------------------------------------------------------------*/
     public void setChecked(boolean aChecked);
 
-    public boolean getChecked();
+    public boolean isChecked();
 
     public IMsoModelIf.ModificationState getCheckedState();
 

@@ -75,14 +75,14 @@ public class MsoBasicTest
             assertNotNull(cmdPostA);
             ICmdPostIf cmdPostB = m_msoManager.getCmdPost();
             assertEquals(cmdPostA, cmdPostB);
-            cmdPostB.setState(ICmdPostIf.CmdPostStatus.OPERATING);
-            ICmdPostIf.CmdPostStatus cmdstat = cmdPostA.getState();
+            cmdPostB.setStatus(ICmdPostIf.CmdPostStatus.OPERATING);
+            ICmdPostIf.CmdPostStatus cmdstat = cmdPostA.getStatus();
             String statname = cmdstat.name();
-            cmdPostB.setState(ICmdPostIf.CmdPostStatus.RELEASED);
+            cmdPostB.setStatus(ICmdPostIf.CmdPostStatus.RELEASED);
             cmdstat = Enum.valueOf(ICmdPostIf.CmdPostStatus.class, statname);
-            cmdPostA.setState("OPERATING");
-            cmdstat = cmdPostB.getState();
-            cmdPostA.setState(cmdstat);
+            cmdPostA.setStatus("OPERATING");
+            cmdstat = cmdPostB.getStatus();
+            cmdPostA.setStatus(cmdstat);
 
         }
         catch (MsoException e)
@@ -164,21 +164,21 @@ public class MsoBasicTest
 
         unitListImpl.clear();
 
-        IUnitIf vUnit1 = unitList.createVehicle(1, "V1", 1);
+        IUnitIf vUnit1 = unitList.createVehicle("V1");
         assertNotNull(vUnit1);
-        assertTrue(koUnit.setSuperior(null));
-        assertTrue(vUnit1.setSuperior(koUnit));
-        assertFalse(koUnit.setSuperior(vUnit1));
+        assertTrue(koUnit.setSuperiorUnit(null));
+        assertTrue(vUnit1.setSuperiorUnit(koUnit));
+        assertFalse(koUnit.setSuperiorUnit(vUnit1));
 
-        IUnitIf vUnit2 = unitList.createVehicle(2, "V2", 1);
+        IUnitIf vUnit2 = unitList.createVehicle("V2");
         assertNotNull(vUnit2);
-        assertTrue(vUnit2.setSuperior(koUnit));
+        assertTrue(vUnit2.setSuperiorUnit(koUnit));
 
         List<IUnitIf> units = unitList.selectItems(new Selector<IUnitIf>()
         {
             public boolean select(IUnitIf anObject)
             {
-                return anObject.getSuperior() != null;
+                return anObject.getSuperiorUnit() != null;
             }
         }, new Comparator<IUnitIf>()
         { // Note: this comparator imposes orderings that are inconsistent with equals.
@@ -191,14 +191,14 @@ public class MsoBasicTest
         assertNotNull(units);
 
 
-        ArrayList<IHierarchicalUnitIf> koSubOrdList;
+        List<IHierarchicalUnitIf> koSubOrdList;
         koSubOrdList = koUnit.getSubOrdinates();
         assertNotNull(koSubOrdList);
         assertEquals(koSubOrdList.size(), 2);
 
         koSubOrdList = vUnit1.getSubOrdinates();
         assertEquals(koSubOrdList.size(), 0);
-        assertTrue(vUnit2.setSuperior(vUnit1));
+        assertTrue(vUnit2.setSuperiorUnit(vUnit1));
 
         koSubOrdList = koUnit.getSubOrdinates();
         assertEquals(koSubOrdList.size(), 1);
@@ -231,24 +231,24 @@ public class MsoBasicTest
 
         try
         {
-            IUnitIf vUnit1 = unitList.createVehicle(1, "V1", 1);
+            IUnitIf vUnit1 = unitList.createVehicle("V1");
             mainCount++;
             int v1Count = 1;
-            IUnitIf vUnit2 = unitList.createVehicle(2, "V2", 2);
+            IUnitIf vUnit2 = unitList.createVehicle("V2");
             mainCount++;
             int v2Count = 1;
-            IUnitIf vUnit3 = unitList.createVehicle(3, "V3", 3);
+            IUnitIf vUnit3 = unitList.createVehicle("V3");
             mainCount++;
             int v3Count = 1;
             myUnitList.add(vUnit2);
             myCount++;
             assertEquals(unitList.size(), mainCount);
             assertEquals(myUnitList.size(), myCount);
-            IUnitIf vUnit4 = unitList.createVehicle(4, "V4", 4);
+            IUnitIf vUnit4 = unitList.createVehicle("V4");
             mainCount++;
             int v4Count = 1;
             System.out.println("Test Create vehicle 5");
-            IUnitIf vUnit5 = unitList.createVehicle(5, "V5", 5);
+            IUnitIf vUnit5 = unitList.createVehicle("V5");
             mainCount++;
             int v5Count = 1;
             assertEquals(unitList.size(), mainCount);
@@ -349,13 +349,13 @@ public class MsoBasicTest
         try
         {
             m_msoModel.setRemoteUpdateMode();
-            IUnitIf vUnit1 = unitList.createVehicle(1, "V1", 1);
+            IUnitIf vUnit1 = unitList.createVehicle("V1");
             mainUnitCount++;
             int v1Count = 1;
-            IUnitIf vUnit2 = unitList.createVehicle(2, "V2", 2);
+            IUnitIf vUnit2 = unitList.createVehicle("V2");
             mainUnitCount++;
             int v2Count = 1;
-            IUnitIf vUnit3 = unitList.createVehicle(3, "V3", 3);
+            IUnitIf vUnit3 = unitList.createVehicle("V3");
             mainUnitCount++;
             int v3Count = 1;
             myUnitList.add(vUnit1);
@@ -364,23 +364,23 @@ public class MsoBasicTest
             AbstractUnit aUnit1 = (AbstractUnit) vUnit1;
 
             IAssignmentIf mis11 = assignmentList.createAssignment();
-            vUnit1.addAssignment(mis11);
+            vUnit1.addUnitAssignments(mis11);
             int vmCount1 = 1;
             IAssignmentIf mis12 = assignmentList.createAssignment();
-            vUnit1.addAssignment(mis12);
+            vUnit1.addUnitAssignments(mis12);
             vmCount1++;
-            assertEquals(aUnit1.assignmentCount(), vmCount1);
+            assertEquals(aUnit1.getUnitAssignmentsItems().size(), vmCount1);
 
             assertTrue(assignmentList.removeReference(mis12));
             vmCount1--;
             mis12 = null;
-            assertEquals(aUnit1.assignmentCount(), vmCount1);
+            assertEquals(aUnit1.getUnitAssignmentsItems().size(), vmCount1);
 
             IAssignmentIf mis13 = assignmentList.createAssignment();
             AssignmentImpl misImpl13 = (AssignmentImpl) mis13;
-            vUnit1.addAssignment(mis13);
+            vUnit1.addUnitAssignments(mis13);
             vmCount1++;
-            assertEquals(aUnit1.assignmentCount(), vmCount1);
+            assertEquals(aUnit1.getUnitAssignmentsItems().size(), vmCount1);
             assertEquals(misImpl13.listenerCount(), 2);
 
             IPOIIf PUI1 = puiList.createPOI();
@@ -439,18 +439,18 @@ public class MsoBasicTest
         int main5POCount = 0;
 
         m_msoModel.setRemoteUpdateMode();
-        IUnitIf vUnit1 = unitList.createVehicle(1, "V1", 1);
+        IUnitIf vUnit1 = unitList.createVehicle("V1");
         mainUnitCount++;
         int v1Count = 1;
-        IUnitIf vUnit2 = unitList.createVehicle(2, "V2", 2);
+        IUnitIf vUnit2 = unitList.createVehicle("V2");
         mainUnitCount++;
         int v2Count = 1;
-        IUnitIf vUnit3 = unitList.createVehicle(3, "V3", 3);
+        IUnitIf vUnit3 = unitList.createVehicle("V3");
         mainUnitCount++;
         assertEquals(unitList.size(), mainUnitCount);
         int v3Count = 1;
-        vUnit2.setSuperior(vUnit1);
-        vUnit3.setSuperior(vUnit2);
+        vUnit2.setSuperiorUnit(vUnit1);
+        vUnit3.setSuperiorUnit(vUnit2);
         assertFalse(unitList.removeReference(vUnit1));
         assertFalse(unitList.removeReference(vUnit2));
 

@@ -2,9 +2,9 @@ package org.redcross.sar.mso.data;
 
 public class VehicleImpl extends AbstractTransportUnit implements IVehicleIf
 {
-    public VehicleImpl(IMsoObjectIf.IObjectIdIf anObjectId, long aNumber, String aKjennetegn, int aHastighet) 
+    public VehicleImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber, String anIdentifier)
     {
-        super(anObjectId, aNumber, aKjennetegn, aHastighet);
+        super(anObjectId, aNumber, anIdentifier);
     }
 
     protected void defineAttributes()
@@ -21,6 +21,12 @@ public class VehicleImpl extends AbstractTransportUnit implements IVehicleIf
     {
         super.defineReferences();
     }
+
+    protected UnitType getTypeBySubclass()
+    {
+        return IUnitIf.UnitType.VEHICLE;
+    }
+
 
     public String toString()
     {

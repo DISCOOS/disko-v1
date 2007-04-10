@@ -5,7 +5,7 @@ package org.redcross.sar.mso.data;
  */
 public class DogImpl extends AbstractUnit implements IDogIf
 {
-    public DogImpl(IMsoObjectIf.IObjectIdIf anObjectId,Long aNumber)
+    public DogImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
     {
         super(anObjectId, aNumber);
     }
@@ -25,6 +25,10 @@ public class DogImpl extends AbstractUnit implements IDogIf
         super.defineReferences();
     }
 
+    protected UnitType getTypeBySubclass()
+    {
+        return IUnitIf.UnitType.DOG;
+    }
 
     public String toString()
     {

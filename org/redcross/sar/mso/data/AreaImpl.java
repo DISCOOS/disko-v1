@@ -6,13 +6,17 @@ import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.util.except.DuplicateIdException;
 import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.mso.Selector;
+import org.redcross.sar.util.mso.*;
 
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Strip of field to search
+ */
 public class AreaImpl extends AbstractMsoObject implements IAreaIf
 {
-    //    todo private final AttributeImpl.MsoGeodata m_geodata = new AttributeImpl.MsoGeodata(this, "Geodata");
+    private final AttributeImpl.MsoGeoCollection m_geodata = new AttributeImpl.MsoGeoCollection(this, "Geodata");
     private final AttributeImpl.MsoString m_remarks = new AttributeImpl.MsoString(this, "Remarks");
     private final POIListImpl m_areaPOIs = new POIListImpl(this, "AreaPOIs", false);
 
@@ -23,7 +27,7 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
 
     protected void defineAttributes()
     {
-// todo       addAttribute(m_geodata);
+        addAttribute(m_geodata);
         addAttribute(m_remarks);
     }
 
@@ -53,26 +57,26 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
         return IMsoManagerIf.MsoClassCode.CLASSCODE_AREA;
     }
 
-    // todo    public void setGeodata(geodata aGeodata)
-//    public void setGeodata(geodata aGeodata)
-//    {
-//        m_geodata.setValue(aGeodata);
-//    }
-//
-//    public geodata getGeodata()
-//    {
-//        return m_geodata.getGeodata();
-//    }
-//
-//    public IMsoModelIf.ModificationState getGeodataState()
-//    {
-//        return m_geodata.getStatus();
-//    }
-//
-//    public IAttributeIf.IMsoGeodataIf getGeodataAttribute()
-//    {
-//        return m_geodata;
-//    }
+
+    public void setGeodata(GeoCollection aGeodata)
+    {
+        m_geodata.setValue(aGeodata);
+    }
+
+    public GeoCollection getGeodata()
+    {
+        return m_geodata.getGeoCollection();
+    }
+
+    public IMsoModelIf.ModificationState getGeodataState()
+    {
+        return m_geodata.getState();
+    }
+
+    public IAttributeIf.IMsoGeoCollectionIf getGeodataAttribute()
+    {
+        return m_geodata;
+    }
 
     public void setRemarks(String aRemarks)
     {
@@ -137,7 +141,7 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
             return null;
         } else if (result.size() == 0)
         {
-            System.out.println("Area "+ getObjectId() + " is referred by more than one assignment.");
+            System.out.println("Area " + getObjectId() + " is referred by more than one assignment.");
         }
         return result.get(0);
     }

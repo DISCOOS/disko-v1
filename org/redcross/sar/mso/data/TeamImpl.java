@@ -4,7 +4,7 @@ public class TeamImpl extends AbstractUnit implements ITeamIf
 {
     private final AttributeImpl.MsoInteger m_speed = new AttributeImpl.MsoInteger(this, "speed");
 
-    public TeamImpl(IMsoObjectIf.IObjectIdIf anObjectId, Long aNumber)
+    public TeamImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
     {
         super(anObjectId, aNumber);
     }
@@ -23,6 +23,10 @@ public class TeamImpl extends AbstractUnit implements ITeamIf
     {
     }
 
+    protected UnitType getTypeBySubclass()
+    {
+        return IUnitIf.UnitType.TEAM;
+    }
 
     public String toString()
     {

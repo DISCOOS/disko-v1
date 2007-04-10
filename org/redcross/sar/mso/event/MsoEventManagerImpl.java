@@ -18,7 +18,7 @@ public class MsoEventManagerImpl implements IMsoEventManagerIf
     private final Set<IMsoUpdateListenerIf> m_serverUpdateListeners = new HashSet<IMsoUpdateListenerIf>();
     private final Set<IMsoCommitListenerIf> m_commitListeners = new HashSet<IMsoCommitListenerIf>();
     private final Set<IMsoGisListenerIf> m_gisListeners = new HashSet<IMsoGisListenerIf>();
-    private final Set<IMsoItemListenerIf> m_itemListeners = new HashSet<IMsoItemListenerIf>();
+    private final Set<IMsoDerivedUpdateListenerIf> m_derivedUpdateListeners = new HashSet<IMsoDerivedUpdateListenerIf>();
 
     /**
      * Add a listener in the {@link #m_clientUpdateListeners} queue.
@@ -129,26 +129,26 @@ public class MsoEventManagerImpl implements IMsoEventManagerIf
         }
     }
 
-    public void addItemListener(IMsoItemListenerIf aListener)
+    public void addDerivedUpdateListener(IMsoDerivedUpdateListenerIf aListener)
     {
-        m_itemListeners.add(aListener);
+        m_derivedUpdateListeners.add(aListener);
     }
 
-    public void removeItemUpdateListener(IMsoItemListenerIf aListener)
+    public void removeDerivedUpdateListener(IMsoDerivedUpdateListenerIf aListener)
     {
-        m_itemListeners.remove(aListener);
+        m_derivedUpdateListeners.remove(aListener);
     }
 
-    public void notifyItemUpdate(IMsoObjectIf aSource,int anEventTypeMask)
+    public void notifyDerivedUpdate(IMsoObjectIf aSource,int anEventTypeMask)
     {
-        if (m_itemListeners.size() == 0)
+        if (m_derivedUpdateListeners.size() == 0)
         {
             return;
         }
-        MsoEvent.Item event = new MsoEvent.Item(aSource, anEventTypeMask);
-        for (IMsoItemListenerIf listener : m_itemListeners)
+        MsoEvent.DerivedUpdate event = new MsoEvent.DerivedUpdate(aSource, anEventTypeMask);
+        for (IMsoDerivedUpdateListenerIf listener : m_derivedUpdateListeners)
         {
-            listener.handleMsoItemEvent(event);
+            listener.handleMsoDerivedUpdateEvent(event);
         }
     }
 

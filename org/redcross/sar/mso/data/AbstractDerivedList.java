@@ -1,7 +1,7 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.MsoModelImpl;
-import org.redcross.sar.mso.event.IMsoItemListenerIf;
+import org.redcross.sar.mso.event.IMsoDerivedUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent;
 import org.redcross.sar.util.mso.Selector;
 
@@ -10,7 +10,7 @@ import java.util.*;
 /**
  *
  */
-public abstract class AbstractDerivedList<M extends IMsoObjectIf> implements IMsoDerivedListIf<M>, IMsoItemListenerIf
+public abstract class AbstractDerivedList<M extends IMsoObjectIf> implements IMsoDerivedListIf<M>, IMsoDerivedUpdateListenerIf
 {
     protected final HashMap<String, M> m_items;
 
@@ -22,7 +22,7 @@ public abstract class AbstractDerivedList<M extends IMsoObjectIf> implements IMs
     public AbstractDerivedList(int aSize)
     {
         m_items = new HashMap<String, M>(aSize);
-        MsoModelImpl.getInstance().getEventManager().addItemListener(this);
+        MsoModelImpl.getInstance().getEventManager().addDerivedUpdateListener(this);
     }
 
     public Collection<M> getItems()
@@ -52,7 +52,7 @@ public abstract class AbstractDerivedList<M extends IMsoObjectIf> implements IMs
         return result;
     }
 
-    public void handleMsoItemEvent(MsoEvent.Item e)
+    public void handleMsoDerivedUpdateEvent(MsoEvent.DerivedUpdate e)
     {
         int mask = MsoEvent.EventType.CREATED_OBJECT_EVENT.maskValue()
                 | MsoEvent.EventType.DELETED_OBJECT_EVENT.maskValue()

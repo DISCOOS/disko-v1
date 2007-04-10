@@ -15,13 +15,13 @@ public class CheckpointListImpl extends MsoListImpl<ICheckpointIf> implements IC
         super(anOwner, theName, isMain, aSize);
     }
 
-    public ICheckpointIf createCheckPoint()
+    public ICheckpointIf createCheckpoint()
     {
         checkCreateOp();
         return createdUniqueItem(new CheckpointImpl(makeUniqueId()));
     }
 
-    public ICheckpointIf createCheckPoint(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public ICheckpointIf createCheckpoint(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
     {
         checkCreateOp();
         return createdItem(new CheckpointImpl(anObjectId));

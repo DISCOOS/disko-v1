@@ -10,6 +10,8 @@
 package org.redcross.sar.mso;
 
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
+import org.redcross.sar.modelDriver.IModelDriverIf;
+
 
 /**
  * Interface for singleton class for accessing the MSO model
@@ -27,7 +29,7 @@ public interface IMsoModelIf
     }
 
     /**
-     * Modification state, tells the status of each attribute or relation.
+     * Modification state, tells the modification state of each attribute or relation.
      */
     enum ModificationState
     {
@@ -40,16 +42,22 @@ public interface IMsoModelIf
 
 
     /**
-     * Get the MSO manager.
+     * Get the {@link IMsoManagerIf MSO manager}
      * @return The MSO manager
      */
     public IMsoManagerIf getMsoManager();
 
     /**
-     * Get the Change manager (for event handling).
+     * Get the {@link org.redcross.sar.mso.event.IMsoEventManagerIf event manager}
      * @return The event manager.
      */
     public IMsoEventManagerIf getEventManager();
+
+    /**
+     * Get the {@link org.redcross.sar.modelDriver.IModelDriverIf Model driver}
+     * @return The Model driver.
+     */
+    public IModelDriverIf getModelDriver();
 
     /**
      * Set update mode to {@link UpdateMode#LOCAL_UPDATE_MODE LOCAL_UPDATE_MODE}.
@@ -79,11 +87,15 @@ public interface IMsoModelIf
 
     /**
      * Perform commit.
+     *
+     * Local modifications since previous commit or rollback are sent to server.
      */
     public void commit();
-    
+
     /**
      * Perform rollback.
+     *
+     * Local modifications since previous commit or rollback are ignored.
      */
     public void rollback();
 }

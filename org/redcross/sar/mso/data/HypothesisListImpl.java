@@ -18,13 +18,13 @@ public class HypothesisListImpl extends MsoListImpl<IHypothesisIf> implements IH
     public IHypothesisIf createHypothesis()
     {
         checkCreateOp();
-        return createdUniqueItem(new HypothesisImpl(makeUniqueId()));
+        return createdUniqueItem(new HypothesisImpl(makeUniqueId(), makeSerialNumber()));
     }
 
-    public IHypothesisIf createHypothesis(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public IHypothesisIf createHypothesis(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber) throws DuplicateIdException
     {
         checkCreateOp();
-        return createdItem(new HypothesisImpl(anObjectId));
+        return createdItem(new HypothesisImpl(anObjectId, aNumber));
     }
 
 

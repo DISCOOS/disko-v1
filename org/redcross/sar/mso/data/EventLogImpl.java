@@ -20,13 +20,13 @@ public class EventLogImpl extends MsoListImpl<IEventIf> implements IEventLogIf
     public IEventIf createEvent(Calendar aCalendar)
     {
         checkCreateOp();
-        return createdUniqueItem(new EventImpl(makeUniqueId(), aCalendar));
+        return createdUniqueItem(new EventImpl(makeUniqueId(), makeSerialNumber(), aCalendar));
     }
 
-    public IEventIf createEvent(IMsoObjectIf.IObjectIdIf anObjectId, Calendar aCalendar) throws DuplicateIdException
+    public IEventIf createEvent(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber, Calendar aCalendar) throws DuplicateIdException
     {
         checkCreateOp();
-        return createdItem(new EventImpl(anObjectId, aCalendar));
+        return createdItem(new EventImpl(anObjectId, aNumber, aCalendar));
     }
 
 

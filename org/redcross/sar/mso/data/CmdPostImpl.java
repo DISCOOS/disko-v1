@@ -5,10 +5,13 @@ import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.DuplicateIdException;
 import org.redcross.sar.util.except.MsoCastException;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Calendar;
 import java.util.Collection;
 
+/**
+ * Command, control and communication center (command post)
+ */
 public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHierarchicalUnitIf, ICommunicatorIf
 {
     private final AttributeImpl.MsoCalendar m_established = new AttributeImpl.MsoCalendar(this, "Established");
@@ -682,17 +685,28 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     *  Methods from IHierarchicalUnitIf
     *-------------------------------------------------------------------------------------------*/
 
-    public boolean setSuperior(IHierarchicalUnitIf aUnit)
+    public boolean setSuperiorUnit(IHierarchicalUnitIf aUnit)
     {
         return aUnit == null;
     }
 
-    public IUnitIf getSuperior()
+    public IUnitIf getSuperiorUnit()
     {
         return null;
     }
 
-    public ArrayList<IHierarchicalUnitIf> getSubOrdinates()
+    public IMsoModelIf.ModificationState getSuperiorUnitState()
+    {
+        return IMsoModelIf.ModificationState.STATE_UNDEFINED;
+    }
+
+    public IMsoReferenceIf<IHierarchicalUnitIf> getSuperiorUnitAttribute()
+    {
+        return null;
+    }
+
+
+    public List<IHierarchicalUnitIf> getSubOrdinates()
     {
         return AbstractUnit.getSubOrdinates(this);
     }

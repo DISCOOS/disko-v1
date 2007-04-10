@@ -35,6 +35,7 @@ public class MsoModelImpl implements IMsoModelIf
 
     /**
      * Get the singleton instance object of this class.
+     *
      * @return The singleton object
      */
     public static MsoModelImpl getInstance()
@@ -44,6 +45,7 @@ public class MsoModelImpl implements IMsoModelIf
 
     /**
      * Constructor.
+     * <p/>
      * Initializes other classes that are accessed via this object..
      */
     private MsoModelImpl()
@@ -55,17 +57,11 @@ public class MsoModelImpl implements IMsoModelIf
         m_updateModeStack.push(UpdateMode.LOCAL_UPDATE_MODE);
     }
 
-    /**
-     * Get the MSO manager.
-     */
     public IMsoManagerIf getMsoManager()
     {
         return m_IMsoManager;
     }
 
-    /**
-     * Get the Change manager (for event handling).
-     */
     public IMsoEventManagerIf getEventManager()
     {
         return m_msoEventManager;
@@ -76,15 +72,15 @@ public class MsoModelImpl implements IMsoModelIf
         return m_modelDriver;
     }
 
-    public CommitManager getCommitManager()
-    {
-        return m_commitManager;
-    }
+// todo slett hvis ubrukt      public CommitManager getCommitManager()
+//    {
+//        return m_commitManager;
+//    }
 
-    public IMsoCommitListenerIf getCommitListener()
-    {
-        return m_commitListener;
-    }
+// todo slett hvis ubrukt  public IMsoCommitListenerIf getCommitListener()
+//    {
+//        return m_commitListener;
+//    }
 
     /**
      * Set update mode to {@link IMsoModelIf.UpdateMode#LOCAL_UPDATE_MODE LOCAL_UPDATE_MODE}.

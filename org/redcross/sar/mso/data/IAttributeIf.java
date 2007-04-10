@@ -190,7 +190,7 @@ public interface IAttributeIf<T>
     {
         public void setValue(Position aPosition);
 
-        public void setValue(Point2D.Double aPoint);
+        public void setValue(String anId, Point2D.Double aPoint);
 
         public Position getPosition();
     }
@@ -233,6 +233,16 @@ public interface IAttributeIf<T>
         public void setValue(Track aTrack);
 
         public Track getTrack();
+    }
+
+    /**
+     * Interface for {@link org.redcross.sar.util.mso.GeoCollection} attributes.
+     */
+    public interface IMsoGeoCollectionIf extends IAttributeIf<GeoCollection>
+    {
+        public void setValue(GeoCollection aGeoCollection);
+
+        public GeoCollection getGeoCollection();
     }
 
     /**

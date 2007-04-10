@@ -9,6 +9,9 @@ import org.redcross.sar.util.except.DuplicateIdException;
 import java.util.Calendar;
 import java.util.Collection;
 
+/**
+ * Communication message
+ */
 public class MessageImpl extends AbstractTimeItem implements IMessageIf
 {
     private final AttributeImpl.MsoBoolean m_broadcast = new AttributeImpl.MsoBoolean(this, "Broadcast");
@@ -20,18 +23,20 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
     private final TaskListImpl m_messageTasks = new TaskListImpl(this, "MessageTasks", false);
     private final MsoListImpl<ICommunicatorIf> m_unconfirmedReceivers = new MsoListImpl<ICommunicatorIf>(this, "UnconfirmedReceivers", false);
 
-    private final MsoReferenceImpl<ICmdPostIf> m_sender = new MsoReferenceImpl<ICmdPostIf>(this, "Sender", false);
+    private final MsoReferenceImpl<ICmdPostIf> m_sender = new MsoReferenceImpl<ICmdPostIf>(this, "Sender", true);
 
-    public MessageImpl(IMsoObjectIf.IObjectIdIf anObjectId)
+    public MessageImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
     {
         super(anObjectId);
         setCreated(Calendar.getInstance());
+        setNumber(aNumber);
     }
 
-    public MessageImpl(IMsoObjectIf.IObjectIdIf anObjectId, Calendar aCalendar)
+    public MessageImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber, Calendar aCalendar)
     {
         super(anObjectId, aCalendar);
         setCreated(Calendar.getInstance());
+        setNumber(aNumber);
     }
 
     protected void defineAttributes()
@@ -147,6 +152,7 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
         return m_created;
     }
 
+    // From ISerialNumberedIf
     public void setNumber(int aNumber)
     {
         m_number.setValue(aNumber);

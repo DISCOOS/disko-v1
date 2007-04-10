@@ -6,40 +6,49 @@ import java.util.Vector;
 /**
  * Class for holding polygon information
  */
-public class Polygon
+public class Polygon implements IGeodataIf
 {
+    private final String m_id;
+    private String m_layout;
+
     private final String m_name;
-    private final Vector<Position> m_polygon;
+    private final Vector<GeoPos> m_polygon;
 
     /**
      * Constructor, default collection size
+     *
+     * @param anId Object Id
      */
-    public Polygon()
+    public Polygon(String anId)
     {
-        this("");
+        this(anId, "");
     }
 
     /**
      * Constructor, default collection size
      *
+     * @param anId  Object Id
      * @param aName Name of route
      */
-    public Polygon(String aName)
+    public Polygon(String anId, String aName)
     {
+        m_id = anId;
         m_name = aName;
-        m_polygon = new Vector<Position>();
+        m_polygon = new Vector<GeoPos>();
     }
 
     /**
      * Constructor, parameter for collection size
      *
+     * @param anId  Object Id
      * @param aName Name of route
      * @param aSize The collection size
      */
-    public Polygon(String aName, int aSize)
+    public Polygon(String anId, String aName, int aSize)
     {
+        m_id = anId;
         m_name = aName;
-        m_polygon = new Vector<Position>(aSize);
+        m_polygon = new Vector<GeoPos>(aSize);
     }
 
     /**
@@ -47,7 +56,7 @@ public class Polygon
      *
      * @param aVertex The vertex to add.
      */
-    public void add(Position aVertex)
+    public void add(GeoPos aVertex)
     {
         m_polygon.add(aVertex);
     }
@@ -60,7 +69,7 @@ public class Polygon
      */
     public void add(double aLongPosition, double aLatPosition)
     {
-        add(new Position(aLongPosition, aLatPosition));
+        add(new GeoPos(aLongPosition, aLatPosition));
     }
 
     /**
@@ -68,7 +77,7 @@ public class Polygon
      *
      * @return The vertice collection.
      */
-    public Collection<Position> getVertices()
+    public Collection<GeoPos> getVertices()
     {
         return m_polygon;
     }
@@ -83,4 +92,18 @@ public class Polygon
         return m_name;
     }
 
+    public String getId()
+    {
+        return m_id;
+    }
+
+    public void setLayout(String aLayout)
+    {
+        m_layout = aLayout;
+    }
+
+    public String getLayout()
+    {
+        return m_layout;
+    }
 }

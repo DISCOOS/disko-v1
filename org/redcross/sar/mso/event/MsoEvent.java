@@ -15,7 +15,7 @@ import org.redcross.sar.mso.data.IMsoObjectIf;
 public class MsoEvent extends java.util.EventObject
 {
     /**
-     * EventImpl( type with maskValue values.
+     * Event type with maskValue values.
      */
     public enum EventType
     {
@@ -75,6 +75,9 @@ public class MsoEvent extends java.util.EventObject
         return m_eventTypeMask;
     }
 
+    /**
+     * Event that triggers an update of the user interface and/or the server handler.
+     */
     public static class Update extends MsoEvent
     {
         public Update(Object aSource, int anEventTypeMask)
@@ -83,6 +86,9 @@ public class MsoEvent extends java.util.EventObject
         }
     }
 
+    /**
+     * Event that triggers a server commit.
+     */
     public static class Commit extends MsoEvent
     {
         public Commit(ICommitWrapperIf aSource, int anEventTypeMask)
@@ -91,6 +97,9 @@ public class MsoEvent extends java.util.EventObject
         }
     }
 
+    /**
+     * Event that triggers an update of the Gis model.
+     */
     public static class Gis extends MsoEvent
     {
         public Gis(IAttributeIf aSource)
@@ -99,9 +108,12 @@ public class MsoEvent extends java.util.EventObject
         }
     }
 
-    public static class Item extends MsoEvent
+    /**
+     * Event that triggers derived updates of the data structures.
+     */
+    public static class DerivedUpdate extends MsoEvent
     {
-        public Item(IMsoObjectIf aSource, int anEventTypeMask)
+        public DerivedUpdate(IMsoObjectIf aSource, int anEventTypeMask)
         {
             super(aSource, anEventTypeMask);
         }

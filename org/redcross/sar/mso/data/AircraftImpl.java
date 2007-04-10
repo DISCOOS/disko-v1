@@ -2,6 +2,9 @@ package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
 
+/**
+ * Aircraft unit
+ */
 public class AircraftImpl extends AbstractTransportUnit implements IAircraftIf
 {
     private final AttributeImpl.MsoInteger m_averageSpeed = new AttributeImpl.MsoInteger(this, "AverageSpeed");
@@ -14,11 +17,11 @@ public class AircraftImpl extends AbstractTransportUnit implements IAircraftIf
     private final AttributeImpl.MsoInteger m_seats = new AttributeImpl.MsoInteger(this, "Seats");
     private final AttributeImpl.MsoBoolean m_video = new AttributeImpl.MsoBoolean(this, "Video");
     private final AttributeImpl.MsoInteger m_visibility = new AttributeImpl.MsoInteger(this, "Visibility");
-    private final AttributeImpl.MsoEnum<AircraftType> m_type = new AttributeImpl.MsoEnum<AircraftType>(this, "Type", AircraftType.LIGHT_AIRCRAFT);
+    private final AttributeImpl.MsoEnum<AircraftSubType> m_subType = new AttributeImpl.MsoEnum<AircraftSubType>(this, "SubType", AircraftSubType.LIGHT_AIRCRAFT);
 
-    public AircraftImpl(IMsoObjectIf.IObjectIdIf anObjectId, long aNumber, String aKjennetegn, int aHastighet)
+    public AircraftImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber, String anIdentifier)
     {
-        super(anObjectId, aNumber, aKjennetegn, aHastighet);
+        super(anObjectId, aNumber, anIdentifier);
     }
 
     protected void defineAttributes()
@@ -34,7 +37,7 @@ public class AircraftImpl extends AbstractTransportUnit implements IAircraftIf
         addAttribute(m_seats);
         addAttribute(m_video);
         addAttribute(m_visibility);
-        addAttribute(m_type);
+        addAttribute(m_subType);
     }
 
     protected void defineLists()
@@ -47,40 +50,45 @@ public class AircraftImpl extends AbstractTransportUnit implements IAircraftIf
         super.defineReferences();
     }
 
+
+    protected UnitType getTypeBySubclass()
+    {
+        return IUnitIf.UnitType.AIRCRAFT;
+    }
+
     /*-------------------------------------------------------------------------------------------
     * Methods for ENUM attributes
     *-------------------------------------------------------------------------------------------*/
 
-    public void setType(AircraftType aType)
+    public void setSubType(AircraftSubType aSubType)
     {
-        m_type.setValue(aType);
+        m_subType.setValue(aSubType);
     }
 
-    public void setType(String aType)
+    public void setSubType(String aSubType)
     {
-        m_type.setValue(aType);
+        m_subType.setValue(aSubType);
     }
 
-    public AircraftType getType()
+    public AircraftSubType getSubType()
     {
-        return m_type.getValue();
+        return m_subType.getValue();
     }
 
-    public IMsoModelIf.ModificationState getTypeState()
+    public IMsoModelIf.ModificationState getSubTypeState()
     {
-        return m_type.getState();
+        return m_subType.getState();
     }
 
-    public IAttributeIf.IMsoEnumIf<AircraftType> getTypeAttribute()
+    public IAttributeIf.IMsoEnumIf<AircraftSubType> getSubTypeAttribute()
     {
-        return m_type;
+        return m_subType;
     }
 
-    public String getTypeName()
+    public String getSubTypeName()
     {
         return null; /*todo*/
     }
-
 
     /*-------------------------------------------------------------------------------------------
     * Methods for attributes

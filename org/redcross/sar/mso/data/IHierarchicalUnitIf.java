@@ -1,6 +1,8 @@
 package org.redcross.sar.mso.data;
 
-import java.util.ArrayList;
+import java.util.List;
+
+import org.redcross.sar.mso.IMsoModelIf;
 
 /**
  *
@@ -8,25 +10,29 @@ import java.util.ArrayList;
 public interface IHierarchicalUnitIf extends IMsoObjectIf
 {
     /**
-     * Define superior AbstractUnit
+     * Define superior IHierarchicalUnitIf
      *
      * @param aSuperior The new superior unit
      * @return False if error (circular reference), otherwise True
      */
-    public boolean setSuperior(IHierarchicalUnitIf aSuperior);
+    public boolean setSuperiorUnit(IHierarchicalUnitIf aSuperior);
 
     /**
-     * Get superior AbstractUnit
+     * Get superior IHierarchicalUnitIf
      *
      * @return The superior unit
      */
-    public IHierarchicalUnitIf getSuperior();
+    public IHierarchicalUnitIf getSuperiorUnit();
+
+    public IMsoModelIf.ModificationState getSuperiorUnitState();
+
+    public IMsoReferenceIf<IHierarchicalUnitIf> getSuperiorUnitAttribute();
 
     /**
      * Generate list of subordinates
      *
      * @return The list
      */
-    public ArrayList<IHierarchicalUnitIf> getSubOrdinates();
+    public List<IHierarchicalUnitIf> getSubOrdinates();
 
 }

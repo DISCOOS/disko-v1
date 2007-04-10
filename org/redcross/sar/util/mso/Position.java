@@ -5,39 +5,61 @@ import java.awt.geom.Point2D;
 /**
  *
  */
-public class Position extends GeoPosition
+public class Position extends GeoPos implements IGeodataIf
 {
-    private static String MSO_COORD_SYS = "";  // todo finn verdi
+    private final String m_id;
+    private String m_layout;
 
-    public Position()
+    /**
+     * Constructor, no point defined.
+     *
+     * @param anId Object Id
+     */
+
+    public Position(String anId)
     {
-        super(MSO_COORD_SYS);
+        super();
+        m_id = anId;
     }
 
     /**
-     * Create a position at a point
+     * Create a position at a point.
      *
+     * @param anId      Object Id
      * @param aPosition The point's coordinates
      */
-    public Position(Point2D.Double aPosition)
+    public Position(String anId, Point2D.Double aPosition)
     {
-        super(aPosition, MSO_COORD_SYS);
+        super(aPosition);
+        m_id = anId;
     }
 
     /**
      * Create a position at a given long/lat
      *
-     * @param aLongPosition The point's longitude
-     * @param aLatPosition  The point's latitude
+     * @param anId  Object Id
+     * @param aLong The point's longitude
+     * @param aLat  The point's latitude
      */
-    public Position(double aLongPosition, double aLatPosition)
+    public Position(String anId, double aLong, double aLat)
     {
-        super(new Point2D.Double(aLongPosition, aLatPosition), MSO_COORD_SYS);
+        super(aLong, aLat);
+        m_id = anId;
     }
 
-    public Position(Point2D.Double aPosition, String fromCoordSystem)
+    public String getId()
     {
-        super(aPosition, fromCoordSystem, MSO_COORD_SYS);
+        return m_id;
+    }
+
+    public void setLayout(String aLayout)
+    {
+        m_layout = aLayout;
+    }
+
+    public String getLayout()
+    {
+        return m_layout;
     }
 
 }

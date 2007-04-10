@@ -8,26 +8,33 @@ import java.util.Collections;
 /**
  * Class for holding track information
  */
-public class Track
+public class Track implements IGeodataIf
 {
+    private final String m_id;
+    private String m_layout;
+
     private final String m_name;
     private final ArrayList<TimePos> m_track;
 
     /**
      * Constructor, default collection size
+     *
+     * @param anId Object Id
      */
-    public Track()
+    public Track(String anId)
     {
-        this("");
+        this(anId, "");
     }
 
     /**
      * Constructor, default collection size
      *
+     * @param anId  Object Id
      * @param aName Name of track
      */
-    public Track(String aName)
+    public Track(String anId, String aName)
     {
+        m_id = anId;
         m_name = aName;
         m_track = new ArrayList<TimePos>();
     }
@@ -35,11 +42,13 @@ public class Track
     /**
      * Constructor, parameter for collection size
      *
+     * @param anId  Object Id
      * @param aName Name of track
      * @param aSize The collection size
      */
-    public Track(String aName, int aSize)
+    public Track(String anId, String aName, int aSize)
     {
+        m_id = anId;
         m_name = aName;
         m_track = new ArrayList<TimePos>(aSize);
     }
@@ -66,7 +75,7 @@ public class Track
      */
     public void add(double aLongPosition, double aLatPosition, Calendar aCalendar)
     {
-        add(new TimePos(aLongPosition,aLatPosition,aCalendar));
+        add(new TimePos(aLongPosition, aLatPosition, aCalendar));
     }
 
     /**
@@ -87,5 +96,20 @@ public class Track
     public String getName()
     {
         return m_name;
+    }
+
+    public String getId()
+    {
+        return m_id;
+    }
+
+    public void setLayout(String aLayout)
+    {
+        m_layout = aLayout;
+    }
+
+    public String getLayout()
+    {
+        return m_layout;
     }
 }

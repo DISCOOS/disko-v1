@@ -1,9 +1,8 @@
 package org.redcross.sar.mso.data;
 
 /**
- *
+ * Subject assistance assignment
  */
-
 public class AssistanceImpl extends AssignmentImpl implements IAssistanceIf
 {
     /*-------------------------------------------------------------------------------------------

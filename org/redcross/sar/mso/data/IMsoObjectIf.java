@@ -1,7 +1,7 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoManagerIf;
-import org.redcross.sar.mso.committer.CommittableImpl;
+import org.redcross.sar.mso.committer.ICommittableIf;
 
 import java.util.Collection;
 
@@ -83,7 +83,6 @@ public interface IMsoObjectIf
      * Can fire a {@link org.redcross.sar.mso.event.MsoEvent}
      */
 //    public void registerModifiedData();
-
 
     /**
      * Rollback local changes.
@@ -238,6 +237,7 @@ public interface IMsoObjectIf
      * @return The attribute, if it exists a and is of the right type, otherwise null.
      */
     public IAttributeIf.IMsoTrackIf getTrackAttribute(String aName);
+
     /**
      * Get a {@link org.redcross.sar.mso.data.IAttributeIf.IMsoRouteIf} attribute with the given index.
      *
@@ -286,7 +286,9 @@ public interface IMsoObjectIf
      */
     public IAttributeIf.IMsoEnumIf getEnumAttribute(String aName);
 
-    public Collection<CommittableImpl.CommitReference> getCommittableRelations();
+    public Collection<ICommittableIf.ICommitReferenceIf> getCommittableAttributeRelations();
+
+    public Collection<ICommittableIf.ICommitReferenceIf> getCommittableListRelations();
 
     public interface IObjectIdIf
     {

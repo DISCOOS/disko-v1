@@ -15,8 +15,10 @@ public interface IAssignmentIf extends IMsoObjectIf
         EMPTY,
         DRAFT,
         READY,
+        ALLOCATED,
         ASSIGNED,
         EXECUTING,
+        PAUSED,
         ABORTED,
         FINISHED,
         REPORTED

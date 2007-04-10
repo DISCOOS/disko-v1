@@ -1,6 +1,7 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.util.except.DuplicateIdException;
+import org.redcross.sar.util.mso.Position;
 
 public class POIListImpl extends MsoListImpl<IPOIIf> implements IPOIListIf
 {
@@ -25,6 +26,18 @@ public class POIListImpl extends MsoListImpl<IPOIIf> implements IPOIListIf
     {
         checkCreateOp();
         return createdItem(new POIImpl(anObjectId));
+    }
+
+    public IPOIIf createPOI(IPOIIf.POIType aType, Position aPosition)
+    {
+        checkCreateOp();
+        return createdUniqueItem(new POIImpl(makeUniqueId(), aType, aPosition));
+    }
+
+    public IPOIIf createPOI(IMsoObjectIf.IObjectIdIf anObjectId, IPOIIf.POIType aType, Position aPosition) throws DuplicateIdException
+    {
+        checkCreateOp();
+        return createdItem(new POIImpl(anObjectId, aType, aPosition));
     }
 
 

@@ -118,7 +118,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         {
             throw new DuplicateIdException("ObjectId already added to list");
         }
-        if (!((AbstractMsoObject)anObject).isSetup())
+        if (!((AbstractMsoObject) anObject).isSetup())
         {
             throw new MsoError(getName() + ": Cannot add uninitialized object");
         }
@@ -131,11 +131,11 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         {
             m_items.put(anObject.getObjectId(), anObject);
         }
-        ((AbstractMsoObject)anObject).registerAddedReference();
-        ((AbstractMsoObject)anObject).addDeleteListener(this);
+        ((AbstractMsoObject) anObject).registerAddedReference();
+        ((AbstractMsoObject) anObject).addDeleteListener(this);
         if (m_owner != null)
         {
-            ((AbstractMsoObject)m_owner).registerAddedReference();
+            ((AbstractMsoObject) m_owner).registerAddedReference();
         }
     }
 
@@ -150,7 +150,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
     {
         for (M refObj : aList.values())
         {
-            AbstractMsoObject abstrObj = (AbstractMsoObject)refObj;
+            AbstractMsoObject abstrObj = (AbstractMsoObject) refObj;
             if (abstrObj != null)
             {
                 if (m_isMain)
@@ -224,10 +224,10 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         }
         if (refObj != null)
         {
-            ((AbstractMsoObject)refObj).removeDeleteListener(this);
+            ((AbstractMsoObject) refObj).removeDeleteListener(this);
             if (m_owner != null)
             {
-                ((AbstractMsoObject)m_owner).registerRemovedReference(updateServer);
+                ((AbstractMsoObject) m_owner).registerRemovedReference(updateServer);
             }
         }
     }
@@ -254,11 +254,11 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         if (refObj != null)
         {
             m_items.put(refObj.getObjectId(), refObj);
-            ((AbstractMsoObject)refObj).addDeleteListener(this);
-            ((AbstractMsoObject)refObj).registerCreatedObject();
+            ((AbstractMsoObject) refObj).addDeleteListener(this);
+            ((AbstractMsoObject) refObj).registerCreatedObject();
             if (m_owner != null)
             {
-                ((AbstractMsoObject)m_owner).registerAddedReference();
+                ((AbstractMsoObject) m_owner).registerAddedReference();
             }
         }
     }
@@ -313,7 +313,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         {
             for (M object : m_items.values())
             {
-                ((AbstractMsoObject)object).rollback();
+                ((AbstractMsoObject) object).rollback();
             }
         }
         return result;
@@ -337,7 +337,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         {
             for (M object : m_items.values())
             {
-                ((AbstractMsoObject)object).commitLocal();
+                ((AbstractMsoObject) object).commitLocal();
             }
         }
         return result;
@@ -350,7 +350,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         {
             for (M object : m_items.values())
             {
-                ((AbstractMsoObject)object).resumeNotify();
+                ((AbstractMsoObject) object).resumeNotify();
             }
         }
     }
@@ -374,7 +374,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
 
     protected M createdItem(M anObject) throws DuplicateIdException
     {
-        ((AbstractMsoObject)anObject).setupReferences();
+        ((AbstractMsoObject) anObject).setupReferences();
         add(anObject);
         return anObject;
     }
@@ -414,5 +414,26 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
             result.add(new CommittableImpl.CommitReference(m_name, m_owner, item, CommitManager.CommitType.COMMIT_DELETED));
         }
         return result;
+    }
+
+    protected int makeSerialNumber()
+    {
+        int retval = 0;
+        for (M item : getItems())
+        {
+            try
+            {
+                ISerialNumberedIf serialItem = (ISerialNumberedIf) item;
+                if (serialItem.getNumber() > retval)
+                {
+                    retval = serialItem.getNumber();
+                }
+            }
+            catch (ClassCastException e)
+            {
+                throw new MsoError("Object " + item + " is not implementing ISerialNumberedIf");
+            }
+        }
+        return retval + 1;
     }
 }

@@ -2,6 +2,7 @@ package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.MsoModelImpl;
+import org.redcross.sar.mso.committer.ICommittableIf;
 import org.redcross.sar.mso.committer.CommittableImpl;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.MsoEvent;
@@ -734,7 +735,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     {
         if (aClientEventTypeMask != 0)
         {
-            m_eventManager.notifyItemUpdate(this, aClientEventTypeMask);
+            m_eventManager.notifyDerivedUpdate(this, aClientEventTypeMask);
             m_eventManager.notifyClientUpdate(this, aClientEventTypeMask);
         }
 
@@ -782,21 +783,26 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
     }
 
-
-    public Collection<CommittableImpl.CommitReference> getCommittableRelations()
+    public Collection<ICommittableIf.ICommitReferenceIf> getCommittableAttributeRelations()
     {
-        Vector<CommittableImpl.CommitReference> result = new Vector<CommittableImpl.CommitReference>();
-        for (MsoListImpl list : m_referenceLists)
-        {
-            result.addAll(list.getCommittableRelations());
-        }
+        Vector<ICommittableIf.ICommitReferenceIf> result = new Vector<ICommittableIf.ICommitReferenceIf>();
         for (MsoReferenceImpl reference : m_referenceObjects)
         {
             result.addAll(reference.getCommittableRelations());
         }
-
         return result;
     }
+
+    public Collection<ICommittableIf.ICommitReferenceIf> getCommittableListRelations()
+    {
+        Vector<ICommittableIf.ICommitReferenceIf> result = new Vector<ICommittableIf.ICommitReferenceIf>();
+        for (MsoListImpl list : m_referenceLists)
+        {
+            result.addAll(list.getCommittableRelations());
+        }
+        return result;
+    }
+
 
     /**
      * Class for holding Object ID Strings

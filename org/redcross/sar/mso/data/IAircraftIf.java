@@ -10,7 +10,7 @@ public interface IAircraftIf extends ITransportIf
     /**
      * Aircraft type enum
      */
-    public enum AircraftType
+    public enum AircraftSubType
     {
         LIGHT_AIRCRAFT,
         AIRPLANE,
@@ -26,17 +26,17 @@ public interface IAircraftIf extends ITransportIf
     * Methods for ENUM attributes
     *-------------------------------------------------------------------------------------------*/
 
-    public void setType(AircraftType aType);
+    public void setSubType(AircraftSubType aSubType);
 
-    public void setType(String aType);
+    public void setSubType(String aSubType);
 
-    public AircraftType getType();
+    public AircraftSubType getSubType();
 
-    public IMsoModelIf.ModificationState getTypeState();
+    public IMsoModelIf.ModificationState getSubTypeState();
 
-    public IAttributeIf.IMsoEnumIf<AircraftType> getTypeAttribute();
+    public IAttributeIf.IMsoEnumIf<AircraftSubType> getSubTypeAttribute();
 
-    public String getTypeName();
+    public String getSubTypeName();
 
     /*-------------------------------------------------------------------------------------------
     * Methods for attributes

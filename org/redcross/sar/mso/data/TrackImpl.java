@@ -1,27 +1,34 @@
 package org.redcross.sar.mso.data;
 
+import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.mso.Track;
 
+/**
+ * Recorded route.
+ */
 public class TrackImpl extends AbstractMsoObject implements ITrackIf
 {
-    private final AttributeImpl.MsoTrack m_track = new AttributeImpl.MsoTrack(this, "track");
+    private final AttributeImpl.MsoTrack m_geodata = new AttributeImpl.MsoTrack(this, "Geodata");
+    private final AttributeImpl.MsoString m_remarks = new AttributeImpl.MsoString(this, "Remarks");
 
     public TrackImpl(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         super(anObjectId);
+        ;
     }
 
     public TrackImpl(IMsoObjectIf.IObjectIdIf anObjectId, Track aTrack)
     {
         super(anObjectId);
-        m_track.setValue(aTrack);
+        setGeodata(aTrack);
     }
 
     protected void defineAttributes()
     {
-        addAttribute(m_track);
+        addAttribute(m_geodata);
+        addAttribute(m_remarks);
     }
 
     protected void defineLists()
@@ -49,4 +56,47 @@ public class TrackImpl extends AbstractMsoObject implements ITrackIf
         return IMsoManagerIf.MsoClassCode.CLASSCODE_TRACK;
     }
 
+    /*-------------------------------------------------------------------------------------------
+    * Methods for attributes
+    *-------------------------------------------------------------------------------------------*/
+
+    public void setGeodata(Track aGeodata)
+    {
+        m_geodata.setValue(aGeodata);
+    }
+
+    public Track getGeodata()
+    {
+        return m_geodata.getTrack();
+    }
+
+    public IMsoModelIf.ModificationState getGeodataState()
+    {
+        return m_geodata.getState();
+    }
+
+    public IAttributeIf.IMsoTrackIf getGeodataAttribute()
+    {
+        return m_geodata;
+    }
+
+    public void setRemarks(String aRemarks)
+    {
+        m_remarks.setValue(aRemarks);
+    }
+
+    public String getRemarks()
+    {
+        return m_remarks.getString();
+    }
+
+    public IMsoModelIf.ModificationState getRemarksState()
+    {
+        return m_remarks.getState();
+    }
+
+    public IAttributeIf.IMsoStringIf getRemarksAttribute()
+    {
+        return m_remarks;
+    }
 }

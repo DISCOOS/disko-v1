@@ -3,6 +3,10 @@ package org.redcross.sar.mso.data;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.MsoCastException;
 
+
+/**
+ * Boat unit
+ */
 public class BoatImpl extends AbstractTransportUnit implements IBoatIf
 {
     private final AttributeImpl.MsoInteger m_averageSpeed = new AttributeImpl.MsoInteger(this, "AverageSpeed");
@@ -12,12 +16,11 @@ public class BoatImpl extends AbstractTransportUnit implements IBoatIf
     private final AttributeImpl.MsoInteger m_height = new AttributeImpl.MsoInteger(this, "Height");
     private final AttributeImpl.MsoInteger m_length = new AttributeImpl.MsoInteger(this, "Length");
     private final AttributeImpl.MsoInteger m_maxSpeed = new AttributeImpl.MsoInteger(this, "MaxSpeed");
-    private final AttributeImpl.MsoEnum<BoatType> m_type = new AttributeImpl.MsoEnum<BoatType>(this, "Type", BoatType.SEARCH_AND_RESCUE);
+    private final AttributeImpl.MsoEnum<BoatSubType> m_subType = new AttributeImpl.MsoEnum<BoatSubType>(this, "SubType", BoatSubType.SEARCH_AND_RESCUE);
 
-
-    public BoatImpl(IMsoObjectIf.IObjectIdIf anObjectId, long aNumber, String aKjennetegn, int aHastighet)
+    public BoatImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber, String anIdentifier)
     {
-        super(anObjectId, aNumber, aKjennetegn, aHastighet);
+        super(anObjectId, aNumber, anIdentifier);
     }
 
     protected void defineAttributes()
@@ -30,7 +33,7 @@ public class BoatImpl extends AbstractTransportUnit implements IBoatIf
         addAttribute(m_height);
         addAttribute(m_length);
         addAttribute(m_maxSpeed);
-        addAttribute(m_type);
+        addAttribute(m_subType);
     }
 
     protected void defineLists()
@@ -41,6 +44,11 @@ public class BoatImpl extends AbstractTransportUnit implements IBoatIf
     protected void defineReferences()
     {
         super.defineReferences();
+    }
+
+    protected UnitType getTypeBySubclass()
+    {
+        return IUnitIf.UnitType.BOAT;
     }
 
     public static BoatImpl implementationOf(IBoatIf anInterface) throws MsoCastException
@@ -59,32 +67,32 @@ public class BoatImpl extends AbstractTransportUnit implements IBoatIf
     * Methods for ENUM attributes
     *-------------------------------------------------------------------------------------------*/
 
-    public void setType(BoatType aType)
+    public void setSubType(BoatSubType aSubType)
     {
-        m_type.setValue(aType);
+        m_subType.setValue(aSubType);
     }
 
-    public void setType(String aType)
+    public void setSubType(String aSubType)
     {
-        m_type.setValue(aType);
+        m_subType.setValue(aSubType);
     }
 
-    public BoatType getType()
+    public BoatSubType getSubType()
     {
-        return m_type.getValue();
+        return m_subType.getValue();
     }
 
-    public IMsoModelIf.ModificationState getTypeState()
+    public IMsoModelIf.ModificationState getSubTypeState()
     {
-        return m_type.getState();
+        return m_subType.getState();
     }
 
-    public IAttributeIf.IMsoEnumIf<BoatType> getTypeAttribute()
+    public IAttributeIf.IMsoEnumIf<BoatSubType> getSubTypeAttribute()
     {
-        return m_type;
+        return m_subType;
     }
 
-    public String getTypeName()
+    public String getSubTypeName()
     {
         return null; /*todo*/
     }
