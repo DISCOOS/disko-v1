@@ -135,7 +135,6 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication {
 			}
 		}
 		currentRole = role;
-		System.out.println(currentRole.getName());
 		role.selectDiskoWpModule(0);
 		getUIFactory().getMainMenuPanel().showMenu(role.getName());
 		getUIFactory().getMenuPanel().setVisible(true);
