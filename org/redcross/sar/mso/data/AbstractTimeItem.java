@@ -2,6 +2,7 @@ package org.redcross.sar.mso.data;
 
 import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.mso.DTG;
+import org.redcross.sar.mso.IMsoModelIf;
 
 import java.util.Calendar;
 
@@ -12,28 +13,28 @@ public abstract class AbstractTimeItem extends AbstractMsoObject implements ITim
 
     public AbstractTimeItem(IMsoObjectIf.IObjectIdIf anObjectId)
     {
-        this(anObjectId,null,true);
+        this(anObjectId, null, true);
     }
 
-    public AbstractTimeItem(IMsoObjectIf.IObjectIdIf anObjectId,Calendar aCalendar)
+    public AbstractTimeItem(IMsoObjectIf.IObjectIdIf anObjectId, Calendar aCalendar)
     {
         this(anObjectId, aCalendar, true);
     }
 
-    public AbstractTimeItem(IMsoObjectIf.IObjectIdIf anObjectId,String aDTG) throws IllegalMsoArgumentException
+    public AbstractTimeItem(IMsoObjectIf.IObjectIdIf anObjectId, String aDTG) throws IllegalMsoArgumentException
     {
         this(anObjectId, DTG.DTGToCal(aDTG), true);
     }
 
-    public AbstractTimeItem(IMsoObjectIf.IObjectIdIf anObjectId,long aDTG) throws IllegalMsoArgumentException
+    public AbstractTimeItem(IMsoObjectIf.IObjectIdIf anObjectId, long aDTG) throws IllegalMsoArgumentException
     {
         this(anObjectId, DTG.DTGToCal(aDTG), true);
     }
 
-    public AbstractTimeItem(IMsoObjectIf.IObjectIdIf anObjectId,Calendar aCalendar, boolean aVisible)
+    public AbstractTimeItem(IMsoObjectIf.IObjectIdIf anObjectId, Calendar aCalendar, boolean aVisible)
     {
         super(anObjectId);
-        System.out.println("AbstractTimeItem");
+//        System.out.println("AbstractTimeItem");
         m_calendar.setValue(aCalendar);
         setVisible(aVisible);
     }
@@ -60,6 +61,21 @@ public abstract class AbstractTimeItem extends AbstractMsoObject implements ITim
     public void setCalendar(Calendar aDTG)
     {
         m_calendar.setValue(aDTG);
+    }
+
+    public Calendar getCalendar()
+    {
+        return m_calendar.getCalendar();
+    }
+
+    public IMsoModelIf.ModificationState getCalendarState()
+    {
+        return m_calendar.getState();
+    }
+
+    public IAttributeIf.IMsoCalendarIf getCalendarAttribute()
+    {
+        return m_calendar;
     }
 
     public void setDTG(Long aDTG) throws IllegalMsoArgumentException
@@ -111,13 +127,20 @@ public abstract class AbstractTimeItem extends AbstractMsoObject implements ITim
         return m_visible.booleanValue();
     }
 
-    public Calendar getCalendar()
-    {
-        return m_calendar.getCalendar();
-    }
-
     public String toString()
     {
         return "Item " + getDTG();
     }
+
+    public IMsoModelIf.ModificationState getVisibleState()
+    {
+        return m_visible.getState();
+    }
+
+    public IAttributeIf.IMsoBooleanIf getVisibleAttribute()
+    {
+        return m_visible;
+    }
+
+
 }

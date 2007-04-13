@@ -5,9 +5,11 @@ import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.except.MsoException;
 import org.redcross.sar.util.except.DuplicateIdException;
+import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.util.mso.*;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  *
@@ -98,7 +100,14 @@ public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf
     * Methods for lists
     *-------------------------------------------------------------------------------------------*/
 
-    public void addUnitAssignments(IAssignmentIf anIAssignmentIf) throws DuplicateIdException;
+    /**
+     * @param anIAssignmentIf The assigment to add
+     * @throws DuplicateIdException if the list already contains an object with the same object ID.
+     * @throws org.redcross.sar.util.except.IllegalOperationException if the assignment cannot be assigned.
+     */
+    public void addUnitAssignment(IAssignmentIf anIAssignmentIf) throws DuplicateIdException, IllegalOperationException;
+
+    public void removeUnitAssignment(IAssignmentIf anIAssignmentIf, IAssignmentIf.AssignmentStatus newStatus) throws IllegalOperationException;
 
     public IAssignmentListIf getUnitAssignments();
 
@@ -126,5 +135,10 @@ public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf
 
     public IMsoReferenceIf<IPersonnelIf> getUnitLeaderAttribute();
 
+    /*-------------------------------------------------------------------------------------------
+    * Other methods
+    *-------------------------------------------------------------------------------------------*/
+
+    public List<IAssignmentIf> assignmentsByPriority();
 
 }

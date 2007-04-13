@@ -32,7 +32,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     /**
      * HashMap of attributes for name lookup.
      */
-    private final HashMap<String, AttributeImpl> m_attributeMap = new HashMap<String, AttributeImpl>();
+    private final HashMap<String, AttributeImpl> m_attributeMap = new LinkedHashMap<String, AttributeImpl>();
 
     /**
      * ArrayList of attributes for index lookup.
@@ -172,7 +172,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         return true;
     }
 
-    private void doDelete()
+    public void doDelete()
     {
         while (m_objectHolders.size() > 0)
         {
@@ -785,22 +785,22 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
 
     public Collection<ICommittableIf.ICommitReferenceIf> getCommittableAttributeRelations()
     {
-        Vector<ICommittableIf.ICommitReferenceIf> result = new Vector<ICommittableIf.ICommitReferenceIf>();
+        Vector<ICommittableIf.ICommitReferenceIf> retVal = new Vector<ICommittableIf.ICommitReferenceIf>();
         for (MsoReferenceImpl reference : m_referenceObjects)
         {
-            result.addAll(reference.getCommittableRelations());
+            retVal.addAll(reference.getCommittableRelations());
         }
-        return result;
+        return retVal;
     }
 
     public Collection<ICommittableIf.ICommitReferenceIf> getCommittableListRelations()
     {
-        Vector<ICommittableIf.ICommitReferenceIf> result = new Vector<ICommittableIf.ICommitReferenceIf>();
+        Vector<ICommittableIf.ICommitReferenceIf> retVal = new Vector<ICommittableIf.ICommitReferenceIf>();
         for (MsoListImpl list : m_referenceLists)
         {
-            result.addAll(list.getCommittableRelations());
+            retVal.addAll(list.getCommittableRelations());
         }
-        return result;
+        return retVal;
     }
 
 
@@ -833,4 +833,30 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
             m_object = myObject;
         }
     }
+    
+    /**
+     * Selector used for selecting assignments with a given status.
+     */
+    public static class EnumSelector<T extends Enum, M extends IMsoObjectIf> implements Selector<M>
+    {
+        T m_selectValue;
+        String m_attributeName;
+        
+        /**
+         * Construct a Selector object
+         * @param aStatus  The status to test against
+         * @param anAttributName Name of Enum attribute
+         */
+        public EnumSelector(T aStatus, String anAttributName)
+        {
+            m_selectValue = aStatus;
+            m_attributeName = anAttributName;
+        }
+
+        public boolean select(M anObject)
+        {
+            return anObject.getEnumAttribute(m_attributeName) == m_selectValue;
+        }
+    }
+    
 }

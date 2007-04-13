@@ -28,6 +28,7 @@ public class TimeLineImpl extends AbstractDerivedList<ITimeItemIf> implements IT
     public void handleItemCreate(Object anObject)
     {
         ITimeItemIf item = (ITimeItemIf) anObject;
+        m_items.put(item.getObjectId(),item);
         m_timeItems.add(item);
         Collections.sort(m_timeItems);
     }
@@ -35,6 +36,7 @@ public class TimeLineImpl extends AbstractDerivedList<ITimeItemIf> implements IT
     public void handleItemDelete(Object anObject)
     {
         ITimeItemIf item = (ITimeItemIf) anObject;
+        m_items.remove(item.getObjectId());
         m_timeItems.remove(item);
         Collections.sort(m_timeItems);
     }
@@ -42,11 +44,6 @@ public class TimeLineImpl extends AbstractDerivedList<ITimeItemIf> implements IT
     public void handleItemModify(Object anObject)
     {
         Collections.sort(m_timeItems);
-    }
-
-    public int size()
-    {
-        return m_timeItems.size();
     }
 
     public void print()

@@ -3,6 +3,7 @@ package org.redcross.sar.mso.data;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.MsoCastException;
+import org.redcross.sar.util.except.IllegalOperationException;
 
 import java.util.Calendar;
 
@@ -340,20 +341,21 @@ public class SearchImpl extends AssignmentImpl implements ISearchIf
 
     public IAreaIf getPlannedSearchArea()
     {
-        return null; /*todo*/
+        return getPlannedArea();
     }
 
     public IAreaIf getReportedSearchArea()
     {
-        return null; /*todo*/
+        return getReportedArea();
     }
 
-    public void setPlannedSearchArea()
+    public void setPlannedSearchArea(IAreaIf anArea) throws IllegalOperationException
     {
+        setPlannedArea(anArea);
     }
 
-    public void setReportedSearchArea()
+    public void setReportedSearchArea(IAreaIf anArea) throws IllegalOperationException
     {
+        setReportedArea(anArea);
     }
-
 }

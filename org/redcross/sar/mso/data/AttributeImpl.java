@@ -4,6 +4,7 @@ import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.mso.*;
+import org.redcross.sar.util.error.MsoError;
 
 import java.awt.geom.Point2D;
 import java.util.Calendar;
@@ -139,10 +140,10 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
     {
         if (m_state == IMsoModelIf.ModificationState.STATE_CONFLICTING)
         {
-            Vector<T> result = new Vector<T>(2);
-            result.add(m_serverValue);
-            result.add(m_localValue);
-            return result;
+            Vector<T> retVal = new Vector<T>(2);
+            retVal.add(m_serverValue);
+            retVal.add(m_localValue);
+            return retVal;
         }
         return null;
     }
@@ -183,17 +184,17 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
     public boolean acceptLocal()
     {
         MsoModelImpl.getInstance().setLocalUpdateMode();
-        boolean retval = acceptConflicting(IMsoModelIf.ModificationState.STATE_LOCAL);
+        boolean retVal = acceptConflicting(IMsoModelIf.ModificationState.STATE_LOCAL);
         MsoModelImpl.getInstance().restoreUpdateMode();
-        return retval;
+        return retVal;
     }
 
     public boolean acceptServer()
     {
         MsoModelImpl.getInstance().setRemoteUpdateMode();
-        boolean retval = acceptConflicting(IMsoModelIf.ModificationState.STATE_SERVER_ORIGINAL);
+        boolean retVal = acceptConflicting(IMsoModelIf.ModificationState.STATE_SERVER_ORIGINAL);
         MsoModelImpl.getInstance().restoreUpdateMode();
-        return retval;
+        return retVal;
     }
 
     public boolean isUncommitted()
@@ -683,8 +684,13 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
             super.setAttrValue(anEnum);
         }
 
-        public void setValue(String aName) // todo Some error handling
+        public void setValue(String aName)
         {
+            E anEnum = enumValue(aName);
+            if (anEnum == null)
+            {
+                throw new MsoError("Cannot set enum value " + aName + " to " + this);
+            }
             super.setAttrValue(enumValue(aName));
         }
 
@@ -700,16 +706,16 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
 
         public E enumValue(String aName)
         {
-            E result;
+            E retVal;
             try
             {
-                result = (E) Enum.valueOf(m_class, aName);
+                retVal = (E) Enum.valueOf(m_class, aName);
             }
-            catch (NullPointerException e)  // todo Better error handling
+            catch (NullPointerException e)
             {
                 return null;
             }
-            return result;
+            return retVal;
         }
     }
 }

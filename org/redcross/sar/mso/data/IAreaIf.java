@@ -2,6 +2,7 @@ package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.DuplicateIdException;
+import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.util.mso.*;
 
 import java.util.Collection;
@@ -32,7 +33,7 @@ public interface IAreaIf extends IMsoObjectIf
     * Methods for lists
     *-------------------------------------------------------------------------------------------*/
 
-    public void addAreaPOIs(IPOIIf anIPOIIf) throws DuplicateIdException;
+    public void addAreaPOI(IPOIIf anIPOIIf) throws DuplicateIdException;
 
     public IPOIListIf getAreaPOIs();
 
@@ -44,7 +45,9 @@ public interface IAreaIf extends IMsoObjectIf
     * Other specified methods
     *-------------------------------------------------------------------------------------------*/
 
-    public IAssignmentIf getAssignment();
+    public IAssignmentIf getOwningAssignment();
+
+    public void verifyAssignable(IAssignmentIf anAssignment) throws IllegalOperationException;
 
     public IMsoReferenceIf<IHypothesisIf> getHypotesisAttribute();
 

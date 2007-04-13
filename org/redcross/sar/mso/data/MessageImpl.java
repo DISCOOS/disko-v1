@@ -177,7 +177,7 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
     * Methods for lists
     *-------------------------------------------------------------------------------------------*/
 
-    public void addConfirmedReceivers(ICommunicatorIf anICommunicatorIf) throws DuplicateIdException
+    public void addConfirmedReceiver(ICommunicatorIf anICommunicatorIf) throws DuplicateIdException
     {
         m_confirmedReceivers.add(anICommunicatorIf);
     }
@@ -197,7 +197,7 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
         return m_confirmedReceivers.getItems();
     }
 
-    public void addMessageTasks(ITaskIf anITaskIf) throws DuplicateIdException
+    public void addMessageTask(ITaskIf anITaskIf) throws DuplicateIdException
     {
         m_messageTasks.add(anITaskIf);
     }
@@ -217,7 +217,7 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
         return m_messageTasks.getItems();
     }
 
-    public void addUnconfirmedReceivers(ICommunicatorIf anICommunicatorIf) throws DuplicateIdException
+    public void addUnconfirmedReceiver(ICommunicatorIf anICommunicatorIf) throws DuplicateIdException
     {
         m_unconfirmedReceivers.add(anICommunicatorIf);
     }

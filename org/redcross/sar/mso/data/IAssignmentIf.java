@@ -2,6 +2,7 @@ package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.DuplicateIdException;
+import org.redcross.sar.util.except.IllegalOperationException;
 
 import java.util.Collection;
 
@@ -24,11 +25,18 @@ public interface IAssignmentIf extends IMsoObjectIf
         REPORTED
     }
 
+    public enum AssignmentPriority
+    {
+        HIGH,
+        MEDIUM,
+        LOW
+    }
+
     /*-------------------------------------------------------------------------------------------
     * Methods for ENUM attributes
     *-------------------------------------------------------------------------------------------*/
 
-    public void setStatus(AssignmentStatus aStatus);
+    public void setStatus(AssignmentStatus aStatus) throws IllegalOperationException;
 
     public void setStatus(String aStatus);
 
@@ -38,17 +46,19 @@ public interface IAssignmentIf extends IMsoObjectIf
 
     public IAttributeIf.IMsoEnumIf<AssignmentStatus> getStatusAttribute();
 
-    /*-------------------------------------------------------------------------------------------
-    * Methods for attributes
-    *-------------------------------------------------------------------------------------------*/
+    public void setPriority(AssignmentPriority aPriority);
 
-    public void setPriority(int aPriority);
+    public void setPriority(String aPriority);
 
-    public int getPriority();
+    public AssignmentPriority getPriority();
 
     public IMsoModelIf.ModificationState getPriorityState();
 
-    public IAttributeIf.IMsoIntegerIf getPriorityAttribute();
+    public IAttributeIf.IMsoEnumIf<AssignmentPriority> getPriorityAttribute();
+
+    /*-------------------------------------------------------------------------------------------
+    * Methods for attributes
+    *-------------------------------------------------------------------------------------------*/
 
     public void setRemarks(String aRemarks);
 
@@ -57,6 +67,14 @@ public interface IAssignmentIf extends IMsoObjectIf
     public IMsoModelIf.ModificationState getRemarksState();
 
     public IAttributeIf.IMsoStringIf getRemarksAttribute();
+
+    public void setPrioritySequence(int aPrioritySequence);
+
+    public int getPrioritySequence();
+
+    public IMsoModelIf.ModificationState getPrioritySequenceState();
+
+    public IAttributeIf.IMsoIntegerIf getPrioritySequenceAttribute();
 
     /*-------------------------------------------------------------------------------------------
     * Methods for lists
@@ -70,7 +88,7 @@ public interface IAssignmentIf extends IMsoObjectIf
 
     public Collection<IEquipmentIf> getAssignmentEquipmentItems();
 
-    public void addAssignmentFindings(IPOIIf anIPOIIf) throws DuplicateIdException;
+    public void addAssignmentFinding(IPOIIf anIPOIIf) throws DuplicateIdException;
 
     public IPOIListIf getAssignmentFindings();
 
@@ -98,7 +116,7 @@ public interface IAssignmentIf extends IMsoObjectIf
 
     public IMsoReferenceIf<IHypothesisIf> getAssignmentHypothesisAttribute();
 
-    public void setPlannedArea(IAreaIf anArea);
+    public void setPlannedArea(IAreaIf anArea) throws IllegalOperationException;
 
     public IAreaIf getPlannedArea();
 
@@ -106,11 +124,36 @@ public interface IAssignmentIf extends IMsoObjectIf
 
     public IMsoReferenceIf<IAreaIf> getPlannedAreaAttribute();
 
-    public void setReportedArea(IAreaIf anArea);
+    public void setReportedArea(IAreaIf anArea) throws IllegalOperationException;
 
     public IAreaIf getReportedArea();
 
     public IMsoModelIf.ModificationState getReportedAreaState();
 
     public IMsoReferenceIf<IAreaIf> getReportedAreaAttribute();
+
+    /*-------------------------------------------------------------------------------------------
+    * Other methods
+    *-------------------------------------------------------------------------------------------*/
+
+    public boolean isNotReady();
+
+    public boolean hasBeenAssigned();
+
+    public boolean hasBeenStarted();
+
+    public boolean hasBeenFinished();
+
+    public boolean canChangeToState(AssignmentStatus newState);
+
+    public IUnitIf getOwningUnit();
+
+    /**
+     * Verify that the assigment can be assigned to a given unit.
+     * @param aUnit The unit that shall have the assigment.
+     * @param newStatus The new status that the assignment shall have.
+     * @param unassignIfPossible If <code>true</code>, the assigment will be assigned from any other possible other unit.
+     * @throws IllegalOperationException If the assignment cannot be done (verification failed).
+     */
+    public void verifyAssignable(IUnitIf aUnit, IAssignmentIf.AssignmentStatus newStatus, boolean unassignIfPossible) throws IllegalOperationException;
 }

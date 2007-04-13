@@ -1,6 +1,7 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.util.except.IllegalOperationException;
 
 import java.util.Calendar;
 
@@ -143,7 +144,7 @@ public interface ISearchIf extends IAssignmentIf
 
     public IAreaIf getReportedSearchArea();
 
-    public void setPlannedSearchArea();
+    public void setPlannedSearchArea(IAreaIf anArea) throws IllegalOperationException;
 
-    public void setReportedSearchArea();
+    public void setReportedSearchArea(IAreaIf anArea) throws IllegalOperationException;
 }

@@ -144,10 +144,10 @@ public class MsoReferenceImpl<T extends IMsoObjectIf> implements IMsoReferenceIf
     {
         if (m_state == IMsoModelIf.ModificationState.STATE_CONFLICTING)
         {
-            Vector<T> result = new Vector<T>(2);
-            result.add(m_serverValue);
-            result.add(m_localValue);
-            return result;
+            Vector<T> retVal = new Vector<T>(2);
+            retVal.add(m_serverValue);
+            retVal.add(m_localValue);
+            return retVal;
         }
         return null;
     }
@@ -166,6 +166,11 @@ public class MsoReferenceImpl<T extends IMsoObjectIf> implements IMsoReferenceIf
             if (m_serverValue != null)
             {
                 ((AbstractMsoObject)m_serverValue).addDeleteListener(this);
+            }
+
+            if (oldLocalValue != null)
+            {
+                ((AbstractMsoObject)oldLocalValue).removeDeleteListener(this);
             }
 
             registerAddedReference(m_serverValue);
@@ -234,17 +239,17 @@ public class MsoReferenceImpl<T extends IMsoObjectIf> implements IMsoReferenceIf
     public boolean acceptLocal()
     {
         MsoModelImpl.getInstance().setLocalUpdateMode();
-        boolean retval = acceptConflicting(IMsoModelIf.ModificationState.STATE_LOCAL);
+        boolean retVal = acceptConflicting(IMsoModelIf.ModificationState.STATE_LOCAL);
         MsoModelImpl.getInstance().restoreUpdateMode();
-        return retval;
+        return retVal;
     }
 
     public boolean acceptServer()
     {
         MsoModelImpl.getInstance().setRemoteUpdateMode();
-        boolean retval = acceptConflicting(IMsoModelIf.ModificationState.STATE_SERVER_ORIGINAL);
+        boolean retVal = acceptConflicting(IMsoModelIf.ModificationState.STATE_SERVER_ORIGINAL);
         MsoModelImpl.getInstance().restoreUpdateMode();
-        return retval;
+        return retVal;
     }
 
 
@@ -257,7 +262,7 @@ public class MsoReferenceImpl<T extends IMsoObjectIf> implements IMsoReferenceIf
     {
         if (getReference() == anObject && !canDelete())
         {
-            throw new IllegalDeleteException("Cannot deleteObject object " + anObject.getObjectId() + " from reference " + getName() + " referred by " + m_owner.toString());
+            throw new IllegalDeleteException("Cannot delete object " + anObject.getObjectId() + " from reference " + getName() + " referred by " + m_owner.toString());
         }
     }
 
@@ -274,20 +279,20 @@ public class MsoReferenceImpl<T extends IMsoObjectIf> implements IMsoReferenceIf
 
     public Collection<CommittableImpl.CommitReference> getCommittableRelations()
     {
-        Vector<CommittableImpl.CommitReference> result = new Vector<CommittableImpl.CommitReference>();
+        Vector<CommittableImpl.CommitReference> retVal = new Vector<CommittableImpl.CommitReference>();
         if (m_state == IMsoModelIf.ModificationState.STATE_LOCAL)
         {
             if (m_serverValue != null)
             {
-                result.add(new CommittableImpl.CommitReference(m_name, m_owner, m_serverValue, CommitManager.CommitType.COMMIT_DELETED));
+                retVal.add(new CommittableImpl.CommitReference(m_name, m_owner, m_serverValue, CommitManager.CommitType.COMMIT_DELETED));
             }
             if (m_localValue != null)
             {
-                result.add(new CommittableImpl.CommitReference(m_name, m_owner, m_localValue, CommitManager.CommitType.COMMIT_CREATED));
+                retVal.add(new CommittableImpl.CommitReference(m_name, m_owner, m_localValue, CommitManager.CommitType.COMMIT_CREATED));
             }
 
         }
-        return result;
+        return retVal;
     }
 
 }

@@ -86,7 +86,7 @@ public class EventImpl extends AbstractTimeItem implements IEventIf, ISerialNumb
     * Methods for lists
     *-------------------------------------------------------------------------------------------*/
 
-    public void addEventTasks(ITaskIf anITaskIf) throws DuplicateIdException
+    public void addEventTask(ITaskIf anITaskIf) throws DuplicateIdException
     {
         m_eventTasks.add(anITaskIf);
     }

@@ -5,7 +5,7 @@ import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.util.except.DuplicateIdException;
 import org.redcross.sar.util.except.MsoCastException;
-import org.redcross.sar.util.mso.Selector;
+import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.util.mso.*;
 
 import java.util.Collection;
@@ -102,7 +102,7 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
     * Methods for lists
     *-------------------------------------------------------------------------------------------*/
 
-    public void addAreaPOIs(IPOIIf anIPOIIf) throws DuplicateIdException
+    public void addAreaPOI(IPOIIf anIPOIIf) throws DuplicateIdException
     {
         m_areaPOIs.add(anIPOIIf);
     }
@@ -126,34 +126,37 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
     * Other specified methods
     *-------------------------------------------------------------------------------------------*/
 
-    public IAssignmentIf getAssignment()
+    public IAssignmentIf getOwningAssignment()
     {
-        List<IAssignmentIf> result = MsoModelImpl.getInstance().getMsoManager().getCmdPost().getAssignmentList().selectItems(
-                new AbstractMsoObject.SelfSelector<IAreaIf, IAssignmentIf>(this)
+        List<IAssignmentIf> retVal = MsoModelImpl.getInstance().getMsoManager().getCmdPost().getAssignmentList().selectItems(
+                new SelfSelector<IAreaIf, IAssignmentIf>(this)
                 {
                     public boolean select(IAssignmentIf anObject)
                     {
                         return (anObject.getPlannedArea() == m_object || anObject.getReportedArea() == m_object); // todo Check status as well?
                     }
                 }, null);
-        if (result.size() == 0)
-        {
-            return null;
-        } else if (result.size() == 0)
-        {
-            System.out.println("Area " + getObjectId() + " is referred by more than one assignment.");
-        }
-        return result.get(0);
+        return (retVal.size() == 0) ? null : retVal.get(0);
     }
+
+    public void verifyAssignable(IAssignmentIf anAssignment) throws IllegalOperationException
+        {
+        IAssignmentIf asg = getOwningAssignment();
+        if (asg != null && asg != anAssignment)
+        {
+            throw new IllegalOperationException("Area " + this + " is already assigned to an assigment.");
+        }
+    }
+
 
     public IMsoReferenceIf<IHypothesisIf> getHypotesisAttribute()
     {
-        return getAssignment().getAssignmentHypothesisAttribute();
+        return getOwningAssignment().getAssignmentHypothesisAttribute();
     }
 
     public void setHypothesis(IHypothesisIf anHypothesis)
     {
-        getAssignment().setAssignmentHypothesis(anHypothesis);
+        getOwningAssignment().setAssignmentHypothesis(anHypothesis);
     }
 
 }

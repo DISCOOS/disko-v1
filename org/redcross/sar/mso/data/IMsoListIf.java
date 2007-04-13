@@ -51,7 +51,7 @@ public interface IMsoListIf<M extends IMsoObjectIf>
      * Add an object to the list.
      *
      * @param anObject The object to add
-     * @throws DuplicateIdException  If the list alreadu contains an object with the same object ID.
+     * @throws DuplicateIdException if the list already contains an object with the same object ID.
      */
     public void add(M anObject) throws DuplicateIdException;
 
@@ -89,4 +89,6 @@ public interface IMsoListIf<M extends IMsoObjectIf>
      * @return The generated list
      */
     public List<M> selectItems(Selector<M> aSelector, Comparator<M> aComparator);
+
+    public boolean contains(M anObject);
 }

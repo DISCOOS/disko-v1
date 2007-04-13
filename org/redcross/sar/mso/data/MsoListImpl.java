@@ -42,9 +42,9 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         m_owner = anOwner;
         m_name = theName;
         m_isMain = isMain;
-        m_items = new HashMap<String, M>(aSize);
-        m_added = new HashMap<String, M>();
-        m_deleted = new HashMap<String, M>();
+        m_items = new LinkedHashMap<String, M>(aSize);
+        m_added = new LinkedHashMap<String, M>();
+        m_deleted = new LinkedHashMap<String, M>();
     }
 
     protected void setName(String aName)
@@ -82,10 +82,10 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
 
     public Collection<M> getItems()
     {
-        HashSet<M> result = new HashSet<M>(size());
-        result.addAll(m_items.values());
-        result.addAll(m_added.values());
-        return result;
+        HashSet<M> retVal = new HashSet<M>(size());
+        retVal.addAll(m_items.values());
+        retVal.addAll(m_added.values());
+        return retVal;
     }
 
     public M getItem()
@@ -100,12 +100,12 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
 
     public M getItem(String anObjectId)
     {
-        M result = m_items.get(anObjectId);
-        if (result == null)
+        M retVal = m_items.get(anObjectId);
+        if (retVal == null)
         {
-            result = m_added.get(anObjectId);
+            retVal = m_added.get(anObjectId);
         }
-        return result;
+        return retVal;
     }
 
     public void add(M anObject) throws DuplicateIdException
@@ -146,21 +146,21 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         clearDeleted(m_deleted);
     }
 
-    private void clearList(HashMap<String, M> aList, boolean updateServer)
+    private void clearList(HashMap<String, M> aList, boolean updateServer)      // todo Denne er feil, slettete elementer blir ikke dereferert.
     {
         for (M refObj : aList.values())
         {
             AbstractMsoObject abstrObj = (AbstractMsoObject) refObj;
             if (abstrObj != null)
             {
+                abstrObj.removeDeleteListener(this);
                 if (m_isMain)
                 {
-                    abstrObj.registerDeletedObject();
+                    abstrObj.doDelete();
                 } else
                 {
                     abstrObj.registerRemovedReference(updateServer);
                 }
-                abstrObj.removeDeleteListener(this);
             }
         }
         aList.clear();
@@ -306,7 +306,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
 
     public boolean rollback()
     {
-        boolean result = m_added.size() > 0 || m_deleted.size() > 0;
+        boolean retVal = m_added.size() > 0 || m_deleted.size() > 0;
         clearList(m_added, false);
         undeleteAll();
         if (m_isMain)
@@ -316,7 +316,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
                 ((AbstractMsoObject) object).rollback();
             }
         }
-        return result;
+        return retVal;
     }
 
     /**
@@ -330,7 +330,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
 
     public boolean commitLocal()
     {
-        boolean result = m_added.size() > 0;
+        boolean retVal = m_added.size() > 0;
         clearDeleted(m_deleted);
         commitAddedLocal();
         if (m_isMain)
@@ -340,7 +340,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
                 ((AbstractMsoObject) object).commitLocal();
             }
         }
-        return result;
+        return retVal;
     }
 
 
@@ -357,19 +357,19 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
 
     public List<M> selectItems(Selector<M> aSelector, Comparator<M> aComparator)
     {
-        ArrayList<M> result = new ArrayList<M>();
+        ArrayList<M> retVal = new ArrayList<M>();
         for (M item : getItems())
         {
             if (aSelector.select(item))
             {
-                result.add(item);
+                retVal.add(item);
             }
         }
         if (aComparator != null)
         {
-            Collections.sort(result, aComparator);
+            Collections.sort(retVal, aComparator);
         }
-        return result;
+        return retVal;
     }
 
     protected M createdItem(M anObject) throws DuplicateIdException
@@ -393,40 +393,40 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
 
     protected IMsoObjectIf.IObjectIdIf makeUniqueId()
     {
-        IMsoObjectIf.IObjectIdIf retval;
+        IMsoObjectIf.IObjectIdIf retVal;
         do
         {
-            retval = MsoModelImpl.getInstance().getModelDriver().makeObjectId();
+            retVal = MsoModelImpl.getInstance().getModelDriver().makeObjectId();
         }
-        while (m_items.get(retval.getId()) != null || m_added.get(retval.getId()) != null || m_deleted.get(retval.getId()) != null);
-        return retval;
+        while (m_items.get(retVal.getId()) != null || m_added.get(retVal.getId()) != null || m_deleted.get(retVal.getId()) != null);
+        return retVal;
     }
 
     public Collection<CommittableImpl.CommitReference> getCommittableRelations()
     {
-        Vector<CommittableImpl.CommitReference> result = new Vector<CommittableImpl.CommitReference>();
+        Vector<CommittableImpl.CommitReference> retVal = new Vector<CommittableImpl.CommitReference>();
         for (M item : m_added.values())
         {
-            result.add(new CommittableImpl.CommitReference(m_name, m_owner, item, CommitManager.CommitType.COMMIT_CREATED));
+            retVal.add(new CommittableImpl.CommitReference(m_name, m_owner, item, CommitManager.CommitType.COMMIT_CREATED));
         }
         for (M item : m_deleted.values())
         {
-            result.add(new CommittableImpl.CommitReference(m_name, m_owner, item, CommitManager.CommitType.COMMIT_DELETED));
+            retVal.add(new CommittableImpl.CommitReference(m_name, m_owner, item, CommitManager.CommitType.COMMIT_DELETED));
         }
-        return result;
+        return retVal;
     }
 
     protected int makeSerialNumber()
     {
-        int retval = 0;
+        int retVal = 0;
         for (M item : getItems())
         {
             try
             {
                 ISerialNumberedIf serialItem = (ISerialNumberedIf) item;
-                if (serialItem.getNumber() > retval)
+                if (serialItem.getNumber() > retVal)
                 {
-                    retval = serialItem.getNumber();
+                    retVal = serialItem.getNumber();
                 }
             }
             catch (ClassCastException e)
@@ -434,6 +434,11 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
                 throw new MsoError("Object " + item + " is not implementing ISerialNumberedIf");
             }
         }
-        return retval + 1;
+        return retVal + 1;
+    }
+
+    public boolean contains(M anObject)
+    {
+        return (m_items.containsKey(anObject.getObjectId()) || m_added.containsKey(anObject.getObjectId()));
     }
 }

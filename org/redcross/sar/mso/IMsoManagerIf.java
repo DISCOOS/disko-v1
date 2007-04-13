@@ -2,7 +2,6 @@ package org.redcross.sar.mso;
 
 import org.redcross.sar.mso.data.*;
 import org.redcross.sar.util.except.DuplicateIdException;
-import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.util.except.MsoNullPointerException;
 import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.mso.*;

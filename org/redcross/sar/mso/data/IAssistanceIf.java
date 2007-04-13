@@ -1,5 +1,7 @@
 package org.redcross.sar.mso.data;
 
+import org.redcross.sar.util.except.IllegalOperationException;
+
 /**
  *
  */
@@ -13,8 +15,8 @@ public interface IAssistanceIf extends IAssignmentIf
 
     public IAreaIf getReportedIncidentScene();
 
-    public void setPlannedIncidentScene(IAreaIf anArea);
+    public void setPlannedIncidentScene(IAreaIf anArea)  throws IllegalOperationException;
 
-    public void setReportedIncidentScene(IAreaIf anArea);
+    public void setReportedIncidentScene(IAreaIf anArea) throws IllegalOperationException;
 
 }

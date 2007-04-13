@@ -49,7 +49,7 @@ public abstract class DTG
         calendar.set(Calendar.MINUTE, minute);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
-        System.out.println(aDTG + "" + calendar.getTime());
+//        System.out.println(aDTG + "" + calendar.getTime());
         return calendar;
     }
 

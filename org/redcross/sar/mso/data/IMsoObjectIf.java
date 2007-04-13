@@ -119,7 +119,7 @@ public interface IMsoObjectIf
     public IAttributeIf.IMsoIntegerIf getIntegerAttribute(int anIndex);
 
     /**
-     * Get a Boolean attribute with the given name.
+     * Get an Integer attribute with the given name.
      *
      * @param aName Attribute name.
      * @return The attribute, if it exists a and is of the right type, otherwise null.
@@ -135,7 +135,7 @@ public interface IMsoObjectIf
     public IAttributeIf.IMsoLongIf getLongAttribute(int anIndex);
 
     /**
-     * Get a Boolean attribute with the given name.
+     * Get a Long attribute with the given name.
      *
      * @param aName Attribute name.
      * @return The attribute, if it exists a and is of the right type, otherwise null.
@@ -151,7 +151,7 @@ public interface IMsoObjectIf
     public IAttributeIf.IMsoDoubleIf getDoubleAttribute(int anIndex);
 
     /**
-     * Get a Boolean attribute with the given name.
+     * Get a Double attribute with the given name.
      *
      * @param aName Attribute name.
      * @return The attribute, if it exists a and is of the right type, otherwise null.
@@ -167,7 +167,7 @@ public interface IMsoObjectIf
     public IAttributeIf.IMsoStringIf getStringAttribute(int anIndex);
 
     /**
-     * Get a Boolean attribute with the given name.
+     * Get a String attribute with the given name.
      *
      * @param aName Attribute name.
      * @return The attribute, if it exists a and is of the right type, otherwise null.
@@ -183,7 +183,7 @@ public interface IMsoObjectIf
     public IAttributeIf.IMsoCalendarIf getCalendarAttribute(int anIndex);
 
     /**
-     * Get a Boolean attribute with the given name.
+     * Get a Calendar attribute with the given name.
      *
      * @param aName Attribute name.
      * @return The attribute, if it exists a and is of the right type, otherwise null.

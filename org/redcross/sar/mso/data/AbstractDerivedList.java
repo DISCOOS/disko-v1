@@ -21,7 +21,7 @@ public abstract class AbstractDerivedList<M extends IMsoObjectIf> implements IMs
 
     public AbstractDerivedList(int aSize)
     {
-        m_items = new HashMap<String, M>(aSize);
+        m_items = new LinkedHashMap<String, M>(aSize);
         MsoModelImpl.getInstance().getEventManager().addDerivedUpdateListener(this);
     }
 
@@ -37,19 +37,19 @@ public abstract class AbstractDerivedList<M extends IMsoObjectIf> implements IMs
 
     public List<M> selectItems(Selector<M> aSelector, Comparator<M> aComparator)
     {
-        ArrayList<M> result = new ArrayList<M>();
+        ArrayList<M> retVal = new ArrayList<M>();
         for (M item : getItems())
         {
             if (aSelector.select(item))
             {
-                result.add(item);
+                retVal.add(item);
             }
         }
         if (aComparator != null)
         {
-            Collections.sort(result, aComparator);
+            Collections.sort(retVal, aComparator);
         }
-        return result;
+        return retVal;
     }
 
     public void handleMsoDerivedUpdateEvent(MsoEvent.DerivedUpdate e)

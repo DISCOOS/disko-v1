@@ -1,7 +1,7 @@
 package org.redcross.sar.util.except;
 
 /**
- * Indicates attempt to establish a reference between objects that is not recognized in the model
+ * Indicates attempt to establish a reference between objects that is not recognized or accepted in the model
  */
 public class IllegalOperationException extends MsoException
 {

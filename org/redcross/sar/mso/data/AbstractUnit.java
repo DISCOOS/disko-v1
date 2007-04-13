@@ -4,6 +4,7 @@ import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.DuplicateIdException;
+import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.util.mso.*;
 
 import java.util.ArrayList;
@@ -31,7 +32,6 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf,
 
     private final MsoReferenceImpl<IHierarchicalUnitIf> m_superiorUnit = new MsoReferenceImpl<IHierarchicalUnitIf>(this, "SuperiorUnit", false);
     private final MsoReferenceImpl<IPersonnelIf> m_unitLeader = new MsoReferenceImpl<IPersonnelIf>(this, "UnitLeader", true);
-
 
     public AbstractUnit(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
     {
@@ -281,9 +281,19 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf,
     * Methods for lists
     *-------------------------------------------------------------------------------------------*/
 
-    public void addUnitAssignments(IAssignmentIf anIAssignmentIf) throws DuplicateIdException
+    public void addUnitAssignment(IAssignmentIf anIAssignmentIf) throws DuplicateIdException, IllegalOperationException
     {
+        anIAssignmentIf.verifyAssignable(this, IAssignmentIf.AssignmentStatus.ASSIGNED, true);
         m_unitAssignments.add(anIAssignmentIf);
+        anIAssignmentIf.setPrioritySequence(Integer.MAX_VALUE);
+        anIAssignmentIf.setStatus(IAssignmentIf.AssignmentStatus.ASSIGNED);
+    }
+
+    public void removeUnitAssignment(IAssignmentIf anIAssignmentIf, IAssignmentIf.AssignmentStatus newStatus) throws IllegalOperationException
+    {
+
+        m_unitAssignments.removeReference(anIAssignmentIf);
+        anIAssignmentIf.setStatus(newStatus);
     }
 
     public IAssignmentListIf getUnitAssignments()
@@ -324,7 +334,6 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf,
     /*-------------------------------------------------------------------------------------------
     * Methods for references
     *-------------------------------------------------------------------------------------------*/
-
 
     public boolean setSuperiorUnit(IHierarchicalUnitIf aSuperior)
     {
@@ -376,6 +385,10 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf,
         return m_unitLeader;
     }
 
+    /*-------------------------------------------------------------------------------------------
+    * Methods for hierarchy
+    *-------------------------------------------------------------------------------------------*/
+
     /**
      * Generate list of subordinates for this unit
      *
@@ -398,7 +411,7 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf,
         IUnitListIf mainList = MsoModelImpl.getInstance().getMsoManager().getCmdPost().getUnitList();
         for (IUnitIf u : mainList.getItems())
         {
-            if (u.getSuperiorUnit() == aUnit) // todo Test !!!!!!!!!!!!!!!!
+            if (u.getSuperiorUnit() == aUnit)
             {
                 resultList.add(u);
             }
@@ -406,9 +419,35 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf,
         return resultList;
     }
 
+    /*-------------------------------------------------------------------------------------------
+    * Other methods
+    *-------------------------------------------------------------------------------------------*/
+
+    /**
+     * @return Lowest (highest number) of priority among assigned assigments
+     */
+    private int getLowestAssigmentPriority()
+    {
+        int retVal = 0;
+        for (IAssignmentIf asg : getUnitAssignmentsItems())
+        {
+            if (!asg.hasBeenStarted() && asg.getPrioritySequence() > retVal)
+            {
+                retVal = asg.getPrioritySequence();
+            }
+        }
+        return retVal;
+    }
+
     public String toString()
     {
         return "AbstractUnit" + " " + getObjectId();
     }
+
+    public List<IAssignmentIf> assignmentsByPriority()
+    {
+        return m_unitAssignments.selectItems(AssignmentImpl.getAssignedSelector(), AssignmentImpl.getPrioritySequenceComparator());
+    }
+
 
 }

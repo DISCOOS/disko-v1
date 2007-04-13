@@ -1,5 +1,7 @@
 package org.redcross.sar.mso.data;
 
+import org.redcross.sar.util.except.IllegalOperationException;
+
 /**
  * Subject assistance assignment
  */
@@ -24,12 +26,12 @@ public class AssistanceImpl extends AssignmentImpl implements IAssistanceIf
         return getReportedArea();
     }
 
-    public void setPlannedIncidentScene(IAreaIf anArea)
+    public void setPlannedIncidentScene(IAreaIf anArea) throws IllegalOperationException
     {
         setPlannedArea(anArea);
     }
 
-    public void setReportedIncidentScene(IAreaIf anArea)
+    public void setReportedIncidentScene(IAreaIf anArea) throws IllegalOperationException
     {
         setReportedArea(anArea);
     }

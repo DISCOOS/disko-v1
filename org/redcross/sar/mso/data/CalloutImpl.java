@@ -41,10 +41,10 @@ public class CalloutImpl extends AbstractMsoObject implements ICalloutIf
 
     public IPersonnelIf createPersonnel(IMsoObjectIf.IObjectIdIf anObjectId, String aPersonellId, IPersonnelListIf aPesonnelList) throws DuplicateIdException
     {
-        IPersonnelIf result = aPesonnelList.createPersonnel(anObjectId, aPersonellId);
-        if (addPersonel(result))
+        IPersonnelIf retVal = aPesonnelList.createPersonnel(anObjectId, aPersonellId);
+        if (addPersonel(retVal))
         {
-            return result;
+            return retVal;
         }
         throw new DuplicateIdException("Duplicated id in Callout: " + anObjectId);
     }

@@ -393,7 +393,7 @@ public class BriefingImpl extends AbstractMsoObject implements IBriefingIf
     * Methods for lists
     *-------------------------------------------------------------------------------------------*/
 
-    public void addBriefingForecasts(IForecastIf anIForecastIf) throws DuplicateIdException
+    public void addBriefingForecast(IForecastIf anIForecastIf) throws DuplicateIdException
     {
         m_briefingForecasts.add(anIForecastIf);
     }
@@ -413,7 +413,7 @@ public class BriefingImpl extends AbstractMsoObject implements IBriefingIf
         return m_briefingForecasts.getItems();
     }
 
-    public void addBriefingEnvironments(IEnvironmentIf anIEnvironmentIf) throws DuplicateIdException
+    public void addBriefingEnvironment(IEnvironmentIf anIEnvironmentIf) throws DuplicateIdException
     {
         m_briefingEnvironments.add(anIEnvironmentIf);
     }
@@ -433,7 +433,7 @@ public class BriefingImpl extends AbstractMsoObject implements IBriefingIf
         return m_briefingEnvironments.getItems();
     }
 
-    public void addBriefingSubjects(ISubjectIf anISubjectIf) throws DuplicateIdException
+    public void addBriefingSubject(ISubjectIf anISubjectIf) throws DuplicateIdException
     {
         m_briefingSubjects.add(anISubjectIf);
     }

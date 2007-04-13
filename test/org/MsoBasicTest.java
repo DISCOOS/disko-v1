@@ -1,6 +1,7 @@
 package org;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
@@ -8,9 +9,10 @@ import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.mso.data.*;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.util.except.MsoException;
+import org.redcross.sar.util.except.DuplicateIdException;
+import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.util.mso.Selector;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
@@ -44,24 +46,21 @@ public class MsoBasicTest
         getModelDependencies();
         assertNotNull(m_msoManager);
         assertNotNull(m_eventManager);
+        msoTestUpdateModes();
         m_msoModel.setRemoteUpdateMode();
-        msoModelCreate();
+        msoModelTestCreate();
+        msoTestUnits();
+        msoTestLists();
+        msoTestSubLists();
+        msoTestReferences();
+        msoTestTimeLine();
+        msoTestAssignments();
+        msoTestRollbackOrCommit(true);
+        msoTestRollbackOrCommit(false);
         m_msoModel.restoreUpdateMode();
-        msoUpdateModes();
-        msoRollback();
-        m_msoModel.rollback();
-        msoUnits();
-        m_msoModel.rollback();
-        msoLists();
-        m_msoModel.rollback();
-        msoSubLists();
-        m_msoModel.rollback();
-        msoReferences();
-        m_msoModel.rollback();
-        msoTimeLine();
     }
 
-    public void msoModelCreate()
+    public void msoModelTestCreate()
     {
         try
         {
@@ -77,13 +76,19 @@ public class MsoBasicTest
             assertEquals(cmdPostA, cmdPostB);
             cmdPostB.setStatus(ICmdPostIf.CmdPostStatus.OPERATING);
             ICmdPostIf.CmdPostStatus cmdstat = cmdPostA.getStatus();
-            String statname = cmdstat.name();
-            cmdPostB.setStatus(ICmdPostIf.CmdPostStatus.RELEASED);
-            cmdstat = Enum.valueOf(ICmdPostIf.CmdPostStatus.class, statname);
-            cmdPostA.setStatus("OPERATING");
-            cmdstat = cmdPostB.getStatus();
-            cmdPostA.setStatus(cmdstat);
+            assertEquals(cmdstat, ICmdPostIf.CmdPostStatus.OPERATING);
 
+            String statname = cmdstat.name();
+            assertEquals(statname, "OPERATING");
+
+            cmdPostB.setStatus(ICmdPostIf.CmdPostStatus.RELEASED);
+            cmdstat = cmdPostA.getStatus();
+            statname = cmdstat.name();
+            assertEquals(statname, "RELEASED");
+
+            cmdstat = Enum.valueOf(ICmdPostIf.CmdPostStatus.class, statname);
+            cmdPostA.setStatus(cmdstat);
+            assertEquals(cmdPostB.getStatus().name(), "RELEASED");
         }
         catch (MsoException e)
         {
@@ -91,76 +96,27 @@ public class MsoBasicTest
         }
     }
 
-    public void msoUpdateModes()
+    public void msoTestUpdateModes()
     {
         assertEquals(m_msoModel.getUpdateMode(), IMsoModelIf.UpdateMode.LOCAL_UPDATE_MODE);
         m_msoModel.setRemoteUpdateMode();
+        assertEquals(m_msoModel.getUpdateMode(), IMsoModelIf.UpdateMode.REMOTE_UPDATE_MODE);
+        m_msoModel.setLoopbackUpdateMode();
+        assertEquals(m_msoModel.getUpdateMode(), IMsoModelIf.UpdateMode.LOOPBACK_UPDATE_MODE);
+        m_msoModel.restoreUpdateMode();
+        assertEquals(m_msoModel.getUpdateMode(), IMsoModelIf.UpdateMode.REMOTE_UPDATE_MODE);
         m_msoModel.restoreUpdateMode();
         assertEquals(m_msoModel.getUpdateMode(), IMsoModelIf.UpdateMode.LOCAL_UPDATE_MODE);
     }
 
-    public void msoRollback()
-    {
-        try
-        {
-            ICmdPostIf cmdPost = m_msoManager.getCmdPost();
-            System.out.println(cmdPost.toString());
 
-            m_msoModel.setRemoteUpdateMode();
-            IAssignmentListIf miList = cmdPost.getAssignmentList();
-            System.out.println("MissionListSize: " + miList.size());
-
-            IPOIListIf puiList = cmdPost.getPOIList();
-            System.out.println("PUIListSize: " + puiList.size());
-
-            IBriefingListIf _5poList = cmdPost.getBriefingList();
-            System.out.println("5POListSize: " + _5poList.size());
-
-            IAssignmentIf assignment = miList.createAssignment();
-            System.out.println("MissionListSize: " + miList.size());
-
-            m_msoModel.restoreUpdateMode();
-
-            IPOIIf pui = puiList.createPOI();
-            System.out.println("PUIListSize: " + puiList.size());
-
-            IBriefingIf _5po = _5poList.createBriefing();
-            System.out.println("5POListSize: " + _5poList.size());
-
-            System.out.println("Add Pui");
-            assignment.addAssignmentFindings(pui);
-
-            System.out.println("Set 5PO");
-            assignment.setAssignmentBriefing(_5po);
-
-            System.out.println("Rollback");
-            m_msoModel.rollback();
-
-            System.out.println("MissionListSize: " + miList.size());
-            System.out.println("PUIListSize: " + puiList.size());
-            System.out.println("5POListSize: " + _5poList.size());
-
-        }
-        catch (MsoException e)
-        {
-            e.printStackTrace();
-            assertTrue(false);
-        }
-        finally
-        {
-            m_msoModel.restoreUpdateMode();
-        }
-    }
-
-
-    public void msoUnits()
+    public void msoTestUnits()
     {
         ICmdPostIf cmdPost = m_msoManager.getCmdPost();
         IHierarchicalUnitIf koUnit = m_msoManager.getCmdPostUnit();
         IUnitListIf unitList = cmdPost.getUnitList();
         UnitListImpl unitListImpl = (UnitListImpl) unitList;
         assertNotNull(unitList);
-        m_msoModel.setRemoteUpdateMode();
 
         unitListImpl.clear();
 
@@ -189,6 +145,7 @@ public class MsoBasicTest
             }
         });
         assertNotNull(units);
+        assertEquals(units.size(), 2);
 
 
         List<IHierarchicalUnitIf> koSubOrdList;
@@ -213,10 +170,9 @@ public class MsoBasicTest
         assertEquals(koSubOrdList.size(), 0);
         unitListImpl.clear();
         assertEquals(unitList.size(), 0);
-        m_msoModel.restoreUpdateMode();
     }
 
-    public void msoLists()
+    public void msoTestLists()
     {
         ICmdPostIf cmdPost = m_msoManager.getCmdPost();
         IUnitListIf unitList = cmdPost.getUnitList();
@@ -247,7 +203,6 @@ public class MsoBasicTest
             IUnitIf vUnit4 = unitList.createVehicle("V4");
             mainCount++;
             int v4Count = 1;
-            System.out.println("Test Create vehicle 5");
             IUnitIf vUnit5 = unitList.createVehicle("V5");
             mainCount++;
             int v5Count = 1;
@@ -255,11 +210,11 @@ public class MsoBasicTest
             assertEquals(((AbstractMsoObject) vUnit3).listenerCount(), v3Count);
             assertEquals(((AbstractMsoObject) vUnit4).listenerCount(), v4Count);
 
-            System.out.println("Test Add vehicle 1");
+//            System.out.println("Test Add vehicle 1");
             myUnitList.add(vUnit1);
             myCount++;
             v1Count++;
-            System.out.println("Test Add vehicle 3");
+//            System.out.println("Test Add vehicle 3");
             myUnitList.add(vUnit3);
             myCount++;
             v3Count++;
@@ -270,22 +225,22 @@ public class MsoBasicTest
             assertEquals(((AbstractMsoObject) vUnit3).listenerCount(), v3Count);
             assertEquals(((AbstractMsoObject) vUnit4).listenerCount(), v4Count);
 
-            System.out.println("Test Remove vehicle 3 from a list");
+//            System.out.println("Test Remove vehicle 3 from a list");
             myUnitList.removeReference(vUnit3);
             myCount--;
             v3Count--;
             assertEquals(myUnitList.size(), myCount);
             assertEquals(((AbstractMsoObject) vUnit3).listenerCount(), v3Count);
 
-            System.out.println("Test Remove vehicle 3 from a list once again");
+//            System.out.println("Test Remove vehicle 3 from a list once again");
             myUnitList.removeReference(vUnit3);
             assertEquals(myUnitList.size(), myCount);
             assertEquals(((AbstractMsoObject) vUnit3).listenerCount(), v3Count);
 
-            unitListImpl.print();
-            myUnitList.print();
+//            unitListImpl.print();
+//            myUnitList.print();
 
-            System.out.println("Test Remove completely vehicle 1");
+//            System.out.println("Test Remove completely vehicle 1");
             assertTrue(unitList.removeReference(vUnit1));
             vUnit1 = null;
             v1Count = 0;
@@ -306,22 +261,27 @@ public class MsoBasicTest
             myCount--;
             mainCount--;
 
-            unitListImpl.print();
-            myUnitList.print();
+//            unitListImpl.print();
+//            myUnitList.print();
 
             assertEquals(unitList.size(), mainCount);
             assertEquals(myUnitList.size(), myCount);
             assertEquals(((AbstractMsoObject) vUnit3).listenerCount(), v3Count);
             assertEquals(((AbstractMsoObject) vUnit5).listenerCount(), v5Count);
-
+            unitListImpl.clear();
+            assertEquals(unitList.size(), 0);
+            assertEquals(myUnitList.size(), 0);
+            assertEquals(((AbstractMsoObject) vUnit3).listenerCount(), 0);
+            assertEquals(((AbstractMsoObject) vUnit5).listenerCount(), 0);
         }
         catch (MsoException e)
         {
             e.printStackTrace();
         }
+        unitListImpl.clear();
     }
 
-    public void msoSubLists()
+    public void msoTestSubLists()
     {
         ICmdPostIf cmdPost = m_msoManager.getCmdPost();
         IUnitListIf unitList = cmdPost.getUnitList();
@@ -342,13 +302,10 @@ public class MsoBasicTest
         puiListImpl.clear();
 
         int mainUnitCount = 0;
-        int mainMissionCount = 0;
-        int mainPUICount = 0;
         int myCount = 0;
 
         try
         {
-            m_msoModel.setRemoteUpdateMode();
             IUnitIf vUnit1 = unitList.createVehicle("V1");
             mainUnitCount++;
             int v1Count = 1;
@@ -363,31 +320,39 @@ public class MsoBasicTest
 
             AbstractUnit aUnit1 = (AbstractUnit) vUnit1;
 
-            IAssignmentIf mis11 = assignmentList.createAssignment();
-            vUnit1.addUnitAssignments(mis11);
+            IAssignmentIf assign11 = assignmentList.createAssignment();
+            assign11.setStatus(IAssignmentIf.AssignmentStatus.READY);
+            vUnit1.addUnitAssignment(assign11);
+            assertEquals(assign11.getOwningUnit(), vUnit1);
             int vmCount1 = 1;
-            IAssignmentIf mis12 = assignmentList.createAssignment();
-            vUnit1.addUnitAssignments(mis12);
+            IAssignmentIf assign12 = assignmentList.createAssignment();
+            assign12.setStatus(IAssignmentIf.AssignmentStatus.READY);
+            assertNull(assign12.getOwningUnit());
+            vUnit1.addUnitAssignment(assign12);
+            assertEquals(assign12.getOwningUnit(), vUnit1);
             vmCount1++;
             assertEquals(aUnit1.getUnitAssignmentsItems().size(), vmCount1);
 
-            assertTrue(assignmentList.removeReference(mis12));
+            assertTrue(assignmentList.removeReference(assign12));
             vmCount1--;
-            mis12 = null;
+            assign12 = null;
             assertEquals(aUnit1.getUnitAssignmentsItems().size(), vmCount1);
 
-            IAssignmentIf mis13 = assignmentList.createAssignment();
-            AssignmentImpl misImpl13 = (AssignmentImpl) mis13;
-            vUnit1.addUnitAssignments(mis13);
+            IAssignmentIf assign13 = assignmentList.createAssignment();
+            AssignmentImpl misImpl13 = (AssignmentImpl) assign13;
+            assign13.setStatus(IAssignmentIf.AssignmentStatus.READY);
+            vUnit1.addUnitAssignment(assign13);
             vmCount1++;
             assertEquals(aUnit1.getUnitAssignmentsItems().size(), vmCount1);
             assertEquals(misImpl13.listenerCount(), 2);
 
+            List l1 = vUnit1.assignmentsByPriority();
+
             IPOIIf PUI1 = puiList.createPOI();
-            mis13.addAssignmentFindings(PUI1);
+            assign13.addAssignmentFinding(PUI1);
             int mpCount3 = 1;
             IPOIIf PUI2 = puiList.createPOI();
-            mis13.addAssignmentFindings(PUI2);
+            assign13.addAssignmentFinding(PUI2);
             mpCount3++;
             assertEquals(misImpl13.POICount(), mpCount3);
             assertEquals(((POIImpl) PUI1).listenerCount(), 2);
@@ -408,13 +373,12 @@ public class MsoBasicTest
         {
             e.printStackTrace();
         }
-        finally
-        {
-            m_msoModel.restoreUpdateMode();
-        }
+        unitListImpl.clear();
+        assignmentListImpl.clear();
+        puiListImpl.clear();
     }
 
-    public void msoReferences()
+    public void msoTestReferences()
     {
         ICmdPostIf cmdPost = m_msoManager.getCmdPost();
         IUnitListIf unitList = cmdPost.getUnitList();
@@ -422,33 +386,25 @@ public class MsoBasicTest
         UnitListImpl unitListImpl = (UnitListImpl) unitList;
         unitListImpl.clear();
 
-        UnitListImpl myUnitList = new UnitListImpl(null, "MyTestList", false);
-
         IAssignmentListIf assignmentList = cmdPost.getAssignmentList();
         assertNotNull(assignmentList);
         AssignmentListImpl assignmentListImpl = (AssignmentListImpl) assignmentList;
         assignmentListImpl.clear();
 
-        IBriefingListIf _5poList = cmdPost.getBriefingList();
-        assertNotNull(_5poList);
-        BriefingListImpl _5poListImpl = (BriefingListImpl) _5poList;
-        _5poListImpl.clear();
+        IBriefingListIf briefingListIf = cmdPost.getBriefingList();
+        assertNotNull(briefingListIf);
+        BriefingListImpl briefingListImpl = (BriefingListImpl) briefingListIf;
+        briefingListImpl.clear();
 
         int mainUnitCount = 0;
-        int mainMissionCount = 0;
-        int main5POCount = 0;
 
-        m_msoModel.setRemoteUpdateMode();
         IUnitIf vUnit1 = unitList.createVehicle("V1");
         mainUnitCount++;
-        int v1Count = 1;
         IUnitIf vUnit2 = unitList.createVehicle("V2");
         mainUnitCount++;
-        int v2Count = 1;
         IUnitIf vUnit3 = unitList.createVehicle("V3");
         mainUnitCount++;
         assertEquals(unitList.size(), mainUnitCount);
-        int v3Count = 1;
         vUnit2.setSuperiorUnit(vUnit1);
         vUnit3.setSuperiorUnit(vUnit2);
         assertFalse(unitList.removeReference(vUnit1));
@@ -462,27 +418,57 @@ public class MsoBasicTest
         mainUnitCount--;
         assertEquals(unitList.size(), mainUnitCount);
 
+        IAssignmentIf assign11 = assignmentList.createAssignment();
+        assertEquals(assignmentList.size(), 1);
+
+        IBriefingIf briefing1 = briefingListIf.createBriefing();
+        assertEquals(briefingListIf.size(), 1);
+        assertEquals(((BriefingImpl) briefing1).listenerCount(), 1);
+
+        assign11.setAssignmentBriefing(briefing1);
+        assertEquals(((BriefingImpl) briefing1).listenerCount(), 2);
+
+        int assign11ListenerCount = ((AssignmentImpl) assign11).listenerCount();
+
+        try
+        {
+            assign11.setStatus(IAssignmentIf.AssignmentStatus.READY);
+            vUnit1.addUnitAssignment(assign11);
+        }
+        catch (DuplicateIdException e)
+        {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        catch (IllegalOperationException e)
+        {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        assign11ListenerCount++;
+        assertEquals(vUnit1.getUnitAssignmentsItems().size(), 1);
+        assertEquals(((AssignmentImpl) assign11).listenerCount(), assign11ListenerCount);
+
+        assertTrue(assignmentListImpl.removeReference(assign11));
+        assertEquals(((BriefingImpl) briefing1).listenerCount(), 1);
+        assertEquals(vUnit1.getUnitAssignmentsItems().size(), 0);
+        assertEquals(((AssignmentImpl) assign11).listenerCount(), 0);
+
+        briefingListImpl.clear();
+        assertEquals(((BriefingImpl) briefing1).listenerCount(), 0);
+
         assertTrue(unitList.removeReference(vUnit1));
         mainUnitCount--;
         assertEquals(unitList.size(), mainUnitCount);
+        assertEquals(vUnit1.getUnitAssignmentsItems().size(), 0);
 
-        IAssignmentIf mis11 = assignmentList.createAssignment();
-        assertEquals(assignmentList.size(), 1);
-        IBriefingIf _5po1 = _5poList.createBriefing();
-        assertEquals(_5poList.size(), 1);
-        assertEquals(((BriefingImpl) _5po1).listenerCount(), 1);
-        mis11.setAssignmentBriefing(_5po1);
-        assertEquals(((BriefingImpl) _5po1).listenerCount(), 2);
-        assignmentListImpl.removeReference(mis11);
-        assertEquals(((BriefingImpl) _5po1).listenerCount(), 1);
-        m_msoModel.restoreUpdateMode();
+
+        assignmentListImpl.clear();
+        unitListImpl.clear();
     }
 
 
-    public void msoTimeLine()
+    public void msoTestTimeLine()
     {
         ICmdPostIf cmdPost = m_msoManager.getCmdPost();
-        IOperationIf operation = m_msoManager.getOperation();
 
         IEventLogIf eventLog = cmdPost.getEventLog();
         EventLogImpl eventLogImpl = (EventLogImpl) eventLog;
@@ -496,60 +482,220 @@ public class MsoBasicTest
 
         try
         {
-            m_msoModel.setRemoteUpdateMode();
             IEventIf event1 = eventLog.createEvent(Calendar.getInstance());
             event1.setDTG(121212L);
-            assertEquals(timeLine.size(),1);
+            assertEquals(timeLine.size(), 1);
             IEventIf event2 = eventLog.createEvent(Calendar.getInstance());
             event2.setDTG(131313L);
-            assertEquals(timeLine.size(),2);
+            assertEquals(timeLine.size(), 2);
             ITaskIf task1 = taskListImpl.createTask(null);
             task1.setDTG(121313L);
-            assertEquals(timeLine.size(),3);
+            assertEquals(timeLine.size(), 3);
+            assertTrue(isSorted(timeLine));
 
-            timeLine.print();
             event1.setDTG(151212L);
-            timeLine.print();
-
-            m_msoModel.restoreUpdateMode();
+            assertTrue(isSorted(timeLine));
 
             eventLog.removeReference(event2);
-            assertEquals(timeLine.size(),2);
-
-            timeLine.print();
-
-            task1.setDTG(151213L);
-            timeLine.print();
-
+            assertEquals(timeLine.size(), 2);
+            assertTrue(isSorted(timeLine));
 
             task1.setDTG(151213L);
-            timeLine.print();
+            assertTrue(isSorted(timeLine));
+
+            event1.setDTG(151213L);
+            assertTrue(isSorted(timeLine));
 
             eventLog.removeReference(event1);
-            assertEquals(timeLine.size(),1);
-
-            timeLine.print();
+            assertEquals(timeLine.size(), 1);
 
             taskList.removeReference(task1);
-            assertEquals(timeLine.size(),0);
-
-            timeLine.print();
-            System.out.println("Commit");
-            m_msoModel.commit();
-            timeLine.print();
-            assertEquals(timeLine.size(),0);
-
-
-
+            assertEquals(timeLine.size(), 0);
         }
         catch (MsoException e)
         {
             e.printStackTrace();
         }
-        finally
-        {
-            m_msoModel.restoreUpdateMode();
-        }
     }
 
+    public boolean isSorted(ITimeLineIf aTimeLine)
+    {
+        Calendar cal = null;
+        for (ITimeItemIf ti : aTimeLine.getTimeItems())
+        {
+            if (cal != null)
+            {
+                if (cal.compareTo(ti.getCalendar()) > 0)
+                {
+                    return false;
+                }
+            }
+            cal = ti.getCalendar();
+        }
+        return true;
+    }
+
+
+    public void msoTestAssignments()
+    {
+        ICmdPostIf cmdPost = m_msoManager.getCmdPost();
+
+        IAssignmentListIf assignmentList = cmdPost.getAssignmentList();
+        assertNotNull(assignmentList);
+        AssignmentListImpl assignmentListImpl = (AssignmentListImpl) assignmentList;
+        assignmentListImpl.clear();
+
+        IAreaListIf areaList = cmdPost.getAreaList();
+        assertNotNull(areaList);
+        AreaListImpl areaListImpl = (AreaListImpl) areaList;
+        areaListImpl.clear();
+
+        IAssignmentIf assign11 = assignmentList.createAssignment();
+        IAssignmentIf assign12 = assignmentList.createAssignment();
+
+        IAreaIf area11 = areaList.createArea();
+        IAreaIf area12 = areaList.createArea();
+        assertNull(area11.getOwningAssignment());
+        assertNull(area12.getOwningAssignment());
+
+        try
+        {
+            assign11.setPlannedArea(area11);
+            assign12.setReportedArea(area12);
+        }
+        catch (IllegalOperationException e)
+        {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        assertEquals(assign11, area11.getOwningAssignment());
+        assertEquals(assign12, area12.getOwningAssignment());
+
+        assign11.setStatus("ASSIGNED");
+        assertEquals(assign11.getStatus(), IAssignmentIf.AssignmentStatus.ASSIGNED);
+        assertTrue(assign11.hasBeenAssigned());
+        assertFalse(assign11.hasBeenFinished());
+        assign11.setStatus("REPORTED");
+        assertTrue(assign11.hasBeenFinished());
+
+        assertNotNull(assign11.getPlannedArea());
+        areaListImpl.clear();
+        assertNull(assign11.getPlannedArea());
+        assignmentListImpl.clear();
+    }
+
+
+    public void msoTestRollbackOrCommit(boolean commit)
+    {
+        ICmdPostIf cmdPost = m_msoManager.getCmdPost();
+        IAssignmentListIf assignmentList = cmdPost.getAssignmentList();
+        ((AssignmentListImpl) assignmentList).clear();
+        assertEquals(assignmentList.size(), 0);
+
+        IPOIListIf poiList = cmdPost.getPOIList();
+        ((POIListImpl) poiList).clear();
+        IBriefingListIf briefingList = cmdPost.getBriefingList();
+        ((BriefingListImpl) briefingList).clear();
+        IAssignmentIf assignment = assignmentList.createAssignment();
+
+        assertEquals(poiList.size(), 0);
+        assertEquals(briefingList.size(), 0);
+        assertEquals(assignmentList.size(), 1);
+        assertEquals(assignment.getAssignmentFindingsItems().size(), 0);
+        assertNull(assignment.getAssignmentBriefing());
+
+        IEventLogIf eventLog = cmdPost.getEventLog();
+        EventLogImpl eventLogImpl = (EventLogImpl) eventLog;
+        eventLogImpl.clear();
+
+        ITaskListIf taskList = cmdPost.getTaskList();
+        TaskListImpl taskListImpl = (TaskListImpl) taskList;
+        taskListImpl.clear();
+
+        ITimeLineIf timeLine = cmdPost.getTimeLine();
+
+
+        boolean updateModeSet = false;
+        try
+        {
+            IEventIf event1 = eventLog.createEvent(Calendar.getInstance());
+            event1.setDTG(121212L);
+            assertEquals(timeLine.size(), 1);
+            assertEquals(event1.getCalendarState(), IMsoModelIf.ModificationState.STATE_SERVER_MODIFIED);
+
+            m_msoModel.setLocalUpdateMode();
+            updateModeSet = true;
+            event1.setDTG(121215L);
+            IPOIIf pui = poiList.createPOI();
+            assertEquals(poiList.size(), 1);
+
+            IBriefingIf briefing = briefingList.createBriefing();
+            assertEquals(briefingList.size(), 1);
+
+            assignment.addAssignmentFinding(pui);
+            assertEquals(assignment.getAssignmentFindingsItems().size(), 1);
+
+            assignment.setAssignmentBriefing(briefing);
+            assertNotNull(assignment.getAssignmentBriefing());
+
+            IEventIf event2 = eventLog.createEvent(Calendar.getInstance());
+            event2.setDTG(131313L);
+            assertEquals(timeLine.size(), 2);
+            ITaskIf task1 = taskListImpl.createTask(null);
+            task1.setDTG(121313L);
+            assertEquals(timeLine.size(), 3);
+            assertTrue(isSorted(timeLine));
+
+            assertEquals(event1.getCalendarState(), IMsoModelIf.ModificationState.STATE_LOCAL);
+
+            if (commit)
+            {
+                m_msoModel.commit();
+
+                assertEquals(poiList.size(), 1);
+                assertEquals(briefingList.size(), 1);
+                assertEquals(assignmentList.size(), 1);
+                assertEquals(assignment.getAssignmentFindingsItems().size(), 1);
+                assertNotNull(assignment.getAssignmentBriefing());
+                assertEquals(timeLine.size(), 3);
+                assertTrue(isSorted(timeLine));
+                assertEquals(event1.getDTG(), "121215");
+                assertEquals(event1.getCalendarState(), IMsoModelIf.ModificationState.STATE_SERVER_ORIGINAL);
+                m_msoModel.rollback();        // to assert thar rollback has no effect
+                assertEquals(poiList.size(), 1);
+                assertEquals(briefingList.size(), 1);
+                assertEquals(assignmentList.size(), 1);
+                assertEquals(assignment.getAssignmentFindingsItems().size(), 1);
+                assertNotNull(assignment.getAssignmentBriefing());
+                assertEquals(timeLine.size(), 3);
+                assertTrue(isSorted(timeLine));
+                assertEquals(event1.getDTG(), "121215");
+                assertEquals(event1.getCalendarState(), IMsoModelIf.ModificationState.STATE_SERVER_ORIGINAL);
+            } else
+            {
+                m_msoModel.rollback();
+
+                assertEquals(poiList.size(), 0);
+                assertEquals(briefingList.size(), 0);
+                assertEquals(assignmentList.size(), 1);
+                assertEquals(assignment.getAssignmentFindingsItems().size(), 0);
+                assertNull(assignment.getAssignmentBriefing());
+                assertEquals(timeLine.size(), 1);
+                assertEquals(event1.getDTG(), "121212");
+                assertEquals(event1.getCalendarState(), IMsoModelIf.ModificationState.STATE_SERVER_ORIGINAL);
+            }
+        }
+        catch (MsoException e)
+        {
+            e.printStackTrace();
+            assertTrue(false);
+        }
+        finally
+        {
+            if (updateModeSet)
+            {
+                m_msoModel.restoreUpdateMode();
+            }
+        }
+    }
 }

@@ -17,7 +17,7 @@ public class MsoManagerImpl implements IMsoManagerIf
 {
     OperationImpl m_operation = null;
 
-    private void eventprint(String aText, MsoEvent.Update e)
+    private void eventLogg(String aText, MsoEvent.Update e)
     {
         Object o = e.getSource();
         MsoClassCode classcode = MsoClassCode.CLASSCODE_NOCLASS;
@@ -25,7 +25,7 @@ public class MsoManagerImpl implements IMsoManagerIf
         {
             classcode = ((IMsoObjectIf) o).getMsoClassCode();
         }
-        System.out.println(aText + " Classcode:" + classcode + " Mask: " + e.getEventTypeMask());
+//        System.out.println(aText + " Classcode:" + classcode + " Mask: " + e.getEventTypeMask());
     }
 
     public MsoManagerImpl(IMsoEventManagerIf anEventManager)
@@ -35,7 +35,7 @@ public class MsoManagerImpl implements IMsoManagerIf
             public void handleMsoUpdateEvent(MsoEvent.Update e)
             {
                 //To change body of implemented methods use File | Settings | File Templates.
-                eventprint("ServerUpdateListener", e);
+                eventLogg("ServerUpdateListener", e);
             }
 
             public boolean hasInterestIn(IMsoObjectIf aSource)
@@ -49,7 +49,7 @@ public class MsoManagerImpl implements IMsoManagerIf
             public void handleMsoUpdateEvent(MsoEvent.Update e)
             {
                 //To change body of implemented methods use File | Settings | File Templates.
-                eventprint("ClientUpdateListener", e);
+                eventLogg("ClientUpdateListener", e);
             }
 
             public boolean hasInterestIn(IMsoObjectIf aSource)
@@ -82,12 +82,12 @@ public class MsoManagerImpl implements IMsoManagerIf
 
     private ICmdPostIf getExistingCmdPost()
     {
-        ICmdPostIf retval = getCmdPost();
-        if (retval == null)
+        ICmdPostIf retVal = getCmdPost();
+        if (retVal == null)
         {
-            throw new MsoError("No Cmd Post exists.");
+            throw new MsoError("No CmdPost exists.");
         }
-        return retval;
+        return retVal;
     }
 
     public CmdPostImpl getCmdPostImpl()
