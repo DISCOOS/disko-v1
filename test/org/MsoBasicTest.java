@@ -64,7 +64,7 @@ public class MsoBasicTest
     {
         try
         {
-            IOperationIf operationA = m_msoManager.createOperation();
+            IOperationIf operationA = m_msoManager.createOperation("2007-TEST","0001");
             assertNotNull(operationA);
             IOperationIf operationB = m_msoManager.getOperation();
             assertEquals(operationA, operationB);
@@ -346,7 +346,7 @@ public class MsoBasicTest
             assertEquals(aUnit1.getUnitAssignmentsItems().size(), vmCount1);
             assertEquals(misImpl13.listenerCount(), 2);
 
-            List l1 = vUnit1.assignmentsByPriority();
+            List l1 = vUnit1.getAllocatedAssignments();
 
             IPOIIf PUI1 = puiList.createPOI();
             assign13.addAssignmentFinding(PUI1);
