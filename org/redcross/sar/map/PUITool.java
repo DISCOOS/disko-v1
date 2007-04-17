@@ -45,7 +45,7 @@ public class PUITool extends AbstractCommandTool {
 		drawSymbol.setColor(drawColor);
 		
 		dialog = new PUIDialog(app);
-		dialog.setIsToggable(true);
+		dialog.setIsToggable(false);
 		//this.drawSymbol = 
 	}
 
@@ -54,7 +54,7 @@ public class PUITool extends AbstractCommandTool {
 			map = (DiskoMap)obj;
 			map.addDiskoMapEventListener(this);
 			puiDialog = (PUIDialog)dialog;
-			puiDialog.setLocationRelativeTo(map, DiskoDialog.POS_WEST, true);
+			puiDialog.setLocationRelativeTo(map, DiskoDialog.POS_WEST, false);
 			setEditLayer(map.getEditLayer());
 		}
 	}
