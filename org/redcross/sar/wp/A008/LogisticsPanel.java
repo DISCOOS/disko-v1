@@ -84,7 +84,7 @@ public class LogisticsPanel
     }
 
 
-    private final static Selector<IUnitIf> m_unitSelector = new Selector<IUnitIf>()
+    private final static Selector<IUnitIf> m_activeUnitSelector = new Selector<IUnitIf>()
     {
         private EnumSet<IUnitIf.UnitStatus> m_activeStatus = EnumSet.range(IUnitIf.UnitStatus.READY, IUnitIf.UnitStatus.WORKING);
 
@@ -94,7 +94,7 @@ public class LogisticsPanel
         }
     };
 
-    private final static Comparator<IUnitIf> m_unitComparator = new Comparator<IUnitIf>()
+    private final static Comparator<IUnitIf> m_unitNumberComparator = new Comparator<IUnitIf>()
     {
         public int compare(IUnitIf u1,IUnitIf u2)
         {
@@ -105,9 +105,8 @@ public class LogisticsPanel
     private void setTableData()
     {
         UnitTableModel utm = (UnitTableModel) m_unitTable.getModel();
-        IAssignmentIf as;
         IUnitListIf unitList = m_wpModule.getMsoManager().getCmdPost().getUnitList();
-        for (IUnitIf unit : unitList.selectItems(m_unitSelector, m_unitComparator))
+        for (IUnitIf unit : unitList.selectItems(m_activeUnitSelector, m_unitNumberComparator))
         {
             utm.addUnit(unit);
         }
