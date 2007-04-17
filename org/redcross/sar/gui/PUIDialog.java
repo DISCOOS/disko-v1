@@ -17,6 +17,7 @@ import java.awt.Point;
 import javax.swing.JButton;
 import com.borland.jbcl.layout.VerticalFlowLayout;
 import org.redcross.sar.app.IDiskoApplication;
+import org.redcross.sar.app.Utils;
 //import com.geodata.engine.disko.app.DiskoApplication;
 
 import javax.swing.JLabel;
@@ -27,6 +28,7 @@ import javax.swing.JTextField;
 import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.JComboBox;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -154,16 +156,23 @@ public class PUIDialog extends DiskoDialog {
 	 */
 	private JButton getCancelButton() {
 		if (cancelButton == null) {
-			cancelButton = new JButton();
-			cancelButton.setPreferredSize(new Dimension(36, 36));
-			cancelButton.setMnemonic(KeyEvent.VK_UNDEFINED);
-			cancelButton.setIcon(new ImageIcon("C:/Utvikling/workspace/DISKO/icons/quit.gif"));
-			cancelButton.setText("");
-			cancelButton.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					System.out.println("actionPerformed()"); // TODO Auto-generated Event stub actionPerformed()
-				}
-			});
+			try {
+				cancelButton = new JButton();
+				cancelButton.setPreferredSize(new Dimension(36, 36));
+				cancelButton.setMnemonic(KeyEvent.VK_UNDEFINED);
+				String iconName = "quit.icon";
+				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
+				cancelButton.setIcon(icon);
+				cancelButton.setText("");
+				cancelButton.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent e) {
+						System.out.println("actionPerformed()"); // TODO Auto-generated Event stub actionPerformed()
+					}
+				});
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return cancelButton;
 	}
@@ -208,14 +217,21 @@ public class PUIDialog extends DiskoDialog {
 	 */
 	private JButton getFinishButton() {
 		if (finishButton == null) {
-			finishButton = new JButton();
-			finishButton.setPreferredSize(new Dimension(36, 36));
-			finishButton.setIcon(new ImageIcon("C:/Utvikling/workspace/DISKO/icons/finish.gif"));
-			finishButton.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					System.out.println("actionPerformed()"); // TODO Auto-generated Event stub actionPerformed()
-				}
-			});
+			try {
+				finishButton = new JButton();
+				finishButton.setPreferredSize(new Dimension(36, 36));
+				String iconName = "finish.icon";
+				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
+				finishButton.setIcon(icon);
+				finishButton.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent e) {
+						System.out.println("actionPerformed()"); // TODO Auto-generated Event stub actionPerformed()
+					}
+				});
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return finishButton;
 	}
@@ -262,9 +278,8 @@ public class PUIDialog extends DiskoDialog {
 					if (e.getClickCount() == 2){
 						numPadDialog = app.getUIFactory().getNumPadDialog();
 						Point p = xCoordTextField.getLocationOnScreen();
-						p.setLocation(p.x + (xCoordTextField.getWidth()/4), p.y + xCoordTextField.getHeight());
-						numPadDialog.setLocation(p);
-						//numPadDialog.setLocation(xCoordTextField.getLocationOnScreen());						
+						p.setLocation(p.x + (xCoordTextField.getWidth()), p.y);
+						numPadDialog.setLocation(p);					
 						numPadDialog.setTextField(xCoordTextField);
 						numPadDialog.setVisible(true);	
 						
@@ -299,9 +314,8 @@ public class PUIDialog extends DiskoDialog {
 					if (e.getClickCount() == 2){										
 						numPadDialog = app.getUIFactory().getNumPadDialog();
 						Point p = yCoordTextField.getLocationOnScreen();
-						p.setLocation(p.x + (yCoordTextField.getWidth()/4), p.y + yCoordTextField.getHeight());
+						p.setLocation(p.x + (yCoordTextField.getWidth()), p.y);
 						numPadDialog.setLocation(p);
-						//numPadDialog.setLocation(xCoordTextField.getLocationOnScreen());
 						numPadDialog.setTextField(yCoordTextField);
 						numPadDialog.setVisible(true);
 					}
@@ -351,8 +365,6 @@ public class PUIDialog extends DiskoDialog {
 			yCoordLabel.setText("Y koordinat");
 			coordsPanel1.add(yCoordLabel, null);
 			coordsPanel1.add(getYCoordTextField(), null);
-			
-
 			
 			showPointLabel = new JLabel();
 			showPointLabel.setText("");
