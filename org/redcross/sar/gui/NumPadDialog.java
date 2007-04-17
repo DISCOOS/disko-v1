@@ -1,6 +1,8 @@
 package org.redcross.sar.gui;
 
 import java.awt.Frame;
+
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JDialog;
@@ -8,6 +10,7 @@ import javax.swing.JRootPane;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import javax.swing.JButton;
+import javax.swing.border.BevelBorder;
 
 public class NumPadDialog extends JDialog {
 
@@ -26,6 +29,7 @@ public class NumPadDialog extends JDialog {
 	private JButton delButton = null;
 	private JButton okButton = null;	
 	private JTextField jtf = null;
+	private Dimension size = new Dimension(50,40);
 
 	public NumPadDialog(Frame owner) {
 		super(owner);
@@ -43,7 +47,6 @@ public class NumPadDialog extends JDialog {
         	}
         });
         this.setAlwaysOnTop(true);
-        
         this.pack();
 	}
 	
@@ -86,6 +89,7 @@ public class NumPadDialog extends JDialog {
 			gridLayout.setRows(4);
 			gridLayout.setColumns(3);
 			componentPanel = new JPanel();
+			componentPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 			componentPanel.setLayout(gridLayout);		
 			componentPanel.setSize(new Dimension(215, 214));
 			componentPanel.add(getOneButton(), null);
@@ -112,7 +116,7 @@ public class NumPadDialog extends JDialog {
 	private JButton getOneButton() {
 		if (oneButton == null) {
 			oneButton = new JButton();
-			oneButton.setToolTipText("");
+			oneButton.setPreferredSize(size);
 			oneButton.setText("1");
 			oneButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -135,7 +139,7 @@ public class NumPadDialog extends JDialog {
 	private JButton getTwoButton() {
 		if (twoButton == null) {
 			twoButton = new JButton();
-			twoButton.setToolTipText("");
+			twoButton.setPreferredSize(size);
 			twoButton.setText("2");
 			twoButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -154,6 +158,7 @@ public class NumPadDialog extends JDialog {
 	private JButton getThreeButton() {
 		if (threeButton == null) {
 			threeButton = new JButton();
+			threeButton.setPreferredSize(size);
 			threeButton.setText("3");
 			threeButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -172,6 +177,7 @@ public class NumPadDialog extends JDialog {
 	private JButton getFourButton() {
 		if (fourButton == null) {
 			fourButton = new JButton();
+			fourButton.setPreferredSize(size);
 			fourButton.setText("4");
 			fourButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -190,6 +196,8 @@ public class NumPadDialog extends JDialog {
 	private JButton getFiveButton() {
 		if (fiveButton == null) {
 			fiveButton = new JButton();
+			fiveButton.setPreferredSize(size);
+			twoButton.setToolTipText("5");
 			fiveButton.setText("5");
 			fiveButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -208,6 +216,7 @@ public class NumPadDialog extends JDialog {
 	private JButton getSixButton() {
 		if (sixButton == null) {
 			sixButton = new JButton();
+			sixButton.setPreferredSize(size);
 			sixButton.setText("6");
 			sixButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -226,6 +235,7 @@ public class NumPadDialog extends JDialog {
 	private JButton getSevenjButton() {
 		if (sevenjButton == null) {
 			sevenjButton = new JButton();
+			sevenjButton.setPreferredSize(size);
 			sevenjButton.setToolTipText("");
 			sevenjButton.setText("7");
 			sevenjButton.addActionListener(new java.awt.event.ActionListener() {
@@ -245,6 +255,7 @@ public class NumPadDialog extends JDialog {
 	private JButton getEightButton() {
 		if (eightButton == null) {
 			eightButton = new JButton();
+			eightButton.setPreferredSize(size);
 			eightButton.setText("8");
 			eightButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -263,6 +274,7 @@ public class NumPadDialog extends JDialog {
 	private JButton getNineButton() {
 		if (nineButton == null) {
 			nineButton = new JButton();
+			nineButton.setPreferredSize(size);
 			nineButton.setText("9");
 			nineButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -281,7 +293,7 @@ public class NumPadDialog extends JDialog {
 	private JButton getZeroButton() {
 		if (zeroButton == null) {
 			zeroButton = new JButton();
-			zeroButton.setToolTipText("");
+			zeroButton.setPreferredSize(size);
 			zeroButton.setText("0");
 			zeroButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -300,6 +312,7 @@ public class NumPadDialog extends JDialog {
 	private JButton getDelButton() {
 		if (delButton == null) {
 			delButton = new JButton();
+			delButton.setPreferredSize(size);
 			delButton.setText("Del");
 			delButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -318,6 +331,7 @@ public class NumPadDialog extends JDialog {
 	private JButton getOkButton() {
 		if (okButton == null) {
 			okButton = new JButton();
+			okButton.setPreferredSize(size);
 			okButton.setText("OK");
 			okButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
