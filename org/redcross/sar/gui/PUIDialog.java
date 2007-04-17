@@ -2,7 +2,6 @@ package org.redcross.sar.gui;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.Point;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -43,7 +42,6 @@ public class PUIDialog extends DiskoDialog {
 	private JComboBox typeComboBox = null;
 	private JLabel txtAreaLabel = null;
 	private JTextArea txtArea = null;
-	private SimpleMarkerSymbol drawSymbol = null;
 	private JPanel centerPanel = null;
 	private JLabel xCoordLabel = null;
 	private JLabel yCoordLabel = null;
