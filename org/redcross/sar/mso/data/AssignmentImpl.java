@@ -22,6 +22,10 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
     private final AttributeImpl.MsoInteger m_prioritySequence = new AttributeImpl.MsoInteger(this, "PrioritySequence");
     private final AttributeImpl.MsoEnum<AssignmentPriority> m_priority = new AttributeImpl.MsoEnum<AssignmentPriority>(this, "Priority", AssignmentPriority.LOW);
     private final AttributeImpl.MsoEnum<AssignmentStatus> m_status = new AttributeImpl.MsoEnum<AssignmentStatus>(this, "Status", AssignmentStatus.EMPTY);
+    private final AttributeImpl.MsoEnum<AssignmentType> m_type = new AttributeImpl.MsoEnum<AssignmentType>(this, "Type", AssignmentType.GENERAL);
+
+    private final AttributeImpl.MsoInteger m_number = new AttributeImpl.MsoInteger(this, "Number");
+
 
     private final EquipmentListImpl m_assignmentEquipment = new EquipmentListImpl(this, "AssignmentEquipment", false);
     private final POIListImpl m_assignmentFindings = new POIListImpl(this, "AssignmentFindings", false);
@@ -33,36 +37,19 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
 
     private final static EnumSet<AssignmentStatus> m_activeSet = EnumSet.range(AssignmentStatus.EXECUTING, AssignmentStatus.PAUSED);
     private final static EnumSet<AssignmentStatus> m_readySet = EnumSet.range(AssignmentStatus.READY, AssignmentStatus.ASSIGNED);
+    private final static EnumSet<AssignmentStatus> m_finishedSet = EnumSet.range(AssignmentStatus.ABORTED, AssignmentStatus.REPORTED);
+    private final static StatusSelector m_allocatedSelector = new StatusSelector(AssignmentStatus.ALLOCATED);
     private final static StatusSelector m_assignedSelector = new StatusSelector(AssignmentStatus.ASSIGNED);
-    private final static StatusSelector m_executingSelector = new StatusSelector(AssignmentStatus.EXECUTING);
-    private final static StatusSelector m_finishedSelector = new StatusSelector(AssignmentStatus.FINISHED);
-    private final static PrioritySequenceComparator m_prioritySequenceComparator  = new PrioritySequenceComparator();
+    private final static StatusSetSelector m_executingSelector = new StatusSetSelector(m_activeSet);
+    private final static StatusSetSelector m_finishedSelector = new StatusSetSelector(m_finishedSet);
+    private final static PrioritySequenceComparator m_prioritySequenceComparator = new PrioritySequenceComparator();
 
-    public static StatusSelector getAssignedSelector()
-    {
-        return m_assignedSelector;
-    }
-
-    public static StatusSelector getExecutingSelector()
-    {
-        return m_executingSelector;
-    }
-
-    public static StatusSelector getFinishedSelector()
-    {
-        return m_finishedSelector;
-    }
-
-    public static PrioritySequenceComparator getPrioritySequenceComparator()
-    {
-        return m_prioritySequenceComparator;
-    }
-
-    public AssignmentImpl(IMsoObjectIf.IObjectIdIf anObjectId)
+    public AssignmentImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
     {
         super(anObjectId);
+        setNumber(aNumber);
+        setType(getTypeBySubclass());
     }
-
 
     protected void defineAttributes()
     {
@@ -70,6 +57,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         addAttribute(m_prioritySequence);
         addAttribute(m_status);
         addAttribute(m_priority);
+        addAttribute(m_type);
     }
 
     protected void defineLists()
@@ -84,6 +72,24 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         addReference(m_assignmentHypothesis);
         addReference(m_plannedArea);
         addReference(m_reportedArea);
+    }
+
+    protected AssignmentType getTypeBySubclass()
+    {
+        return AssignmentType.GENERAL;
+    }
+
+    /**
+     * Local implementation of {@link AbstractMsoObject#registerModifiedData()}
+     * Resets correct subclass in case of incorrect changes by application or others.
+     */
+    public void registerModifiedData()
+    {
+        if (getType() != getTypeBySubclass())
+        {
+            setType(getTypeBySubclass());
+        }
+        super.registerModifiedData();
     }
 
     public static AssignmentImpl implementationOf(IAssignmentIf anInterface) throws MsoCastException
@@ -114,7 +120,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
 
     public void setStatus(AssignmentStatus aStatus) throws IllegalOperationException
     {
-        if (!canChangeToState(aStatus))
+        if (!canChangeToStatus(aStatus))
         {
             throw new IllegalOperationException("Cannont change status from " + getStatus() + " to " + aStatus);
         }
@@ -166,6 +172,26 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         return m_priority;
     }
 
+    protected void setType(AssignmentType aType)
+    {
+        m_type.setValue(aType);
+    }
+
+    public AssignmentType getType()
+    {
+        return m_type.getValue();
+    }
+
+    public IMsoModelIf.ModificationState getTypeState()
+    {
+        return m_type.getState();
+    }
+
+    public IAttributeIf.IMsoEnumIf<AssignmentType> getTypeAttribute()
+    {
+        return m_type;
+    }
+
     /*-------------------------------------------------------------------------------------------
     * Methods for attributes
     *-------------------------------------------------------------------------------------------*/
@@ -208,6 +234,27 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
     public IAttributeIf.IMsoIntegerIf getPrioritySequenceAttribute()
     {
         return m_prioritySequence;
+    }
+
+    // From ISerialNumberedIf
+    public void setNumber(int aNumber)
+    {
+        m_number.setValue(aNumber);
+    }
+
+    public int getNumber()
+    {
+        return m_number.intValue();
+    }
+
+    public IMsoModelIf.ModificationState getNumberState()
+    {
+        return m_number.getState();
+    }
+
+    public IAttributeIf.IMsoIntegerIf getNumberAttribute()
+    {
+        return m_number;
     }
 
     /*-------------------------------------------------------------------------------------------
@@ -346,6 +393,11 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         return getStatus().ordinal() < AssignmentStatus.READY.ordinal();
     }
 
+    public boolean hasBeenAllocated()
+    {
+        return getStatus().ordinal() >= AssignmentStatus.ALLOCATED.ordinal();
+    }
+
     public boolean hasBeenAssigned()
     {
         return getStatus().ordinal() >= AssignmentStatus.ASSIGNED.ordinal();
@@ -361,17 +413,17 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         return getStatus().ordinal() >= AssignmentStatus.FINISHED.ordinal();
     }
 
-    public boolean canChangeToState(String newState)
+    public boolean canChangeToStatus(String newState)
     {
         AssignmentStatus status = getStatusAttribute().enumValue(newState);
         if (status == null)
         {
             return false;
         }
-        return canChangeToState(status);
+        return canChangeToStatus(status);
     }
 
-    public boolean canChangeToState(AssignmentStatus newState)
+    public boolean canChangeToStatus(AssignmentStatus newState)
     {
         if (getStatus() == newState)
         {
@@ -413,16 +465,16 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         return (retVal.size() == 0) ? null : retVal.get(0);
     }
 
-    public void verifyAssignable(IUnitIf aUnit, AssignmentStatus newStatus, boolean unassignIfPossible) throws IllegalOperationException
+    public void verifyAllocatable(IUnitIf aUnit, AssignmentStatus newStatus, boolean unassignIfPossible) throws IllegalOperationException
     {
         // todo Test on type of assigment compared to type of unit.
-        if (!canChangeToState(AssignmentStatus.ASSIGNED))
+        if (!canChangeToStatus(AssignmentStatus.ALLOCATED))
         {
-            throw new IllegalOperationException("Assignment " + this + " cannot change status to ASSIGNED.");
+            throw new IllegalOperationException("Assignment " + this + " cannot change status to ALLOCATED.");
         }
-        if (getStatus() == AssignmentStatus.ASSIGNED && !unassignIfPossible)
+        if (getStatus() == AssignmentStatus.ALLOCATED && !unassignIfPossible)
         {
-            throw new IllegalOperationException("Assignment " + this + " is already assigned to another unit and cannot be reassigned.");
+            throw new IllegalOperationException("Assignment " + this + " is already allocated to another unit and cannot be reallocated.");
         }
         IUnitIf owningUnit = getOwningUnit();
         if (owningUnit != null && owningUnit != aUnit)
@@ -434,6 +486,32 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         }
     }
 
+    public static StatusSelector getAllocatedSelector()
+    {
+        return m_allocatedSelector;
+    }
+
+    public static StatusSelector getAssignedSelector()
+    {
+        return m_assignedSelector;
+    }
+
+    public static StatusSetSelector getExecutingSelector()
+    {
+        return m_executingSelector;
+    }
+
+    public static StatusSetSelector getFinishedSelector()
+    {
+        return m_finishedSelector;
+    }
+
+    public static PrioritySequenceComparator getPrioritySequenceComparator()
+    {
+        return m_prioritySequenceComparator;
+    }
+
+
     /**
      * Selector used for selecting assignments with a given status.
      */
@@ -443,7 +521,8 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
 
         /**
          * Construct a Selector object
-         * @param aStatus  The status to test against
+         *
+         * @param aStatus The status to test against
          */
         public StatusSelector(AssignmentStatus aStatus)
         {
@@ -455,7 +534,30 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
             return anObject.getStatus() == m_selectValue;
         }
     }
-    
+
+    /**
+     * Selector used for selecting assignments with status in a given set.
+     */
+    public static class StatusSetSelector implements Selector<IAssignmentIf>
+    {
+        EnumSet<AssignmentStatus> m_valueSet;
+
+        /**
+         * Construct a Selector object
+         *
+         * @param aValueSet The status set to test against
+         */
+        public StatusSetSelector(EnumSet<AssignmentStatus> aValueSet)
+        {
+            m_valueSet = aValueSet;
+        }
+
+        public boolean select(IAssignmentIf anObject)
+        {
+            return m_valueSet.contains(anObject.getStatus());
+        }
+    }
+
     public static class PrioritySequenceComparator implements Comparator<IAssignmentIf>
     {
         public int compare(IAssignmentIf o1, IAssignmentIf o2)
@@ -464,5 +566,9 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         }
     }
 
+    public int getTypenr()
+    {
+        return 0;
+    }
 
 }

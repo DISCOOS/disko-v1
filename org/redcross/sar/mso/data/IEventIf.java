@@ -6,7 +6,7 @@ import org.redcross.sar.util.except.DuplicateIdException;
 import java.util.Calendar;
 import java.util.Collection;
 
-public interface IEventIf extends ITimeItemIf
+public interface IEventIf extends ITimeItemIf, ISerialNumberedIf
 {
     /*-------------------------------------------------------------------------------------------
     * Methods for attributes

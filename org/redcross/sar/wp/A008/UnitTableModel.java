@@ -48,7 +48,7 @@ public class UnitTableModel extends AbstractTableModel
     {
         if(columnIndex==0)
         {
-            return TmpUnit.class;
+            return IUnitIf.class;
         }
         else if(columnIndex==5)
         {
@@ -56,11 +56,11 @@ public class UnitTableModel extends AbstractTableModel
         }
         else
         {
-            return TmpAssignment[].class;
+            return List.class;
         }
     }
 
-    ArrayList<TmpUnit> units = new ArrayList();
+    ArrayList<IUnitIf> units = new ArrayList<IUnitIf>();
 
 
     public int getRowCount()
@@ -73,134 +73,30 @@ public class UnitTableModel extends AbstractTableModel
         return 6;
     }
 
-    public void addUnit (TmpUnit aUnit)
+    public void addUnit (IUnitIf aUnit)
     {
         units.add(aUnit);
     }
 
     public Object getValueAt(int rowIndex, int columnIndex)
     {
-        TmpUnit un=units.get(rowIndex);
+        IUnitIf un=units.get(rowIndex);
         switch(columnIndex)
         {
             case 0:
                 return un;
             case 1:
-                return un.getNeste();
+                return un.getAllocatedAssignments();
             case 2:
-                return un.getTildelt();
+                return un.getAssignedAssignments();
             case 3:
-                return un.getStartet();
+                return un.getExecutingAssigment();
             case 4:
-                return un.getSøkt();
+                return un.getFinishedAssigment();
             case 5:
-                return un.getInfo();
+                return un.getRemarks();  // todo getInfo
             default: return "";
         }
     }
 
-    public static class TmpUnit
-    {
-        int enhnr;
-        IUnitIf.UnitType type;
-        String info;
-
-        public String getInfo()
-        {
-            return info;
-        }
-
-        List neste = new ArrayList();
-        List tildelt = new ArrayList();
-        List startet = new ArrayList();
-        List søkt = new ArrayList();
-
-        public TmpUnit(int aNr, IUnitIf.UnitType aType)
-        {
-            enhnr = aNr;
-            type = aType;
-        }
-
-        public int getEnhnr()
-        {
-            return enhnr;
-        }
-
-        public IUnitIf.UnitType getType()
-        {
-            return type;
-        }
-
-        public TmpAssignment[] getNeste()
-        {
-            return (TmpAssignment[])neste.toArray(new TmpAssignment[neste.size()]);
-        }
-
-        public TmpAssignment[] getTildelt()
-        {
-            return (TmpAssignment[])tildelt.toArray(new TmpAssignment[tildelt.size()]);
-        }
-
-        public TmpAssignment[] getStartet()
-        {
-            return (TmpAssignment[])startet.toArray(new TmpAssignment[startet.size()]);
-        }
-
-        public TmpAssignment[] getSøkt()
-        {
-            return (TmpAssignment[])søkt.toArray(new TmpAssignment[søkt.size()]);
-        }
-
-         public List<TmpAssignment> getNesteList()
-        {
-            return neste;
-        }
-
-        public List<TmpAssignment> getTildeltList()
-        {
-            return tildelt;
-        }
-
-        public List<TmpAssignment> getStartetList()
-        {
-            return startet;
-        }
-
-        public List<TmpAssignment> getSøktList()
-        {
-            return søkt;
-        }
-       
-
-
-    }
-
-    public static class TmpAssignment
-    {
-        int assgng;
-        int type;
-        IAssignmentIf.AssignmentStatus status;
-
-        public TmpAssignment(int assgng, int type, IAssignmentIf.AssignmentStatus status)
-        {
-            this.assgng = assgng;
-            this.type = type;
-            this.status = status;
-        }
-
-        public int getAssgng()
-        {
-            return assgng;
-        }
-
-        public int getType()
-        {
-            return type;
-        }
-
-        public IAssignmentIf.AssignmentStatus getStatus()
-        {
-            return status;
-        }
-    }
 }

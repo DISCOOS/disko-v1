@@ -5,7 +5,7 @@ import org.redcross.sar.mso.IMsoModelIf;
 /**
  *
  */
-public interface IHypothesisIf extends IMsoObjectIf
+public interface IHypothesisIf extends IMsoObjectIf, ISerialNumberedIf
 {
     /**
      * Status enum

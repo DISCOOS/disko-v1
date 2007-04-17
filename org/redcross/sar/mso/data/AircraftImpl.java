@@ -50,7 +50,6 @@ public class AircraftImpl extends AbstractTransportUnit implements IAircraftIf
         super.defineReferences();
     }
 
-
     protected UnitType getTypeBySubclass()
     {
         return IUnitIf.UnitType.AIRCRAFT;

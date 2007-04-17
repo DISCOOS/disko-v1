@@ -59,14 +59,14 @@ public class MsoManagerImpl implements IMsoManagerIf
         });
     }
 
-    public IOperationIf createOperation() throws DuplicateIdException
+    public IOperationIf createOperation(String aNumberPrefix, String aNumber) throws DuplicateIdException
     {
         if (m_operation != null)
         {
             throw new DuplicateIdException("An operation already exists");
         }
         IMsoObjectIf.IObjectIdIf operationId = MsoModelImpl.getInstance().getModelDriver().makeObjectId();
-        m_operation = new OperationImpl(operationId);
+        m_operation = new OperationImpl(operationId, aNumberPrefix, aNumber);
         return m_operation;
     }
 
@@ -148,9 +148,29 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getAssignmentList().createAssignment();
     }
 
-    public IAssignmentIf createAssignment(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public IAssignmentIf createAssignment(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber) throws DuplicateIdException
     {
-        return getExistingCmdPost().getAssignmentList().createAssignment(anObjectId);
+        return getExistingCmdPost().getAssignmentList().createAssignment(anObjectId, aNumber);
+    }
+
+    public ISearchIf createSearch()
+    {
+        return getExistingCmdPost().getAssignmentList().createSearch();
+    }
+
+    public ISearchIf createSearch(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber) throws DuplicateIdException
+    {
+        return getExistingCmdPost().getAssignmentList().createSearch(anObjectId, aNumber);
+    }
+
+    public IAssistanceIf createAssistance()
+    {
+        return getExistingCmdPost().getAssignmentList().createAssistance();
+    }
+
+    public IAssistanceIf createAssistance(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber) throws DuplicateIdException
+    {
+        return getExistingCmdPost().getAssignmentList().createAssistance(anObjectId, aNumber);
     }
 
     public IBriefingIf createBriefing()

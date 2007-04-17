@@ -14,7 +14,7 @@ import java.util.Collection;
 /**
  * Search or rescue unit.
  */
-public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf, ISerialNumberedIf
+public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
 {
 
     private final AttributeImpl.MsoInteger m_averageSpeed = new AttributeImpl.MsoInteger(this, "AverageSpeed");
@@ -26,6 +26,7 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf,
     private final AttributeImpl.MsoString m_remarks = new AttributeImpl.MsoString(this, "Remarks");
     private final AttributeImpl.MsoInteger m_speed = new AttributeImpl.MsoInteger(this, "Speed");
     private final AttributeImpl.MsoEnum<UnitType> m_type = new AttributeImpl.MsoEnum<UnitType>(this, "Type", UnitType.COMMAND_POST);
+    private final AttributeImpl.MsoEnum<UnitStatus> m_status = new AttributeImpl.MsoEnum<UnitStatus>(this, "Status", UnitStatus.EMPTY);
 
     private final AssignmentListImpl m_unitAssignments = new AssignmentListImpl(this, "UnitAssignments", false);
     private final PersonnelListImpl m_unitPersonnel = new PersonnelListImpl(this, "UnitPersonnel", false);
@@ -36,7 +37,7 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf,
     public AbstractUnit(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
     {
         super(anObjectId);
-        m_number.setValue(aNumber);
+        setNumber(aNumber);
         setType(getTypeBySubclass());
     }
 
@@ -58,6 +59,7 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf,
         addAttribute(m_remarks);
         addAttribute(m_speed);
         addAttribute(m_type);
+        addAttribute(m_status);
     }
 
     protected void defineLists()
@@ -110,6 +112,31 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf,
     public IAttributeIf.IMsoEnumIf<UnitType> getTypeAttribute()
     {
         return m_type;
+    }
+
+    public void setStatus(UnitStatus aStatus)
+    {
+        m_status.setValue(aStatus);
+    }
+
+    public void setStatus(String aStatus)
+    {
+        m_status.setValue(aStatus);
+    }
+
+    public UnitStatus getStatus()
+    {
+        return m_status.getValue();
+    }
+
+    public IMsoModelIf.ModificationState getStatusState()
+    {
+        return m_status.getState();
+    }
+
+    public IAttributeIf.IMsoEnumIf<UnitStatus> getStatusAttribute()
+    {
+        return m_status;
     }
 
     /*-------------------------------------------------------------------------------------------
@@ -283,10 +310,10 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf,
 
     public void addUnitAssignment(IAssignmentIf anIAssignmentIf) throws DuplicateIdException, IllegalOperationException
     {
-        anIAssignmentIf.verifyAssignable(this, IAssignmentIf.AssignmentStatus.ASSIGNED, true);
+        anIAssignmentIf.verifyAllocatable(this, IAssignmentIf.AssignmentStatus.ALLOCATED, true);
         m_unitAssignments.add(anIAssignmentIf);
         anIAssignmentIf.setPrioritySequence(Integer.MAX_VALUE);
-        anIAssignmentIf.setStatus(IAssignmentIf.AssignmentStatus.ASSIGNED);
+        anIAssignmentIf.setStatus(IAssignmentIf.AssignmentStatus.ALLOCATED);
     }
 
     public void removeUnitAssignment(IAssignmentIf anIAssignmentIf, IAssignmentIf.AssignmentStatus newStatus) throws IllegalOperationException
@@ -444,10 +471,23 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf,
         return "AbstractUnit" + " " + getObjectId();
     }
 
-    public List<IAssignmentIf> assignmentsByPriority()
+    public List<IAssignmentIf> getAllocatedAssignments()
     {
-        return m_unitAssignments.selectItems(AssignmentImpl.getAssignedSelector(), AssignmentImpl.getPrioritySequenceComparator());
+        return m_unitAssignments.selectItems(AssignmentImpl.getAllocatedSelector(), AssignmentImpl.getPrioritySequenceComparator());
     }
 
+    public List<IAssignmentIf> getAssignedAssignments()
+    {
+        return m_unitAssignments.selectItems(AssignmentImpl.getAssignedSelector(), null);
+    }
 
+    public List<IAssignmentIf> getExecutingAssigment()
+    {
+        return m_unitAssignments.selectItems(AssignmentImpl.getExecutingSelector(), null);
+    }
+
+    public List<IAssignmentIf> getFinishedAssigment()
+    {
+        return m_unitAssignments.selectItems(AssignmentImpl.getFinishedSelector(), null);
+    }
 }

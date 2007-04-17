@@ -11,7 +11,7 @@ import java.util.Calendar;
 public interface ISearchIf extends IAssignmentIf
 {
 
-    public enum SearchType
+    public enum SearchSubType
     {
         LINE,
         PATROL,
@@ -26,15 +26,15 @@ public interface ISearchIf extends IAssignmentIf
     * Methods for ENUM attributes
     *-------------------------------------------------------------------------------------------*/
 
-    public void setType(SearchType aType);
+    public void setSubType(SearchSubType aSubType);
 
-    public void setType(String aType);
+    public void setSubType(String aSubType);
 
-    public SearchType getType();
+    public SearchSubType getSubType();
 
-    public IMsoModelIf.ModificationState getTypeState();
+    public IMsoModelIf.ModificationState getSubTypeState();
 
-    public IAttributeIf.IMsoEnumIf<SearchType> getTypeAttribute();
+    public IAttributeIf.IMsoEnumIf<SearchSubType> getSubTypeAttribute();
 
     /*-------------------------------------------------------------------------------------------
     * Methods for attributes

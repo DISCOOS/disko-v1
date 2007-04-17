@@ -7,6 +7,8 @@ import javax.swing.UIManager;
 import org.redcross.sar.gui.LoginDialog;
 import org.redcross.sar.gui.UIFactory;
 import org.redcross.sar.map.DiskoMap;
+import org.redcross.sar.mso.MsoModelImpl;
+import org.redcross.sar.mso.IMsoModelIf;
 
 import java.io.File;
 import java.util.Hashtable;
@@ -26,8 +28,10 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication {
 	private DiskoModuleLoader moduleLoader = null;
 	private Properties properties = null;
 	private UIFactory uiFactory = null;
-	
-	/**
+
+    private MsoModelImpl m_msoModel = null;
+
+    /**
 	 * The main method.
 	 * @param args
 	 */
@@ -116,8 +120,17 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication {
 		}
 		return uiFactory;
 	}
-	
-	/* (non-Javadoc)
+
+    public IMsoModelIf getMsoModel()
+    {
+        if (m_msoModel == null)
+        {
+            m_msoModel = MsoModelImpl.getInstance();
+        }
+        return m_msoModel;
+    }
+
+    /* (non-Javadoc)
 	 * @see org.redcross.sar.app.IDiskoApplication#login(java.lang.String, java.lang.String, char[])
 	 */
 	public void login(String rolleName, String user, char[] password) {

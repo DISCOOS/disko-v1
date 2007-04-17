@@ -7,14 +7,36 @@ import org.redcross.sar.util.except.IllegalOperationException;
  */
 public class AssistanceImpl extends AssignmentImpl implements IAssistanceIf
 {
+    public AssistanceImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
+    {
+        super(anObjectId, aNumber);
+    }
+
+    protected void defineAttributes()
+    {
+        super.defineAttributes();
+    }
+
+    protected void defineLists()
+    {
+        super.defineLists();
+    }
+
+    protected void defineReferences()
+    {
+        super.defineReferences();
+    }
+
+    @Override
+    protected AssignmentType getTypeBySubclass()
+    {
+        return AssignmentType.ASSISTANCE;
+    }
+
+
     /*-------------------------------------------------------------------------------------------
     * Other specified methods
     *-------------------------------------------------------------------------------------------*/
-
-    public AssistanceImpl(IMsoObjectIf.IObjectIdIf anObjectId)
-    {
-        super(anObjectId);
-    }
 
     public IAreaIf getPlannedIncidentScene()
     {
@@ -35,4 +57,10 @@ public class AssistanceImpl extends AssignmentImpl implements IAssistanceIf
     {
         setReportedArea(anArea);
     }
+
+    public int getTypenr()
+    {
+        return 1;
+    }
+
 }

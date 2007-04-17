@@ -8,7 +8,7 @@ import org.redcross.sar.util.except.DuplicateIdException;
 import java.util.Calendar;
 import java.util.Collection;
 
-public class EventImpl extends AbstractTimeItem implements IEventIf, ISerialNumberedIf
+public class EventImpl extends AbstractTimeItem implements IEventIf
 {
 
     private final AttributeImpl.MsoInteger m_number = new AttributeImpl.MsoInteger(this, "Number");

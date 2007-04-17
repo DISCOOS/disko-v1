@@ -126,21 +126,22 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
     * Other specified methods
     *-------------------------------------------------------------------------------------------*/
 
+    private final SelfSelector<IAreaIf, IAssignmentIf> owningAssigmentSelector = new SelfSelector<IAreaIf, IAssignmentIf>(this)
+    {
+        public boolean select(IAssignmentIf anObject)
+        {
+            return (anObject.getPlannedArea() == m_object || anObject.getReportedArea() == m_object); // todo Check status as well?
+        }
+    };
+
     public IAssignmentIf getOwningAssignment()
     {
-        List<IAssignmentIf> retVal = MsoModelImpl.getInstance().getMsoManager().getCmdPost().getAssignmentList().selectItems(
-                new SelfSelector<IAreaIf, IAssignmentIf>(this)
-                {
-                    public boolean select(IAssignmentIf anObject)
-                    {
-                        return (anObject.getPlannedArea() == m_object || anObject.getReportedArea() == m_object); // todo Check status as well?
-                    }
-                }, null);
+        List<IAssignmentIf> retVal = MsoModelImpl.getInstance().getMsoManager().getCmdPost().getAssignmentList().selectItems(owningAssigmentSelector, null);
         return (retVal.size() == 0) ? null : retVal.get(0);
     }
 
     public void verifyAssignable(IAssignmentIf anAssignment) throws IllegalOperationException
-        {
+    {
         IAssignmentIf asg = getOwningAssignment();
         if (asg != null && asg != anAssignment)
         {
@@ -148,15 +149,13 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
         }
     }
 
-
-    public IMsoReferenceIf<IHypothesisIf> getHypotesisAttribute()
-    {
-        return getOwningAssignment().getAssignmentHypothesisAttribute();
-    }
-
-    public void setHypothesis(IHypothesisIf anHypothesis)
+    public void setAreaHypothesis(IHypothesisIf anHypothesis)
     {
         getOwningAssignment().setAssignmentHypothesis(anHypothesis);
     }
 
+    public IHypothesisIf getAreaHypothesis()
+    {
+        return getOwningAssignment().getAssignmentHypothesis();
+    }
 }

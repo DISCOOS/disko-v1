@@ -3,6 +3,7 @@ package org.redcross.sar.wp.A008;
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
+import org.redcross.sar.wp.TestData.BuildTestData;
 import org.redcross.sar.wp.A008.IDiskoWpLogistics;
 
 import javax.swing.*;
@@ -30,7 +31,10 @@ public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDisk
     {
         loadProperties("properties");
 
-        JPanel lPanel=new LogisticsPanel().getPanel();
+        BuildTestData.createCmdPost(getMsoModel());
+        BuildTestData.createUnitsAndAssignments(getMsoModel());
+
+        JPanel lPanel=new LogisticsPanel(this).getPanel();
         lPanel.setBackground(Color.BLUE);
         layoutComponent(lPanel);
 //        DiskoMap map = getMap();

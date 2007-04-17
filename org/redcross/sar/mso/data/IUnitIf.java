@@ -14,7 +14,7 @@ import java.util.List;
 /**
  *
  */
-public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf
+public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf, ISerialNumberedIf
 {
     public enum UnitType
     {
@@ -26,6 +26,15 @@ public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf
         VEHICLE
     }
 
+    public enum UnitStatus
+    {
+        EMPTY,
+        READY,
+        PAUSED,
+        WORKING,
+        RELEASED
+    }
+
     /*-------------------------------------------------------------------------------------------
     * Methods for ENUM attributes
     *-------------------------------------------------------------------------------------------*/
@@ -35,6 +44,17 @@ public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf
     public IMsoModelIf.ModificationState getTypeState();
 
     public IAttributeIf.IMsoEnumIf<UnitType> getTypeAttribute();
+
+
+    public void setStatus(UnitStatus aStatus);
+
+    public void setStatus(String aStatus);
+
+    public UnitStatus getStatus();
+
+    public IMsoModelIf.ModificationState getStatusState();
+
+    public IAttributeIf.IMsoEnumIf<UnitStatus> getStatusAttribute();
 
     /*-------------------------------------------------------------------------------------------
     * Methods for attributes
@@ -103,7 +123,8 @@ public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf
     /**
      * @param anIAssignmentIf The assigment to add
      * @throws DuplicateIdException if the list already contains an object with the same object ID.
-     * @throws org.redcross.sar.util.except.IllegalOperationException if the assignment cannot be assigned.
+     * @throws org.redcross.sar.util.except.IllegalOperationException
+     *                              if the assignment cannot be assigned.
      */
     public void addUnitAssignment(IAssignmentIf anIAssignmentIf) throws DuplicateIdException, IllegalOperationException;
 
@@ -139,6 +160,13 @@ public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf
     * Other methods
     *-------------------------------------------------------------------------------------------*/
 
-    public List<IAssignmentIf> assignmentsByPriority();
+    public List<IAssignmentIf> getAllocatedAssignments();
+
+    public List<IAssignmentIf> getAssignedAssignments();
+
+    public List<IAssignmentIf> getExecutingAssigment();
+
+    public List<IAssignmentIf> getFinishedAssigment();
+
 
 }

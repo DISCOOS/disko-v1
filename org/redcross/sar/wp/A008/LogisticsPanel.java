@@ -1,15 +1,19 @@
 package org.redcross.sar.wp.A008;
 
 import org.redcross.sar.app.Utils;
-import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IAssignmentIf;
+import org.redcross.sar.mso.data.IUnitIf;
+import org.redcross.sar.mso.data.IUnitListIf;
+import org.redcross.sar.util.mso.Selector;
+import org.redcross.sar.wp.AbstractDiskoWpModule;
 
 import javax.swing.*;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.DefaultTableCellRenderer;
+import java.awt.*;
 import java.awt.event.HierarchyBoundsAdapter;
 import java.awt.event.HierarchyEvent;
-import java.awt.*;
+import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 /**
  * Created by IntelliJ IDEA.
@@ -24,7 +28,7 @@ import java.util.HashMap;
 public class LogisticsPanel
 {
 
-    private static final Dimension labelDim=new Dimension(60,60);
+    private static final Dimension labelDim = new Dimension(60, 60);
     private JPanel panel1;
     private JPanel m_mapPanel;
     private JPanel m_assignmentPanel;
@@ -32,8 +36,9 @@ public class LogisticsPanel
     private JPanel m_infoPanel;
     private JTable m_unitTable;
     private JTable m_assignmentTable;
+    private AbstractDiskoWpModule m_wpModule;
 
-    public LogisticsPanel()
+    public LogisticsPanel(AbstractDiskoWpModule aWp)
     {
         m_infoPanel.addHierarchyBoundsListener(new HierarchyBoundsAdapter()
         {
@@ -45,14 +50,15 @@ public class LogisticsPanel
 
         m_unitTable.setModel(new UnitTableModel());
         m_unitTable.setAutoCreateColumnsFromModel(true);
-        m_unitTable.setDefaultRenderer(UnitTableModel.TmpUnit.class,new UnitRenderer());
-        m_unitTable.setDefaultRenderer(UnitTableModel.TmpAssignment[].class,new AssignmentRenderer());
+        m_unitTable.setDefaultRenderer(IUnitIf.class, new UnitRenderer());
+        m_unitTable.setDefaultRenderer(java.util.List.class, new AssignmentRenderer());
         m_unitTable.setRowHeight(32);
+        m_wpModule = aWp;
     }
 
     public JPanel getPanel()
     {
-        setTmpData();
+        setTableData();
         return panel1;
     }
 
@@ -78,25 +84,34 @@ public class LogisticsPanel
     }
 
 
-    private void setTmpData()
+    private final static Selector<IUnitIf> m_unitSelector = new Selector<IUnitIf>()
     {
-        UnitTableModel utm = (UnitTableModel)m_unitTable.getModel();
-        UnitTableModel.TmpUnit un;
-        UnitTableModel.TmpAssignment as;
-        un = new UnitTableModel.TmpUnit(1,IUnitIf.UnitType.AIRCRAFT);
-        as = new UnitTableModel.TmpAssignment(1,0, IAssignmentIf.AssignmentStatus.FINISHED);
-        un.getNesteList().add(as);
-        utm.addUnit(un);
-    }
+        private EnumSet<IUnitIf.UnitStatus> m_activeStatus = EnumSet.range(IUnitIf.UnitStatus.READY, IUnitIf.UnitStatus.WORKING);
 
-    public void main(String[] args)
+        public boolean select(IUnitIf anObject)
+        {
+            return m_activeStatus.contains(anObject.getStatus());
+        }
+    };
+
+    private final static Comparator<IUnitIf> m_unitComparator = new Comparator<IUnitIf>()
     {
-        JFrame frame = new JFrame("frame");
-        LogisticsPanel lp = new LogisticsPanel();
-        frame.getContentPane().add(lp.getPanel());
-        lp.setTmpData();
-    }
+        public int compare(IUnitIf u1,IUnitIf u2)
+        {
+            return u1.getNumber() - u2.getNumber();
+        }
+    };
 
+    private void setTableData()
+    {
+        UnitTableModel utm = (UnitTableModel) m_unitTable.getModel();
+        IAssignmentIf as;
+        IUnitListIf unitList = m_wpModule.getMsoManager().getCmdPost().getUnitList();
+        for (IUnitIf unit : unitList.selectItems(m_unitSelector, m_unitComparator))
+        {
+            utm.addUnit(unit);
+        }
+    }
 
     public static class UnitRenderer extends DefaultTableCellRenderer
     {
@@ -120,15 +135,15 @@ public class LogisticsPanel
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
         {
-            UnitTableModel.TmpUnit tmpUnit = (UnitTableModel.TmpUnit) value;
+            IUnitIf unit = (IUnitIf) value;
 
 
-            JLabel retVal = new JLabel("" + tmpUnit.getEnhnr(), icons.get(tmpUnit.getType()), JLabel.CENTER);
+            JLabel retVal = new JLabel("" + unit.getNumber(), icons.get(unit.getType()), JLabel.CENTER);
             if (isSelected || hasFocus)
             {
-                retVal=(JLabel) super.getTableCellRendererComponent(table, "", isSelected, hasFocus, row, column);
-                retVal.setText("" + tmpUnit.getEnhnr());
-                retVal.setIcon(icons.get(tmpUnit.getType()));
+                retVal = (JLabel) super.getTableCellRendererComponent(table, "", isSelected, hasFocus, row, column);
+                retVal.setText("" + unit.getNumber());
+                retVal.setIcon(icons.get(unit.getType()));
                 retVal.setHorizontalAlignment(JLabel.CENTER);
             }
             return retVal;
@@ -158,15 +173,14 @@ public class LogisticsPanel
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
         {
-            UnitTableModel.TmpAssignment[] tmpAssignment = (UnitTableModel.TmpAssignment[]) value;
-            JLabel retVal=null;
-            if(tmpAssignment.length==0)
+            java.util.List<IAssignmentIf> assignments = (java.util.List<IAssignmentIf>) value;
+            JLabel retVal = null;
+            if (assignments.size() == 0)
             {
-                retVal=new JLabel();
-            }
-            else
+                retVal = new JLabel();
+            } else
             {
-            retVal = new JLabel("" + tmpAssignment.length, icons.get(tmpAssignment[0].getType()), JLabel.LEFT);
+                retVal = new JLabel("" + assignments.get(0).getNumber() + "(" + assignments.size() + ")", icons.get(assignments.get(0).getTypenr()), JLabel.LEFT);
             }
             if (isSelected || hasFocus)
             {
@@ -174,11 +188,10 @@ public class LogisticsPanel
             }
             retVal.setPreferredSize(labelDim);
             retVal.setMinimumSize(labelDim);
-                        retVal.setMaximumSize(labelDim);
+            retVal.setMaximumSize(labelDim);
             retVal.setBorder(BorderFactory.createEtchedBorder());
 
-                return retVal;
-
+            return retVal;
         }
     }
 }

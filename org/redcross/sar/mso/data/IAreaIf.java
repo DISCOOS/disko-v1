@@ -47,9 +47,15 @@ public interface IAreaIf extends IMsoObjectIf
 
     public IAssignmentIf getOwningAssignment();
 
+    /**
+     * Verify that the area can be assigned to a given assigmnent.
+     *
+     * @param anAssignment The assigmnent that shall refer to the area.
+     * @throws IllegalOperationException If the assignment cannot be done (verification failed).
+     */
     public void verifyAssignable(IAssignmentIf anAssignment) throws IllegalOperationException;
 
-    public IMsoReferenceIf<IHypothesisIf> getHypotesisAttribute();
+    public void setAreaHypothesis(IHypothesisIf anHypothesis);
 
-    public void setHypothesis(IHypothesisIf anHypothesis);
+    public IHypothesisIf getAreaHypothesis();
 }

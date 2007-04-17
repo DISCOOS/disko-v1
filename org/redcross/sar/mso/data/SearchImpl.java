@@ -1,8 +1,6 @@
 package org.redcross.sar.mso.data;
 
-import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.except.IllegalOperationException;
 
 import java.util.Calendar;
@@ -25,11 +23,11 @@ public class SearchImpl extends AssignmentImpl implements ISearchIf
     private final AttributeImpl.MsoCalendar m_start = new AttributeImpl.MsoCalendar(this, "Start");
     private final AttributeImpl.MsoCalendar m_stop = new AttributeImpl.MsoCalendar(this, "Stop");
 
-    private final AttributeImpl.MsoEnum<SearchType> m_type = new AttributeImpl.MsoEnum<SearchType>(this, "Type", SearchType.LINE);
+    private final AttributeImpl.MsoEnum<SearchSubType> m_subType = new AttributeImpl.MsoEnum<SearchSubType>(this,"SubType", SearchSubType.LINE);
 
-    public SearchImpl(IMsoObjectIf.IObjectIdIf anObjectId)
+    public SearchImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
     {
-        super(anObjectId);
+        super(anObjectId, aNumber);
     }
 
 
@@ -48,8 +46,7 @@ public class SearchImpl extends AssignmentImpl implements ISearchIf
         addAttribute(m_reportedSearchMethod);
         addAttribute(m_start);
         addAttribute(m_stop);
-        addAttribute(m_type);
-
+        addAttribute(m_subType);
     }
 
     protected void defineLists()
@@ -62,33 +59,39 @@ public class SearchImpl extends AssignmentImpl implements ISearchIf
         super.defineReferences();
     }
 
+    @Override
+    protected AssignmentType getTypeBySubclass()
+    {
+        return AssignmentType.SEARCH;
+    }
+
     /*-------------------------------------------------------------------------------------------
     * Methods for ENUM attributes
     *-------------------------------------------------------------------------------------------*/
 
-    public void setType(SearchType aType)
+    public void setSubType(SearchSubType aSubType)
     {
-        m_type.setValue(aType);
+        m_subType.setValue(aSubType);
     }
 
-    public void setType(String aType)
+    public void setSubType(String aSubType)
     {
-        m_type.setValue(aType);
+        m_subType.setValue(aSubType);
     }
 
-    public SearchType getType()
+    public SearchSubType getSubType()
     {
-        return m_type.getValue();
+        return m_subType.getValue();
     }
 
-    public IMsoModelIf.ModificationState getTypeState()
+    public IMsoModelIf.ModificationState getSubTypeState()
     {
-        return m_type.getState();
+        return m_subType.getState();
     }
 
-    public IAttributeIf.IMsoEnumIf<SearchType> getTypeAttribute()
+    public IAttributeIf.IMsoEnumIf<SearchSubType> getSubTypeAttribute()
     {
-        return m_type;
+        return m_subType;
     }
 
     /*-------------------------------------------------------------------------------------------
@@ -358,4 +361,11 @@ public class SearchImpl extends AssignmentImpl implements ISearchIf
     {
         setReportedArea(anArea);
     }
+
+    @Override
+    public int getTypenr()
+    {
+        return 2;
+    }
+
 }

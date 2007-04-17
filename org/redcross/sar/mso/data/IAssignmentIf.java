@@ -9,7 +9,7 @@ import java.util.Collection;
 /**
  *
  */
-public interface IAssignmentIf extends IMsoObjectIf
+public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf
 {
     public enum AssignmentStatus
     {
@@ -30,6 +30,13 @@ public interface IAssignmentIf extends IMsoObjectIf
         HIGH,
         MEDIUM,
         LOW
+    }
+
+    public enum AssignmentType
+    {
+        GENERAL,
+        ASSISTANCE,
+        SEARCH
     }
 
     /*-------------------------------------------------------------------------------------------
@@ -55,6 +62,12 @@ public interface IAssignmentIf extends IMsoObjectIf
     public IMsoModelIf.ModificationState getPriorityState();
 
     public IAttributeIf.IMsoEnumIf<AssignmentPriority> getPriorityAttribute();
+
+    public AssignmentType getType();
+
+    public IMsoModelIf.ModificationState getTypeState();
+
+    public IAttributeIf.IMsoEnumIf<AssignmentType> getTypeAttribute();
 
     /*-------------------------------------------------------------------------------------------
     * Methods for attributes
@@ -116,6 +129,12 @@ public interface IAssignmentIf extends IMsoObjectIf
 
     public IMsoReferenceIf<IHypothesisIf> getAssignmentHypothesisAttribute();
 
+    /**
+     * Assign planned area
+     *
+     * @param anArea The area to assign
+     * @throws IllegalOperationException If the area has been assigned to another assignment.
+     */
     public void setPlannedArea(IAreaIf anArea) throws IllegalOperationException;
 
     public IAreaIf getPlannedArea();
@@ -124,6 +143,12 @@ public interface IAssignmentIf extends IMsoObjectIf
 
     public IMsoReferenceIf<IAreaIf> getPlannedAreaAttribute();
 
+    /**
+     * Assign reported area
+     *
+     * @param anArea The area to assign
+     * @throws IllegalOperationException If the area has been assigned to another assignment.
+     */
     public void setReportedArea(IAreaIf anArea) throws IllegalOperationException;
 
     public IAreaIf getReportedArea();
@@ -138,22 +163,29 @@ public interface IAssignmentIf extends IMsoObjectIf
 
     public boolean isNotReady();
 
+    public boolean hasBeenAllocated();
+
     public boolean hasBeenAssigned();
 
     public boolean hasBeenStarted();
 
     public boolean hasBeenFinished();
 
-    public boolean canChangeToState(AssignmentStatus newState);
+    public boolean canChangeToStatus(AssignmentStatus newState);
+
+    public boolean canChangeToStatus(String newState);
 
     public IUnitIf getOwningUnit();
 
     /**
      * Verify that the assigment can be assigned to a given unit.
-     * @param aUnit The unit that shall have the assigment.
-     * @param newStatus The new status that the assignment shall have.
+     *
+     * @param aUnit              The unit that shall have the assigment.
+     * @param newStatus          The new status that the assignment shall have.
      * @param unassignIfPossible If <code>true</code>, the assigment will be assigned from any other possible other unit.
      * @throws IllegalOperationException If the assignment cannot be done (verification failed).
      */
-    public void verifyAssignable(IUnitIf aUnit, IAssignmentIf.AssignmentStatus newStatus, boolean unassignIfPossible) throws IllegalOperationException;
+    public void verifyAllocatable(IUnitIf aUnit, IAssignmentIf.AssignmentStatus newStatus, boolean unassignIfPossible) throws IllegalOperationException;
+
+    int getTypenr();
 }

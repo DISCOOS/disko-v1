@@ -1,9 +1,10 @@
 package org.redcross.sar.app;
 
-import javax.swing.JFrame;
-
 import org.redcross.sar.gui.UIFactory;
 import org.redcross.sar.map.DiskoMap;
+import org.redcross.sar.mso.IMsoModelIf;
+
+import javax.swing.*;
 
 
 /**
@@ -60,4 +61,12 @@ public interface IDiskoApplication {
 	 * @param password Default password
 	 */
 	public void login(String rolleName, String user, char[] password);
+
+    /**
+     * Get a reference to the MsoModel.
+     * This class is responsible for all communication with the data model and data server (SARA).
+     * @return A reference to the MsoModel.
+     */
+    public IMsoModelIf getMsoModel();
+
 }

@@ -51,11 +51,13 @@ public interface IMsoManagerIf
      * Create a new {@link org.redcross.sar.mso.data.IOperationIf} object.
      * The Big Bang that creates the Universe of MSO Structures (Galaxes) and Objects (stars).
      *
+     * @param aNumberPrefix Number prefix types with format yyyy-[text], where yyyy = current year. List of prefix types is given in config file.
+     * @param aNumber Variable part of operation number. The readable operation number is a concatenation of Number and NumberPrefix.
      * @return The created object.
      * @throws org.redcross.sar.util.except.DuplicateIdException
      *          if an Operation object (Universe) already exists.
      */
-    public IOperationIf createOperation() throws DuplicateIdException;
+    public IOperationIf createOperation(String aNumberPrefix, String aNumber) throws DuplicateIdException;
 
     /**
      * Get the {@link org.redcross.sar.mso.data.IOperationIf} object
@@ -150,11 +152,49 @@ public interface IMsoManagerIf
      * Create a new {@link org.redcross.sar.mso.data.IAssignmentIf} object and add it to the collection of Assignment objects.
      *
      * @param anObjectId The Object id
+     * @param aNumber The assigments's sequence number
      * @return The created object.
      * @throws org.redcross.sar.util.except.DuplicateIdException
      *          if an Assignment object already exists with the same ObjectId value.
      */
-    public IAssignmentIf createAssignment(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException;
+    public IAssignmentIf createAssignment(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber) throws DuplicateIdException;
+
+    /**
+     * Create a new {@link org.redcross.sar.mso.data.ISearchIf} object and add it to the collection of Assignment objects.
+     *
+     * @return The created object.
+     */
+    public ISearchIf createSearch();
+
+    /**
+     * Create a new {@link org.redcross.sar.mso.data.ISearchIf} object and add it to the collection of Assignment objects.
+     *
+     * @param anObjectId The Object id
+     * @param aNumber The assigments's sequence number
+     * @return The created object.
+     * @throws org.redcross.sar.util.except.DuplicateIdException
+     *          if an Assignment object already exists with the same ObjectId value.
+     */
+    public ISearchIf createSearch(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber) throws DuplicateIdException;
+
+    /**
+     * Create a new {@link org.redcross.sar.mso.data.IAssistanceIf} object and add it to the collection of Assignment objects.
+     *
+     * @return The created object.
+     */
+    public IAssistanceIf createAssistance();
+
+    /**
+     * Create a new {@link org.redcross.sar.mso.data.IAssistanceIf} object and add it to the collection of Assignment objects.
+     *
+     * @param anObjectId The Object id
+     * @param aNumber The assigments's sequence number
+     * @return The created object.
+     * @throws org.redcross.sar.util.except.DuplicateIdException
+     *          if an Assignment object already exists with the same ObjectId value.
+     */
+    public IAssistanceIf createAssistance(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber) throws DuplicateIdException;
+
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.IBriefingIf} object and add it to the collection of Briefing objects.
