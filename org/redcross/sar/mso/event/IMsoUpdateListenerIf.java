@@ -15,5 +15,5 @@ public interface IMsoUpdateListenerIf extends java.util.EventListener
      */
     public void handleMsoUpdateEvent(MsoEvent.Update e);
 
-    public boolean hasInterestIn(IMsoObjectIf aClassCode);
+    public boolean hasInterestIn(IMsoObjectIf aMsoObject);
 }

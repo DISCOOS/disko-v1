@@ -9,7 +9,7 @@ import java.util.Collection;
 /**
  *
  */
-public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf
+public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumStatusHolder<IAssignmentIf.AssignmentStatus>
 {
     public enum AssignmentStatus
     {

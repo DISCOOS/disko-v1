@@ -38,10 +38,10 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
     private final static EnumSet<AssignmentStatus> m_activeSet = EnumSet.range(AssignmentStatus.EXECUTING, AssignmentStatus.PAUSED);
     private final static EnumSet<AssignmentStatus> m_readySet = EnumSet.range(AssignmentStatus.READY, AssignmentStatus.ASSIGNED);
     private final static EnumSet<AssignmentStatus> m_finishedSet = EnumSet.range(AssignmentStatus.ABORTED, AssignmentStatus.REPORTED);
-    private final static StatusSelector m_allocatedSelector = new StatusSelector(AssignmentStatus.ALLOCATED);
-    private final static StatusSelector m_assignedSelector = new StatusSelector(AssignmentStatus.ASSIGNED);
-    private final static StatusSetSelector m_executingSelector = new StatusSetSelector(m_activeSet);
-    private final static StatusSetSelector m_finishedSelector = new StatusSetSelector(m_finishedSet);
+    private final static StatusSelector<IAssignmentIf,AssignmentStatus> m_allocatedSelector = new StatusSelector<IAssignmentIf,AssignmentStatus>(AssignmentStatus.ALLOCATED);
+    private final static StatusSelector<IAssignmentIf,AssignmentStatus> m_assignedSelector = new StatusSelector<IAssignmentIf,AssignmentStatus>(AssignmentStatus.ASSIGNED);
+    private final static StatusSetSelector<IAssignmentIf,AssignmentStatus> m_executingSelector = new StatusSetSelector<IAssignmentIf,AssignmentStatus>(m_activeSet);
+    private final static StatusSetSelector<IAssignmentIf,AssignmentStatus> m_finishedSelector = new StatusSetSelector<IAssignmentIf,AssignmentStatus>(m_finishedSet);
     private final static PrioritySequenceComparator m_prioritySequenceComparator = new PrioritySequenceComparator();
 
     public AssignmentImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
@@ -486,22 +486,22 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         }
     }
 
-    public static StatusSelector getAllocatedSelector()
+    public static StatusSelector<IAssignmentIf,AssignmentStatus> getAllocatedSelector()
     {
         return m_allocatedSelector;
     }
 
-    public static StatusSelector getAssignedSelector()
+    public static StatusSelector<IAssignmentIf,AssignmentStatus> getAssignedSelector()
     {
         return m_assignedSelector;
     }
 
-    public static StatusSetSelector getExecutingSelector()
+    public static StatusSetSelector<IAssignmentIf,AssignmentStatus> getExecutingSelector()
     {
         return m_executingSelector;
     }
 
-    public static StatusSetSelector getFinishedSelector()
+    public static StatusSetSelector<IAssignmentIf,AssignmentStatus> getFinishedSelector()
     {
         return m_finishedSelector;
     }
@@ -511,52 +511,6 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         return m_prioritySequenceComparator;
     }
 
-
-    /**
-     * Selector used for selecting assignments with a given status.
-     */
-    public static class StatusSelector implements Selector<IAssignmentIf>
-    {
-        AssignmentStatus m_selectValue;
-
-        /**
-         * Construct a Selector object
-         *
-         * @param aStatus The status to test against
-         */
-        public StatusSelector(AssignmentStatus aStatus)
-        {
-            m_selectValue = aStatus;
-        }
-
-        public boolean select(IAssignmentIf anObject)
-        {
-            return anObject.getStatus() == m_selectValue;
-        }
-    }
-
-    /**
-     * Selector used for selecting assignments with status in a given set.
-     */
-    public static class StatusSetSelector implements Selector<IAssignmentIf>
-    {
-        EnumSet<AssignmentStatus> m_valueSet;
-
-        /**
-         * Construct a Selector object
-         *
-         * @param aValueSet The status set to test against
-         */
-        public StatusSetSelector(EnumSet<AssignmentStatus> aValueSet)
-        {
-            m_valueSet = aValueSet;
-        }
-
-        public boolean select(IAssignmentIf anObject)
-        {
-            return m_valueSet.contains(anObject.getStatus());
-        }
-    }
 
     public static class PrioritySequenceComparator implements Comparator<IAssignmentIf>
     {

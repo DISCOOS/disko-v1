@@ -9,14 +9,19 @@
     <children>
       <splitpane id="a7292">
         <constraints border-constraint="Center"/>
-        <properties/>
+        <properties>
+          <continuousLayout value="true"/>
+        </properties>
         <border type="none"/>
         <children>
           <splitpane id="f87e5">
             <constraints>
               <splitpane position="right"/>
             </constraints>
-            <properties/>
+            <properties>
+              <continuousLayout value="true"/>
+              <oneTouchExpandable value="false"/>
+            </properties>
             <border type="none"/>
             <children>
               <grid id="abbe8" binding="m_unitPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
@@ -46,12 +51,12 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <scrollpane id="85e40">
+                  <scrollpane id="560b7">
                     <constraints border-constraint="Center"/>
                     <properties/>
                     <border type="none"/>
                     <children>
-                      <component id="14991" class="javax.swing.JTable" binding="m_assignmentTable">
+                      <component id="8ad55" class="javax.swing.JTable" binding="m_assignmentTable">
                         <constraints/>
                         <properties/>
                       </component>
@@ -66,6 +71,8 @@
               <splitpane position="left"/>
             </constraints>
             <properties>
+              <continuousLayout value="true"/>
+              <oneTouchExpandable value="false"/>
               <orientation value="0"/>
             </properties>
             <border type="none"/>
@@ -78,13 +85,39 @@
                 <border type="none"/>
                 <children/>
               </grid>
-              <grid id="c251a" binding="m_mapPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+              <grid id="c251a" binding="m_mapPanel" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="0">
                 <constraints>
                   <splitpane position="left"/>
                 </constraints>
                 <properties/>
                 <border type="none"/>
-                <children/>
+                <children>
+                  <component id="9b798" class="javax.swing.JButton" binding="button1" default-binding="true">
+                    <constraints/>
+                    <properties>
+                      <enabled value="true"/>
+                      <text value="Unit 1"/>
+                    </properties>
+                  </component>
+                  <component id="7901b" class="javax.swing.JButton" binding="button2">
+                    <constraints/>
+                    <properties>
+                      <text value="Unit 2"/>
+                    </properties>
+                  </component>
+                  <component id="676e0" class="javax.swing.JButton" binding="button3">
+                    <constraints/>
+                    <properties>
+                      <text value="Ready Unit"/>
+                    </properties>
+                  </component>
+                  <component id="5a0aa" class="javax.swing.JButton" binding="Allocate">
+                    <constraints/>
+                    <properties>
+                      <text value="Allocate"/>
+                    </properties>
+                  </component>
+                </children>
               </grid>
             </children>
           </splitpane>

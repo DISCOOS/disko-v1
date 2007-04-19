@@ -86,7 +86,7 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
         {
             try
             {
-                m_personnelButton = createLargeButton("Ny person", new java.awt.event.ActionListener()
+                m_personnelButton = createLargeButton("<html><center>Ny<br>person</center></html>", new java.awt.event.ActionListener()
                 {
                     public void actionPerformed(java.awt.event.ActionEvent e)
                     {

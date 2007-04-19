@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class BuildTestData
 {
-   public static void createCmdPost(IMsoModelIf aMsoModel)
+    public static void createCmdPost(IMsoModelIf aMsoModel)
     {
         aMsoModel.setRemoteUpdateMode();
         IMsoManagerIf msoManager = aMsoModel.getMsoManager();
@@ -30,7 +30,7 @@ public class BuildTestData
         {
             try
             {
-                testOperation = msoManager.createOperation("2007-TEST","0001");
+                testOperation = msoManager.createOperation("2007-TEST", "0001");
             }
             catch (DuplicateIdException e) // shall not happen
             {
@@ -61,42 +61,52 @@ public class BuildTestData
         ICmdPostIf cmdPost = aMsoModel.getMsoManager().getCmdPost();
         aMsoModel.setRemoteUpdateMode();
         IUnitListIf unitList = cmdPost.getUnitList();
-        IUnitIf unit1 = unitList.createVehicle("St 39911");
-        unit1.setStatus(IUnitIf.UnitStatus.READY);
+        IUnitIf unit;
 
-        IUnitIf unit2 = unitList.createVehicle("St 39912");
-        unit2.setStatus(IUnitIf.UnitStatus.READY);
+        unit= unitList.createVehicle("St 39911");
+        unit.setStatus(IUnitIf.UnitStatus.READY);
+
+        unit = unitList.createVehicle("St 39912");
+        unit.setStatus(IUnitIf.UnitStatus.READY);
+
+        unit = unitList.createVehicle("St 39913");
+        unit.setStatus(IUnitIf.UnitStatus.EMPTY);
+
+        unit = unitList.createVehicle("St 39914");
+        unit.setStatus(IUnitIf.UnitStatus.EMPTY);
+
+        unit = unitList.createVehicle("St 39915");
+        unit.setStatus(IUnitIf.UnitStatus.EMPTY);
 
         IAssignmentListIf asgList = cmdPost.getAssignmentList();
-        IAssignmentIf asg1 = asgList.createSearch();
-        IAssignmentIf asg2 = asgList.createSearch();
-        IAssignmentIf asg3 = asgList.createSearch();
-        IAssignmentIf asg4 = asgList.createSearch();
-        IAssignmentIf asg5 = asgList.createSearch();
         try
         {
-            asg1.setStatus(IAssignmentIf.AssignmentStatus.DRAFT);
-            asg1.setStatus(IAssignmentIf.AssignmentStatus.READY);
-            unit1.addUnitAssignment(asg1);
+            IAssignmentIf asg;
 
-            asg2.setStatus(IAssignmentIf.AssignmentStatus.DRAFT);
-            asg2.setStatus(IAssignmentIf.AssignmentStatus.READY);
-            unit1.addUnitAssignment(asg2);
+            unit = unitList.getUnit(1);
+            for (int i = 0; i < 10; i++)
+            {
+                asg = asgList.createSearch();
+                asg.setStatus(IAssignmentIf.AssignmentStatus.DRAFT);
+                asg.setStatus(IAssignmentIf.AssignmentStatus.READY);
+                unit.addUnitAssignment(asg);
+            }
 
-            asg3.setStatus(IAssignmentIf.AssignmentStatus.DRAFT);
-            asg3.setStatus(IAssignmentIf.AssignmentStatus.READY);
-            unit1.addUnitAssignment(asg3);
-            asg3.setStatus(IAssignmentIf.AssignmentStatus.PAUSED);
+            unit = unitList.getUnit(2);
+            for (int i = 0; i < 8; i++)
+            {
+                asg = asgList.createSearch();
+                asg.setStatus(IAssignmentIf.AssignmentStatus.DRAFT);
+                asg.setStatus(IAssignmentIf.AssignmentStatus.READY);
+                unit.addUnitAssignment(asg);
+            }
 
-            asg4.setStatus(IAssignmentIf.AssignmentStatus.DRAFT);
-            asg4.setStatus(IAssignmentIf.AssignmentStatus.READY);
-            unit2.addUnitAssignment(asg4);
-            asg4.setStatus(IAssignmentIf.AssignmentStatus.ASSIGNED);
-
-            asg5.setStatus(IAssignmentIf.AssignmentStatus.DRAFT);
-            asg5.setStatus(IAssignmentIf.AssignmentStatus.READY);
-            unit2.addUnitAssignment(asg5);
-            asg5.setStatus(IAssignmentIf.AssignmentStatus.FINISHED);
+            for (int i = 0; i < 12; i++)
+            {
+                asg = asgList.createSearch();
+                asg.setStatus(IAssignmentIf.AssignmentStatus.DRAFT);
+                asg.setStatus(IAssignmentIf.AssignmentStatus.READY);
+            }
 
         }
         catch (MsoException e)

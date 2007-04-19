@@ -491,3 +491,4 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
         return m_unitAssignments.selectItems(AssignmentImpl.getFinishedSelector(), null);
     }
 }
+

@@ -63,6 +63,15 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
         return m_state;
     }
 
+    public void set(T aValue)
+    {
+        if (!m_class.isAssignableFrom(aValue.getClass()))
+        {
+                throw new ClassCastException("Cannot cast " + aValue.getClass() + " to " + m_class.toString());
+        }
+        setAttrValue(aValue,false);
+    }
+
     protected void setAttrValue(T aValue)
     {
         setAttrValue(aValue, false);
@@ -147,7 +156,6 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
         }
         return null;
     }
-
 
     public boolean rollback()
     {
@@ -445,16 +453,26 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
             setValue(aDTG);
         }
 
+        public void setDTG(Number aDTG) throws IllegalMsoArgumentException
+        {
+            setValue(aDTG);
+        }
+
         public void setValue(String aDTG) throws IllegalMsoArgumentException
         {
             Calendar cal = DTG.DTGToCal(aDTG);
             setAttrValue(cal);
         }
 
-        public void setValue(Long aDTG) throws IllegalMsoArgumentException
+        public void setValue(Number aDTG) throws IllegalMsoArgumentException
         {
-            Calendar cal = DTG.DTGToCal(aDTG);
+            Calendar cal = DTG.DTGToCal(aDTG.longValue());
             setAttrValue(cal);
+        }
+
+        public void set(Calendar aDTG)
+        {
+            super.set(aDTG);
         }
 
         public void setValue(Calendar aDTG)

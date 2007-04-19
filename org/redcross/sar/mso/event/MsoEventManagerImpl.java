@@ -6,6 +6,8 @@ import org.redcross.sar.mso.data.IMsoObjectIf;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Vector;
+import java.util.Collection;
 
 /**
  * Class for managing MsoUpdateEvents.
@@ -14,11 +16,11 @@ import java.util.Set;
  */
 public class MsoEventManagerImpl implements IMsoEventManagerIf
 {
-    private final Set<IMsoUpdateListenerIf> m_clientUpdateListeners = new HashSet<IMsoUpdateListenerIf>();
-    private final Set<IMsoUpdateListenerIf> m_serverUpdateListeners = new HashSet<IMsoUpdateListenerIf>();
-    private final Set<IMsoCommitListenerIf> m_commitListeners = new HashSet<IMsoCommitListenerIf>();
-    private final Set<IMsoGisListenerIf> m_gisListeners = new HashSet<IMsoGisListenerIf>();
-    private final Set<IMsoDerivedUpdateListenerIf> m_derivedUpdateListeners = new HashSet<IMsoDerivedUpdateListenerIf>();
+    private final Collection<IMsoUpdateListenerIf> m_clientUpdateListeners = new Vector<IMsoUpdateListenerIf>();
+    private final Collection<IMsoUpdateListenerIf> m_serverUpdateListeners = new Vector<IMsoUpdateListenerIf>();
+    private final Collection<IMsoCommitListenerIf> m_commitListeners = new Vector<IMsoCommitListenerIf>();
+    private final Collection<IMsoGisListenerIf> m_gisListeners = new Vector<IMsoGisListenerIf>();
+    private final Collection<IMsoDerivedUpdateListenerIf> m_derivedUpdateListeners = new Vector<IMsoDerivedUpdateListenerIf>();
 
     /**
      * Add a listener in the {@link #m_clientUpdateListeners} queue.
@@ -77,7 +79,7 @@ public class MsoEventManagerImpl implements IMsoEventManagerIf
         fireCommit(m_commitListeners, aSource, MsoEvent.EventType.COMMIT_EVENT.maskValue());
     }
 
-    private void fireUpdate(Set<IMsoUpdateListenerIf> theListeners, IMsoObjectIf aSource, int anEventTypeMask)
+    private void fireUpdate(Collection<IMsoUpdateListenerIf> theListeners, IMsoObjectIf aSource, int anEventTypeMask)
     {
         if (theListeners.size() == 0 || anEventTypeMask == 0)
         {
@@ -93,7 +95,7 @@ public class MsoEventManagerImpl implements IMsoEventManagerIf
         }
     }
 
-    private void fireCommit(Set<IMsoCommitListenerIf> theListeners, ICommitWrapperIf aSource, int anEventTypeMask)
+    private void fireCommit(Collection<IMsoCommitListenerIf> theListeners, ICommitWrapperIf aSource, int anEventTypeMask)
     {
         if (theListeners.size() == 0 || anEventTypeMask == 0)
         {

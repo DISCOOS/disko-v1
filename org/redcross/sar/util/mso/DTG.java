@@ -39,7 +39,7 @@ public abstract class DTG
             throw new IllegalMsoArgumentException("Illegal DTG hour value in " + aDTG);
         }
 
-        if (!adjustToDay(calendar, day))
+        if (day < 1 || !adjustToDay(calendar, day))
         {
             throw new IllegalMsoArgumentException("Illegal DTG day value in " + aDTG);
         }

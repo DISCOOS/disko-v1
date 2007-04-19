@@ -98,7 +98,7 @@ public class NavBar extends JPanel {
 			
 		addButton(getFlankToggleButton());
 		addButton(getDrawLineToggleButton());
-		addButton(getEraseToggleButton());
+//		addButton(getEraseToggleButton());        // todo sett tilbake på plass
 		addButton(getSplitToggleButton());
 		addButton(getPUIToggleButton());
 		addButton(getZoomInToggleButton());

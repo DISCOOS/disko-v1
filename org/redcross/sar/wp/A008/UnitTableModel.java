@@ -1,11 +1,14 @@
 package org.redcross.sar.wp.A008;
 
-import org.redcross.sar.mso.data.IAssignmentIf;
-import org.redcross.sar.mso.data.IUnitIf;
+import org.redcross.sar.mso.data.*;
+import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
+import org.redcross.sar.mso.event.MsoEvent;
+import org.redcross.sar.mso.event.IMsoEventManagerIf;
+import org.redcross.sar.mso.IMsoManagerIf;
+import org.redcross.sar.util.mso.Selector;
 
 import javax.swing.table.AbstractTableModel;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 /**
  * Created by IntelliJ IDEA.
  * User: vinjar
@@ -16,10 +19,58 @@ import java.util.List;
 /**
  *
  */
-public class UnitTableModel extends AbstractTableModel
+public class UnitTableModel extends AbstractTableModel implements IMsoUpdateListenerIf
 {
-    public UnitTableModel()
+    private IMsoEventManagerIf m_eventManager;
+    private IUnitListIf m_unitList;
+    private ArrayList<IUnitIf> units = new ArrayList<IUnitIf>();
+
+
+    public UnitTableModel(IMsoEventManagerIf anEventManager, IUnitListIf aUnitList)
     {
+        m_eventManager = anEventManager;
+        m_eventManager.addClientUpdateListener(this);
+        m_unitList = aUnitList;
+    }
+
+
+    public void handleMsoUpdateEvent(MsoEvent.Update e)
+    {
+        System.out.println(this.getClass() + " " + e + " " + e.getEventTypeMask());
+        if (e.getSource() instanceof IUnitIf)
+        {
+            buildTable();
+        }
+        this.fireTableDataChanged();
+    }
+
+    private final EnumSet<IMsoManagerIf.MsoClassCode> myInterests =  EnumSet.of(IMsoManagerIf.MsoClassCode.CLASSCODE_UNIT,IMsoManagerIf.MsoClassCode.CLASSCODE_ASSIGNMENT);
+
+    public boolean hasInterestIn(IMsoObjectIf aMsoObject)
+    {
+        return myInterests.contains(aMsoObject.getMsoClassCode());
+    }
+
+    private final static AbstractMsoObject.StatusSetSelector<IUnitIf,IUnitIf.UnitStatus> m_activeUnitSelector =
+            new AbstractMsoObject.StatusSetSelector<IUnitIf, IUnitIf.UnitStatus>(EnumSet.range(IUnitIf.UnitStatus.READY, IUnitIf.UnitStatus.WORKING));
+
+    private final static Comparator<IUnitIf> m_unitNumberComparator = new Comparator<IUnitIf>()
+    {
+        public int compare(IUnitIf u1, IUnitIf u2)
+        {
+            return u1.getNumber() - u2.getNumber();
+        }
+    };
+
+    void buildTable()
+    {
+        units.clear();
+        for (IUnitIf unit : m_unitList.selectItems(m_activeUnitSelector, m_unitNumberComparator))
+        {
+            addUnit(unit);
+        }
+
+
     }
 
     @Override
@@ -59,9 +110,6 @@ public class UnitTableModel extends AbstractTableModel
             return List.class;
         }
     }
-
-    ArrayList<IUnitIf> units = new ArrayList<IUnitIf>();
-
 
     public int getRowCount()
     {

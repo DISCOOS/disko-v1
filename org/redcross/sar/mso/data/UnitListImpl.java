@@ -25,4 +25,16 @@ public class UnitListImpl extends MsoListImpl<IUnitIf> implements IUnitListIf
         checkCreateOp();
         return (VehicleImpl) createdItem(new VehicleImpl(anObjectId, aNumber, anIdentifier));
     }
+
+    public IUnitIf getUnit(int aUnitNr)
+    {
+        for (IUnitIf unit : getItems())
+        {
+            if (unit.getNumber() == aUnitNr)
+            {
+                return unit;
+            }
+        }
+        return null;
+    }
 }

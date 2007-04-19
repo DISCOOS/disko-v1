@@ -42,6 +42,8 @@ public interface IAttributeIf<T>
      */
     public IMsoModelIf.ModificationState getState();
 
+    public void set(T aValue);
+
     /**
      * Get conflicting values
      *
@@ -172,11 +174,15 @@ public interface IAttributeIf<T>
     {
         public void setDTG(String aDTG) throws IllegalMsoArgumentException;
 
+        public void setDTG(Number aDTG) throws IllegalMsoArgumentException;
+
         public void setValue(String aDTG) throws IllegalMsoArgumentException;
 
-        public void setValue(Long aDTG) throws IllegalMsoArgumentException;
+        public void setValue(Number aDTG) throws IllegalMsoArgumentException;
 
         public void setValue(Calendar aDTG);
+
+        public void set(Calendar aDTG);
 
         public String getDTG();
 

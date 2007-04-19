@@ -14,7 +14,7 @@ import java.util.List;
 /**
  *
  */
-public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf, ISerialNumberedIf
+public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf, ISerialNumberedIf,IEnumStatusHolder<IUnitIf.UnitStatus>
 {
     public enum UnitType
     {

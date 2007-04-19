@@ -593,7 +593,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     {
         if (anAttr != null)
         {
-            anAttr.setAttrValue(aValue); // todo Check class before assignment
+            anAttr.set(aValue);
         } else
         {
             throw new MsoNullPointerException("Trying to assign value to null attribute");
@@ -858,5 +858,55 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
             return anObject.getEnumAttribute(m_attributeName) == m_selectValue;
         }
     }
-    
+
+    public static class StatusSelector<T extends IEnumStatusHolder, E extends Enum> implements Selector<T>
+    {
+        E m_selectValue;
+
+        /**
+         * Construct a Selector object
+         *
+         * @param aStatus The status to test against
+         */
+        public StatusSelector(E aStatus)
+        {
+            m_selectValue = aStatus;
+        }
+
+        public boolean select(T anObject)
+        {
+            return anObject.getStatus() == m_selectValue;
+        }
+    }
+
+    /**
+     * Selector used for selecting assignments with status in a given set.
+     */
+    public static class StatusSetSelector<T extends IEnumStatusHolder<E>, E extends Enum>  implements Selector<T>
+    {
+        EnumSet <? extends E> m_valueSet;
+
+        /**
+         * Construct a Selector object
+         *
+         * @param aValueSet The status set to test against
+         */
+        public StatusSetSelector(EnumSet<? extends E> aValueSet)
+        {
+            m_valueSet = aValueSet;
+        }
+
+        public StatusSetSelector()
+        {
+            //To change body of created methods use File | Settings | File Templates.
+        }
+
+        public boolean select(T anObject)
+        {
+            return m_valueSet.contains(anObject.getStatus());
+        }
+    }
+
+
+
 }
