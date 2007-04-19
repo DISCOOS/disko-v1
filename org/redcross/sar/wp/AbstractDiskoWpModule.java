@@ -147,6 +147,10 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMap
             listeners.get(i).wpFinished(diskoWpEvent);
         }
     }
+    
+    public void activated() {
+		// TODO Auto-generated method stub
+	}
 
     protected void layoutComponent(JComponent comp)
     {
