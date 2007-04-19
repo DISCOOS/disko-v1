@@ -1,6 +1,7 @@
 package org.redcross.sar.map;
 
 import java.io.IOException;
+import java.util.Properties;
 
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.event.IDiskoMapEventListener;
@@ -13,6 +14,7 @@ import com.esri.arcgis.geodatabase.IFeatureCursor;
 import com.esri.arcgis.geodatabase.SpatialFilter;
 import com.esri.arcgis.geodatabase.esriSpatialRelEnum;
 import com.esri.arcgis.geometry.Envelope;
+import com.esri.arcgis.geometry.IEnvelope;
 import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.systemUI.ICommand;
@@ -22,14 +24,28 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 	
 	protected DiskoMap map = null;
 	protected DiskoDialog dialog = null;
+	protected Properties properties = null;
+	protected IDisplayTransformation transform = null;
 	
-	protected Point transform(int x, int y) throws IOException {
-		IDisplayTransformation transform = map.getActiveView().
-			getScreenDisplay().getDisplayTransformation();
-		return (Point)transform.toMapPoint(x,y);
+	protected IDisplayTransformation getTransform() 
+			throws IOException, AutomationException {
+		if (transform == null) {
+			transform = map.getActiveView().getScreenDisplay().
+				getDisplayTransformation();
+		}
+		return transform;
 	}
 	
-	protected IFeature search(FeatureLayer flayer, Envelope env) throws IOException {
+	protected Point transform(int x, int y) throws IOException, AutomationException {
+		return (Point)getTransform().toMapPoint(x,y);
+	}
+	
+	protected void transform(Point p) throws IOException, AutomationException {
+		p.transform(com.esri.arcgis.geometry.esriTransformDirection.esriTransformReverse, getTransform());
+	}
+	
+	protected IFeature search(FeatureLayer flayer, Envelope env) 
+			throws IOException, AutomationException {
 		SpatialFilter spatialFilter = new SpatialFilter();
 		spatialFilter.setGeometryByRef(env);
 		spatialFilter.setGeometryField(flayer.getFeatureClass().getShapeFieldName());
@@ -37,6 +53,17 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 		IFeatureCursor featureCursor = flayer.search(spatialFilter,false);
 		// first hit will be returned
 		return featureCursor.nextFeature();
+	}
+	
+	protected void partialRefresh(IEnvelope env) throws IOException, AutomationException {
+		if (env != null) {
+			map.getActiveView().partialRefresh(
+				com.esri.arcgis.carto.esriViewDrawPhase.esriViewGeography, 
+				null, env);
+		}
+		else {
+			map.getActiveView().refresh();
+		}
 	}
 	
 	public void toolActivated() throws IOException, AutomationException {
@@ -53,6 +80,10 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 	
 	public DiskoDialog getDialog() {
 		return dialog;
+	}
+
+	public DiskoMap getMap() {
+		return map;
 	}
 
 	public int getBitmap() throws IOException, AutomationException {
