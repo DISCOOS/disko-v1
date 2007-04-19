@@ -12,29 +12,42 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
+
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.app.Utils;
+import org.redcross.sar.map.DiskoMap;
+import org.redcross.sar.map.PUITool;
+
 import com.borland.jbcl.layout.VerticalFlowLayout;
-import com.esri.arcgis.display.SimpleMarkerSymbol;
+import com.esri.arcgis.geodatabase.IFeature;
+import com.esri.arcgis.geometry.IEnvelope;
+import com.esri.arcgis.geometry.IGeometry;
+import com.esri.arcgis.interop.AutomationException;
+
 import java.awt.GridBagLayout;
 import java.awt.event.KeyEvent;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.io.IOException;
+
 import javax.swing.JScrollPane;
 
 
 
 public class PUIDialog extends DiskoDialog {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+	private IDiskoApplication app = null;
+	private PUITool tool = null;
 	private JPanel contentPanel = null;
 	private NumPadDialog numPadDialog = null;
-	private IDiskoApplication app = null;
 	private JPanel northPanel = null;
-	private JButton cancelButton = null;
+	private JButton deleteButton = null;
 	private JPanel southPanel = null;
 	private JButton finishButton = null;
 	private JTextField xCoordTextField = null;
@@ -47,11 +60,16 @@ public class PUIDialog extends DiskoDialog {
 	private JLabel yCoordLabel = null;
 	private JLabel typeLabel = null;
 	private JScrollPane textAreaScrollPane = null;
+	private CoordinateDocumentListener coordinateDocumentListener = null;
+	//  @jve:decl-index=0:
+	private JButton refreshButton = null;
 	
 
-	public PUIDialog(IDiskoApplication app) {
+	public PUIDialog(IDiskoApplication app, PUITool tool) {
 		super(app.getFrame());
 		this.app = app;
+		this.tool = tool;
+		coordinateDocumentListener = new CoordinateDocumentListener();
 		initialize();
 		// TODO Auto-generated constructor stub
 	}
@@ -62,7 +80,7 @@ public class PUIDialog extends DiskoDialog {
 	 */
 	private void initialize() {
 		try {
-            this.setPreferredSize(new Dimension(175,310));
+            this.setPreferredSize(new Dimension(200, 270));
             //this.setSize(new Dimension(175, 350));
             this.setContentPane(getContentPanel());
             this.pack();
@@ -71,7 +89,7 @@ public class PUIDialog extends DiskoDialog {
 			//  Do Something
 		}
 	}
-
+	
 	/**
 	 * This method initializes contentPanel	
 	 * 	
@@ -114,37 +132,13 @@ public class PUIDialog extends DiskoDialog {
 			flowLayout.setHgap(0);
 			northPanel = new JPanel();
 			northPanel.setLayout(flowLayout);
-			northPanel.add(getCancelButton(), null);
+			northPanel.add(getRefreshButton(), null);
+			northPanel.add(getDeleteButton(), null);
+			northPanel.add(getFinishButton(), null);
 		}
 		return northPanel;
 	}
-	/**
-	 * This method initializes cancelButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getCancelButton() {
-		if (cancelButton == null) {
-			try {
-				cancelButton = new JButton();
-				cancelButton.setPreferredSize(new Dimension(36, 36));
-				cancelButton.setMnemonic(KeyEvent.VK_UNDEFINED);
-				String iconName = "quit.icon";
-				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
-				cancelButton.setIcon(icon);
-				cancelButton.setText("");
-				cancelButton.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent e) {
-						System.out.println("actionPerformed()"); // TODO Auto-generated Event stub actionPerformed()
-					}
-				});
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		return cancelButton;
-	}
+	
 	/**
 	 * This method initializes southPanel	
 	 * 	
@@ -158,7 +152,6 @@ public class PUIDialog extends DiskoDialog {
 			flowLayout1.setHgap(0);
 			southPanel = new JPanel();
 			southPanel.setLayout(flowLayout1);
-			southPanel.add(getFinishButton(), null);
 		}
 		return southPanel;
 	}
@@ -171,13 +164,21 @@ public class PUIDialog extends DiskoDialog {
 		if (finishButton == null) {
 			try {
 				finishButton = new JButton();
-				finishButton.setPreferredSize(new Dimension(36, 36));
-				String iconName = "finish.icon";
+				finishButton.setPreferredSize(new Dimension(32, 32));
+				String iconName = "checkout.icon";
 				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
 				finishButton.setIcon(icon);
 				finishButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
-						System.out.println("actionPerformed()"); // TODO Auto-generated Event stub actionPerformed()
+						try {
+							tool.finish();
+						} catch (AutomationException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 					}
 				});
 			} catch (Exception e) {
@@ -189,12 +190,73 @@ public class PUIDialog extends DiskoDialog {
 	}
 	
 	/**
-	 * This method sets textvalue for xCoordTextField	
+	 * This method initializes cancelButton	
 	 * 	
+	 * @return javax.swing.JButton	
 	 */
-	public void setXCoordFieldText(String s){
-		s = s.substring(0,s.indexOf("."));//ikke helt elegant, burde ligge i en util klasse som sjekker for locale komma/punktum settinger?
-		this.xCoordTextField.setText(s);
+	private JButton getDeleteButton() {
+		if (deleteButton == null) {
+			try {
+				deleteButton = new JButton();
+				deleteButton.setPreferredSize(new Dimension(32, 32));
+				deleteButton.setMnemonic(KeyEvent.VK_UNDEFINED);
+				String iconName = "delete_small.icon";
+				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
+				deleteButton.setIcon(icon);
+				deleteButton.setText("");
+				deleteButton.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent e) {
+						try {
+							tool.deleteSelectedPUI();
+						} catch (AutomationException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
+				});
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return deleteButton;
+	}
+	
+	/**
+	 * This method initializes refreshButton	
+	 * 	
+	 * @return javax.swing.JButton	
+	 */
+	private JButton getRefreshButton() {
+		if (refreshButton == null) {
+			try {
+				refreshButton = new JButton();
+				refreshButton.setPreferredSize(new Dimension(32, 32));
+				String iconName = "refresh.icon";
+				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
+				refreshButton.setIcon(icon);
+				refreshButton.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent e) {
+						try {
+							tool.clearSelectedPUI();
+							clearFields();
+						} catch (AutomationException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
+				});
+			} catch (java.lang.Throwable e) {
+				// TODO: Something
+			}
+		}
+		return refreshButton;
 	}
 	
 	/**
@@ -205,34 +267,25 @@ public class PUIDialog extends DiskoDialog {
 	private JTextField getXCoordTextField() {
 		if (xCoordTextField == null) {
 			xCoordTextField = new JTextField();
-			
 			xCoordTextField.addMouseListener(new java.awt.event.MouseAdapter() {
 				public void mouseClicked(java.awt.event.MouseEvent e) {					
-					System.out.println("mouseClicked()"); 
 					if (e.getClickCount() == 2){
 						numPadDialog = app.getUIFactory().getNumPadDialog();
 						Point p = xCoordTextField.getLocationOnScreen();
-						p.setLocation(p.x + (xCoordTextField.getWidth()), p.y);
+						p.setLocation(p.x + (xCoordTextField.getWidth()+7), p.y);
 						numPadDialog.setLocation(p);					
 						numPadDialog.setTextField(xCoordTextField);
 						numPadDialog.setVisible(true);	
-						
 					}
 				}
 			});	
-			
+			CoordinateDocument doc = new CoordinateDocument(6);
+			doc.addDocumentListener(coordinateDocumentListener);
+			xCoordTextField.setDocument(doc);
 		}
 		return xCoordTextField;
 	}
 	
-	/**
-	 * This method sets textvalue for yCoordTextField	
-	 * 	
-	 */	
-	public void setYCoordFieldText(String s){
-		s = s.substring(0,s.indexOf("."));
-		this.yCoordTextField.setText(s);
-	}
 	/**
 	 * This method initializes yCoordTextField	
 	 * 	
@@ -244,21 +297,104 @@ public class PUIDialog extends DiskoDialog {
 			
 			yCoordTextField.addMouseListener(new java.awt.event.MouseAdapter() {
 				public void mouseClicked(java.awt.event.MouseEvent e) {
-					System.out.println("mouseClicked() " + e.getClickCount());
 					if (e.getClickCount() == 2){										
 						numPadDialog = app.getUIFactory().getNumPadDialog();
 						Point p = yCoordTextField.getLocationOnScreen();
-						p.setLocation(p.x + (yCoordTextField.getWidth()), p.y);
+						p.setLocation(p.x + (yCoordTextField.getWidth()+7), p.y);
 						numPadDialog.setLocation(p);
 						numPadDialog.setTextField(yCoordTextField);
 						numPadDialog.setVisible(true);
 					}
 				}
 			});
+			CoordinateDocument doc = new CoordinateDocument(7);
+			doc.addDocumentListener(coordinateDocumentListener);
+			yCoordTextField.setDocument(doc);
 		}
 		return yCoordTextField;
 	}
 	
+	public void setPUI(IFeature pui) {
+		try {
+			IGeometry geom = pui.getShape();
+			if (geom instanceof com.esri.arcgis.geometry.Point) {
+				com.esri.arcgis.geometry.Point p = (com.esri.arcgis.geometry.Point)geom;
+				setXCoordinateField(p.getX());
+				setYCoordinateField(p.getY());
+			}
+			getTxtArea().setText((String)pui.getValue(4));
+		} catch (AutomationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void clearFields() {
+		setXCoordinateField("");
+		setYCoordinateField("");
+		getTxtArea().setText("");
+	}
+	
+	private void setXCoordinateField(double d) {
+		setXCoordinateField(Integer.toString((int)d));
+	}
+	
+	private void setYCoordinateField(double d) {
+		setYCoordinateField(Integer.toString((int)d));
+	}
+	
+	private void setXCoordinateField(String str) {
+		JTextField f = getXCoordTextField();
+		f.getDocument().removeDocumentListener(coordinateDocumentListener);
+		f.setText(str);
+		f.getDocument().addDocumentListener(coordinateDocumentListener);
+	}
+	
+	private void setYCoordinateField(String str) {
+		JTextField f = getYCoordTextField();
+		f.getDocument().removeDocumentListener(coordinateDocumentListener);
+		f.setText(str);
+		f.getDocument().addDocumentListener(coordinateDocumentListener);
+	}
+	
+	private void checkCoords() {
+		String xStr = getXCoordTextField().getText();
+		String yStr = getYCoordTextField().getText();
+		long x = 0, y = 0;
+		if (xStr != null && xStr.length() > 0) {
+			x = Long.parseLong(xStr);
+		}
+		if (yStr != null && yStr.length() > 0) {
+			y = Long.parseLong(yStr);
+		}
+		DiskoMap map = tool.getMap();
+		if (map != null) {
+			try {
+				IEnvelope env = map.getExtent();
+				if (x > env.getLowerLeft().getX() & x < env.getLowerRight().getX() &
+					y > env.getLowerLeft().getY() & y < env.getUpperLeft().getY()) {
+					com.esri.arcgis.geometry.Point p  = new com.esri.arcgis.geometry.Point();
+					p.setX(x);
+					p.setY(y);
+					if (tool.getSelectedPUI() != null) {
+						tool.moveSelectedPUI(x, y);
+					}
+					else {
+						tool.addPUIAt(x, y);
+					}
+				}
+			} catch (AutomationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 	
 	/**
 	 * This method initializes typeComboBox	
@@ -286,6 +422,22 @@ public class PUIDialog extends DiskoDialog {
 			txtArea = new JTextArea();
 			txtArea.setRows(5);
 			txtArea.setColumns(1);
+			txtArea.addKeyListener(new java.awt.event.KeyAdapter() {
+				public void keyTyped(java.awt.event.KeyEvent e) {
+					try {
+						String t0 = (String)tool.getSelectedPUI().getValue(4);
+						char c = e.getKeyChar();
+						String t1 = t0 != null ? t0+c : ""+c; 
+						tool.getSelectedPUI().setValue(4, t1);
+					} catch (AutomationException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			});
 		}
 		return txtArea;
 	}
@@ -376,5 +528,42 @@ public class PUIDialog extends DiskoDialog {
 		}
 		return textAreaScrollPane;
 	}	
+
+	 
+	class CoordinateDocument extends PlainDocument {
+	 
+		private static final long serialVersionUID = 1L;
+		
+		private int maxLength;
+		
+		CoordinateDocument(int maxLength) {
+			this.maxLength = maxLength;
+		}
+
+		public void insertString(int offs, String str, AttributeSet a) 
+	            throws BadLocationException {
+			if (str == null) {
+				return;
+	        }
+			try {
+				Integer.parseInt(str);
+			} catch (NumberFormatException e) {
+				return;
+			}
+			if (super.getLength()+1 <= maxLength) {
+				super.insertString(offs, str, a);
+			}
+	     }
+	 }
+	
+	class CoordinateDocumentListener implements DocumentListener {
+		public void changedUpdate(DocumentEvent e) {}
+		public void insertUpdate(DocumentEvent e) {
+			checkCoords();
+		}
+		public void removeUpdate(DocumentEvent e) {
+			checkCoords();
+		}
+	}
 
 }  //  @jve:decl-index=0:visual-constraint="10,10"
