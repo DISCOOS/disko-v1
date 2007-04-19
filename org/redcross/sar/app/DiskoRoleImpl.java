@@ -112,6 +112,7 @@ public class DiskoRoleImpl implements IDiskoRole {
 			}
 			app.getFrame().setTitle("DISKO "+getTitle()+" "+
 					currentModule.getName());
+			module.activated();
 		}
 	}
 	
