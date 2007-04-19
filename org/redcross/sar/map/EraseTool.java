@@ -7,6 +7,7 @@ import com.esri.arcgis.carto.FeatureLayer;
 import com.esri.arcgis.carto.ILayer;
 import com.esri.arcgis.geodatabase.IFeature;
 import com.esri.arcgis.geometry.Envelope;
+import com.esri.arcgis.geometry.IEnvelope;
 import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.interop.AutomationException;
 
@@ -26,8 +27,8 @@ public class EraseTool extends AbstractCommandTool {
 	public EraseTool() throws IOException {
 		searchEnvelope = new Envelope();
 		searchEnvelope.putCoords(0, 0, 0, 0);
-		searchEnvelope.setHeight(10);
-		searchEnvelope.setWidth(10);
+		searchEnvelope.setHeight(50);
+		searchEnvelope.setWidth(50);
 	}
 
 	public void onCreate(Object obj) throws IOException, AutomationException {
@@ -47,8 +48,16 @@ public class EraseTool extends AbstractCommandTool {
 				if (flayer.isSelectable()) {
 					IFeature result = search(flayer, searchEnvelope);
 					if (result != null) {
+						IEnvelope env = null;
+						if (result.getShape() instanceof Point) {
+							env = searchEnvelope.getEnvelope();
+							env.expand(2, 2, true);
+						}
+						else {
+							env = result.getExtent().getEnvelope();
+						}
 						result.delete();
-						map.getActiveView().refresh();
+						partialRefresh(env);
 						break; // first hit will be deleted
 					}
 				}
