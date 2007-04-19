@@ -39,11 +39,25 @@ import com.esri.arcgis.systemUI.ITool;
 public class NavBar extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
+	
+	public static final int INDEX_FLANK_TOGGLE_BUTTON = 0;
+	public static final int INDEX_DRAW_LINE_TOGGLE_BUTTON = 1;
+	public static final int INDEX_ERASE_TOGGLE_BUTTON = 2;
+	public static final int INDEX_SPLIT_TOGGLE_BUTTON = 3;
+	public static final int INDEX_PUI_TOGGLE_BUTTON = 4;
+	public static final int INDEX_ZOOM_IN_TOGGLE_BUTTON = 5;
+	public static final int INDEX_ZOOM_OUT_TOGGLE_BUTTON = 6;
+	public static final int INDEX_PAN_TOGGLE_BUTTON = 7;
+	public static final int INDEX_ZOOM_IN_FIXED_BUTTON = 8;
+	public static final int INDEX_ZOOM_OUT_FIXED_BUTTON = 9;
+	public static final int INDEX_ZOOM_FULL_EXTENT_BUTTON = 10;
+	public static final int INDEX_ZOOM_TO_LAST_EXTENT_FORWARD_BUTTON = 11;
+	public static final int INDEX_ZOOM_TO_LAST_EXTENT_BACKWARD_BUTTON = 12;
+	
 	private IDiskoApplication app = null;
 	private ButtonGroup bgroup  = null;
 	private JToggleButton dummyToggleButton = null;
-	private ArrayList<AbstractButton> navTools  = null;
-	private ArrayList<AbstractButton> editTools = null;
+	private ArrayList<AbstractButton> buttons  = null;
 	private JToggleButton flankToggleButton = null;
 	private JToggleButton drawLineToggleButton = null;
 	private JToggleButton eraseToggleButton = null;
@@ -82,8 +96,7 @@ public class NavBar extends JPanel {
 	}
 	
 	private void initialize() {
-		navTools  = new ArrayList<AbstractButton>();
-		editTools = new ArrayList<AbstractButton>();
+		buttons  = new ArrayList<AbstractButton>();
 		bgroup = new ButtonGroup();
 			
 		FlowLayout flowLayout = new FlowLayout();
@@ -110,6 +123,7 @@ public class NavBar extends JPanel {
 		addButton(getZoomToLastExtentForwardButton());
 		addButton(getZoomToLastExtentBackwardButton());	
 	}
+	
 	
 	private DrawTool getDrawTool() {
 		if (drawTool == null) {
@@ -163,7 +177,8 @@ public class NavBar extends JPanel {
 	private PUITool getPUITool() {
 		if (puiTool == null) {
 			try {
-				puiTool = new PUITool(app);
+				String flayerName = app.getProperty("PUI.featureClass.Name");
+				puiTool = new PUITool(app, flayerName);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -318,7 +333,7 @@ public class NavBar extends JPanel {
 						setCurrentTool(getFlankTool());
 					}
 				});
-				editTools.add(flankToggleButton);
+				buttons.add(flankToggleButton);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -341,7 +356,7 @@ public class NavBar extends JPanel {
 						setCurrentTool(getDrawTool());
 					}
 				});
-				editTools.add(drawLineToggleButton);
+				buttons.add(drawLineToggleButton);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -364,7 +379,7 @@ public class NavBar extends JPanel {
 						setCurrentTool(getSplitTool());
 					}
 				});
-				editTools.add(splitToggleButton);
+				buttons.add(splitToggleButton);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -387,7 +402,7 @@ public class NavBar extends JPanel {
 						setCurrentTool(getEraseTool());
 					}
 				});
-				editTools.add(eraseToggleButton);
+				buttons.add(eraseToggleButton);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -410,7 +425,7 @@ public class NavBar extends JPanel {
 						setCurrentTool(getPUITool());
 					}
 				});
-				editTools.add(puiToggleButton);
+				buttons.add(puiToggleButton);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -433,7 +448,7 @@ public class NavBar extends JPanel {
 						setCurrentTool(getZoomInTool());
 					}
 				});
-				navTools.add(zoomInToggleButton);
+				buttons.add(zoomInToggleButton);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -456,7 +471,7 @@ public class NavBar extends JPanel {
 						setCurrentTool(getZoomOutTool());
 					}
 				});
-				navTools.add(zoomOutToggleButton);
+				buttons.add(zoomOutToggleButton);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -479,7 +494,7 @@ public class NavBar extends JPanel {
 						setCurrentTool(getPanTool());
 					}
 				});
-				navTools.add(panToggleButton);
+				buttons.add(panToggleButton);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -502,7 +517,7 @@ public class NavBar extends JPanel {
 						doClick(getZoomInFixedCommand());
 					}
 				});
-				navTools.add(zoomInFixedButton);
+				buttons.add(zoomInFixedButton);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -525,7 +540,7 @@ public class NavBar extends JPanel {
 						doClick(getZoomOutFixedCommand());
 					}
 				});
-				navTools.add(zoomOutFixedButton);
+				buttons.add(zoomOutFixedButton);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -549,7 +564,7 @@ public class NavBar extends JPanel {
 						doClick(getFullExtentCommand());
 					}
 				});
-				navTools.add(fullExtentButton);
+				buttons.add(fullExtentButton);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -572,7 +587,7 @@ public class NavBar extends JPanel {
 						doClick(getZoomToLastExtentForwardCommand());
 					}
 				});
-				navTools.add(zoomToLastExtentForwardButton);
+				buttons.add(zoomToLastExtentForwardButton);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -595,7 +610,7 @@ public class NavBar extends JPanel {
 						doClick(getZoomToLastExtentBackCommand());
 					}
 				});
-				navTools.add(zoomToLastExtentBackwardButton);
+				buttons.add(zoomToLastExtentBackwardButton);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -608,6 +623,7 @@ public class NavBar extends JPanel {
 		DiskoMap map = app.getCurrentMap();
 		if (map != null) {
 			try {
+				System.out.println(tool);
 				map.setCurrentToolByRef(tool);
 			} catch (AutomationException e) {
 				// TODO Auto-generated catch block
@@ -632,10 +648,9 @@ public class NavBar extends JPanel {
 	}
 	
 	public void taskChanged() {
-		unselectAll();
+		getDummyToggleButton().doClick(); // HACK: unselect all toggle buttons
 		final DiskoMap map = app.getCurrentMap();
 		if (map != null) {
-			setEditToolsVisible(map.isEditable());
 			map.addDiskoMapEventListener(new DiskoMapEventAdapter() {
 				public void editLayerChanged(DiskoMapEvent e) {
 					//FeatureLayer editLayer = map.getEditLayer();
@@ -672,22 +687,10 @@ public class NavBar extends JPanel {
 		}
 	}
 	
-	public void unselectAll() {
+	/*public void unselectAll() {
 		// unselect all by selecting a not visible dummy JToggelButton
 		getDummyToggleButton().setSelected(true);
-	}
-	
-	public void setEditToolsVisible(boolean visible) {
-		for (int i = 0; i < editTools.size(); i++) {
-			editTools.get(i).setVisible(visible);
-		}
-	}
-	
-	public void setNavToolsVisible(boolean visible) {
-		for (int i = 0; i < navTools.size(); i++) {
-			navTools.get(i).setVisible(visible);
-		}
-	}
+	}*/
 	
 	public void addButton(AbstractButton button) {
 		add(button);
@@ -700,6 +703,29 @@ public class NavBar extends JPanel {
 		remove(button);
 		if (button instanceof JToggleButton) {
 			bgroup.remove(button);
+		}
+	}
+	
+	public void enableButtons(int[] indexes) {
+		for (int i = 0; i < buttons.size(); i++) {
+			((AbstractButton)buttons.get(i)).setEnabled(false);
+		}
+		if (indexes != null) {
+			for (int i = 0; i < indexes.length; i++) {
+				((AbstractButton)buttons.get(indexes[i])).setEnabled(true);
+			}
+		}
+	}
+	
+	public void showButtons(int[] indexes) {
+		for (int i = 0; i < buttons.size(); i++) {
+			((AbstractButton)buttons.get(i)).setVisible(false);
+		}
+		
+		if (indexes != null) {
+			for (int i = 0; i < indexes.length; i++) {
+				((AbstractButton)buttons.get(indexes[i])).setVisible(true);
+			}
 		}
 	}
 }
