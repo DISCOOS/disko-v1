@@ -13,5 +13,6 @@ public interface IDiskoTool {
 	public void toolDeactivated() throws IOException, AutomationException;
 	
 	public DiskoDialog getDialog();
-
+	
+	public DiskoMap getMap();
 }
