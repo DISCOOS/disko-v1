@@ -11,6 +11,7 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.border.BevelBorder;
+import javax.swing.text.BadLocationException;
 
 public class NumPadDialog extends JDialog {
 
@@ -41,41 +42,32 @@ public class NumPadDialog extends JDialog {
 		this.setSize(new Dimension(200, 200));
         this.setContentPane(getComponentPanel());
         this.setUndecorated(true);
-        this.addFocusListener(new java.awt.event.FocusAdapter() {
-        	public void focusLost(java.awt.event.FocusEvent e) {
-        		System.out.println("focusLost()"); // TODO Auto-generated Event stub focusLost()        		
-        	}
-        });
-        this.setAlwaysOnTop(true);
         this.pack();
 	}
 	
 	public void setTextField(JTextField jtf){
-		System.out.println("kult skjult");
 		this.jtf = jtf;
-		System.out.println(":" + jtf.getText() + ":");
-	}
-
-	//test
-	public void setTextField(String s){
-		System.out.println(s);
 	}
 	
-	private void subtractTextFieldValue(){
-		if (jtf.getText().length() > 0){			
-				jtf.setText(jtf.getText().substring(0, jtf.getText().length()-1));
+	private void deleteTextFieldValue(){
+		if (jtf != null && jtf.getText().length() > 0){	
+			try {
+				jtf.getDocument().remove(jtf.getCaretPosition()-1, 1);
+			} catch (BadLocationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}		
 	}
 	
 	private void addTextFieldValue(String s){
-		System.out.println("skal sette textverdi");
-		if (jtf.getText().length() == 0){
-			jtf.setText(s);
+		if (jtf != null) {
+			try {
+				jtf.getDocument().insertString(jtf.getCaretPosition(), s, null);
+			} catch (BadLocationException e) {
+				e.printStackTrace();
+			}
 		}
-		else{ 
-			jtf.setText(jtf.getText()+s);			
-		}
-		System.out.println(jtf.getText());
 	}
 	
 	/**
@@ -120,8 +112,7 @@ public class NumPadDialog extends JDialog {
 			oneButton.setText("1");
 			oneButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					System.out.println("1, tallet er 1"); // TODO Auto-generated Event stub actionPerformed()
-					//setTextFieldValue("1", true);
+					addTextFieldValue("1");
 				}
 			});
 			
@@ -316,7 +307,7 @@ public class NumPadDialog extends JDialog {
 			delButton.setText("Del");
 			delButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					subtractTextFieldValue();
+					deleteTextFieldValue();
 				}
 			});
 		}
@@ -335,7 +326,6 @@ public class NumPadDialog extends JDialog {
 			okButton.setText("OK");
 			okButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					System.out.println("ok"); // TODO Auto-generated Event stub actionPerformed()
 					setVisible(false);
 				}
 			});
