@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.event.DiskoMapEvent;
+import org.redcross.sar.gui.NavBar;
+import org.redcross.sar.gui.UIFactory;
 import org.redcross.sar.map.DiskoMap;
 
 import com.esri.arcgis.carto.FeatureLayer;
@@ -43,6 +45,26 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 		basisLinjeFL.setSelectable(true);
 		flankeFL.setSelectable(true);
 		map.setEditLayer(basisLinjeFL);
+	}
+	
+	public void activated() {
+		UIFactory uiFactory = getDiskoRole().getApplication().getUIFactory();
+		NavBar navBar = uiFactory.getMainPanel().getNavBar();
+		int[] buttonIndexes = {
+				NavBar.INDEX_FLANK_TOGGLE_BUTTON,
+				NavBar.INDEX_DRAW_LINE_TOGGLE_BUTTON,
+				NavBar.INDEX_ERASE_TOGGLE_BUTTON,
+				NavBar.INDEX_SPLIT_TOGGLE_BUTTON,
+				NavBar.INDEX_ZOOM_IN_TOGGLE_BUTTON,
+				NavBar.INDEX_ZOOM_OUT_TOGGLE_BUTTON,
+				NavBar.INDEX_PAN_TOGGLE_BUTTON,
+				NavBar.INDEX_ZOOM_IN_FIXED_BUTTON,
+				NavBar.INDEX_ZOOM_OUT_FIXED_BUTTON,
+				NavBar.INDEX_ZOOM_FULL_EXTENT_BUTTON,
+				NavBar.INDEX_ZOOM_TO_LAST_EXTENT_FORWARD_BUTTON,
+				NavBar.INDEX_ZOOM_TO_LAST_EXTENT_BACKWARD_BUTTON
+		};
+		navBar.showButtons(buttonIndexes);
 	}
 	
 	/* (non-Javadoc)
