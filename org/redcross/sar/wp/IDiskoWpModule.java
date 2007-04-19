@@ -13,7 +13,7 @@ public interface IDiskoWpModule {
 	/**
 	 * Get the name of this IDiskoWpModule. This name is used to identify
 	 * the gui component (JPanel) where this module is placed. Implementations
-	 * of this interface and subclasses must override this methodto provide 
+	 * of this interface and subclasses must override this method to provide 
 	 * a unique name for the spesific work process module.
 	 * @return The name of this IDiskoWpModule
 	 */
@@ -35,4 +35,9 @@ public interface IDiskoWpModule {
 	 * @return true if this IDiskoWpModule has sub menu, false otherwise
 	 */
 	public boolean hasSubMenu();
+	
+	/**
+	 * Called when this IDiskoWpModule is activated
+	 */
+	public void activated();
 }
