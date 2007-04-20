@@ -171,7 +171,7 @@ public class PUIDialog extends DiskoDialog {
 				finishButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
 						try {
-							tool.finish();
+							tool.commit();
 						} catch (AutomationException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
