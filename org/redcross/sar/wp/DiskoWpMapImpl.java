@@ -29,27 +29,22 @@ public class DiskoWpMapImpl extends AbstractDiskoWpModule implements IDiskoWpMap
 	
 	private void initialize() {
 		DiskoMap map = getMap();
-		map.setIsEditable(true);
 		layoutComponent(map);
-	}
-	
-	public void onMapReplaced(DiskoMapEvent e) throws IOException {
 	}
 	
 	public void activated() {
 		UIFactory uiFactory = getDiskoRole().getApplication().getUIFactory();
 		NavBar navBar = uiFactory.getMainPanel().getNavBar();
 		int[] buttonIndexes = {
-				//NavBar.INDEX_ERASE_TOGGLE_BUTTON,
-				NavBar.INDEX_PUI_TOGGLE_BUTTON,
-				NavBar.INDEX_ZOOM_IN_TOGGLE_BUTTON,
-				NavBar.INDEX_ZOOM_OUT_TOGGLE_BUTTON,
-				NavBar.INDEX_PAN_TOGGLE_BUTTON,
-				NavBar.INDEX_ZOOM_IN_FIXED_BUTTON,
-				NavBar.INDEX_ZOOM_OUT_FIXED_BUTTON,
-				NavBar.INDEX_ZOOM_FULL_EXTENT_BUTTON,
-				NavBar.INDEX_ZOOM_TO_LAST_EXTENT_FORWARD_BUTTON,
-				NavBar.INDEX_ZOOM_TO_LAST_EXTENT_BACKWARD_BUTTON
+				NavBar.PUI_TOOL,
+				NavBar.ZOOM_IN_TOOL,
+				NavBar.ZOOM_OUT_TOOL,
+				NavBar.PAN_TOOL,
+				NavBar.ZOOM_IN_FIXED_COMMAND,
+				NavBar.ZOOM_OUT_FIXED_COMMAND,
+				NavBar.ZOOM_FULL_EXTENT_COMMAND,
+				NavBar.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND,
+				NavBar.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND
 		};
 		navBar.showButtons(buttonIndexes);
 	}
