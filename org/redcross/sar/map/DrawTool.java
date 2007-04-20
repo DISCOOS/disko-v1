@@ -141,6 +141,7 @@ public class DrawTool extends AbstractCommandTool {
 			pathGeometry.simplify();
 			IFeatureClass fclass = editLayer.getFeatureClass();
 			IFeature digFeature = fclass.createFeature();
+			
 			int shapeType = fclass.getShapeType();
 			if (shapeType == com.esri.arcgis.geometry.
 					esriGeometryType.esriGeometryPolyline) {
@@ -154,13 +155,7 @@ public class DrawTool extends AbstractCommandTool {
 				return;
 			}
 			digFeature.store();
-				
-			// select this feature
-			QueryFilter qfilter = new QueryFilter();
-			qfilter.setWhereClause("[OBJECTID] ="+digFeature.getOID());
-			editLayer.selectFeatures(qfilter, 
-					esriSelectionResultEnum.esriSelectionResultNew, false);
-			map.getActiveView().refresh();
+			partialRefresh(digFeature.getExtent());
 		}
 		reset();
 	}
