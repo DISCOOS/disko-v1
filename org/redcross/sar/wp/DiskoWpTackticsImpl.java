@@ -31,9 +31,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	
 	private void initialize() {
 		loadProperties("properties");
-		
 		DiskoMap map = getMap();
-		map.setIsEditable(true);
 		layoutComponent(map);
 	}
 	
@@ -51,18 +49,18 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 		UIFactory uiFactory = getDiskoRole().getApplication().getUIFactory();
 		NavBar navBar = uiFactory.getMainPanel().getNavBar();
 		int[] buttonIndexes = {
-				NavBar.INDEX_FLANK_TOGGLE_BUTTON,
-				NavBar.INDEX_DRAW_LINE_TOGGLE_BUTTON,
-				NavBar.INDEX_ERASE_TOGGLE_BUTTON,
-				NavBar.INDEX_SPLIT_TOGGLE_BUTTON,
-				NavBar.INDEX_ZOOM_IN_TOGGLE_BUTTON,
-				NavBar.INDEX_ZOOM_OUT_TOGGLE_BUTTON,
-				NavBar.INDEX_PAN_TOGGLE_BUTTON,
-				NavBar.INDEX_ZOOM_IN_FIXED_BUTTON,
-				NavBar.INDEX_ZOOM_OUT_FIXED_BUTTON,
-				NavBar.INDEX_ZOOM_FULL_EXTENT_BUTTON,
-				NavBar.INDEX_ZOOM_TO_LAST_EXTENT_FORWARD_BUTTON,
-				NavBar.INDEX_ZOOM_TO_LAST_EXTENT_BACKWARD_BUTTON
+				NavBar.FLANK_TOOL,
+				NavBar.DRAW_TOOL,
+				NavBar.ERASE_TOOL,
+				NavBar.SPLIT_TOOL,
+				NavBar.ZOOM_IN_TOOL,
+				NavBar.ZOOM_OUT_TOOL,
+				NavBar.PAN_TOOL,
+				NavBar.ZOOM_IN_FIXED_COMMAND,
+				NavBar.ZOOM_OUT_FIXED_COMMAND,
+				NavBar.ZOOM_FULL_EXTENT_COMMAND,
+				NavBar.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND,
+				NavBar.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND
 		};
 		navBar.showButtons(buttonIndexes);
 	}
