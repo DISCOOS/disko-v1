@@ -104,6 +104,7 @@ public class DiskoRoleImpl implements IDiskoRole {
 				navBar.setVisible(true);
 			}
 			currentModule = module;
+			module.activated();
 			navBar.taskChanged();
 			// set the button selected in the main menu
 			AbstractButton button = mainMenu.getButton(getName(), index);
@@ -112,7 +113,6 @@ public class DiskoRoleImpl implements IDiskoRole {
 			}
 			app.getFrame().setTitle("DISKO "+getTitle()+" "+
 					currentModule.getName());
-			module.activated();
 		}
 	}
 	
