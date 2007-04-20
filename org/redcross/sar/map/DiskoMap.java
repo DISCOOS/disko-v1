@@ -34,7 +34,6 @@ public final class DiskoMap extends MapBean {
 	
 	private static final long serialVersionUID = 1L;
 	private String mxdDoc = null;
-	private boolean editable = false;
 	private FeatureLayer editLayer = null;
 	private SnapLayerSelectionModel snapLayerSelectionModel = null;
 	private ClipLayerSelectionModel clipLayerSelectionModel = null;
@@ -198,14 +197,6 @@ public final class DiskoMap extends MapBean {
 	
 	public FeatureLayer getEditLayer() {
 		return editLayer;
-	}
-	
-	public void setIsEditable(boolean editable) {
-		this.editable = editable;
-	}
-	
-	public boolean isEditable() {
-		return editable;
 	}
 
 	public Feature[] getSelection() throws IOException {
