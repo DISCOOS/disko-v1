@@ -65,13 +65,18 @@ public class PUITool extends AbstractCommandTool {
 			puiDialog = (PUIDialog)dialog;
 			puiDialog.setLocationRelativeTo(map, DiskoDialog.POS_WEST, false);
 			refreshEnvelope = (Envelope)map.getActiveView().getExtent();
-			loadPUIs();
 		}
 	}
 	
-	public boolean deactivate() throws IOException, AutomationException {
-		// TODO Auto-generated method stub
-		return true;
+	public void toolActivated() throws IOException, AutomationException {
+		loadPUIs();
+		super.toolActivated();
+		
+	}
+	
+	public void toolDeactivated() throws IOException, AutomationException {
+		finish();
+		super.toolDeactivated();
 	}
 	
 	private void loadPUIs() throws IOException, AutomationException {
@@ -249,7 +254,7 @@ public class PUITool extends AbstractCommandTool {
 		invalidArea.invalidate((short) esriScreenCache.esriNoScreenCache);
 	}
 	
-	public void finish() throws IOException, AutomationException {
+	public void commit() throws IOException, AutomationException {
 		for (int i = 0; i < features.size(); i++) {
 			IFeature pui = (IFeature)features.get(i);
 			short editCode = ((Short)pui.getValue(3)).shortValue();
@@ -266,6 +271,14 @@ public class PUITool extends AbstractCommandTool {
 		}
 		System.out.println(" ---- ");	
 		clear();
+	}
+	
+	private void finish() throws IOException, AutomationException {
+		System.out.println("finish");
+		commit();
+		features.clear();
+		puiLayer.setVisible(true);
+		partialRefresh(null);
 	}
 	
 	private void clear() throws IOException, AutomationException {
