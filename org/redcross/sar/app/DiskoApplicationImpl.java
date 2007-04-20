@@ -36,7 +36,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-//		com.esri.arcgis.system.EngineInitializer.initializeVisualBeans();
+		com.esri.arcgis.system.EngineInitializer.initializeVisualBeans();
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		}
@@ -59,7 +59,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication {
 	 */
 	public DiskoApplicationImpl() {
 		super();
-//		initializeArcGISLicenses();
+		initializeArcGISLicenses();
 		initialize();
 	}
 
