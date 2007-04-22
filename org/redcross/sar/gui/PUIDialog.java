@@ -35,6 +35,9 @@ import java.io.IOException;
 
 import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
+import javax.swing.border.TitledBorder;
+import java.awt.Font;
+import java.awt.Color;
 
 
 
@@ -79,7 +82,7 @@ public class PUIDialog extends DiskoDialog {
 	 */
 	private void initialize() {
 		try {
-            this.setPreferredSize(new Dimension(150, 270));
+            this.setPreferredSize(new Dimension(175, 270));
             //this.setSize(new Dimension(175, 350));
             this.setSize(new Dimension(200, 609));
             this.setContentPane(getContentPanel());
@@ -538,6 +541,7 @@ public class PUIDialog extends DiskoDialog {
 				BorderLayout borderLayout = new BorderLayout();
 				borderLayout.setVgap(0);
 				centerPanel = new JPanel();
+				centerPanel.setBorder(BorderFactory.createTitledBorder(null, "PUI", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Tahoma", Font.PLAIN, 11), new Color(0, 70, 213)));
 				centerPanel.setLayout(borderLayout);
 				centerPanel.add(getCoordPanel(), BorderLayout.NORTH);
 				centerPanel.add(getTextAreaPanel(), BorderLayout.CENTER);

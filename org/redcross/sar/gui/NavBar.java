@@ -41,11 +41,11 @@ public class NavBar extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
 	
-	public static final int FLANK_TOOL = 0;
-	public static final int DRAW_TOOL = 1;
-	public static final int ERASE_TOOL = 2;
-	public static final int SPLIT_TOOL = 3;
-	public static final int PUI_TOOL = 4;
+	public static final int PUI_TOOL = 0;
+	public static final int FLANK_TOOL = 1;
+	public static final int DRAW_TOOL = 2;
+	public static final int ERASE_TOOL = 3;
+	public static final int SPLIT_TOOL = 4;
 	public static final int SELECT_FEATURES_TOOL = 5;
 	public static final int ZOOM_IN_TOOL = 6;
 	public static final int ZOOM_OUT_TOOL = 7;
@@ -117,11 +117,11 @@ public class NavBar extends JPanel {
 		add(dummy);
 		bgroup.add(dummy);
 			
+		addCommand(getPUIToggleButton(), getPUITool());
 		addCommand(getFlankToggleButton(), getFlankTool());
 		addCommand(getDrawLineToggleButton(), getDrawTool());
 		addCommand(getEraseToggleButton(), getEraseTool());
 		addCommand(getSplitToggleButton(), getSplitTool());
-		addCommand(getPUIToggleButton(), getPUITool());
 		addCommand(getSelectFeaturesToggleButton(), getSelectFeaturesTool());
 		addCommand(getZoomInToggleButton(), getZoomInTool());
 		addCommand(getZoomOutToggleButton(), getZoomOutTool());

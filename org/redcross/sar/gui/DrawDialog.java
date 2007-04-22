@@ -60,7 +60,7 @@ public class DrawDialog extends DiskoDialog {
 	private void initialize() {
 		try {
             this.setContentPane(getMainPanel());
-            this.setPreferredSize(new Dimension(150,450));
+            this.setPreferredSize(new Dimension(175,450));
             this.pack();
 				
 		}

@@ -2,6 +2,7 @@ package org.redcross.sar.gui;
 
 import java.awt.Frame;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.JPanel;
 import javax.swing.SpinnerNumberModel;
 
@@ -20,15 +21,21 @@ import java.awt.GridBagConstraints;
 import javax.swing.JCheckBox;
 import javax.swing.JSpinner;
 
+import org.redcross.sar.app.IDiskoApplication;
+import org.redcross.sar.app.Utils;
 import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.FlankTool;
 
 import java.awt.Insets;
 import java.io.IOException;
+import java.awt.FlowLayout;
+import javax.swing.JButton;
 
 public class FlankDialog extends DiskoDialog {
 
 	private static final long serialVersionUID = 1L;
+	private IDiskoApplication app = null;
+	private FlankTool tool = null;
 	private ClipLayerSelectionModel clipLayerSelectionModel = null;
 	private JPanel contentPanel = null;
 	private JPanel centerPanel = null;
@@ -40,9 +47,15 @@ public class FlankDialog extends DiskoDialog {
 	private ScaleBar rightScaleBar = null;
 	private JSpinner leftSpinner = null;
 	private JSpinner rightSpinner = null;
+	private JPanel northPanel = null;
+	private JButton finishButton = null;
+	private JPanel southPanel = null;
+	private JButton cancelButton = null;
 	
-	public FlankDialog(Frame owner, FlankTool tool) {
-		super(owner);
+	public FlankDialog(IDiskoApplication app, FlankTool tool) {
+		super(app.getFrame());
+		this.app = app;
+		this.tool = tool;
 		initialize();
 		// TODO Auto-generated constructor stub
 	}
@@ -54,7 +67,7 @@ public class FlankDialog extends DiskoDialog {
 	private void initialize() {
 		try {
             this.setContentPane(getContentPanel());
-            this.setPreferredSize(new Dimension(150, 340));
+            this.setPreferredSize(new Dimension(175, 340));
             this.pack();
 		}
 		catch (java.lang.Throwable e) {
@@ -83,6 +96,8 @@ public class FlankDialog extends DiskoDialog {
 				contentPanel.setLayout(new BorderLayout());
 				contentPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 				contentPanel.add(getCenterPanel(), BorderLayout.CENTER);
+				contentPanel.add(getNorthPanel(), BorderLayout.NORTH);
+				contentPanel.add(getSouthPanel(), BorderLayout.SOUTH);
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
@@ -344,5 +359,89 @@ public class FlankDialog extends DiskoDialog {
 			}
 		}
 		return rightSpinner;
+	}
+
+	/**
+	 * This method initializes northPanel	
+	 * 	
+	 * @return javax.swing.JPanel	
+	 */
+	private JPanel getNorthPanel() {
+		if (northPanel == null) {
+			try {
+				FlowLayout flowLayout = new FlowLayout();
+				flowLayout.setAlignment(FlowLayout.RIGHT);
+				flowLayout.setVgap(0);
+				flowLayout.setHgap(0);
+				northPanel = new JPanel();
+				northPanel.setLayout(flowLayout);
+				northPanel.add(getFinishButton(), null);
+			} catch (java.lang.Throwable e) {
+				// TODO: Something
+			}
+		}
+		return northPanel;
+	}
+
+	/**
+	 * This method initializes finishButton	
+	 * 	
+	 * @return javax.swing.JButton	
+	 */
+	private JButton getFinishButton() {
+		if (finishButton == null) {
+			try {
+				finishButton = new JButton();
+				finishButton.setPreferredSize(app.getUIFactory().getSmallButtonSize());
+				String iconName = "finish.icon";
+				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
+				finishButton.setIcon(icon);
+			} catch (java.lang.Throwable e) {
+				// TODO: Something
+			}
+		}
+		return finishButton;
+	}
+
+	/**
+	 * This method initializes southPanel	
+	 * 	
+	 * @return javax.swing.JPanel	
+	 */
+	private JPanel getSouthPanel() {
+		if (southPanel == null) {
+			try {
+				FlowLayout flowLayout1 = new FlowLayout();
+				flowLayout1.setAlignment(FlowLayout.RIGHT);
+				flowLayout1.setVgap(0);
+				flowLayout1.setHgap(0);
+				southPanel = new JPanel();
+				southPanel.setLayout(flowLayout1);
+				southPanel.add(getCancelButton(), null);
+			} catch (java.lang.Throwable e) {
+				// TODO: Something
+			}
+		}
+		return southPanel;
+	}
+
+	/**
+	 * This method initializes cancelButton	
+	 * 	
+	 * @return javax.swing.JButton	
+	 */
+	private JButton getCancelButton() {
+		if (cancelButton == null) {
+			try {
+				cancelButton = new JButton();
+				cancelButton.setPreferredSize(app.getUIFactory().getSmallButtonSize());
+				String iconName = "cancel.icon";
+				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
+				cancelButton.setIcon(icon);
+			} catch (java.lang.Throwable e) {
+				// TODO: Something
+			}
+		}
+		return cancelButton;
 	}
 }  //  @jve:decl-index=0:visual-constraint="10,2"
