@@ -34,7 +34,6 @@ public final class DiskoMap extends MapBean {
 	
 	private static final long serialVersionUID = 1L;
 	private String mxdDoc = null;
-	private FeatureLayer editLayer = null;
 	private SnapLayerSelectionModel snapLayerSelectionModel = null;
 	private ClipLayerSelectionModel clipLayerSelectionModel = null;
 	private IDiskoTool currentTool = null;
@@ -187,16 +186,6 @@ public final class DiskoMap extends MapBean {
 			clipLayerSelectionModel = new ClipLayerSelectionModel(this);
 		}
 		return clipLayerSelectionModel;
-	}
-	
-	
-	public void setEditLayer(FeatureLayer editLayer) {
-		this.editLayer = editLayer;
-		fireEditLayerChanged();
-	}
-	
-	public FeatureLayer getEditLayer() {
-		return editLayer;
 	}
 
 	public Feature[] getSelection() throws IOException {

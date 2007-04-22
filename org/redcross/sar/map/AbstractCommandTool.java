@@ -6,14 +6,11 @@ import java.util.Properties;
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.event.IDiskoMapEventListener;
 import org.redcross.sar.gui.DiskoDialog;
-
-import com.esri.arcgis.carto.FeatureLayer;
+import com.esri.arcgis.carto.IActiveView;
+import com.esri.arcgis.carto.IElement;
+import com.esri.arcgis.carto.IEnumElement;
+import com.esri.arcgis.carto.IGraphicsContainer;
 import com.esri.arcgis.display.IDisplayTransformation;
-import com.esri.arcgis.geodatabase.IFeature;
-import com.esri.arcgis.geodatabase.IFeatureCursor;
-import com.esri.arcgis.geodatabase.SpatialFilter;
-import com.esri.arcgis.geodatabase.esriSpatialRelEnum;
-import com.esri.arcgis.geometry.Envelope;
 import com.esri.arcgis.geometry.IEnvelope;
 import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.interop.AutomationException;
@@ -44,15 +41,17 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 		p.transform(com.esri.arcgis.geometry.esriTransformDirection.esriTransformReverse, getTransform());
 	}
 	
-	protected IFeature search(FeatureLayer flayer, Envelope env) 
+	protected IElement searchGraphics(Point p) 
 			throws IOException, AutomationException {
-		SpatialFilter spatialFilter = new SpatialFilter();
-		spatialFilter.setGeometryByRef(env);
-		spatialFilter.setGeometryField(flayer.getFeatureClass().getShapeFieldName());
-		spatialFilter.setSpatialRel(esriSpatialRelEnum.esriSpatialRelIntersects);
-		IFeatureCursor featureCursor = flayer.search(spatialFilter,false);
-		// first hit will be returned
-		return featureCursor.nextFeature();
+
+		IActiveView av = map.getActiveView();
+		double tolerance = av.getExtent().getWidth()/50;
+		IGraphicsContainer graphics = av.getGraphicsContainer();
+		IEnumElement enumElement = graphics.locateElements(p, tolerance);
+		if (enumElement != null) {
+			return enumElement.next();
+		}
+		return null;
 	}
 	
 	protected void partialRefresh(IEnvelope env) throws IOException, AutomationException {
@@ -63,6 +62,14 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 		}
 		else {
 			map.getActiveView().refresh();
+		}
+	}
+	
+	protected void partialRefreshGraphics(IEnvelope env) throws IOException, AutomationException {
+		if (env != null) {
+			map.getActiveView().partialRefresh(
+				com.esri.arcgis.carto.esriViewDrawPhase.esriViewGraphics, 
+				null, env);
 		}
 	}
 	

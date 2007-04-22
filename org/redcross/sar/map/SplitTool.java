@@ -2,13 +2,10 @@ package org.redcross.sar.map;
 
 import java.awt.Toolkit;
 import java.io.IOException;
-
-
-import com.esri.arcgis.carto.FeatureLayer;
-import com.esri.arcgis.carto.ILayer;
-import com.esri.arcgis.geodatabase.IFeature;
-import com.esri.arcgis.geodatabase.IFeatureClass;
-import com.esri.arcgis.geometry.Envelope;
+import com.esri.arcgis.carto.IActiveView;
+import com.esri.arcgis.carto.IElement;
+import com.esri.arcgis.carto.IGraphicsContainer;
+import com.esri.arcgis.carto.LineElement;
 import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.geometry.Polyline;
 import com.esri.arcgis.interop.AutomationException;
@@ -21,16 +18,15 @@ import com.esri.arcgis.interop.AutomationException;
 public class SplitTool extends AbstractCommandTool {
 
 	private static final long serialVersionUID = 1L;
-	private Envelope searchEnvelope = null;
+	private Point p = null;
 	
 	/**
 	 * Constructs the DrawTool
 	 */
 	public SplitTool() throws IOException {
-		searchEnvelope = new Envelope();
-		searchEnvelope.putCoords(0, 0, 0, 0);
-		searchEnvelope.setHeight(10);
-		searchEnvelope.setWidth(10);
+		p = new Point();
+		p.setX(0);
+		p.setY(0);
 	}
 
 	public void onCreate(Object obj) throws IOException, AutomationException {
@@ -41,30 +37,24 @@ public class SplitTool extends AbstractCommandTool {
 
 	public void onMouseDown(int button, int shift, int x, int y)
 			throws IOException, AutomationException {
-		Point p = transform(x,y);
-		searchEnvelope.centerAt(p);
-		for (int i = 0; i < map.getLayerCount(); i++) {
-			ILayer layer = map.getLayer(i);
-			if (layer instanceof FeatureLayer) {
-				FeatureLayer flayer = (FeatureLayer)layer;
-				if (flayer.isSelectable()) {
-					IFeature feature = search(flayer, searchEnvelope);
-					if (feature != null) {
-						int geomType = feature.getShape().getGeometryType();
-						if (geomType == com.esri.arcgis.geometry.esriGeometryType.
-								esriGeometryPolyline) {
-							split(flayer, feature, p);
-							break; // first hit will be deleted
-						}
-					}
-				}
-			}
-		}	
+		p.setX(x);
+		p.setY(y); 
+		transform(p);
+		IElement elem = searchGraphics(p);
+		if (elem != null && elem instanceof LineElement) {
+			IActiveView av = map.getActiveView();
+			IGraphicsContainer graphics = av.getGraphicsContainer();
+			Polyline pl = (Polyline)elem.getGeometry();
+			// splitting and adding new elements
+			split(graphics, pl, p);
+			// delete the orginal element
+			graphics.deleteElement(elem);
+		}
 	}
 	
-	private void split(FeatureLayer flayer, IFeature feature, Point nearPoint) 
+	private void split(IGraphicsContainer graphics, Polyline orginal, Point nearPoint) 
 			throws IOException, AutomationException {
-		Polyline orginal = (Polyline)feature.getShapeCopy();
+		
 		boolean[] splitHappened = new boolean[2];
 		int[] newPartIndex = new int[2];
 		int[] newSegmentIndex = new int[2];
@@ -76,23 +66,14 @@ public class SplitTool extends AbstractCommandTool {
 		Polyline pline2 = new Polyline();
 		pline2.addGeometry(orginal.getGeometry(newPartIndex[1]), null, null);
 		
-		// update orginal feature
-		feature.setShapeByRef(pline1);
-		feature.store();
-		// create new feature
-		IFeatureClass fclass = flayer.getFeatureClass();
-		IFeature newFeature = fclass.createFeature();
-		newFeature.setShapeByRef(pline2);
-		newFeature.store();
+		LineElement le1 = new LineElement();
+		le1.setGeometry(pline1);
+		graphics.addElement(le1, 0);
+		
+		LineElement le2 = new LineElement();
+		le2.setGeometry(pline2);
+		graphics.addElement(le2, 0);
 		
 		Toolkit.getDefaultToolkit().beep();
-		//clear selection and refresh
-		map.getMap().clearSelection();
-		map.getActiveView().refresh();
-	}
-	
-	public void setTolerance(double tolerance) throws IOException {
-		searchEnvelope.setHeight(tolerance);
-		searchEnvelope.setWidth(tolerance);
 	}
 }

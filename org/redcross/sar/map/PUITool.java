@@ -30,6 +30,7 @@ public class PUITool extends AbstractCommandTool {
 
 	private static final long serialVersionUID = 1L;
 	
+	private IDiskoApplication app = null;
 	private String puiLayerName = null;
 	private FeatureLayer puiLayer = null;
 	private PUIDialog puiDialog = null;
@@ -38,6 +39,7 @@ public class PUITool extends AbstractCommandTool {
 	private Point movePoint = null;
 	private Envelope refreshEnvelope = null;
 	private boolean edit = false;
+	private boolean hasChanges = false;
 	
 	private static final Short EDIT_CODE_UNCHANGED = new Short((short)0);
 	private static final Short EDIT_CODE_ADDED     = new Short((short)1);
@@ -48,9 +50,10 @@ public class PUITool extends AbstractCommandTool {
 	 * Constructs the DrawTool
 	 */
 	public PUITool(IDiskoApplication app, String puiLayerName) throws IOException {
+		this.app = app;
 		this.puiLayerName = puiLayerName;
 		dialog = new PUIDialog(app, this);
-		dialog.setIsToggable(false);
+		dialog.setIsToggable(true);
 		features = new ArrayList<IFeature>();
 		movePoint = new Point();
 		movePoint.setX(0);
@@ -63,7 +66,7 @@ public class PUITool extends AbstractCommandTool {
 			puiLayer = map.getFeatureLayer(puiLayerName);
 			map.addDiskoMapEventListener(this);
 			puiDialog = (PUIDialog)dialog;
-			puiDialog.setLocationRelativeTo(map, DiskoDialog.POS_WEST, false);
+			puiDialog.setLocationRelativeTo(map, DiskoDialog.POS_WEST, true);
 			refreshEnvelope = (Envelope)map.getActiveView().getExtent();
 		}
 	}
@@ -95,6 +98,7 @@ public class PUITool extends AbstractCommandTool {
 		}
 		puiLayer.setVisible(false);
 		draw();
+		hasChanges =  false;
 	}
 
 	public void onMouseDown(int button, int shift, int x, int y)
@@ -262,15 +266,18 @@ public class PUITool extends AbstractCommandTool {
 				editCode == EDIT_CODE_CHANGED.shortValue()) {
 				pui.setValue(3, EDIT_CODE_UNCHANGED);
 				pui.store();
+				hasChanges = true;
 				System.out.println("Added or changed");			}
 			else if (editCode == EDIT_CODE_DELETED.shortValue()) {
 				features.remove(pui);
 				pui.delete();
+				hasChanges = true;
 				System.out.println("Deleted");	
 			}
 		}
 		System.out.println(" ---- ");	
 		clear();
+		app.refreshAllMaps(null);
 	}
 	
 	private void finish() throws IOException, AutomationException {
@@ -278,13 +285,15 @@ public class PUITool extends AbstractCommandTool {
 		commit();
 		features.clear();
 		puiLayer.setVisible(true);
-		partialRefresh(null);
+		if (hasChanges) {
+			partialRefresh(null);
+			hasChanges = false;
+		}
 	}
 	
 	private void clear() throws IOException, AutomationException {
 		clearSelectedPUI();
 		refreshEnvelope = (Envelope)map.getActiveView().getExtent();
-		partialRefresh(refreshEnvelope);
 		puiDialog.clearFields();
 	}
 	
