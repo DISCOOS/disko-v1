@@ -52,8 +52,9 @@ public class SysBar extends JPanel {
 		if (changeRolleButton == null) {
 			try {
 				changeRolleButton = new JButton();
-				String iconName = "MapSnappingEnvCommand.icon";
+				String iconName = "SwitchRole.icon";
 				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
+				changeRolleButton.setIcon(icon);
 				Dimension size = app.getUIFactory().getSmallButtonSize();
 				changeRolleButton.setPreferredSize(size);
 				changeRolleButton.setIcon(icon);
