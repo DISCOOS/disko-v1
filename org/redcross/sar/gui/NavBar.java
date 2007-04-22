@@ -32,6 +32,7 @@ import com.esri.arcgis.controls.ControlsMapZoomOutFixedCommand;
 import com.esri.arcgis.controls.ControlsMapZoomOutTool;
 import com.esri.arcgis.controls.ControlsMapZoomToLastExtentBackCommand;
 import com.esri.arcgis.controls.ControlsMapZoomToLastExtentForwardCommand;
+import com.esri.arcgis.controls.ControlsSelectFeaturesTool;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.systemUI.ICommand;
 import com.esri.arcgis.systemUI.ITool;
@@ -45,14 +46,15 @@ public class NavBar extends JPanel {
 	public static final int ERASE_TOOL = 2;
 	public static final int SPLIT_TOOL = 3;
 	public static final int PUI_TOOL = 4;
-	public static final int ZOOM_IN_TOOL = 5;
-	public static final int ZOOM_OUT_TOOL = 6;
-	public static final int PAN_TOOL = 7;
-	public static final int ZOOM_IN_FIXED_COMMAND = 8;
-	public static final int ZOOM_OUT_FIXED_COMMAND = 9;
-	public static final int ZOOM_FULL_EXTENT_COMMAND = 10;
-	public static final int ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND = 11;
-	public static final int ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND = 12;
+	public static final int SELECT_FEATURES_TOOL = 5;
+	public static final int ZOOM_IN_TOOL = 6;
+	public static final int ZOOM_OUT_TOOL = 7;
+	public static final int PAN_TOOL = 8;
+	public static final int ZOOM_IN_FIXED_COMMAND = 9;
+	public static final int ZOOM_OUT_FIXED_COMMAND = 10;
+	public static final int ZOOM_FULL_EXTENT_COMMAND = 11;
+	public static final int ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND = 12;
+	public static final int ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND = 13;
 	
 	private IDiskoApplication app = null;
 	private ButtonGroup bgroup  = null;
@@ -67,6 +69,7 @@ public class NavBar extends JPanel {
 	private JToggleButton zoomInToggleButton = null;
 	private JToggleButton zoomOutToggleButton = null;
 	private JToggleButton panToggleButton = null;
+	private JToggleButton selectFeaturesToggleButton = null;
 	private JButton zoomInFixedButton = null;
 	private JButton zoomOutFixedButton = null;
 	private JButton fullExtentButton = null;
@@ -81,6 +84,7 @@ public class NavBar extends JPanel {
 	private ControlsMapZoomInTool zoomInTool = null;
 	private ControlsMapZoomOutTool zoomOutTool = null;
 	private ControlsMapPanTool panTool = null;
+	private ControlsSelectFeaturesTool selectFeaturesTool = null;
 	private ControlsMapZoomInFixedCommand zoomInFixedCommand = null;
 	private ControlsMapZoomOutFixedCommand zoomOutFixedCommand = null;
 	private ControlsMapFullExtentCommand fullExtentCommand = null;
@@ -118,6 +122,7 @@ public class NavBar extends JPanel {
 		addCommand(getEraseToggleButton(), getEraseTool());
 		addCommand(getSplitToggleButton(), getSplitTool());
 		addCommand(getPUIToggleButton(), getPUITool());
+		addCommand(getSelectFeaturesToggleButton(), getSelectFeaturesTool());
 		addCommand(getZoomInToggleButton(), getZoomInTool());
 		addCommand(getZoomOutToggleButton(), getZoomOutTool());
 		addCommand(getPanToggleButton(), getPanTool());
@@ -144,8 +149,7 @@ public class NavBar extends JPanel {
 	private FlankTool getFlankTool() {
 		if (flankTool == null) {
 			try {
-				String flayerName = app.getProperty("BufferPath.featureClass.Name");
-				flankTool = new FlankTool(app.getFrame(), flayerName);
+				flankTool = new FlankTool(app);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -234,7 +238,21 @@ public class NavBar extends JPanel {
 			}
 		}
 		return panTool;
-		
+	}
+	
+	private ControlsSelectFeaturesTool getSelectFeaturesTool() {
+		if (selectFeaturesTool == null) {
+			try {
+				selectFeaturesTool = new ControlsSelectFeaturesTool();
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return selectFeaturesTool;
 	}
 	
 	private ControlsMapZoomInFixedCommand getZoomInFixedCommand() {
@@ -329,7 +347,7 @@ public class NavBar extends JPanel {
 				Dimension size = app.getUIFactory().getSmallButtonSize();
 				//String iconName = "MapDrawLineTool.icon";
 				//Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
-				flankToggleButton = new JToggleButton("Fl");
+				flankToggleButton = new JToggleButton("FL");
 				//flankToggleButton.setIcon(icon);
 				flankToggleButton.setPreferredSize(size);
 			} catch (Exception e) {
@@ -361,10 +379,10 @@ public class NavBar extends JPanel {
 		if (splitToggleButton == null) {
 			try {
 				Dimension size = app.getUIFactory().getSmallButtonSize();
-				String iconName = "MapSelectionTool.icon";
-				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
-				splitToggleButton = new JToggleButton();
-				splitToggleButton.setIcon(icon);
+				//String iconName = "MapSelectionTool.icon";
+				//Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
+				splitToggleButton = new JToggleButton("SP");
+				//splitToggleButton.setIcon(icon);
 				splitToggleButton.setPreferredSize(size);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -457,6 +475,23 @@ public class NavBar extends JPanel {
 			}
 		}
 		return panToggleButton;
+	}
+	
+	public JToggleButton getSelectFeaturesToggleButton() {
+		if (selectFeaturesToggleButton == null)  {
+			try {
+				Dimension size = app.getUIFactory().getSmallButtonSize();
+				String iconName = "MapSelectionTool.icon";
+				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
+				selectFeaturesToggleButton = new JToggleButton();
+				selectFeaturesToggleButton.setIcon(icon);
+				selectFeaturesToggleButton.setPreferredSize(size);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return selectFeaturesToggleButton;
 	}
 	
 	public JButton getZoomInFixedButton() {
@@ -566,9 +601,6 @@ public class NavBar extends JPanel {
 									}
 								}
 							}
-						}
-						if (map != null) {
-							map.getActiveView().refresh(); // refreshing the current map
 						}
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
