@@ -79,7 +79,7 @@ public class PUIDialog extends DiskoDialog {
 	 */
 	private void initialize() {
 		try {
-            this.setPreferredSize(new Dimension(200, 270));
+            this.setPreferredSize(new Dimension(150, 270));
             //this.setSize(new Dimension(175, 350));
             this.setSize(new Dimension(200, 609));
             this.setContentPane(getContentPanel());
@@ -100,6 +100,7 @@ public class PUIDialog extends DiskoDialog {
 			try {
 				BorderLayout borderLayout1 = new BorderLayout();
 				borderLayout1.setVgap(5);
+				borderLayout1.setHgap(0);
 				txtAreaLabel = new JLabel();
 				txtAreaLabel.setText("Beskrivelse:");
 				contentPanel = new JPanel();
