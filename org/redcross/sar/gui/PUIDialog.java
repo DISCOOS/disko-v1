@@ -23,19 +23,18 @@ import org.redcross.sar.app.Utils;
 import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.PUITool;
 
-import com.borland.jbcl.layout.VerticalFlowLayout;
 import com.esri.arcgis.geodatabase.IFeature;
 import com.esri.arcgis.geometry.IEnvelope;
 import com.esri.arcgis.geometry.IGeometry;
 import com.esri.arcgis.interop.AutomationException;
 
 import java.awt.GridBagLayout;
-import java.awt.event.KeyEvent;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.io.IOException;
 
 import javax.swing.JScrollPane;
+import java.awt.BorderLayout;
 
 
 
@@ -47,7 +46,6 @@ public class PUIDialog extends DiskoDialog {
 	private JPanel contentPanel = null;
 	private NumPadDialog numPadDialog = null;
 	private JPanel northPanel = null;
-	private JButton deleteButton = null;
 	private JPanel southPanel = null;
 	private JButton finishButton = null;
 	private JTextField xCoordTextField = null;
@@ -55,14 +53,15 @@ public class PUIDialog extends DiskoDialog {
 	private JComboBox typeComboBox = null;
 	private JLabel txtAreaLabel = null;
 	private JTextArea txtArea = null;
-	private JPanel centerPanel = null;
+	private JPanel coordPanel = null;
 	private JLabel xCoordLabel = null;
 	private JLabel yCoordLabel = null;
 	private JLabel typeLabel = null;
 	private JScrollPane textAreaScrollPane = null;
 	private CoordinateDocumentListener coordinateDocumentListener = null;
-	//  @jve:decl-index=0:
-	private JButton refreshButton = null;
+	private JButton cancelButton = null;
+	private JPanel centerPanel = null;
+	private JPanel textAreaPanel = null;
 	
 
 	public PUIDialog(IDiskoApplication app, PUITool tool) {
@@ -82,6 +81,7 @@ public class PUIDialog extends DiskoDialog {
 		try {
             this.setPreferredSize(new Dimension(200, 270));
             //this.setSize(new Dimension(175, 350));
+            this.setSize(new Dimension(200, 609));
             this.setContentPane(getContentPanel());
             this.pack();
 		}
@@ -98,20 +98,16 @@ public class PUIDialog extends DiskoDialog {
 	private JPanel getContentPanel() {
 		if (contentPanel == null) {
 			try {
+				BorderLayout borderLayout1 = new BorderLayout();
+				borderLayout1.setVgap(5);
 				txtAreaLabel = new JLabel();
 				txtAreaLabel.setText("Beskrivelse:");
 				contentPanel = new JPanel();
+				contentPanel.setLayout(borderLayout1);
 				contentPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-				VerticalFlowLayout vfl = new VerticalFlowLayout();
-				vfl.setVgap(0);
-				vfl.setHgap(5);
-				vfl.setAlignment(VerticalFlowLayout.TOP);
-				contentPanel.setLayout(vfl);
-				contentPanel.add(getNorthPanel(), null);
-				contentPanel.add(getCenterPanel(), null);
-				contentPanel.add(txtAreaLabel, null);
-				contentPanel.add(getTextAreaScrollPane(), null);
-				contentPanel.add(getSouthPanel(), null);
+				contentPanel.add(getNorthPanel(), BorderLayout.NORTH);
+				contentPanel.add(getCenterPanel(), BorderLayout.CENTER);
+				contentPanel.add(getSouthPanel(), BorderLayout.SOUTH);
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
@@ -128,12 +124,10 @@ public class PUIDialog extends DiskoDialog {
 		if (northPanel == null) {
 			FlowLayout flowLayout = new FlowLayout();
 			flowLayout.setAlignment(FlowLayout.RIGHT);
-			flowLayout.setVgap(5);
+			flowLayout.setVgap(0);
 			flowLayout.setHgap(0);
 			northPanel = new JPanel();
 			northPanel.setLayout(flowLayout);
-			northPanel.add(getRefreshButton(), null);
-			northPanel.add(getDeleteButton(), null);
 			northPanel.add(getFinishButton(), null);
 		}
 		return northPanel;
@@ -148,13 +142,49 @@ public class PUIDialog extends DiskoDialog {
 		if (southPanel == null) {
 			FlowLayout flowLayout1 = new FlowLayout();
 			flowLayout1.setAlignment(FlowLayout.RIGHT);
-			flowLayout1.setVgap(5);
+			flowLayout1.setVgap(0);
 			flowLayout1.setHgap(0);
 			southPanel = new JPanel();
 			southPanel.setLayout(flowLayout1);
+			southPanel.add(getCancelButton(), null);
 		}
 		return southPanel;
 	}
+	
+	/**
+	 * This method initializes applyButton	
+	 * 	
+	 * @return javax.swing.JButton	
+	 */
+	private JButton getCancelButton() {
+		if (cancelButton == null) {
+			try {
+				cancelButton = new JButton();
+				cancelButton.setPreferredSize(app.getUIFactory().getSmallButtonSize());
+				String iconName = "cancel.icon";
+				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
+				cancelButton.setIcon(icon);
+				cancelButton.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent e) {
+						try {
+							tool.clearSelectedPUI();
+							clearFields();
+						} catch (AutomationException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
+				});
+			} catch (java.lang.Throwable e) {
+				// TODO: Something
+			}
+		}
+		return cancelButton;
+	}
+	
 	/**
 	 * This method initializes finishButton	
 	 * 	
@@ -164,8 +194,8 @@ public class PUIDialog extends DiskoDialog {
 		if (finishButton == null) {
 			try {
 				finishButton = new JButton();
-				finishButton.setPreferredSize(new Dimension(32, 32));
-				String iconName = "checkout.icon";
+				finishButton.setPreferredSize(app.getUIFactory().getSmallButtonSize());
+				String iconName = "finish.icon";
 				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
 				finishButton.setIcon(icon);
 				finishButton.addActionListener(new java.awt.event.ActionListener() {
@@ -187,76 +217,6 @@ public class PUIDialog extends DiskoDialog {
 			}
 		}
 		return finishButton;
-	}
-	
-	/**
-	 * This method initializes cancelButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getDeleteButton() {
-		if (deleteButton == null) {
-			try {
-				deleteButton = new JButton();
-				deleteButton.setPreferredSize(new Dimension(32, 32));
-				deleteButton.setMnemonic(KeyEvent.VK_UNDEFINED);
-				String iconName = "delete_small.icon";
-				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
-				deleteButton.setIcon(icon);
-				deleteButton.setText("");
-				deleteButton.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent e) {
-						try {
-							tool.deleteSelectedPUI();
-						} catch (AutomationException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-					}
-				});
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		return deleteButton;
-	}
-	
-	/**
-	 * This method initializes refreshButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getRefreshButton() {
-		if (refreshButton == null) {
-			try {
-				refreshButton = new JButton();
-				refreshButton.setPreferredSize(new Dimension(32, 32));
-				String iconName = "refresh.icon";
-				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
-				refreshButton.setIcon(icon);
-				refreshButton.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent e) {
-						try {
-							tool.clearSelectedPUI();
-							clearFields();
-						} catch (AutomationException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-					}
-				});
-			} catch (java.lang.Throwable e) {
-				// TODO: Something
-			}
-		}
-		return refreshButton;
 	}
 	
 	/**
@@ -420,8 +380,8 @@ public class PUIDialog extends DiskoDialog {
 	private JTextArea getTxtArea() {
 		if (txtArea == null) {
 			txtArea = new JTextArea();
-			txtArea.setRows(5);
-			txtArea.setColumns(1);
+			//txtArea.setRows(5);
+			//txtArea.setColumns(1);
 			txtArea.addKeyListener(new java.awt.event.KeyAdapter() {
 				public void keyTyped(java.awt.event.KeyEvent e) {
 					try {
@@ -446,8 +406,8 @@ public class PUIDialog extends DiskoDialog {
 	 * 	
 	 * @return javax.swing.JPanel	
 	 */
-	private JPanel getCenterPanel() {
-		if (centerPanel == null) {
+	private JPanel getCoordPanel() {
+		if (coordPanel == null) {
 			try {
 				GridBagConstraints gridBagConstraints31 = new GridBagConstraints();
 				gridBagConstraints31.gridx = 0;
@@ -496,20 +456,20 @@ public class PUIDialog extends DiskoDialog {
 				GridBagConstraints gridBagConstraints = new GridBagConstraints();
 				gridBagConstraints.gridx = 0;
 				gridBagConstraints.gridy = 0;
-				centerPanel = new JPanel();
-				centerPanel.setLayout(new GridBagLayout());
-				centerPanel.setPreferredSize(new Dimension(0, 100));
-				centerPanel.add(getXCoordTextField(), gridBagConstraints1);
-				centerPanel.add(getYCoordTextField(), gridBagConstraints3);
-				centerPanel.add(getTypeComboBox(), gridBagConstraints5);
-				centerPanel.add(xCoordLabel, gridBagConstraints11);
-				centerPanel.add(yCoordLabel, gridBagConstraints21);
-				centerPanel.add(typeLabel, gridBagConstraints31);
+				coordPanel = new JPanel();
+				coordPanel.setLayout(new GridBagLayout());
+				coordPanel.setPreferredSize(new Dimension(0, 100));
+				coordPanel.add(getXCoordTextField(), gridBagConstraints1);
+				coordPanel.add(getYCoordTextField(), gridBagConstraints3);
+				coordPanel.add(getTypeComboBox(), gridBagConstraints5);
+				coordPanel.add(xCoordLabel, gridBagConstraints11);
+				coordPanel.add(yCoordLabel, gridBagConstraints21);
+				coordPanel.add(typeLabel, gridBagConstraints31);
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
 		}
-		return centerPanel;
+		return coordPanel;
 	}
 
 	/**
@@ -564,6 +524,46 @@ public class PUIDialog extends DiskoDialog {
 		public void removeUpdate(DocumentEvent e) {
 			checkCoords();
 		}
+	}
+
+	/**
+	 * This method initializes centerPanel	
+	 * 	
+	 * @return javax.swing.JPanel	
+	 */
+	private JPanel getCenterPanel() {
+		if (centerPanel == null) {
+			try {
+				BorderLayout borderLayout = new BorderLayout();
+				borderLayout.setVgap(0);
+				centerPanel = new JPanel();
+				centerPanel.setLayout(borderLayout);
+				centerPanel.add(getCoordPanel(), BorderLayout.NORTH);
+				centerPanel.add(getTextAreaPanel(), BorderLayout.CENTER);
+			} catch (java.lang.Throwable e) {
+				// TODO: Something
+			}
+		}
+		return centerPanel;
+	}
+
+	/**
+	 * This method initializes textAreaPanel	
+	 * 	
+	 * @return javax.swing.JPanel	
+	 */
+	private JPanel getTextAreaPanel() {
+		if (textAreaPanel == null) {
+			try {
+				textAreaPanel = new JPanel();
+				textAreaPanel.setLayout(new BorderLayout());
+				textAreaPanel.add(txtAreaLabel, BorderLayout.NORTH);
+				textAreaPanel.add(getTextAreaScrollPane(), BorderLayout.CENTER);
+			} catch (java.lang.Throwable e) {
+				// TODO: Something
+			}
+		}
+		return textAreaPanel;
 	}
 
 }  //  @jve:decl-index=0:visual-constraint="10,10"
