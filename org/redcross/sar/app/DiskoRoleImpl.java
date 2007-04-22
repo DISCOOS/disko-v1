@@ -2,8 +2,10 @@ package org.redcross.sar.app;
 
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.AbstractButton;
+import javax.swing.Icon;
 import javax.swing.JToggleButton;
 
 import org.redcross.sar.gui.MainMenuPanel;
@@ -16,6 +18,10 @@ import org.redcross.sar.wp.IDiskoWpModule;
 /**
  * Implements the DiskoRolle interface.
  * @author geira
+ */
+/**
+ * @author geira
+ *
  */
 public class DiskoRoleImpl implements IDiskoRole {
 	
@@ -54,19 +60,26 @@ public class DiskoRoleImpl implements IDiskoRole {
 	 * @see org.redcross.sar.app.IDiskoRole#addDiskoWpModule(org.redcross.sar.wp.IDiskoWpModule)
 	 */
 	public void addDiskoWpModule(final IDiskoWpModule module) {
-		final String id = getName()+module.getName();
-		JToggleButton tbutton = new JToggleButton();
-		tbutton.setText(module.getName());
-		Dimension size = app.getUIFactory().getLargeButtonSize();
-		tbutton.setPreferredSize(size);
-		tbutton.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent e) {
-				selectDiskoWpModule(id);
-			}
-		});
-		MainMenuPanel mainMenuPanel = app.getUIFactory().getMainMenuPanel();
-		mainMenuPanel.addItem(tbutton, getName());
-		modules.add(module);
+		try {
+			final String id = getName()+module.getName();
+			JToggleButton tbutton = new JToggleButton();
+			String iconName = module.getName()+".icon";
+			Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
+			tbutton.setIcon(icon);
+			Dimension size = app.getUIFactory().getLargeButtonSize();
+			tbutton.setPreferredSize(size);
+			tbutton.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					selectDiskoWpModule(id);
+				}
+			});
+			MainMenuPanel mainMenuPanel = app.getUIFactory().getMainMenuPanel();
+			mainMenuPanel.addItem(tbutton, getName());
+			modules.add(module);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/* (non-Javadoc)
@@ -121,6 +134,14 @@ public class DiskoRoleImpl implements IDiskoRole {
 	 */
 	public IDiskoWpModule getCurrentDiskoWpModule() {
 		return currentModule;
+	}
+	
+	
+	/* (non-Javadoc)
+	 * @see org.redcross.sar.app.IDiskoRole#getDiskoWpModules()
+	 */
+	public List getDiskoWpModules() {
+		return modules;
 	}
 	
 	/* (non-Javadoc)

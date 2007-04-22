@@ -1,5 +1,7 @@
 package org.redcross.sar.app;
 
+import java.util.List;
+
 import org.redcross.sar.wp.IDiskoWpModule;
 
 /**
@@ -53,6 +55,12 @@ public interface IDiskoRole {
 	 * @return The current worksprocess
 	 */
 	public IDiskoWpModule getCurrentDiskoWpModule();
+	
+	/**
+	 * Return a list of all IDiskoWpModules loaded for this IDiskoRole
+	 * @return A list of IDiskoWpModules
+	 */
+	public List getDiskoWpModules();
 	
 	/**
 	 * Get a reference to the DiskoApplication.

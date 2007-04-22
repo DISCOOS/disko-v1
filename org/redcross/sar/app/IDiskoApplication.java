@@ -4,6 +4,8 @@ import org.redcross.sar.gui.UIFactory;
 import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.mso.IMsoModelIf;
 
+import com.esri.arcgis.geometry.IEnvelope;
+
 import javax.swing.*;
 
 
@@ -25,6 +27,12 @@ public interface IDiskoApplication {
 	 * @return The current active map
 	 */
 	public DiskoMap getCurrentMap();
+	
+	/**
+	 * Refresh all map in this DiskoApplication. Should be called after database updates.
+	 * @param env A envelope to define the area to refresh
+	 */
+	public void refreshAllMaps(IEnvelope env);
 	
 	/**
 	 * Get a reference to the main frame in this application. Is used

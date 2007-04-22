@@ -9,9 +9,16 @@ import org.redcross.sar.gui.UIFactory;
 import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.wp.IDiskoWpModule;
+
+import com.esri.arcgis.geometry.IEnvelope;
+import com.esri.arcgis.interop.AutomationException;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 
@@ -20,11 +27,15 @@ import java.util.Properties;
  * ArcGIS Engine API and the DiskoModule API.
  * 
  */
+/**
+ * @author geira
+ *
+ */
 public class DiskoApplicationImpl extends JFrame implements IDiskoApplication {
 
 	private static final long serialVersionUID = 1L;
 	private IDiskoRole currentRole = null;
-	private Hashtable<String, IDiskoRole> roller = null;
+	private Hashtable<String, IDiskoRole> roles = null;
 	private DiskoModuleLoader moduleLoader = null;
 	private Properties properties = null;
 	private UIFactory uiFactory = null;
@@ -105,6 +116,40 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication {
 	
 	
 	/* (non-Javadoc)
+	 * @see org.redcross.sar.app.IDiskoApplication#refreshAllMaps()
+	 */
+	public void refreshAllMaps(IEnvelope env) {
+		try {
+			Iterator iter = roles.values().iterator();
+			while(iter.hasNext()) {
+				IDiskoRole role = (IDiskoRole)iter.next();
+				List modules = role.getDiskoWpModules();
+				for (int i = 0; i < modules.size(); i++)  {
+					IDiskoWpModule module = (IDiskoWpModule)modules.get(i);
+					DiskoMap map = module.getMap();
+					if (map != null) {
+						if (env != null) {
+							map.getActiveView().partialRefresh(
+								com.esri.arcgis.carto.esriViewDrawPhase.esriViewGeography, 
+								null, env);
+						}
+						else {
+							map.getActiveView().refresh();
+						}
+					}
+				}
+			}
+		} catch (AutomationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	/* (non-Javadoc)
 	 * @see org.redcross.sar.app.IDiskoApplication#getFrame()
 	 */
 	public JFrame getFrame() {
@@ -134,14 +179,14 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication {
 	 * @see org.redcross.sar.app.IDiskoApplication#login(java.lang.String, java.lang.String, char[])
 	 */
 	public void login(String rolleName, String user, char[] password) {
-		if (roller == null) {
-			roller = new Hashtable<String,IDiskoRole>();
+		if (roles == null) {
+			roles = new Hashtable<String,IDiskoRole>();
 		}
-		IDiskoRole role = (IDiskoRole) roller.get(rolleName);
+		IDiskoRole role = (IDiskoRole) roles.get(rolleName);
 		if (role == null) {
 			try {
 				role = getDiskoModuleLoader().parseRole(rolleName);
-				roller.put(rolleName, role);
+				roles.put(rolleName, role);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
