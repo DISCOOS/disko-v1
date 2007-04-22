@@ -2,6 +2,7 @@ package org.redcross.sar.gui;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
+import javax.swing.Icon;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
@@ -15,6 +16,7 @@ import com.borland.jbcl.layout.VerticalFlowLayout;
 import javax.swing.BorderFactory;
 
 import org.redcross.sar.app.IDiskoApplication;
+import org.redcross.sar.app.Utils;
 
 public class MainMenuPanel extends JPanel {
 
@@ -120,7 +122,9 @@ public class MainMenuPanel extends JPanel {
 		if (navToggleButton == null) {
 			try {
 				navToggleButton = new JToggleButton();
-				navToggleButton.setText("NAV");
+				String iconName = "NAV.icon";
+				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
+				navToggleButton.setIcon(icon);
 				Dimension size = app.getUIFactory().getLargeButtonSize();
 				navToggleButton.setPreferredSize(size);
 				navToggleButton.addActionListener(new java.awt.event.ActionListener() {
@@ -150,7 +154,9 @@ public class MainMenuPanel extends JPanel {
 		if (sysToggleButton == null) {
 			try {
 				sysToggleButton = new JToggleButton();
-				sysToggleButton.setText("SYS");
+				String iconName = "SYS.icon";
+				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
+				sysToggleButton.setIcon(icon);
 				Dimension size = app.getUIFactory().getLargeButtonSize();
 				sysToggleButton.setPreferredSize(size);
 				sysToggleButton.addActionListener(new java.awt.event.ActionListener() {
