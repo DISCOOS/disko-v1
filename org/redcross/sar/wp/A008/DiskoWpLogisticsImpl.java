@@ -57,8 +57,6 @@ public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDisk
 				NavBar.ZOOM_IN_TOOL,
 				NavBar.ZOOM_OUT_TOOL,
 				NavBar.PAN_TOOL,
-				NavBar.ZOOM_IN_FIXED_COMMAND,
-				NavBar.ZOOM_OUT_FIXED_COMMAND,
 				NavBar.ZOOM_FULL_EXTENT_COMMAND,
 				NavBar.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND,
 				NavBar.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND

@@ -16,8 +16,7 @@ import com.esri.arcgis.carto.FeatureLayer;
  *
  */
 public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDiskoWpTacktics {
-	
-	private FeatureLayer basisLinjeFL = null;
+
 	private FeatureLayer flankeFL = null;
 	
 	/**
@@ -38,11 +37,8 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	public void onMapReplaced(DiskoMapEvent e) throws IOException {
 		DiskoMap map = getMap();
 		map.setName(getName()+"Map");	
-		basisLinjeFL = map.getFeatureLayer(getProperty("BasicLine.featureClass.Name"));
 		flankeFL = map.getFeatureLayer(getProperty("BufferPath.featureClass.Name"));
-		basisLinjeFL.setSelectable(true);
 		flankeFL.setSelectable(true);
-		map.setEditLayer(basisLinjeFL);
 	}
 	
 	public void activated() {
@@ -53,11 +49,11 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 				NavBar.DRAW_TOOL,
 				NavBar.ERASE_TOOL,
 				NavBar.SPLIT_TOOL,
+				NavBar.PUI_TOOL,
 				NavBar.ZOOM_IN_TOOL,
 				NavBar.ZOOM_OUT_TOOL,
 				NavBar.PAN_TOOL,
-				NavBar.ZOOM_IN_FIXED_COMMAND,
-				NavBar.ZOOM_OUT_FIXED_COMMAND,
+				NavBar.SELECT_FEATURES_TOOL,
 				NavBar.ZOOM_FULL_EXTENT_COMMAND,
 				NavBar.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND,
 				NavBar.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND
