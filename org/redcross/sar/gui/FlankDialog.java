@@ -54,7 +54,7 @@ public class FlankDialog extends DiskoDialog {
 	private void initialize() {
 		try {
             this.setContentPane(getContentPanel());
-            this.setPreferredSize(new Dimension(175, 340));
+            this.setPreferredSize(new Dimension(150, 340));
             this.pack();
 		}
 		catch (java.lang.Throwable e) {
