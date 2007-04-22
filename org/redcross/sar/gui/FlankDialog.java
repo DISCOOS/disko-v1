@@ -54,7 +54,7 @@ public class FlankDialog extends DiskoDialog {
 	private void initialize() {
 		try {
             this.setContentPane(getContentPanel());
-            this.setPreferredSize(new Dimension(175, 380));
+            this.setPreferredSize(new Dimension(175, 340));
             this.pack();
 		}
 		catch (java.lang.Throwable e) {
@@ -250,7 +250,7 @@ public class FlankDialog extends DiskoDialog {
 				leftScaleBar.setPreferredSize(new Dimension(20, 20));
 				leftScaleBar.setValue(25);
 				leftScaleBar.setMaximum(500);
-				leftScaleBar.setColor(Color.blue);
+				leftScaleBar.setColor(Color.red);
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
@@ -265,7 +265,7 @@ public class FlankDialog extends DiskoDialog {
 				rightScaleBar.setPreferredSize(new Dimension(20, 20));
 				rightScaleBar.setValue(25);
 				rightScaleBar.setMaximum(500);
-				rightScaleBar.setColor(Color.red);
+				rightScaleBar.setColor(Color.blue);
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
