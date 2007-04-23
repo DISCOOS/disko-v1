@@ -33,6 +33,9 @@ SwitchRole.icon=icons/switchrole.gif
 finish.icon=icons/finish.gif
 cancel.icon=icons/cancel.gif
 quit.icon=icons/quit.gif
+hypothese.icon=icons/hypothese.gif
+list.icon=icons/list.gif
+mission.icon=icons/mission.gif
 
 
 ApplyButton.text=Utfør
