@@ -99,6 +99,10 @@ public class DiskoRoleImpl implements IDiskoRole {
 	 */
 	public void selectDiskoWpModule(int index) {
 		if (index < modules.size()) {
+			if (currentModule != null) {
+				// deactiat previous module
+				currentModule.deactivated();
+			}
 			IDiskoWpModule module = modules.get(index);
 			String id = getName()+module.getName();
 			MainMenuPanel mainMenu = app.getUIFactory().getMainMenuPanel();
