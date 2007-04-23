@@ -1,8 +1,14 @@
 package org.redcross.sar.wp;
 
+import java.awt.Dimension;
 import java.io.IOException;
 
+import javax.swing.Icon;
+import javax.swing.JToggleButton;
+
+import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.app.IDiskoRole;
+import org.redcross.sar.app.Utils;
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.gui.NavBar;
 import org.redcross.sar.gui.UIFactory;
@@ -17,7 +23,9 @@ import com.esri.arcgis.carto.FeatureLayer;
  */
 public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDiskoWpTacktics {
 
+	private IDiskoApplication app = null;
 	private FeatureLayer flankeFL = null;
+	private JToggleButton elementToggleButton = null;
 	
 	/**
 	 * Constructs a DiskoApTaktikkImpl
@@ -25,6 +33,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	 */
 	public DiskoWpTackticsImpl(IDiskoRole rolle) {
 		super(rolle);
+		app = getDiskoRole().getApplication();
 		initialize();
 	}
 	
@@ -32,6 +41,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 		loadProperties("properties");
 		DiskoMap map = getMap();
 		layoutComponent(map);
+		layoutButton(getElementToggleButton());
 	}
 	
 	public void onMapReplaced(DiskoMapEvent e) throws IOException {
@@ -78,5 +88,23 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	 * @see com.geodata.engine.disko.task.DiskoAp#finish()
 	 */
 	public void finish() {
+	}
+
+	private JToggleButton getElementToggleButton() {
+		if (elementToggleButton == null) {
+			try {
+				Dimension size = app.getUIFactory().getLargeButtonSize();
+				//String iconName = "MapZoomInTool.icon";
+				//Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
+				elementToggleButton = new JToggleButton();
+				elementToggleButton.setText("ELEMENT");
+				//elementToggleButton.setIcon(icon);
+				elementToggleButton.setPreferredSize(size);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return elementToggleButton;
 	}
 }
