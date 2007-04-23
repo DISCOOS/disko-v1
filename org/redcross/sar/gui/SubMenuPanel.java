@@ -2,6 +2,7 @@ package org.redcross.sar.gui;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -17,6 +18,7 @@ import com.borland.jbcl.layout.VerticalFlowLayout;
 import javax.swing.BorderFactory;
 
 import org.redcross.sar.app.IDiskoApplication;
+import org.redcross.sar.app.Utils;
 import org.redcross.sar.wp.IDiskoWp;
 
 public class SubMenuPanel extends JPanel {
@@ -63,10 +65,6 @@ public class SubMenuPanel extends JPanel {
 	 * @param menuName A name to identify a panel (menu) in the CardLayout
 	 */
 	public void addItem(AbstractButton button, String menuName) {
-		addItem(button, menuName, true);
-		
-	}
-	public void addItem(AbstractButton button, String menuName, boolean addToGroup) {
 		JPanel panel = (JPanel)panels.get(menuName);
 		if (panel == null) {
 			panel = new JPanel();
@@ -79,7 +77,7 @@ public class SubMenuPanel extends JPanel {
 			panels.put(menuName, panel);
 		}
 		panel.add(button);
-		if (button instanceof JToggleButton && addToGroup) {
+		if (button instanceof JToggleButton) {
 			bgroup.add(button);
 		}
 	}
@@ -115,7 +113,9 @@ public class SubMenuPanel extends JPanel {
 		if (cancelButton == null) {
 			try {
 				cancelButton = new JButton();
-				cancelButton.setText("Avbryt");
+				String iconName = "cancel.icon";
+				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
+				cancelButton.setIcon(icon);
 				Dimension size = app.getUIFactory().getLargeButtonSize();
 				cancelButton.setPreferredSize(size);
 				cancelButton.addActionListener(new java.awt.event.ActionListener() {
@@ -144,8 +144,10 @@ public class SubMenuPanel extends JPanel {
 		if (finishButton == null) {
 			try {
 				finishButton = new JButton();
-				finishButton.setText("Avslutt");
+				String iconName = "finish.icon";
+				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
 				Dimension size = app.getUIFactory().getLargeButtonSize();
+				finishButton.setIcon(icon);
 				finishButton.setPreferredSize(size);
 				finishButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
