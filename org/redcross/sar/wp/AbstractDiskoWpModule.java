@@ -148,9 +148,18 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMap
         }
     }
     
+    /* (non-Javadoc)
+     * @see org.redcross.sar.wp.IDiskoWpModule#activated()
+     */
     public void activated() {
-		// TODO Auto-generated method stub
 	}
+    
+    /* (non-Javadoc)
+     * @see org.redcross.sar.wp.IDiskoWpModule#deactivated()
+     */
+    public void deactivated() {
+    	
+    }
 
     protected void layoutComponent(JComponent comp)
     {
@@ -161,9 +170,14 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMap
 
     protected void layoutButton(AbstractButton button)
     {
+        layoutButton(button, true);
+    }
+
+    protected void layoutButton(AbstractButton button, boolean addToGroup)
+    {
         String id = role.getName() + getName();
         SubMenuPanel subMenuPanel = role.getApplication().getUIFactory().getSubMenuPanel();
-        subMenuPanel.addItem(button, id);
+        subMenuPanel.addItem(button, id, addToGroup);
         hasSubMenu = true;
     }
 
