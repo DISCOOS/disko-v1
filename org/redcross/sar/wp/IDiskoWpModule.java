@@ -40,4 +40,9 @@ public interface IDiskoWpModule {
 	 * Called when this IDiskoWpModule is activated
 	 */
 	public void activated();
+	
+	/**
+	 * Called when this IDiskoWpModule is deactivated
+	 */
+	public void deactivated();
 }
