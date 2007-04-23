@@ -161,14 +161,9 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMap
 
     protected void layoutButton(AbstractButton button)
     {
-        layoutButton(button, true);
-    }
-
-    protected void layoutButton(AbstractButton button, boolean addToGroup)
-    {
         String id = role.getName() + getName();
         SubMenuPanel subMenuPanel = role.getApplication().getUIFactory().getSubMenuPanel();
-        subMenuPanel.addItem(button, id, addToGroup);
+        subMenuPanel.addItem(button, id);
         hasSubMenu = true;
     }
 
