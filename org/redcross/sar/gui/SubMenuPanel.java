@@ -64,7 +64,7 @@ public class SubMenuPanel extends JPanel {
 	 * @param button The button to add
 	 * @param menuName A name to identify a panel (menu) in the CardLayout
 	 */
-	public void addItem(AbstractButton button, String menuName) {
+	public void addItem(AbstractButton button, String menuName, boolean addToGroup) {
 		JPanel panel = (JPanel)panels.get(menuName);
 		if (panel == null) {
 			panel = new JPanel();
@@ -77,9 +77,13 @@ public class SubMenuPanel extends JPanel {
 			panels.put(menuName, panel);
 		}
 		panel.add(button);
-		if (button instanceof JToggleButton) {
+		if (button instanceof JToggleButton && addToGroup) {
 			bgroup.add(button);
 		}
+	}
+	
+	public void addItem(AbstractButton button, String menuName) {
+		addItem(button,menuName, false);
 	}
 	
 	/**
@@ -146,8 +150,8 @@ public class SubMenuPanel extends JPanel {
 				finishButton = new JButton();
 				String iconName = "finish.icon";
 				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
-				Dimension size = app.getUIFactory().getLargeButtonSize();
 				finishButton.setIcon(icon);
+				Dimension size = app.getUIFactory().getLargeButtonSize();
 				finishButton.setPreferredSize(size);
 				finishButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
