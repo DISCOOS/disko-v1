@@ -62,10 +62,6 @@ public class MainMenuPanel extends JPanel {
 	 * @param menuName A name to identify a panel (menu) in the CardLayout
 	 */
 	public void addItem(AbstractButton button, String menuName) {
-		addItem(button, menuName, true);
-	}
-	
-	public void addItem(AbstractButton button, String menuName, boolean addToGroup) {
 		JPanel panel = (JPanel)panels.get(menuName);
 		if (panel == null) {
 			panel = new JPanel();
@@ -78,7 +74,7 @@ public class MainMenuPanel extends JPanel {
 			panels.put(menuName, panel);
 		}
 		panel.add(button);
-		if (button instanceof JToggleButton && addToGroup) {
+		if (button instanceof JToggleButton) {
 			bgroup.add(button);
 		}
 	}
