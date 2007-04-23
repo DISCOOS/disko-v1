@@ -34,6 +34,7 @@ finish.icon=icons/finish.gif
 cancel.icon=icons/cancel.gif
 quit.icon=icons/quit.gif
 
+
 ApplyButton.text=Utfør
 OkButton.text=OK
 CancelButton.text=Avbryt
