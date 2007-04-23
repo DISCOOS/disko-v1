@@ -1,6 +1,5 @@
 package org.redcross.sar.gui;
 
-import java.awt.Frame;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JPanel;
@@ -35,7 +34,6 @@ public class FlankDialog extends DiskoDialog {
 
 	private static final long serialVersionUID = 1L;
 	private IDiskoApplication app = null;
-	private FlankTool tool = null;
 	private ClipLayerSelectionModel clipLayerSelectionModel = null;
 	private JPanel contentPanel = null;
 	private JPanel centerPanel = null;
@@ -55,7 +53,6 @@ public class FlankDialog extends DiskoDialog {
 	public FlankDialog(IDiskoApplication app, FlankTool tool) {
 		super(app.getFrame());
 		this.app = app;
-		this.tool = tool;
 		initialize();
 		// TODO Auto-generated constructor stub
 	}
