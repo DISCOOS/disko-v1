@@ -64,6 +64,7 @@ public class BuildTestData
         IUnitIf unit;
 
         unit= unitList.createVehicle("St 39911");
+        unit.setRemarks("This is a red car");
         unit.setStatus(IUnitIf.UnitStatus.READY);
 
         unit = unitList.createVehicle("St 39912");
@@ -101,7 +102,7 @@ public class BuildTestData
                 unit.addUnitAssignment(asg);
             }
 
-            for (int i = 0; i < 12; i++)
+            for (int i = 0; i < 13; i++)
             {
                 asg = asgList.createSearch();
                 asg.setStatus(IAssignmentIf.AssignmentStatus.DRAFT);
