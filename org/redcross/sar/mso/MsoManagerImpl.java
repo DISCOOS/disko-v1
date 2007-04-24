@@ -5,7 +5,7 @@ import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent;
 import org.redcross.sar.util.except.*;
-import org.redcross.sar.util.error.MsoError;
+import org.redcross.sar.util.except.MsoRuntimeException;
 import org.redcross.sar.util.mso.*;
 
 import java.util.Calendar;
@@ -85,7 +85,7 @@ public class MsoManagerImpl implements IMsoManagerIf
         ICmdPostIf retVal = getCmdPost();
         if (retVal == null)
         {
-            throw new MsoError("No CmdPost exists.");
+            throw new MsoRuntimeException("No CmdPost exists.");
         }
         return retVal;
     }

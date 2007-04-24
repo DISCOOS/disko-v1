@@ -4,7 +4,7 @@ import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.mso.*;
-import org.redcross.sar.util.error.MsoError;
+import org.redcross.sar.util.except.MsoRuntimeException;
 
 import java.awt.geom.Point2D;
 import java.util.Calendar;
@@ -63,13 +63,18 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
         return m_state;
     }
 
+    Class getAttributeClass()
+    {
+        return m_class;
+    }
+
     public void set(T aValue)
     {
         if (!m_class.isAssignableFrom(aValue.getClass()))
         {
-                throw new ClassCastException("Cannot cast " + aValue.getClass() + " to " + m_class.toString());
+            throw new ClassCastException("Cannot cast " + aValue.getClass() + " to " + m_class.toString());
         }
-        setAttrValue(aValue,false);
+        setAttrValue(aValue, false);
     }
 
     protected void setAttrValue(T aValue)
@@ -242,6 +247,12 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
             super(Boolean.class, theOwner, theName, theIndexNo, aBool);
         }
 
+        @Override
+        public void set(Boolean aValue)
+        {
+            super.set(aValue);
+        }
+
         public void setValue(boolean aValue)
         {
             setAttrValue(aValue);
@@ -273,6 +284,12 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
         public MsoInteger(AbstractMsoObject theOwner, String theName, int theIndexNo, Integer anInt)
         {
             super(Integer.class, theOwner, theName, theIndexNo, anInt);
+        }
+
+        @Override
+        public void set(Integer aValue)
+        {
+            super.set(aValue);
         }
 
         public void setValue(int aValue)
@@ -311,6 +328,12 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
         public MsoLong(AbstractMsoObject theOwner, String theName, int theIndexNo, Long aLong)
         {
             super(Long.class, theOwner, theName, theIndexNo, aLong);
+        }
+
+        @Override
+        public void set(Long aValue)
+        {
+            super.set(aValue);
         }
 
         public void setValue(long aValue)
@@ -354,6 +377,12 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
         public MsoDouble(AbstractMsoObject theOwner, String theName, int theIndexNo, Double aDouble)
         {
             super(Double.class, theOwner, theName, theIndexNo, aDouble);
+        }
+
+        @Override
+        public void set(Double aValue)
+        {
+            super.set(aValue);
         }
 
         public void setValue(long aValue)
@@ -420,6 +449,12 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
             super(String.class, theOwner, theName, theIndexNo, aString);
         }
 
+        @Override
+        public void set(String aValue)
+        {
+            super.set(aValue);
+        }
+
         public void setValue(String aValue)
         {
             setAttrValue(aValue);
@@ -470,6 +505,7 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
             setAttrValue(cal);
         }
 
+        @Override
         public void set(Calendar aDTG)
         {
             super.set(aDTG);
@@ -508,6 +544,12 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
             super(Position.class, theOwner, theName, theIndexNo, aPosition);
         }
 
+        @Override
+        public void set(Position aPosition)
+        {
+            super.set(aPosition);
+        }
+
         public void setValue(Position aPosition)
         {
             super.setAttrValue(aPosition);
@@ -540,6 +582,12 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
         public MsoTimePos(AbstractMsoObject theOwner, String theName, int theIndexNo, TimePos aTimePos)
         {
             super(TimePos.class, theOwner, theName, theIndexNo, aTimePos);
+        }
+
+        @Override
+        public void set(TimePos aTimePos)
+        {
+            super.set(aTimePos);
         }
 
         public void setValue(TimePos aTimePos)
@@ -575,6 +623,12 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
             super(Polygon.class, theOwner, theName, theIndexNo, aPolygon);
         }
 
+        @Override
+        public void set(Polygon aPolygon)
+        {
+            super.set(aPolygon);
+        }
+
         public void setValue(Polygon aPolygon)
         {
             super.setAttrValue(aPolygon);
@@ -606,6 +660,12 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
         public MsoRoute(AbstractMsoObject theOwner, String theName, int theIndexNo, Route aRoute)
         {
             super(Route.class, theOwner, theName, theIndexNo, aRoute);
+        }
+
+        @Override
+        public void set(Route aRoute)
+        {
+            super.set(aRoute);
         }
 
         public void setValue(Route aRoute)
@@ -641,6 +701,12 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
             super(Track.class, theOwner, theName, theIndexNo, aTrack);
         }
 
+        @Override
+        public void set(Track aTrack)
+        {
+            super.set(aTrack);
+        }
+
         public void setValue(Track aTrack)
         {
             super.setAttrValue(aTrack);
@@ -674,6 +740,12 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
             super(GeoCollection.class, theOwner, theName, theIndexNo, aGeoCollection);
         }
 
+        @Override
+        public void set(GeoCollection aGeoCollection)
+        {
+            super.set(aGeoCollection);
+        }
+
         public void setValue(GeoCollection aGeoCollection)
         {
             super.setAttrValue(aGeoCollection);
@@ -697,6 +769,12 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
             super(anInstance.getClass(), theOwner, theName, Integer.MAX_VALUE, anInstance);
         }
 
+        @Override
+        public void set(E anEnum)
+        {
+            super.set(anEnum);
+        }
+
         public void setValue(E anEnum)
         {
             super.setAttrValue(anEnum);
@@ -707,7 +785,7 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
             E anEnum = enumValue(aName);
             if (anEnum == null)
             {
-                throw new MsoError("Cannot set enum value " + aName + " to " + this);
+                throw new MsoRuntimeException("Cannot set enum value " + aName + " to " + this);
             }
             super.setAttrValue(enumValue(aName));
         }

@@ -3,13 +3,13 @@ package org.redcross.sar.mso.data;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.mso.committer.ICommittableIf;
-import org.redcross.sar.mso.committer.CommittableImpl;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.MsoEvent;
-import org.redcross.sar.util.error.MsoError;
+import org.redcross.sar.util.except.MsoRuntimeException;
 import org.redcross.sar.util.except.IllegalDeleteException;
 import org.redcross.sar.util.except.MsoNullPointerException;
-import org.redcross.sar.util.mso.Selector;
+import org.redcross.sar.util.except.UnknownAttributeException;
+import org.redcross.sar.util.mso.*;
 
 import java.util.*;
 
@@ -88,7 +88,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     {
         if (anObjectId == null || anObjectId.getId() == null || anObjectId.getId().length() == 0)
         {
-            throw new MsoError("Try to create object with no well defined object id.");
+            throw new MsoRuntimeException("Try to create object with no well defined object id.");
         }
         m_MsoObjectId = anObjectId;
         m_eventManager = MsoModelImpl.getInstance().getEventManager();
@@ -235,17 +235,40 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
     }
 
-    private AttributeImpl getAttribute(String aName)
+    private AttributeImpl getAttribute(String aName) throws UnknownAttributeException
     {
+        AttributeImpl retVal = m_attributeMap.get(aName.toLowerCase());
+        if (retVal == null)
+        {
+            throw new UnknownAttributeException("Unkbown attribute name '" + aName + "' in " + this.getClass().toString());
+        }
+        return retVal;
+    }
+
+    UnknownAttributeException attributeCast(String aName, Class aClass)
+    {
+        return new UnknownAttributeException("Unknown attribute name '" + aName + "' of class " + aClass.toString() + " in " + this.getClass().toString());
+    }
+
+    UnknownAttributeException attributeCast(int anIndex, Class aClass)
+    {
+        return new UnknownAttributeException("Unknown attribute index '" + anIndex + "' of class " + aClass.toString() + " in " + this.getClass().toString());
+    }
+
+    private AttributeImpl getAttribute(String aName, Class aClass) throws UnknownAttributeException
+    {
+
+        AttributeImpl retVal = getAttribute(aName);
+        if (!retVal.getAttributeClass().isAssignableFrom(aClass))
+        {
+            throw attributeCast(aName, aClass);
+        }
+
+
         return m_attributeMap.get(aName.toLowerCase());
     }
 
-    private AttributeImpl getAttribute(String aName, Class aClass)
-    {
-        return m_attributeMap.get(aName.toLowerCase());
-    }
-
-    private AttributeImpl getAttribute(int anIndex)
+    private AttributeImpl getAttribute(int anIndex) throws UnknownAttributeException
     {
         if (!m_listSorted)
         {
@@ -255,11 +278,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         {
             return m_attributeList.get(anIndex);
         }
-        return null;
+        throw new UnknownAttributeException("Unkbown attribute index " + anIndex + " in " + this.getClass().toString());
     }
 
 
-    public IAttributeIf.IMsoBooleanIf getBooleanAttribute(int anIndex)
+    public IAttributeIf.IMsoBooleanIf getBooleanAttribute(int anIndex) throws UnknownAttributeException
     {
         try
         {
@@ -267,11 +290,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (ClassCastException e)
         {
-            return null;
+            throw attributeCast(anIndex, Boolean.class);
         }
     }
 
-    public IAttributeIf.IMsoBooleanIf getBooleanAttribute(String aName)
+    public IAttributeIf.IMsoBooleanIf getBooleanAttribute(String aName) throws UnknownAttributeException
     {
         try
         {
@@ -279,11 +302,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (ClassCastException e)
         {
-            return null;
+            throw attributeCast(aName, Boolean.class);
         }
     }
 
-    public IAttributeIf.IMsoIntegerIf getIntegerAttribute(int anIndex)
+    public IAttributeIf.IMsoIntegerIf getIntegerAttribute(int anIndex) throws UnknownAttributeException
     {
         try
         {
@@ -291,11 +314,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (ClassCastException e)
         {
-            return null;
+            throw attributeCast(anIndex, Integer.class);
         }
     }
 
-    public IAttributeIf.IMsoIntegerIf getIntegerAttribute(String aName)
+    public IAttributeIf.IMsoIntegerIf getIntegerAttribute(String aName) throws UnknownAttributeException
     {
         try
         {
@@ -303,11 +326,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (ClassCastException e)
         {
-            return null;
+            throw attributeCast(aName, Integer.class);
         }
     }
 
-    public IAttributeIf.IMsoLongIf getLongAttribute(int anIndex)
+    public IAttributeIf.IMsoLongIf getLongAttribute(int anIndex) throws UnknownAttributeException
     {
         try
         {
@@ -315,11 +338,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (ClassCastException e)
         {
-            return null;
+            throw attributeCast(anIndex, Long.class);
         }
     }
 
-    public IAttributeIf.IMsoLongIf getLongAttribute(String aName)
+    public IAttributeIf.IMsoLongIf getLongAttribute(String aName) throws UnknownAttributeException
     {
         try
         {
@@ -327,11 +350,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (ClassCastException e)
         {
-            return null;
+            throw attributeCast(aName, Long.class);
         }
     }
 
-    public IAttributeIf.IMsoDoubleIf getDoubleAttribute(int anIndex)
+    public IAttributeIf.IMsoDoubleIf getDoubleAttribute(int anIndex) throws UnknownAttributeException
     {
         try
         {
@@ -339,11 +362,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (ClassCastException e)
         {
-            return null;
+            throw attributeCast(anIndex, Double.class);
         }
     }
 
-    public IAttributeIf.IMsoDoubleIf getDoubleAttribute(String aName)
+    public IAttributeIf.IMsoDoubleIf getDoubleAttribute(String aName) throws UnknownAttributeException
     {
         try
         {
@@ -351,11 +374,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (ClassCastException e)
         {
-            return null;
+            throw attributeCast(aName, Double.class);
         }
     }
 
-    public IAttributeIf.IMsoStringIf getStringAttribute(int anIndex)
+    public IAttributeIf.IMsoStringIf getStringAttribute(int anIndex) throws UnknownAttributeException
     {
         try
         {
@@ -363,11 +386,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (ClassCastException e)
         {
-            return null;
+            throw attributeCast(anIndex, String.class);
         }
     }
 
-    public IAttributeIf.IMsoStringIf getStringAttribute(String aName)
+    public IAttributeIf.IMsoStringIf getStringAttribute(String aName) throws UnknownAttributeException
     {
         try
         {
@@ -375,11 +398,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (ClassCastException e)
         {
-            return null;
+            throw attributeCast(aName, String.class);
         }
     }
 
-    public IAttributeIf.IMsoCalendarIf getCalendarAttribute(int anIndex)
+    public IAttributeIf.IMsoCalendarIf getCalendarAttribute(int anIndex) throws UnknownAttributeException
     {
         try
         {
@@ -387,11 +410,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (ClassCastException e)
         {
-            return null;
+            throw attributeCast(anIndex, Calendar.class);
         }
     }
 
-    public IAttributeIf.IMsoCalendarIf getCalendarAttribute(String aName)
+    public IAttributeIf.IMsoCalendarIf getCalendarAttribute(String aName) throws UnknownAttributeException
     {
         try
         {
@@ -399,11 +422,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (ClassCastException e)
         {
-            return null;
+            throw attributeCast(aName, Calendar.class);
         }
     }
 
-    public IAttributeIf.IMsoPositionIf getPositionAttribute(int anIndex)
+    public IAttributeIf.IMsoPositionIf getPositionAttribute(int anIndex) throws UnknownAttributeException
     {
         try
         {
@@ -411,11 +434,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (ClassCastException e)
         {
-            return null;
+            throw attributeCast(anIndex, Position.class);
         }
     }
 
-    public IAttributeIf.IMsoPositionIf getPositionAttribute(String aName)
+    public IAttributeIf.IMsoPositionIf getPositionAttribute(String aName) throws UnknownAttributeException
     {
         try
         {
@@ -423,11 +446,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (ClassCastException e)
         {
-            return null;
+            throw attributeCast(aName, Position.class);
         }
     }
 
-    public IAttributeIf.IMsoTimePosIf getTimePosAttribute(int anIndex)
+    public IAttributeIf.IMsoTimePosIf getTimePosAttribute(int anIndex) throws UnknownAttributeException
     {
         try
         {
@@ -435,11 +458,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (ClassCastException e)
         {
-            return null;
+            throw attributeCast(anIndex, TimePos.class);
         }
     }
 
-    public IAttributeIf.IMsoTimePosIf getTimePosAttribute(String aName)
+    public IAttributeIf.IMsoTimePosIf getTimePosAttribute(String aName) throws UnknownAttributeException
     {
         try
         {
@@ -447,11 +470,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (ClassCastException e)
         {
-            return null;
+            throw attributeCast(aName, TimePos.class);
         }
     }
 
-    public IAttributeIf.IMsoTrackIf getTrackAttribute(int anIndex)
+    public IAttributeIf.IMsoTrackIf getTrackAttribute(int anIndex) throws UnknownAttributeException
     {
         try
         {
@@ -459,11 +482,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (ClassCastException e)
         {
-            return null;
+            throw attributeCast(anIndex, Track.class);
         }
     }
 
-    public IAttributeIf.IMsoTrackIf getTrackAttribute(String aName)
+    public IAttributeIf.IMsoTrackIf getTrackAttribute(String aName) throws UnknownAttributeException
     {
         try
         {
@@ -471,11 +494,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (ClassCastException e)
         {
-            return null;
+            throw attributeCast(aName, Track.class);
         }
     }
 
-    public IAttributeIf.IMsoRouteIf getRouteAttribute(int anIndex)
+    public IAttributeIf.IMsoRouteIf getRouteAttribute(int anIndex) throws UnknownAttributeException
     {
         try
         {
@@ -483,11 +506,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (ClassCastException e)
         {
-            return null;
+            throw attributeCast(anIndex, Route.class);
         }
     }
 
-    public IAttributeIf.IMsoRouteIf getRouteAttribute(String aName)
+    public IAttributeIf.IMsoRouteIf getRouteAttribute(String aName) throws UnknownAttributeException
     {
         try
         {
@@ -495,11 +518,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (ClassCastException e)
         {
-            return null;
+            throw attributeCast(aName, Route.class);
         }
     }
 
-    public IAttributeIf.IMsoPolygonIf getPolygonAttribute(int anIndex)
+    public IAttributeIf.IMsoPolygonIf getPolygonAttribute(int anIndex) throws UnknownAttributeException
     {
         try
         {
@@ -507,11 +530,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (ClassCastException e)
         {
-            return null;
+            throw attributeCast(anIndex, Polygon.class);
         }
     }
 
-    public IAttributeIf.IMsoPolygonIf getPolygonAttribute(String aName)
+    public IAttributeIf.IMsoPolygonIf getPolygonAttribute(String aName) throws UnknownAttributeException
     {
         try
         {
@@ -519,11 +542,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (ClassCastException e)
         {
-            return null;
+            throw attributeCast(aName, Polygon.class);
         }
     }
 
-    public IAttributeIf.IMsoEnumIf getEnumAttribute(int anIndex)
+    public IAttributeIf.IMsoEnumIf getEnumAttribute(int anIndex) throws UnknownAttributeException
     {
         try
         {
@@ -531,11 +554,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (ClassCastException e)
         {
-            return null;
+            throw attributeCast(anIndex, Enum.class);
         }
     }
 
-    public IAttributeIf.IMsoEnumIf getEnumAttribute(String aName)
+    public IAttributeIf.IMsoEnumIf getEnumAttribute(String aName) throws UnknownAttributeException
     {
         try
         {
@@ -543,7 +566,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (ClassCastException e)
         {
-            return null;
+            throw attributeCast(aName, Enum.class);
         }
     }
 
@@ -600,15 +623,16 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
     }
 
-    public void setAttribute(String aName, Object aValue) throws MsoNullPointerException
+    public void setAttribute(String aName, Object aValue) throws UnknownAttributeException
     {
-
-        setAttributeValue(getAttribute(aName), aValue);
+        AttributeImpl attr = getAttribute(aName);
+        attr.set(aValue);
     }
 
-    public void setAttribute(int anIndex, Object aValue) throws MsoNullPointerException
+    public void setAttribute(int anIndex, Object aValue) throws UnknownAttributeException
     {
-        setAttributeValue(getAttribute(anIndex), aValue);
+        AttributeImpl attr = getAttribute(anIndex);
+        attr.set(aValue);
     }
 
     private void registerUpdate(MsoEvent.EventType anEventType, boolean updateServer)
@@ -833,7 +857,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
             m_object = myObject;
         }
     }
-    
+
     /**
      * Selector used for selecting assignments with a given status.
      */
@@ -841,10 +865,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     {
         T m_selectValue;
         String m_attributeName;
-        
+
         /**
          * Construct a Selector object
-         * @param aStatus  The status to test against
+         *
+         * @param aStatus        The status to test against
          * @param anAttributName Name of Enum attribute
          */
         public EnumSelector(T aStatus, String anAttributName)
@@ -855,7 +880,14 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
 
         public boolean select(M anObject)
         {
-            return anObject.getEnumAttribute(m_attributeName) == m_selectValue;
+            try
+            {
+                return anObject.getEnumAttribute(m_attributeName) == m_selectValue;
+            }
+            catch (UnknownAttributeException e)
+            {
+                return false;
+            }
         }
     }
 
@@ -882,9 +914,9 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     /**
      * Selector used for selecting assignments with status in a given set.
      */
-    public static class StatusSetSelector<T extends IEnumStatusHolder<E>, E extends Enum>  implements Selector<T>
+    public static class StatusSetSelector<T extends IEnumStatusHolder<E>, E extends Enum> implements Selector<T>
     {
-        EnumSet <? extends E> m_valueSet;
+        EnumSet<? extends E> m_valueSet;
 
         /**
          * Construct a Selector object
@@ -906,7 +938,6 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
             return m_valueSet.contains(anObject.getStatus());
         }
     }
-
 
 
 }
