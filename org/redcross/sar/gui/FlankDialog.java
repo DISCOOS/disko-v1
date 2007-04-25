@@ -93,8 +93,8 @@ public class FlankDialog extends DiskoDialog {
 				contentPanel.setLayout(new BorderLayout());
 				contentPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 				contentPanel.add(getCenterPanel(), BorderLayout.CENTER);
-				contentPanel.add(getNorthPanel(), BorderLayout.NORTH);
-				contentPanel.add(getSouthPanel(), BorderLayout.SOUTH);
+				//contentPanel.add(getNorthPanel(), BorderLayout.NORTH);
+				//contentPanel.add(getSouthPanel(), BorderLayout.SOUTH);
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
