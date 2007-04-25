@@ -77,13 +77,17 @@ public class DrawDialog extends DiskoDialog {
 				mainPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 				mainPanel.setLayout(new BorderLayout());
 				mainPanel.add(getCenterPanel(), BorderLayout.CENTER);
-				mainPanel.add(getSouthPanel(), BorderLayout.SOUTH);
-				mainPanel.add(getNorthPanel(), BorderLayout.NORTH);
+				//mainPanel.add(getSouthPanel(), BorderLayout.SOUTH);
+				//mainPanel.add(getNorthPanel(), BorderLayout.NORTH);
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
 		}
 		return mainPanel;
+	}
+	
+	public void setSnapTolerance(double tol) {
+		snapToleranceSlider.setValue((int)tol);
 	}
 	
 	private JSlider getSnapToleranceSlider() {
