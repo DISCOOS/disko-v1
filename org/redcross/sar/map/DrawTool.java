@@ -87,11 +87,10 @@ public class DrawTool extends AbstractCommandTool {
 		p1 = new Point();
 		p1.setX(0);
 		p1.setY(0);
-		setSnapTolerance(40);
 		indexedGeometry = new IndexedGeometry();
 		// dialog
 		dialog = new DrawDialog(app, this);
-		dialog.setIsToggable(true);
+		dialog.setIsToggable(false);
 	}
 
 	public void onCreate(Object obj) throws IOException, AutomationException {
@@ -100,8 +99,10 @@ public class DrawTool extends AbstractCommandTool {
 			map.addDiskoMapEventListener(this);
 			DrawDialog drawDialog = (DrawDialog)dialog;
 			drawDialog.onLoad(map);
-			drawDialog.setLocationRelativeTo(map, DiskoDialog.POS_WEST, true);
+			drawDialog.setLocationRelativeTo(map, DiskoDialog.POS_WEST, false);
 			setSnapableLayers(drawDialog.getSnapModel().getSelected());
+			setSnapTolerance(map.getActiveView().getExtent().getWidth()/50);
+			drawDialog.setSnapTolerance(getSnapTolerance());
 		}
 	}
 	
@@ -227,7 +228,7 @@ public class DrawTool extends AbstractCommandTool {
 		}
 		// densify rubberband, use vertices as input to segment graph
 		Polyline copy = (Polyline)rubberBand.esri_clone();
-		copy.densify(10, -1);
+		copy.densify(getSnapTolerance(), -1);
 		// greate a geometry bag to hold selected polylines
 		GeometryBag gb = new GeometryBag();
 		if (pline1 != null) {
@@ -333,10 +334,13 @@ public class DrawTool extends AbstractCommandTool {
 	public void onExtentUpdated(DiskoMapEvent e) throws IOException {
 		isDirty = true;
 		updateIndexedGeometry();
+		
 	}
 
 	public void onMapReplaced(DiskoMapEvent e) throws IOException{
 		isDirty = true;
 		updateIndexedGeometry();
+		setSnapTolerance(map.getActiveView().getExtent().getWidth()/50);
+		((DrawDialog)dialog).setSnapTolerance(getSnapTolerance());
 	}
 }
