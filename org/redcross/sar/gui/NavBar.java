@@ -21,7 +21,7 @@ import org.redcross.sar.map.DrawTool;
 import org.redcross.sar.map.EraseTool;
 import org.redcross.sar.map.FlankTool;
 import org.redcross.sar.map.IDiskoTool;
-import org.redcross.sar.map.PUITool;
+import org.redcross.sar.map.POITool;
 import org.redcross.sar.map.SplitTool;
 
 import com.esri.arcgis.controls.ControlsMapFullExtentCommand;
@@ -80,7 +80,7 @@ public class NavBar extends JPanel {
 	private FlankTool flankTool = null;
 	private EraseTool eraseTool = null;
 	private SplitTool splitTool = null;
-	private PUITool puiTool = null;
+	private POITool puiTool = null;
 	private ControlsMapZoomInTool zoomInTool = null;
 	private ControlsMapZoomOutTool zoomOutTool = null;
 	private ControlsMapPanTool panTool = null;
@@ -182,11 +182,10 @@ public class NavBar extends JPanel {
 		return splitTool;
 	}
 	
-	private PUITool getPUITool() {
+	private POITool getPUITool() {
 		if (puiTool == null) {
 			try {
-				String flayerName = app.getProperty("PUI.featureClass.Name");
-				puiTool = new PUITool(app, flayerName);
+				puiTool = new POITool(app);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -664,7 +663,15 @@ public class NavBar extends JPanel {
 		
 		public void actionPerformed(java.awt.event.ActionEvent e) {
 			try {
+				AbstractButton button = (AbstractButton)e.getSource();
 				DiskoMap map = app.getCurrentMap();
+				if (command instanceof IDiskoTool) {
+					DiskoDialog dialog = ((IDiskoTool)command).getDialog();
+					if (button.isSelected() && dialog != null && dialog.isVisible()) {
+						dialog.setVisible(false);
+						return;
+					}
+				}
 				if (command instanceof ITool && map != null) {
 					map.setCurrentToolByRef((ITool)command);
 				}
