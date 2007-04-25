@@ -6,7 +6,7 @@ import java.util.Hashtable;
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.gui.DiskoDialog;
-import org.redcross.sar.gui.PUIDialog;
+import org.redcross.sar.gui.POIDialog;
 import com.esri.arcgis.display.IDraw;
 import com.esri.arcgis.display.IScreenDisplay;
 import com.esri.arcgis.display.RgbColor;
@@ -30,7 +30,7 @@ public class POITool extends AbstractCommandTool {
 	private static final long serialVersionUID = 1L;
 	
 	private IGraphicsContainer graphics = null;
-	private PUIDialog puiDialog = null;
+	private POIDialog puiDialog = null;
 	private Point movePoint = null;
 	private Envelope refreshEnvelope = null;
 	private MarkerElement selectedElement = null;
@@ -41,7 +41,7 @@ public class POITool extends AbstractCommandTool {
 	 * Constructs the DrawTool
 	 */
 	public POITool(IDiskoApplication app) throws IOException {
-		dialog = new PUIDialog(app, this);
+		dialog = new POIDialog(app, this);
 		dialog.setIsToggable(false);
 		
 		symbol = new SimpleMarkerSymbol();
@@ -61,7 +61,7 @@ public class POITool extends AbstractCommandTool {
 		if (obj instanceof DiskoMap) {
 			map = (DiskoMap)obj;
 			map.addDiskoMapEventListener(this);
-			puiDialog = (PUIDialog)dialog;
+			puiDialog = (POIDialog)dialog;
 			puiDialog.setLocationRelativeTo(map, DiskoDialog.POS_WEST, false);
 			graphics = map.getActiveView().getGraphicsContainer();
 		}
