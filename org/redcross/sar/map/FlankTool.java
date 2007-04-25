@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.gui.FlankDialog;
 
 import com.esri.arcgis.carto.FeatureLayer;
@@ -38,6 +39,7 @@ import com.esri.arcgis.interop.AutomationException;
 public class FlankTool extends AbstractCommandTool {
 
 	private static final long serialVersionUID = 1L;
+	private IDiskoApplication app = null;
 	private IGraphicsContainer graphics = null;
 	private Point p = null;
 	private IEnvelope refreshEnvelope = null;
@@ -52,7 +54,8 @@ public class FlankTool extends AbstractCommandTool {
 	/**
 	 * Constructs the DrawTool
 	 */
-	public FlankTool(IDiskoApplication app) throws IOException {
+	public FlankTool(IDiskoApplication app) throws IOException, AutomationException {
+		this.app = app;
 		p = new Point();
 		p.setX(0);
 		p.setY(0);
@@ -80,7 +83,7 @@ public class FlankTool extends AbstractCommandTool {
 		
 		// the dialog
 		dialog = new FlankDialog(app, this);
-		dialog.setIsToggable(true);
+		dialog.setIsToggable(false);
 	}
 
 	public void onCreate(Object obj) throws IOException, AutomationException {
@@ -89,7 +92,7 @@ public class FlankTool extends AbstractCommandTool {
 			graphics = map.getActiveView().getGraphicsContainer();
 			FlankDialog flankDialog = (FlankDialog)dialog;
 			flankDialog.onLoad(map);
-			flankDialog.setLocationRelativeTo(map, DiskoDialog.POS_WEST, true);
+			flankDialog.setLocationRelativeTo(map, DiskoDialog.POS_WEST, false);
 		}
 	}
 
@@ -105,20 +108,34 @@ public class FlankTool extends AbstractCommandTool {
 		}
 	}
 	
-	private void createFlankes(Polyline pl) throws IOException, AutomationException {
+	private void createFlankes(Polyline pl)  throws IOException {
 		refreshEnvelope.putCoords(0, 0, 0, 0);
 		FlankDialog flankDialog = (FlankDialog)dialog;
 		// left side
 		if (flankDialog.getLeftCheckBox().isSelected()) {
 			double value = (double)((Integer)flankDialog.getLeftSpinner().getValue()).intValue();
-			createFlanke(pl, value, LEFT_SIDE_FLANK);
+			try {
+				createFlanke(pl, value, LEFT_SIDE_FLANK);
+			} catch (AutomationException e) {
+				showError("Kan ikke lage venstre flanke. Ugyldig geometri. Tegn på nytt", e.getDescription());
+			}
 		}
 		// right side
 		if (flankDialog.getRightCheckBox().isSelected()) {
 			double value = (double)((Integer)flankDialog.getRightSpinner().getValue()).intValue();
-			createFlanke(pl, value, RIGHT_SIDE_FLANK);
+			try {
+				createFlanke(pl, value, RIGHT_SIDE_FLANK);
+			} catch (AutomationException e) {
+				showError("Kan ikke lage høyre flanke. Ugyldig geometri. Tegn på nytt", e.getDescription());
+			}
 		}
 		partialRefreshGraphics(refreshEnvelope);
+	}
+	
+	private void showError(String msg, String description) {
+		ErrorDialog dialog = app.getUIFactory().getErrorDialog();
+		dialog.showError(msg, description);
+		dialog.setLocationRelativeTo(map);
 	}
 	
 	private void createFlanke(Polyline path, double dist, int side) 
@@ -128,22 +145,24 @@ public class FlankTool extends AbstractCommandTool {
 		Polyline pl = new Polyline();
 		IGeometryCollection coll = null;
 		Polygon buffer = (Polygon) path.buffer(dist);
-			
-		path.queryNormal(3, 0, false, dist * 2, n1);
-		path.queryNormal(3, 0, false, dist * -2, n2);
+		
+		path.queryNormal(3, 0, false, dist *  1, n1);
+		path.queryNormal(3, 0, false, dist * -1, n2);
 		pl.addPoint(n1.getToPoint(), null, null);
 		pl.addPoint(n2.getToPoint(), null, null);
 		coll = buffer.cut2(pl);
 			
 		double d = path.getLength();
-		path.queryNormal(12, d, false, dist * 2, n1);
-		path.queryNormal(12, d, false, dist * -2, n2);
+		path.queryNormal(12, d, false, dist *  1, n1);
+		path.queryNormal(12, d, false, dist * -1, n2);
 		pl.setFromPoint(n2.getToPoint());
 		pl.setToPoint(n1.getToPoint());
-		coll = ((Polygon) coll.getGeometry(1)).cut2(pl);
+		Polygon rest = (Polygon) coll.getGeometry(1);
+		coll = rest.cut2(pl);
 			
 		IGeometry[] leftGeom = new IGeometry[2];
 		IGeometry[] rightGeom = new IGeometry[2];
+		
 		((Polygon) coll.getGeometry(1)).cut(path,leftGeom,rightGeom);
 
 		if (side == LEFT_SIDE_FLANK) {
@@ -164,7 +183,7 @@ public class FlankTool extends AbstractCommandTool {
 		}
 	}
 	
-	private Polygon clip(Polygon flank) throws IOException {
+	private Polygon clip(Polygon flank) throws IOException, AutomationException {
 		List clipLayers = ((FlankDialog)dialog).getClipModel().getSelected();
 		if (clipLayers == null || clipLayers.size() < 1) {
 			return flank;
