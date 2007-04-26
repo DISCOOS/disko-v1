@@ -14,5 +14,5 @@ public interface IDiskoTool {
 	
 	public DiskoDialog getDialog();
 	
-	public DiskoMap getMap();
+	public IDiskoMap getMap();
 }

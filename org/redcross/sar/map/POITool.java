@@ -56,7 +56,7 @@ public class POITool extends AbstractCommandTool {
 	}
 
 	public void onCreate(Object obj) throws IOException, AutomationException {
-		if (obj instanceof DiskoMap) {
+		if (obj instanceof IDiskoMap) {
 			map = (DiskoMap)obj;
 			map.addDiskoMapEventListener(this);
 			poiDialog = (POIDialog)dialog;
@@ -102,6 +102,7 @@ public class POITool extends AbstractCommandTool {
 			throws IOException, AutomationException {
 		if (movePoint != null) {
 			Point p = transform(x, y);
+			p.setSpatialReferenceByRef(map.getSpatialReference());
 			selectedElement.setGeometry(p);
 			movePoint = null;
 			refreshEnvelope = null;
@@ -115,6 +116,7 @@ public class POITool extends AbstractCommandTool {
 			Point p = new Point();
 			p.setX(x);
 			p.setY(y);
+			p.setSpatialReferenceByRef(map.getSpatialReference());
 			selectedElement.setGeometry(p);
 			map.partialRefreshGraphics(null);
 		}
@@ -136,6 +138,7 @@ public class POITool extends AbstractCommandTool {
 		Point p = new Point();
 		p.setX(x);
 		p.setY(y);
+		p.setSpatialReferenceByRef(map.getSpatialReference());
 		selectedElement = new MarkerElement();
 		selectedElement.setGeometry(p);
 		selectedElement.setSymbol(selectionSymbol);

@@ -30,7 +30,7 @@ public class SplitTool extends AbstractCommandTool {
 	}
 
 	public void onCreate(Object obj) throws IOException, AutomationException {
-		if (obj instanceof DiskoMap) {
+		if (obj instanceof IDiskoMap) {
 			map = (DiskoMap)obj;
 		}
 	}

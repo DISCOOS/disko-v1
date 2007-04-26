@@ -2,16 +2,10 @@ package org.redcross.sar.map;
 
 import java.io.IOException;
 import java.util.Properties;
-
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.event.IDiskoMapEventListener;
 import org.redcross.sar.gui.DiskoDialog;
-import com.esri.arcgis.carto.IActiveView;
-import com.esri.arcgis.carto.IElement;
-import com.esri.arcgis.carto.IEnumElement;
-import com.esri.arcgis.carto.IGraphicsContainer;
 import com.esri.arcgis.display.IDisplayTransformation;
-import com.esri.arcgis.geometry.IEnvelope;
 import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.systemUI.ICommand;

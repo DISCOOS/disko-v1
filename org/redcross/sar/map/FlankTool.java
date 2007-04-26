@@ -87,7 +87,7 @@ public class FlankTool extends AbstractCommandTool {
 	}
 
 	public void onCreate(Object obj) throws IOException, AutomationException {
-		if (obj instanceof DiskoMap) {
+		if (obj instanceof IDiskoMap) {
 			map = (DiskoMap)obj;
 			graphics = map.getActiveView().getGraphicsContainer();
 			FlankDialog flankDialog = (FlankDialog)dialog;
@@ -169,6 +169,7 @@ public class FlankTool extends AbstractCommandTool {
 		if (side == LEFT_SIDE_FLANK) {
 			properties.setSide("venstre");
 			Polygon leftPoly = clip((Polygon) leftGeom[0]);
+			leftPoly.setSpatialReferenceByRef(map.getSpatialReference());
 			PolygonElement pe = new PolygonElement();
 			pe.setGeometry(leftPoly);
 			pe.setSymbol(redFill);
@@ -179,6 +180,7 @@ public class FlankTool extends AbstractCommandTool {
 		else if (side == RIGHT_SIDE_FLANK) {
 			properties.setSide("hoyre");
 			Polygon rightPoly = clip((Polygon) rightGeom[0]);
+			rightPoly.setSpatialReferenceByRef(map.getSpatialReference());
 			PolygonElement pe = new PolygonElement();
 			pe.setGeometry(rightPoly);
 			pe.setSymbol(blueFill);

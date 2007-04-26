@@ -92,7 +92,7 @@ public class DrawTool extends AbstractCommandTool {
 	}
 
 	public void onCreate(Object obj) throws IOException, AutomationException {
-		if (obj instanceof DiskoMap) {
+		if (obj instanceof IDiskoMap) {
 			map = (DiskoMap)obj;
 			map.addDiskoMapEventListener(this);
 			DrawDialog drawDialog = (DrawDialog)dialog;
@@ -133,6 +133,7 @@ public class DrawTool extends AbstractCommandTool {
 
 	public void onDblClick() throws IOException, AutomationException {
 		pathGeometry.simplify();
+		pathGeometry.setSpatialReferenceByRef(map.getSpatialReference());
 		// add to graphics coontainer
 		IGraphicsContainer graphics = map.getActiveView().getGraphicsContainer();
 		LineElement le = new LineElement();
