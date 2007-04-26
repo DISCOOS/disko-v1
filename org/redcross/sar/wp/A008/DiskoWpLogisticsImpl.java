@@ -50,8 +50,7 @@ public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDisk
     }
     
     public void activated() {
-    	UIFactory uiFactory = getDiskoRole().getApplication().getUIFactory();
-		NavBar navBar = uiFactory.getMainPanel().getNavBar();
+		NavBar navBar = getApplication().getNavBar();
 		int[] buttonIndexes = {
 				//NavBar.INDEX_ERASE_TOGGLE_BUTTON,
 				NavBar.ZOOM_IN_TOOL,
