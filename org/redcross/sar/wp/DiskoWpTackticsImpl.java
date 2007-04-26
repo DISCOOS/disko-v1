@@ -14,8 +14,17 @@ import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.gui.NavBar;
 import org.redcross.sar.gui.UIFactory;
 import org.redcross.sar.map.DiskoMap;
+import org.redcross.sar.map.FlankProperties;
+import org.redcross.sar.map.PoiProperties;
 
 import com.esri.arcgis.carto.FeatureLayer;
+import com.esri.arcgis.carto.IElement;
+import com.esri.arcgis.carto.IGraphicsContainer;
+import com.esri.arcgis.carto.LineElement;
+import com.esri.arcgis.carto.MarkerElement;
+import com.esri.arcgis.carto.PolygonElement;
+import com.esri.arcgis.geodatabase.IFeature;
+import com.esri.arcgis.interop.AutomationException;
 
 /**
  * Implements the DiskoApTaktikk interface
@@ -25,7 +34,10 @@ import com.esri.arcgis.carto.FeatureLayer;
 public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDiskoWpTacktics {
 
 	private IDiskoApplication app = null;
-	private FeatureLayer flankeFL = null;
+	private FeatureLayer basicLineFL = null;
+	private FeatureLayer flankFL = null;
+	private FeatureLayer poiFL = null;
+	private IGraphicsContainer graphics = null;
 	private ElementDialog elementDialog = null;
 	private JToggleButton elementToggleButton = null;
 	private JToggleButton listToggleButton = null;
@@ -64,8 +76,13 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	public void onMapReplaced(DiskoMapEvent e) throws IOException {
 		DiskoMap map = getMap();
 		map.setName(getName()+"Map");	
-		flankeFL = map.getFeatureLayer(getProperty("BufferPath.featureClass.Name"));
-		flankeFL.setSelectable(true);
+		basicLineFL = map.getFeatureLayer(getProperty("BasicLine.featureClass.Name"));
+		basicLineFL.setSelectable(true);
+		flankFL = map.getFeatureLayer(getProperty("BufferPath.featureClass.Name"));
+		flankFL.setSelectable(true);
+		poiFL = map.getFeatureLayer(getProperty("PUI.featureClass.Name"));
+		poiFL.setSelectable(true);
+		graphics = map.getActiveView().getGraphicsContainer();
 	}
 	
 	public void activated() {
@@ -103,14 +120,62 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	 * @see com.geodata.engine.disko.task.DiskoAp#cancel()
 	 */
 	public void cancel() {
-		hideDialogs();
+		try {
+			hideDialogs();
+			graphics.deleteAllElements();
+			getMap().partialRefreshGraphics(null);
+		} catch (AutomationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/* (non-Javadoc)
 	 * @see com.geodata.engine.disko.task.DiskoAp#finish()
 	 */
 	public void finish() {
-		hideDialogs();
+		try {
+			hideDialogs();
+			graphics.reset();
+			IElement elem = null;
+			while ((elem = graphics.next()) != null) {
+				if (elem instanceof MarkerElement) {
+					MarkerElement marker = (MarkerElement)elem;
+					PoiProperties properties = (PoiProperties)marker.getCustomProperty();
+					IFeature feature = poiFL.getFeatureClass().createFeature();
+					feature.setShapeByRef(marker.getGeometry());
+					feature.setValue(4, properties.getDesrciption());
+					feature.store();
+				}
+				else if (elem instanceof LineElement) {
+					LineElement line = (LineElement)elem;
+					//DrawProperties properties = (DrawProperties)line.getCustomProperty();
+					IFeature feature = basicLineFL.getFeatureClass().createFeature();
+					feature.setShapeByRef(line.getGeometry());
+					feature.store();
+				}
+				else if (elem instanceof PolygonElement) {
+					PolygonElement polygon = (PolygonElement)elem;
+					FlankProperties properties = (FlankProperties)polygon.getCustomProperty();
+					IFeature feature = flankFL.getFeatureClass().createFeature();
+					feature.setShapeByRef(polygon.getGeometry());
+					int field = flankFL.getFeatureClass().findField("Side");
+					feature.setValue(field, properties.getSide());
+					feature.store();
+				}
+				graphics.deleteElement(elem);
+			}
+			getMap().partialRefresh(null);
+		} catch (AutomationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private void hideDialogs() {
