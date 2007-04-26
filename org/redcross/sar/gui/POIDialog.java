@@ -22,6 +22,7 @@ import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.POITool;
+import org.redcross.sar.map.PoiProperties;
 
 import com.esri.arcgis.carto.MarkerElement;
 import com.esri.arcgis.geometry.IEnvelope;
@@ -170,7 +171,7 @@ public class POIDialog extends DiskoDialog {
 				cancelButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
 						try {
-							tool.clearSelectedPUI();
+							tool.clearSelectedPOI();
 							clearFields();
 						} catch (AutomationException e1) {
 							// TODO Auto-generated catch block
@@ -243,14 +244,13 @@ public class POIDialog extends DiskoDialog {
 		return yCoordTextField;
 	}
 	
-	public void setPUI(MarkerElement elem) {
+	public void setPOI(MarkerElement elem) {
 		try {
 			IPoint p = (IPoint)elem.getGeometry();
 			setXCoordinateField(p.getX());
 			setYCoordinateField(p.getY());
-			Hashtable attributes = (Hashtable)elem.getCustomProperty();
-			String description = (String)attributes.get("description");
-			getTxtArea().setText(description);
+			PoiProperties properties = (PoiProperties)elem.getCustomProperty();
+			getTxtArea().setText(properties.getDesrciption());
 		} catch (AutomationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -308,10 +308,10 @@ public class POIDialog extends DiskoDialog {
 					p.setX(x);
 					p.setY(y);
 					if (tool.getSelectedPUI() != null) {
-						tool.moveSelectedPUI(x, y);
+						tool.moveSelectedPOI(x, y);
 					}
 					else {
-						tool.addPUIAt(x, y);
+						tool.addPOIAt(x, y);
 					}
 				}
 			} catch (AutomationException e) {
@@ -353,11 +353,11 @@ public class POIDialog extends DiskoDialog {
 					try {
 						MarkerElement selectedPUI = tool.getSelectedPUI();
 						if (selectedPUI != null) {
-							Hashtable attributes = (Hashtable)selectedPUI.getCustomProperty();
-							String description = (String)attributes.get("description");
+							PoiProperties properties = (PoiProperties)selectedPUI.getCustomProperty();
+							String description = properties.getDesrciption();
 							char c = e.getKeyChar();
 							String text = description != null ? description+c : ""+c; 
-							attributes.put("description", text);
+							properties.setDesrciption(text);
 						}
 					} catch (AutomationException e1) {
 						// TODO Auto-generated catch block
