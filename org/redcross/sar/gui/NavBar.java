@@ -16,10 +16,10 @@ import javax.swing.JToggleButton;
 
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.app.Utils;
-import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.DrawTool;
 import org.redcross.sar.map.EraseTool;
 import org.redcross.sar.map.FlankTool;
+import org.redcross.sar.map.IDiskoMap;
 import org.redcross.sar.map.IDiskoTool;
 import org.redcross.sar.map.POITool;
 import org.redcross.sar.map.SplitTool;
@@ -134,7 +134,7 @@ public class NavBar extends JPanel {
 	}
 	
 	
-	private DrawTool getDrawTool() {
+	public DrawTool getDrawTool() {
 		if (drawTool == null) {
 			try {
 				drawTool = new DrawTool(app);
@@ -146,7 +146,7 @@ public class NavBar extends JPanel {
 		return drawTool;
 	}
 	
-	private FlankTool getFlankTool() {
+	public FlankTool getFlankTool() {
 		if (flankTool == null) {
 			try {
 				flankTool = new FlankTool(app);
@@ -182,7 +182,7 @@ public class NavBar extends JPanel {
 		return splitTool;
 	}
 	
-	private POITool getPUITool() {
+	public POITool getPUITool() {
 		if (puiTool == null) {
 			try {
 				puiTool = new POITool(app);
@@ -586,7 +586,7 @@ public class NavBar extends JPanel {
 				// wait for the map is loaded
 				public void run() {
 					try {
-						DiskoMap map = app.getCurrentMap();
+						IDiskoMap map = app.getCurrentMap();
 						for (int i = 0; i < commands.size(); i++) {
 							ICommand command = (ICommand)commands.get(i);
 							if (command != null) {
@@ -664,7 +664,7 @@ public class NavBar extends JPanel {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
 			try {
 				AbstractButton button = (AbstractButton)e.getSource();
-				DiskoMap map = app.getCurrentMap();
+				IDiskoMap map = app.getCurrentMap();
 				if (command instanceof IDiskoTool) {
 					DiskoDialog dialog = ((IDiskoTool)command).getDialog();
 					if (button.isSelected() && dialog != null && dialog.isVisible()) {

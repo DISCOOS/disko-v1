@@ -22,8 +22,8 @@ import javax.swing.JSpinner;
 
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.app.Utils;
-import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.FlankTool;
+import org.redcross.sar.map.IDiskoMap;
 
 import java.awt.Insets;
 import java.io.IOException;
@@ -72,7 +72,7 @@ public class FlankDialog extends DiskoDialog {
 		}
 	}
 	
-	public void onLoad(DiskoMap diskoMap) throws IOException {
+	public void onLoad(IDiskoMap diskoMap) throws IOException {
 		this.clipLayerSelectionModel = diskoMap.getClipLayerSelectionModel();
 		updateLayerSelection();
 	}

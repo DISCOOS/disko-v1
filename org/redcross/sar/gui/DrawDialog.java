@@ -15,8 +15,8 @@ import javax.swing.border.TitledBorder;
 
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.app.Utils;
-import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.DrawTool;
+import org.redcross.sar.map.IDiskoMap;
 
 import com.borland.jbcl.layout.VerticalFlowLayout;
 import com.esri.arcgis.carto.FeatureLayer;
@@ -47,7 +47,7 @@ public class DrawDialog extends DiskoDialog {
 		initialize();
 	}
 	
-	public void onLoad(DiskoMap map) throws IOException {
+	public void onLoad(IDiskoMap map) throws IOException {
 		this.snapLayerSelectionModel = map.getSnapLayerSelectionModel();
 		updateLayerSelection();
 		getSnapToleranceSlider().setValue((int)tool.getSnapTolerance());
