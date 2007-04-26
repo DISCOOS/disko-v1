@@ -38,12 +38,12 @@ public class EraseTool extends AbstractCommandTool {
 		p.setX(x);
 		p.setY(y); 
 		transform(p);
-		IElement elem = searchGraphics(p);
+		IElement elem = map.searchGraphics(p);
 		if (elem != null) {
 			IActiveView av = map.getActiveView();
 			IGraphicsContainer graphics = av.getGraphicsContainer();
 			graphics.deleteElement(elem);
-			partialRefreshGraphics(elem.getGeometry().getEnvelope());
+			map.partialRefreshGraphics(map.getActiveView().getExtent());
 		}
 	}
 }

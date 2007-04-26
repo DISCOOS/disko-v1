@@ -11,8 +11,12 @@ import org.redcross.sar.gui.SnapLayerSelectionModel;
 
 import com.esri.arcgis.beans.map.MapBean;
 import com.esri.arcgis.carto.FeatureLayer;
+import com.esri.arcgis.carto.IActiveView;
+import com.esri.arcgis.carto.IElement;
+import com.esri.arcgis.carto.IEnumElement;
 import com.esri.arcgis.carto.IFeatureLayerSelectionEventsAdapter;
 import com.esri.arcgis.carto.IFeatureLayerSelectionEventsFeatureLayerSelectionChangedEvent;
+import com.esri.arcgis.carto.IGraphicsContainer;
 import com.esri.arcgis.carto.ILayer;
 import com.esri.arcgis.controls.IMapControlEvents2Adapter;
 import com.esri.arcgis.controls.IMapControlEvents2OnAfterDrawEvent;
@@ -21,6 +25,8 @@ import com.esri.arcgis.controls.IMapControlEvents2OnMapReplacedEvent;
 import com.esri.arcgis.geodatabase.Feature;
 import com.esri.arcgis.geodatabase.IEnumIDs;
 import com.esri.arcgis.geodatabase.QueryFilter;
+import com.esri.arcgis.geometry.IEnvelope;
+import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.systemUI.ITool;
 
@@ -255,5 +261,38 @@ public final class DiskoMap extends MapBean {
 		for (int i = 0; i < selection.length; i++) {
 			selection[i].delete();
 		}
+	}
+	
+	public IElement searchGraphics(Point p) 
+			throws IOException, AutomationException {
+
+		IActiveView av = getActiveView();
+		double tolerance = av.getExtent().getWidth()/50;
+		IGraphicsContainer graphics = av.getGraphicsContainer();
+		IEnumElement enumElement = graphics.locateElements(p, tolerance);
+		if (enumElement != null) {
+			return enumElement.next();
+		}
+		return null;
+}
+
+	public void partialRefresh(IEnvelope env) throws IOException, AutomationException {
+		if (env != null) {
+			getActiveView().partialRefresh(
+					com.esri.arcgis.carto.esriViewDrawPhase.esriViewGeography, 
+					null, env);
+		}
+		else {
+			getActiveView().refresh();
+		}
+}
+
+	public void partialRefreshGraphics(IEnvelope env) throws IOException, AutomationException {
+		if (env == null) {
+			env = getActiveView().getExtent();
+		}
+		getActiveView().partialRefresh(
+				com.esri.arcgis.carto.esriViewDrawPhase.esriViewGraphics, 
+				null, env);
 	}
 }

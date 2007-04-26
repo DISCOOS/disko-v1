@@ -40,7 +40,7 @@ public class SplitTool extends AbstractCommandTool {
 		p.setX(x);
 		p.setY(y); 
 		transform(p);
-		IElement elem = searchGraphics(p);
+		IElement elem = map.searchGraphics(p);
 		if (elem != null && elem instanceof LineElement) {
 			IActiveView av = map.getActiveView();
 			IGraphicsContainer graphics = av.getGraphicsContainer();

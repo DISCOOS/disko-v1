@@ -8,8 +8,6 @@ import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.DrawDialog;
 import org.redcross.sar.map.index.IndexedGeometry;
-
-import com.esri.arcgis.display.IDraw;
 import com.esri.arcgis.display.IScreenDisplay;
 import com.esri.arcgis.display.RgbColor;
 import com.esri.arcgis.display.SimpleLineSymbol;
@@ -139,8 +137,9 @@ public class DrawTool extends AbstractCommandTool {
 		IGraphicsContainer graphics = map.getActiveView().getGraphicsContainer();
 		LineElement le = new LineElement();
 		le.setGeometry(pathGeometry);
+		le.setCustomProperty(new DrawProperties());
 		graphics.addElement(le, 0);
-		partialRefreshGraphics(pathGeometry.getEnvelope());
+		map.partialRefreshGraphics(pathGeometry.getEnvelope());
 		reset();
 	}
 	
@@ -265,19 +264,19 @@ public class DrawTool extends AbstractCommandTool {
 	
 	private void draw() throws IOException {
 		IScreenDisplay screenDisplay = map.getActiveView().getScreenDisplay();
-		screenDisplay.startDrawing(0,(short) esriScreenCache.esriNoScreenCache);
-		IDraw draw = (IDraw) screenDisplay;
+		screenDisplay.startDrawing(screenDisplay.getHDC(),(short) esriScreenCache.esriNoScreenCache);
+		
 		if (pathGeometry != null && !isMoving) {
-			draw.setSymbol(drawSymbol);
-			draw.draw(pathGeometry);
+			screenDisplay.setSymbol(drawSymbol);
+			screenDisplay.drawPolyline(pathGeometry);
 		}
 		if (rubberBand != null) {
-			draw.setSymbol(drawSymbol);
-			draw.draw(rubberBand);
+			screenDisplay.setSymbol(drawSymbol);
+			screenDisplay.drawPolyline(rubberBand);
 		}
 		if (snapGeometry != null) {
-			draw.setSymbol(flashSymbol);
-			draw.draw(snapGeometry);
+			screenDisplay.setSymbol(flashSymbol);
+			screenDisplay.drawPolyline(snapGeometry);
 		}
 		screenDisplay.finishDrawing();
 	}

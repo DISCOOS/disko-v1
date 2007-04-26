@@ -41,38 +41,6 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 		p.transform(com.esri.arcgis.geometry.esriTransformDirection.esriTransformReverse, getTransform());
 	}
 	
-	protected IElement searchGraphics(Point p) 
-			throws IOException, AutomationException {
-
-		IActiveView av = map.getActiveView();
-		double tolerance = av.getExtent().getWidth()/50;
-		IGraphicsContainer graphics = av.getGraphicsContainer();
-		IEnumElement enumElement = graphics.locateElements(p, tolerance);
-		if (enumElement != null) {
-			return enumElement.next();
-		}
-		return null;
-	}
-	
-	protected void partialRefresh(IEnvelope env) throws IOException, AutomationException {
-		if (env != null) {
-			map.getActiveView().partialRefresh(
-				com.esri.arcgis.carto.esriViewDrawPhase.esriViewGeography, 
-				null, env);
-		}
-		else {
-			map.getActiveView().refresh();
-		}
-	}
-	
-	protected void partialRefreshGraphics(IEnvelope env) throws IOException, AutomationException {
-		if (env != null) {
-			map.getActiveView().partialRefresh(
-				com.esri.arcgis.carto.esriViewDrawPhase.esriViewGraphics, 
-				null, env);
-		}
-	}
-	
 	public void toolActivated() throws IOException, AutomationException {
 		if (dialog != null) {
 			dialog.setVisible(true);

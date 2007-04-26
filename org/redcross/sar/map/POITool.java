@@ -1,13 +1,11 @@
 package org.redcross.sar.map;
 
 import java.io.IOException;
-import java.util.Hashtable;
 
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.POIDialog;
-import com.esri.arcgis.display.IDraw;
 import com.esri.arcgis.display.IScreenDisplay;
 import com.esri.arcgis.display.RgbColor;
 import com.esri.arcgis.display.SimpleMarkerSymbol;
@@ -30,7 +28,7 @@ public class POITool extends AbstractCommandTool {
 	private static final long serialVersionUID = 1L;
 	
 	private IGraphicsContainer graphics = null;
-	private POIDialog puiDialog = null;
+	private POIDialog poiDialog = null;
 	private Point movePoint = null;
 	private Envelope refreshEnvelope = null;
 	private MarkerElement selectedElement = null;
@@ -61,8 +59,8 @@ public class POITool extends AbstractCommandTool {
 		if (obj instanceof DiskoMap) {
 			map = (DiskoMap)obj;
 			map.addDiskoMapEventListener(this);
-			puiDialog = (POIDialog)dialog;
-			puiDialog.setLocationRelativeTo(map, DiskoDialog.POS_WEST, false);
+			poiDialog = (POIDialog)dialog;
+			poiDialog.setLocationRelativeTo(map, DiskoDialog.POS_WEST, false);
 			graphics = map.getActiveView().getGraphicsContainer();
 		}
 	}
@@ -71,21 +69,21 @@ public class POITool extends AbstractCommandTool {
 			throws IOException, AutomationException {
 		if (selectedElement != null) {
 			selectedElement.setSymbol(symbol);
-			partialRefreshGraphics(getEnvelope((Point)selectedElement.getGeometry()));
+			map.partialRefreshGraphics(getEnvelope((Point)selectedElement.getGeometry()));
 		}
 		Point p = transform(x, y);
 		refreshEnvelope = getEnvelope(p);
-		IElement elem = searchGraphics(p);
+		IElement elem = map.searchGraphics(p);
 		if (elem != null && elem instanceof MarkerElement) {
 			selectedElement = (MarkerElement)elem;
 		}
 		else {
 			selectedElement = new MarkerElement();
-			selectedElement.setCustomProperty(new Hashtable());
+			selectedElement.setCustomProperty(new PoiProperties());
 			graphics.addElement(selectedElement, 0);
 		}
 		selectedElement.setSymbol(selectionSymbol);
-		partialRefreshGraphics(refreshEnvelope);
+		map.partialRefreshGraphics(refreshEnvelope);
 		movePoint = p;
 	}	
 	
@@ -96,7 +94,6 @@ public class POITool extends AbstractCommandTool {
 			movePoint.setY(y);
 			transform(movePoint);
 			refreshForeground();
-			refresh(0);
 			refreshEnvelope.centerAt(movePoint);
 		}
 	}
@@ -108,18 +105,18 @@ public class POITool extends AbstractCommandTool {
 			selectedElement.setGeometry(p);
 			movePoint = null;
 			refreshEnvelope = null;
-			puiDialog.setPUI(selectedElement);
-			partialRefreshGraphics(map.getActiveView().getExtent());
+			poiDialog.setPOI(selectedElement);
+			map.partialRefreshGraphics(null);
 		}
 	}
 	
-	public void moveSelectedPUI(double x, double y) throws IOException, AutomationException {
+	public void moveSelectedPOI(double x, double y) throws IOException, AutomationException {
 		if (selectedElement != null) {
 			Point p = new Point();
 			p.setX(x);
 			p.setY(y);
 			selectedElement.setGeometry(p);
-			partialRefreshGraphics(getEnvelope(p));
+			map.partialRefreshGraphics(null);
 		}
 	}
 	
@@ -127,24 +124,24 @@ public class POITool extends AbstractCommandTool {
 		return selectedElement;
 	}
 	
-	public void clearSelectedPUI() throws IOException, AutomationException {	
+	public void clearSelectedPOI() throws IOException, AutomationException {	
 		if (selectedElement != null) {
 			selectedElement.setSymbol(symbol);
-			partialRefreshGraphics(getEnvelope((Point)selectedElement.getGeometry()));
+			map.partialRefreshGraphics(getEnvelope((Point)selectedElement.getGeometry()));
 			selectedElement = null;
 		}
 	}
 	
-	public void addPUIAt(double x, double y) throws IOException, AutomationException {
+	public void addPOIAt(double x, double y) throws IOException, AutomationException {
 		Point p = new Point();
 		p.setX(x);
 		p.setY(y);
 		selectedElement = new MarkerElement();
 		selectedElement.setGeometry(p);
 		selectedElement.setSymbol(selectionSymbol);
-		selectedElement.setCustomProperty(new Hashtable());
+		selectedElement.setCustomProperty(new PoiProperties());
 		graphics.addElement(selectedElement, 0);
-		partialRefreshGraphics(map.getActiveView().getExtent());
+		map.partialRefreshGraphics(null);
 	}
 	
 	private Envelope getEnvelope(Point p) throws IOException, AutomationException {
@@ -161,10 +158,10 @@ public class POITool extends AbstractCommandTool {
 	private void draw() throws IOException, AutomationException {	
 		if (movePoint != null) {
 			IScreenDisplay screenDisplay = map.getActiveView().getScreenDisplay();
-			screenDisplay.startDrawing(0,(short) esriScreenCache.esriNoScreenCache);
-			IDraw draw = (IDraw) screenDisplay;
-			draw.setSymbol(selectionSymbol);
-			draw.draw(movePoint);
+			short esriNoScreenCache = (short) esriScreenCache.esriNoScreenCache;
+			screenDisplay.startDrawing(0, esriNoScreenCache);
+			screenDisplay.setSymbol(selectionSymbol);
+			screenDisplay.drawPoint(movePoint);
 			screenDisplay.finishDrawing();
 		}
 	}
