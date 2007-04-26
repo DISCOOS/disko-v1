@@ -25,13 +25,12 @@ public class DiskoWpMapImpl extends AbstractDiskoWpModule implements IDiskoWpMap
 	}
 	
 	private void initialize() {
-		DiskoMap map = getMap();
+		DiskoMap map = (DiskoMap)getMap();
 		layoutComponent(map);
 	}
 	
 	public void activated() {
-		UIFactory uiFactory = getDiskoRole().getApplication().getUIFactory();
-		NavBar navBar = uiFactory.getMainPanel().getNavBar();
+		NavBar navBar = getApplication().getNavBar();
 		int[] buttonIndexes = {
 				NavBar.ZOOM_IN_TOOL,
 				NavBar.ZOOM_OUT_TOOL,

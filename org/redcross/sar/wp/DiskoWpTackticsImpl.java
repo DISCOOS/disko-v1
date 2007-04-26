@@ -1,7 +1,6 @@
 package org.redcross.sar.wp;
 
 import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
@@ -15,7 +14,10 @@ import org.redcross.sar.gui.NavBar;
 import org.redcross.sar.gui.UIFactory;
 import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.FlankProperties;
+import org.redcross.sar.map.MapUtil;
 import org.redcross.sar.map.PoiProperties;
+import org.redcross.sar.mso.IMsoManagerIf;
+import org.redcross.sar.mso.data.IPOIIf;
 
 import com.esri.arcgis.carto.FeatureLayer;
 import com.esri.arcgis.carto.IElement;
@@ -24,6 +26,9 @@ import com.esri.arcgis.carto.LineElement;
 import com.esri.arcgis.carto.MarkerElement;
 import com.esri.arcgis.carto.PolygonElement;
 import com.esri.arcgis.geodatabase.IFeature;
+import com.esri.arcgis.geometry.Envelope;
+import com.esri.arcgis.geometry.IEnvelope;
+import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.interop.AutomationException;
 
 /**
@@ -33,7 +38,6 @@ import com.esri.arcgis.interop.AutomationException;
  */
 public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDiskoWpTacktics {
 
-	private IDiskoApplication app = null;
 	private FeatureLayer basicLineFL = null;
 	private FeatureLayer flankFL = null;
 	private FeatureLayer poiFL = null;
@@ -48,20 +52,18 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	private JToggleButton descriptionToggleButton = null;
 	private JToggleButton unitToggleButton = null;
 	
-	
 	/**
 	 * Constructs a DiskoApTaktikkImpl
 	 * @param rolle A reference to the DiskoRolle
 	 */
 	public DiskoWpTackticsImpl(IDiskoRole rolle) {
 		super(rolle);
-		app = getDiskoRole().getApplication();
 		initialize();
 	}
 	
 	private void initialize() {
 		loadProperties("properties");
-		DiskoMap map = getMap();
+		DiskoMap map = (DiskoMap)getMap();
 		layoutComponent(map);
 		layoutButton(getElementToggleButton(), false);
 		layoutButton(getListToggleButton(), true);
@@ -74,7 +76,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	}
 	
 	public void onMapReplaced(DiskoMapEvent e) throws IOException {
-		DiskoMap map = getMap();
+		DiskoMap map = (DiskoMap)getMap();
 		map.setName(getName()+"Map");	
 		basicLineFL = map.getFeatureLayer(getProperty("BasicLine.featureClass.Name"));
 		basicLineFL.setSelectable(true);
@@ -86,8 +88,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	}
 	
 	public void activated() {
-		UIFactory uiFactory = getDiskoRole().getApplication().getUIFactory();
-		NavBar navBar = uiFactory.getMainPanel().getNavBar();
+		NavBar navBar = getApplication().getNavBar();
 		int[] buttonIndexes = {
 				NavBar.FLANK_TOOL,
 				NavBar.DRAW_TOOL,
@@ -139,16 +140,19 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	public void finish() {
 		try {
 			hideDialogs();
+			IMsoManagerIf msoManager = getMsoManager();
+			IEnvelope refreshEnv = new Envelope();
 			graphics.reset();
 			IElement elem = null;
 			while ((elem = graphics.next()) != null) {
 				if (elem instanceof MarkerElement) {
 					MarkerElement marker = (MarkerElement)elem;
 					PoiProperties properties = (PoiProperties)marker.getCustomProperty();
-					IFeature feature = poiFL.getFeatureClass().createFeature();
-					feature.setShapeByRef(marker.getGeometry());
-					feature.setValue(4, properties.getDesrciption());
-					feature.store();
+					Point p = (Point)marker.getGeometry();
+					refreshEnv.union(p.getEnvelope());
+					IPOIIf poi = msoManager.createPOI(IPOIIf.POIType.INTELLIGENCE, 
+							MapUtil.getPosistion(p));
+					poi.setRemarks(properties.getDesrciption());
 				}
 				else if (elem instanceof LineElement) {
 					LineElement line = (LineElement)elem;
@@ -168,7 +172,10 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 				}
 				graphics.deleteElement(elem);
 			}
-			getMap().partialRefresh(null);
+			refreshEnv.expand(50, 50, false);
+			getMap().partialRefreshGraphics(refreshEnv);
+			// commits to MSO
+			getMsoModel().commit();
 		} catch (AutomationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -185,7 +192,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	
 	private ElementDialog getElementDialog() {
 		if (elementDialog == null) {
-			elementDialog = new ElementDialog(app.getFrame(), new ActionListener() {
+			elementDialog = new ElementDialog(getApplication().getFrame(), new ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					getElementDialog().setVisible(false);
 					getElementToggleButton().setSelected(false);
@@ -257,7 +264,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	private JToggleButton getElementToggleButton() {
 		if (elementToggleButton == null) {
 			try {
-				Dimension size = app.getUIFactory().getLargeButtonSize();
+				Dimension size = getApplication().getUIFactory().getLargeButtonSize();
 				//String iconName = "MapZoomInTool.icon";
 				//Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
 				elementToggleButton = new JToggleButton();
@@ -268,7 +275,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 					public void actionPerformed(java.awt.event.ActionEvent e) {
 						ElementDialog dialog = getElementDialog();
 						if (elementToggleButton.isSelected()) {
-							Point p = elementToggleButton.getLocationOnScreen();
+							java.awt.Point p = elementToggleButton.getLocationOnScreen();
 							p.setLocation(p.x - dialog.getWidth()-2, p.y);
 							dialog.setLocation(p);
 							dialog.setVisible(true);
@@ -289,7 +296,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	private JToggleButton getDescriptionToggleButton() {
 		if (descriptionToggleButton == null) {
 			try {
-				Dimension size = app.getUIFactory().getLargeButtonSize();
+				Dimension size = getApplication().getUIFactory().getLargeButtonSize();
 				//String iconName = "MapZoomInTool.icon";
 				//Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
 				descriptionToggleButton = new JToggleButton();
@@ -312,9 +319,9 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	private JToggleButton getHypotheseToggleButton() {
 		if (hypotheseToggleButton == null) {
 			try {
-				Dimension size = app.getUIFactory().getLargeButtonSize();
+				Dimension size = getApplication().getUIFactory().getLargeButtonSize();
 				String iconName = "hypothese.icon";
-				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
+				Icon icon = Utils.createImageIcon(getApplication().getProperty(iconName),iconName);
 				hypotheseToggleButton = new JToggleButton();
 				hypotheseToggleButton.setIcon(icon);
 				hypotheseToggleButton.setPreferredSize(size);
@@ -335,9 +342,9 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	private JToggleButton getListToggleButton() {
 		if (listToggleButton == null) {
 			try {
-				Dimension size = app.getUIFactory().getLargeButtonSize();
+				Dimension size = getApplication().getUIFactory().getLargeButtonSize();
 				String iconName = "list.icon";
-				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
+				Icon icon = Utils.createImageIcon(getApplication().getProperty(iconName),iconName);
 				listToggleButton = new JToggleButton();
 				listToggleButton.setIcon(icon);
 				listToggleButton.setPreferredSize(size);
@@ -357,9 +364,9 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	private JToggleButton getMissionToggleButton() {
 		if (missionToggleButton == null) {
 			try {
-				Dimension size = app.getUIFactory().getLargeButtonSize();
+				Dimension size = getApplication().getUIFactory().getLargeButtonSize();
 				String iconName = "mission.icon";
-				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
+				Icon icon = Utils.createImageIcon(getApplication().getProperty(iconName),iconName);
 				missionToggleButton = new JToggleButton();
 				missionToggleButton.setIcon(icon);
 				missionToggleButton.setPreferredSize(size);
@@ -380,7 +387,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	private JToggleButton getPriorityToggleButton() {
 		if (priorityToggleButton == null) {
 			try {
-				Dimension size = app.getUIFactory().getLargeButtonSize();
+				Dimension size = getApplication().getUIFactory().getLargeButtonSize();
 				//String iconName = "MapZoomInTool.icon";
 				//Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
 				priorityToggleButton = new JToggleButton();
@@ -404,7 +411,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	private JToggleButton getRequirementToggleButton() {
 		if (requirementToggleButton == null) {
 			try {
-				Dimension size = app.getUIFactory().getLargeButtonSize();
+				Dimension size = getApplication().getUIFactory().getLargeButtonSize();
 				//String iconName = "MapZoomInTool.icon";
 				//Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
 				requirementToggleButton = new JToggleButton();
@@ -427,7 +434,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	private JToggleButton getUnitToggleButton() {
 		if (unitToggleButton == null) {
 			try {
-				Dimension size = app.getUIFactory().getLargeButtonSize();
+				Dimension size = getApplication().getUIFactory().getLargeButtonSize();
 				//String iconName = "MapZoomInTool.icon";
 				//Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
 				unitToggleButton = new JToggleButton();

@@ -1,5 +1,6 @@
 package org.redcross.sar.wp;
 
+import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.event.DiskoMapEvent;
@@ -8,7 +9,8 @@ import org.redcross.sar.event.IDiskoMapEventListener;
 import org.redcross.sar.event.IDiskoWpEventListener;
 import org.redcross.sar.gui.MainPanel;
 import org.redcross.sar.gui.SubMenuPanel;
-import org.redcross.sar.map.DiskoMap;
+import org.redcross.sar.map.IDiskoMap;
+import org.redcross.sar.map.IDiskoMapManager;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
@@ -28,7 +30,7 @@ import java.util.Properties;
 public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMapEventListener
 {
     private IDiskoRole role = null;
-    private DiskoMap map = null;
+    private IDiskoMap map = null;
     private boolean hasSubMenu = false;
     private Properties properties = null;
     private ArrayList<IDiskoWpEventListener> listeners = null;
@@ -51,14 +53,14 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMap
     /* (non-Javadoc)
       * @see org.redcross.sar.wp.IDiskoWpModule#getMap()
       */
-    public DiskoMap getMap()
+    public IDiskoMap getMap()
     {
         if (map == null)
         {
             try
             {
-                String mxdDoc = getProperty("MxdDocument.path");
-                map = new DiskoMap(mxdDoc);
+            	IDiskoMapManager manager = role.getApplication().getDiskoMapManager();
+                map = manager.getMapInstance();
                 map.addDiskoMapEventListener(this);
             }
             catch (Exception e)
@@ -69,7 +71,10 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMap
         }
         return map;
     }
-
+    
+    public IDiskoApplication getApplication() {
+    	return role.getApplication();
+    }
 
     /* (non-Javadoc)
       * @see org.redcross.sar.wp.IDiskoWpModule#getName()
@@ -102,7 +107,7 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMap
         if (value == null)
         {
             //try application properties
-            value = role.getApplication().getProperty(key);
+            value = getApplication().getProperty(key);
         }
         return value;
     }
@@ -164,7 +169,7 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMap
     protected void layoutComponent(JComponent comp)
     {
         String id = role.getName() + getName();
-        MainPanel mainPanel = role.getApplication().getUIFactory().getMainPanel();
+        MainPanel mainPanel = getApplication().getUIFactory().getMainPanel();
         mainPanel.addComponent(comp, id);
     }
 
@@ -176,19 +181,19 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMap
     protected void layoutButton(AbstractButton button, boolean addToGroup)
     {
         String id = role.getName() + getName();
-        SubMenuPanel subMenuPanel = role.getApplication().getUIFactory().getSubMenuPanel();
+        SubMenuPanel subMenuPanel = getApplication().getUIFactory().getSubMenuPanel();
         subMenuPanel.addItem(button, id, addToGroup);
         hasSubMenu = true;
     }
 
     protected JButton createLargeButton(String aText, java.awt.event.ActionListener aListener)
     {
-        return createButton(aText, role.getApplication().getUIFactory().getLargeButtonSize(), aListener);
+        return createButton(aText, getApplication().getUIFactory().getLargeButtonSize(), aListener);
     }
 
     protected JButton createSmallButton(String aText, java.awt.event.ActionListener aListener)
     {
-        return createButton(aText, role.getApplication().getUIFactory().getSmallButtonSize(), aListener);
+        return createButton(aText, getApplication().getUIFactory().getSmallButtonSize(), aListener);
     }
 
     protected JButton createButton(String aText, Dimension aSize, java.awt.event.ActionListener aListener)
@@ -232,7 +237,7 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMap
 
     public IMsoModelIf getMsoModel()
     {
-            return role.getApplication().getMsoModel();
+            return getApplication().getMsoModel();
     }
 
     public IMsoManagerIf getMsoManager()
@@ -244,5 +249,4 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMap
     {
             return getMsoModel().getEventManager();
     }
-
 }

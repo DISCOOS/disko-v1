@@ -1,6 +1,7 @@
 package org.redcross.sar.wp;
 
-import org.redcross.sar.map.DiskoMap;
+import org.redcross.sar.app.IDiskoApplication;
+import org.redcross.sar.map.IDiskoMap;
 
 /**
  * This interface provides access to properties and methods for
@@ -24,7 +25,13 @@ public interface IDiskoWpModule {
 	 * null should be returned
 	 * @return A reference to a DiskoMap
 	 */
-	public DiskoMap getMap();
+	public IDiskoMap getMap();
+	
+	/**
+	 * Get a reference to the DiskoApplication.
+	 * @return
+	 */
+	public IDiskoApplication getApplication();
 	
 	/**
 	 * @return true if DiskoMap is different from null, false otherwise
