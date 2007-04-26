@@ -1,10 +1,11 @@
 package org.redcross.sar.app;
 
+import org.redcross.sar.gui.NavBar;
+import org.redcross.sar.gui.SysBar;
 import org.redcross.sar.gui.UIFactory;
-import org.redcross.sar.map.DiskoMap;
+import org.redcross.sar.map.IDiskoMap;
+import org.redcross.sar.map.IDiskoMapManager;
 import org.redcross.sar.mso.IMsoModelIf;
-
-import com.esri.arcgis.geometry.IEnvelope;
 
 import javax.swing.*;
 
@@ -26,13 +27,7 @@ public interface IDiskoApplication {
 	 * Get the current (active) map
 	 * @return The current active map
 	 */
-	public DiskoMap getCurrentMap();
-	
-	/**
-	 * Refresh all map in this DiskoApplication. Should be called after database updates.
-	 * @param env A envelope to define the area to refresh
-	 */
-	public void refreshAllMaps(IEnvelope env);
+	public IDiskoMap getCurrentMap();
 	
 	/**
 	 * Get a reference to the main frame in this application. Is used
@@ -54,6 +49,16 @@ public interface IDiskoApplication {
 	 * @return A reference to the UIFactory
 	 */
 	public UIFactory getUIFactory();
+	
+	public NavBar getNavBar();
+	
+	public SysBar getSysBar();
+	
+	/**
+	 * Get a reference to the DiskoMapManager.
+	 * @return
+	 */
+	public IDiskoMapManager getDiskoMapManager();
 	
 	/**
 	 * Get a reference to the DiskoModuleLoader. This class is responsible

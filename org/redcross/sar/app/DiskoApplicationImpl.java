@@ -5,20 +5,17 @@ import javax.swing.JFrame;
 import javax.swing.UIManager;
 
 import org.redcross.sar.gui.LoginDialog;
+import org.redcross.sar.gui.NavBar;
+import org.redcross.sar.gui.SysBar;
 import org.redcross.sar.gui.UIFactory;
-import org.redcross.sar.map.DiskoMap;
+import org.redcross.sar.map.DiskoMapManagerImpl;
+import org.redcross.sar.map.IDiskoMap;
+import org.redcross.sar.map.IDiskoMapManager;
 import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.wp.IDiskoWpModule;
-
-import com.esri.arcgis.geometry.IEnvelope;
-import com.esri.arcgis.interop.AutomationException;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 
 
@@ -39,7 +36,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication {
 	private DiskoModuleLoader moduleLoader = null;
 	private Properties properties = null;
 	private UIFactory uiFactory = null;
-
+	private IDiskoMapManager mapManager = null;
     private MsoModelImpl m_msoModel = null;
 
     /**
@@ -110,44 +107,9 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication {
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.app.IDiskoApplication#getCurrentMap()
 	 */
-	public DiskoMap getCurrentMap() {
+	public IDiskoMap getCurrentMap() {
 		return getCurrentRole().getCurrentDiskoWpModule().getMap();
 	}
-	
-	
-	/* (non-Javadoc)
-	 * @see org.redcross.sar.app.IDiskoApplication#refreshAllMaps()
-	 */
-	public void refreshAllMaps(IEnvelope env) {
-		try {
-			Iterator iter = roles.values().iterator();
-			while(iter.hasNext()) {
-				IDiskoRole role = (IDiskoRole)iter.next();
-				List modules = role.getDiskoWpModules();
-				for (int i = 0; i < modules.size(); i++)  {
-					IDiskoWpModule module = (IDiskoWpModule)modules.get(i);
-					DiskoMap map = module.getMap();
-					if (map != null) {
-						if (env != null) {
-							map.getActiveView().partialRefresh(
-								com.esri.arcgis.carto.esriViewDrawPhase.esriViewGeography, 
-								null, env);
-						}
-						else {
-							map.getActiveView().refresh();
-						}
-					}
-				}
-			}
-		} catch (AutomationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
 	
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.app.IDiskoApplication#getFrame()
@@ -164,6 +126,24 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication {
 			uiFactory = new UIFactory(this);
 		}
 		return uiFactory;
+	}
+	
+	public NavBar getNavBar() {
+		return getUIFactory().getMainPanel().getNavBar();
+	}
+	
+	public SysBar getSysBar() {
+		return getUIFactory().getMainPanel().getSysBar();
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.redcross.sar.app.IDiskoApplication#getDiskoMapManager()
+	 */
+	public IDiskoMapManager getDiskoMapManager() {
+		if (mapManager == null) {
+			mapManager = new DiskoMapManagerImpl(this);
+		}
+		return mapManager;
 	}
 
     public IMsoModelIf getMsoModel()
