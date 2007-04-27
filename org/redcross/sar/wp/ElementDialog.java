@@ -167,6 +167,7 @@ public class ElementDialog extends DiskoDialog {
 			try {
 				lineSearchCheckBox = new JCheckBox();
 				lineSearchCheckBox.setText("Linjesøk");
+				lineSearchCheckBox.setEnabled(false);
 				lineSearchCheckBox.setActionCommand("ELEMENT_LINE_SEARCH");
 				lineSearchCheckBox.addActionListener(listener);
 				bgroup.add(lineSearchCheckBox);
@@ -187,6 +188,7 @@ public class ElementDialog extends DiskoDialog {
 			try {
 				rodeSearchCheckBox = new JCheckBox();
 				rodeSearchCheckBox.setText("Rodesøk");
+				rodeSearchCheckBox.setEnabled(false);
 				rodeSearchCheckBox.setActionCommand("ELEMENT_RODE_SEARCH");
 				rodeSearchCheckBox.addActionListener(listener);
 				bgroup.add(rodeSearchCheckBox);
@@ -207,6 +209,7 @@ public class ElementDialog extends DiskoDialog {
 			try {
 				beachSearchCheckBox = new JCheckBox();
 				beachSearchCheckBox.setText("Strandsøk");
+				beachSearchCheckBox.setEnabled(false);
 				beachSearchCheckBox.setActionCommand("ELEMENT_BEACH_SEARCH");
 				beachSearchCheckBox.addActionListener(listener);
 				bgroup.add(beachSearchCheckBox);
@@ -227,6 +230,7 @@ public class ElementDialog extends DiskoDialog {
 			try {
 				maritimeSearchCheckBox = new JCheckBox();
 				maritimeSearchCheckBox.setText("Maritime søk");
+				maritimeSearchCheckBox.setEnabled(false);
 				maritimeSearchCheckBox.setActionCommand("ELEMENT_MARITIME_SEARCH");
 				maritimeSearchCheckBox.addActionListener(listener);
 				bgroup.add(maritimeSearchCheckBox);
@@ -247,6 +251,7 @@ public class ElementDialog extends DiskoDialog {
 			try {
 				dogSearchCheckBox = new JCheckBox();
 				dogSearchCheckBox.setText("Hundesøk");
+				dogSearchCheckBox.setEnabled(false);
 				dogSearchCheckBox.setActionCommand("ELEMENT_DOG_SEARCH");
 				dogSearchCheckBox.addActionListener(listener);
 				bgroup.add(dogSearchCheckBox);
@@ -267,6 +272,7 @@ public class ElementDialog extends DiskoDialog {
 			try {
 				airSearchCheckBox = new JCheckBox();
 				airSearchCheckBox.setText("Flysøk");
+				airSearchCheckBox.setEnabled(false);
 				airSearchCheckBox.setActionCommand("ELEMENT_AIR_SEARCH");
 				airSearchCheckBox.addActionListener(listener);
 				bgroup.add(airSearchCheckBox);
@@ -287,6 +293,7 @@ public class ElementDialog extends DiskoDialog {
 			try {
 				generalTaskCheckBox = new JCheckBox();
 				generalTaskCheckBox.setText("Generellt oppdrag");
+				generalTaskCheckBox.setEnabled(false);
 				generalTaskCheckBox.setActionCommand("ELEMENT_GENERAL_TASK");
 				generalTaskCheckBox.addActionListener(listener);
 				bgroup.add(generalTaskCheckBox);
