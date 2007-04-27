@@ -173,6 +173,7 @@ public class FlankTool extends AbstractCommandTool {
 			PolygonElement pe = new PolygonElement();
 			pe.setGeometry(leftPoly);
 			pe.setSymbol(redFill);
+			pe.setName(getElementName());
 			pe.setCustomProperty(properties);
 			graphics.addElement(pe, 0);
 			refreshEnvelope.union(leftPoly.getEnvelope());
@@ -184,6 +185,7 @@ public class FlankTool extends AbstractCommandTool {
 			PolygonElement pe = new PolygonElement();
 			pe.setGeometry(rightPoly);
 			pe.setSymbol(blueFill);
+			pe.setName(getElementName());
 			pe.setCustomProperty(properties);
 			graphics.addElement(pe, 0);
 			refreshEnvelope.union(rightPoly.getEnvelope());

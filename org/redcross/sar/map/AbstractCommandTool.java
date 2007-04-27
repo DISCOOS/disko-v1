@@ -17,6 +17,7 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 	protected DiskoDialog dialog = null;
 	protected Properties properties = null;
 	protected IDisplayTransformation transform = null;
+	private String elementName = null;
 	
 	protected IDisplayTransformation getTransform() 
 			throws IOException, AutomationException {
@@ -53,6 +54,21 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 
 	public DiskoMap getMap() {
 		return map;
+	}
+	
+	
+	/* (non-Javadoc)
+	 * @see org.redcross.sar.map.IDiskoTool#getElementName()
+	 */
+	public String getElementName() {
+		return elementName;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.redcross.sar.map.IDiskoTool#setElementName(java.lang.String)
+	 */
+	public void setElementName(String name) {
+		elementName = name;
 	}
 
 	public int getBitmap() throws IOException, AutomationException {

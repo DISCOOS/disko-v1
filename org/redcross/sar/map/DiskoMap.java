@@ -306,6 +306,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap {
 		IActiveView av = getActiveView();
 		double tolerance = av.getExtent().getWidth()/50;
 		IGraphicsContainer graphics = av.getGraphicsContainer();
+		graphics.reset();
 		IEnumElement enumElement = graphics.locateElements(p, tolerance);
 		if (enumElement != null) {
 			return enumElement.next();
@@ -317,6 +318,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap {
 			throws IOException, AutomationException {
 		ArrayList result = new ArrayList();
 		IGraphicsContainer graphics = getActiveView().getGraphicsContainer();
+		graphics.reset();
 		IElement elem = null;
 		while ((elem = graphics.next()) != null) {
 			if (elem instanceof IElementProperties && 
