@@ -1,11 +1,8 @@
 package org.redcross.sar.gui;
 
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Point;
 import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -19,10 +16,10 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
 import org.redcross.sar.app.IDiskoApplication;
-import org.redcross.sar.app.Utils;
 import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.POITool;
 import org.redcross.sar.map.PoiProperties;
+import org.redcross.sar.mso.data.IPOIIf.POIType;
 
 import com.esri.arcgis.carto.MarkerElement;
 import com.esri.arcgis.geometry.IEnvelope;
@@ -33,7 +30,6 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.io.IOException;
-import java.util.Hashtable;
 
 import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
@@ -50,8 +46,6 @@ public class POIDialog extends DiskoDialog {
 	private POITool tool = null;
 	private JPanel contentPanel = null;
 	private NumPadDialog numPadDialog = null;
-	private JPanel northPanel = null;
-	private JPanel southPanel = null;
 	private JTextField xCoordTextField = null;
 	private JTextField yCoordTextField = null;
 	private JComboBox typeComboBox = null;
@@ -63,8 +57,7 @@ public class POIDialog extends DiskoDialog {
 	private JLabel typeLabel = null;
 	private JScrollPane textAreaScrollPane = null;
 	private CoordinateDocumentListener coordinateDocumentListener = null;
-	private JButton cancelButton = null;
-	private JPanel centerPanel = null;
+	private JPanel northPanel = null;
 	private JPanel textAreaPanel = null;
 	
 
@@ -85,7 +78,7 @@ public class POIDialog extends DiskoDialog {
 		try {
             this.setPreferredSize(new Dimension(175, 270));
             //this.setSize(new Dimension(175, 350));
-            this.setSize(new Dimension(200, 609));
+            this.setSize(new Dimension(200, 247));
             this.setContentPane(getContentPanel());
             this.pack();
 		}
@@ -111,82 +104,13 @@ public class POIDialog extends DiskoDialog {
 				contentPanel.setLayout(borderLayout1);
 				contentPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 				//contentPanel.add(getNorthPanel(), BorderLayout.NORTH);
-				contentPanel.add(getCenterPanel(), BorderLayout.CENTER);
-				//contentPanel.add(getSouthPanel(), BorderLayout.SOUTH);
+				contentPanel.add(getNorthPanel(), BorderLayout.NORTH);
+				contentPanel.add(getTextAreaPanel(), BorderLayout.CENTER);
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
 		}
 		return contentPanel;
-	}
-	
-	/**
-	 * This method initializes northPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
-	 */
-	private JPanel getNorthPanel() {
-		if (northPanel == null) {
-			FlowLayout flowLayout = new FlowLayout();
-			flowLayout.setAlignment(FlowLayout.RIGHT);
-			flowLayout.setVgap(0);
-			flowLayout.setHgap(0);
-			northPanel = new JPanel();
-			northPanel.setLayout(flowLayout);
-		}
-		return northPanel;
-	}
-	
-	/**
-	 * This method initializes southPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
-	 */
-	private JPanel getSouthPanel() {
-		if (southPanel == null) {
-			FlowLayout flowLayout1 = new FlowLayout();
-			flowLayout1.setAlignment(FlowLayout.RIGHT);
-			flowLayout1.setVgap(0);
-			flowLayout1.setHgap(0);
-			southPanel = new JPanel();
-			southPanel.setLayout(flowLayout1);
-			southPanel.add(getCancelButton(), null);
-		}
-		return southPanel;
-	}
-	
-	/**
-	 * This method initializes applyButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getCancelButton() {
-		if (cancelButton == null) {
-			try {
-				cancelButton = new JButton();
-				cancelButton.setPreferredSize(app.getUIFactory().getSmallButtonSize());
-				String iconName = "cancel.icon";
-				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
-				cancelButton.setIcon(icon);
-				cancelButton.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent e) {
-						try {
-							tool.clearSelectedPOI();
-							clearFields();
-						} catch (AutomationException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-					}
-				});
-			} catch (java.lang.Throwable e) {
-				// TODO: Something
-			}
-		}
-		return cancelButton;
 	}
 	
 	/**
@@ -251,6 +175,10 @@ public class POIDialog extends DiskoDialog {
 			setYCoordinateField(p.getY());
 			PoiProperties properties = (PoiProperties)elem.getCustomProperty();
 			getTxtArea().setText(properties.getDesrciption());
+			POIType type = properties.getType();
+			if (type != null) {
+				getTypeComboBox().setSelectedItem(type);
+			}
 		} catch (AutomationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -324,6 +252,19 @@ public class POIDialog extends DiskoDialog {
 		}
 	}
 	
+	public void setTypes(POIType[] poiTypes) {
+		JComboBox cb = getTypeComboBox();
+		cb.removeAll();
+		for (int i = 0; i < poiTypes.length; i++) {
+			cb.addItem(poiTypes[i]);
+		}
+		cb.setSelectedItem(poiTypes[0]);
+	}
+	
+	public POIType getSelectedType() {
+		return (POIType)getTypeComboBox().getSelectedItem();
+	}
+	
 	/**
 	 * This method initializes typeComboBox	
 	 * 	
@@ -332,9 +273,24 @@ public class POIDialog extends DiskoDialog {
 	private JComboBox getTypeComboBox() {
 		if (typeComboBox == null) {
 			typeComboBox = new JComboBox();
-			typeComboBox.addItem("type 1");
-			typeComboBox.addItem("type 2");
-			typeComboBox.addItem("type 3");
+			typeComboBox.setMaximumRowCount(8);
+			typeComboBox.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					MarkerElement selectedPUI = tool.getSelectedPUI();
+					if (selectedPUI != null) {
+						try {
+							PoiProperties properties = (PoiProperties)selectedPUI.getCustomProperty();
+							properties.setType((POIType)getTypeComboBox().getSelectedItem());
+						} catch (AutomationException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
+				}
+			});
 		}
 		return typeComboBox;
 	}
@@ -497,25 +453,24 @@ public class POIDialog extends DiskoDialog {
 	}
 
 	/**
-	 * This method initializes centerPanel	
+	 * This method initializes northPanel	
 	 * 	
 	 * @return javax.swing.JPanel	
 	 */
-	private JPanel getCenterPanel() {
-		if (centerPanel == null) {
+	private JPanel getNorthPanel() {
+		if (northPanel == null) {
 			try {
 				BorderLayout borderLayout = new BorderLayout();
 				borderLayout.setVgap(0);
-				centerPanel = new JPanel();
-				centerPanel.setBorder(BorderFactory.createTitledBorder(null, "PUI", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Tahoma", Font.PLAIN, 11), new Color(0, 70, 213)));
-				centerPanel.setLayout(borderLayout);
-				centerPanel.add(getCoordPanel(), BorderLayout.NORTH);
-				centerPanel.add(getTextAreaPanel(), BorderLayout.CENTER);
+				northPanel = new JPanel();
+				northPanel.setBorder(BorderFactory.createTitledBorder(null, "PUI", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Tahoma", Font.PLAIN, 11), new Color(0, 70, 213)));
+				northPanel.setLayout(borderLayout);
+				northPanel.add(getCoordPanel(), BorderLayout.NORTH);
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
 		}
-		return centerPanel;
+		return northPanel;
 	}
 
 	/**
