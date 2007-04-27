@@ -12,11 +12,13 @@ import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.gui.NavBar;
+import org.redcross.sar.gui.POIDialog;
 import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.DrawTool;
 import org.redcross.sar.map.MapUtil;
 import org.redcross.sar.map.POITool;
 import org.redcross.sar.map.PoiProperties;
+import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IOperationAreaIf;
 import org.redcross.sar.mso.data.IOperationAreaListIf;
 import org.redcross.sar.mso.data.IPOIIf;
@@ -24,6 +26,7 @@ import org.redcross.sar.mso.data.IPOIListIf;
 import org.redcross.sar.mso.data.IRouteListIf;
 import org.redcross.sar.mso.data.ISearchAreaIf;
 import org.redcross.sar.mso.data.ISearchAreaListIf;
+import org.redcross.sar.mso.data.IPOIIf.POIType;
 
 import com.esri.arcgis.carto.IGraphicsContainer;
 import com.esri.arcgis.carto.LineElement;
@@ -57,6 +60,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	private String currentAction = null;
 	private POITool poiTool = null;
 	private DrawTool drawTool = null;
+	private POIDialog poiDialog = null;
 	
 	/**
 	 * Constructs a DiskoApTaktikkImpl
@@ -112,6 +116,10 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 		
 		poiTool = getApplication().getNavBar().getPOITool();
 		poiTool.setElementName("POI");
+		
+		poiDialog = (POIDialog)poiTool.getDialog();
+		POIType[] poiTypes = {POIType.START, POIType.VIA, POIType.STOP};
+		poiDialog.setTypes(poiTypes);
 	}
 	
 	public void deactivated() {
@@ -148,30 +156,31 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	public void finish() {
 		try {
 			hideDialogs();
-			IPOIListIf poiList = getMsoManager().getCmdPost().getPOIList();
 			IEnvelope refreshEnv = new Envelope();
+			ICmdPostIf cmdPost = getMsoManager().getCmdPost();
 			
 			// committing POIs
+			IPOIListIf poiList = cmdPost.getPOIList();
 			List poiGraphics = getMap().searchGraphics("POI");
 			for (int i = 0; i < poiGraphics.size(); i++) {
 				MarkerElement marker = (MarkerElement)poiGraphics.get(i);
 				PoiProperties properties = (PoiProperties)marker.getCustomProperty();
 				Point p = (Point)marker.getGeometry();
-				IPOIIf poi = poiList.createPOI(IPOIIf.POIType.INTELLIGENCE, 
+				IPOIIf poi = poiList.createPOI(properties.getType(), 
 						MapUtil.getMsoPosistion(p));
 				poi.setRemarks(properties.getDesrciption());
 				refreshEnv.union(p.getEnvelope());
 				graphics.deleteElement(marker);
 			}
-			
 			if (currentAction.equals("ELEMENT_OPERATION_AREA")) {
-				IOperationAreaListIf opAreaList = getMsoManager().getCmdPost().getOperationAreaList();
+				IOperationAreaListIf opAreaList = cmdPost.getOperationAreaList();
 				List opAreaGraphics = getMap().searchGraphics(currentAction);
 				if (opAreaGraphics.size() == 1) {
 					PolygonElement pe = (PolygonElement)opAreaGraphics.get(0);
 					Polygon polygon = (Polygon)pe.getGeometry();
 					IOperationAreaIf opArea = opAreaList.createOperationArea();
-					org.redcross.sar.util.mso.Polygon msoPolygon = MapUtil.getMsoPolygon(polygon);
+					org.redcross.sar.util.mso.Polygon msoPolygon = 
+						MapUtil.getMsoPolygon(polygon);
 					opArea.setGeodata(msoPolygon);
 					refreshEnv.union(polygon.getEnvelope());
 					graphics.deleteElement(pe);
@@ -182,13 +191,14 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 				}
 			}
 			else if (currentAction.equals("ELEMENT_SEARCH_AREA")) {
-				ISearchAreaListIf searchAreaList = getMsoManager().getCmdPost().getSearchAreaList();
+				ISearchAreaListIf searchAreaList = cmdPost.getSearchAreaList();
 				List searchAreaGraphics = getMap().searchGraphics(currentAction);
 				for (int i = 0; i < searchAreaGraphics.size(); i++) {
 					PolygonElement pe = (PolygonElement)searchAreaGraphics.get(i);
 					Polygon polygon = (Polygon)pe.getGeometry();
 					ISearchAreaIf searchArea = searchAreaList.createSearchArea();
-					org.redcross.sar.util.mso.Polygon msoPolygon = MapUtil.getMsoPolygon(polygon);
+					org.redcross.sar.util.mso.Polygon msoPolygon = 
+						MapUtil.getMsoPolygon(polygon);
 					searchArea.setGeodata(msoPolygon);
 					refreshEnv.union(polygon.getEnvelope());
 					graphics.deleteElement(pe);
@@ -196,7 +206,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 				}
 			}
 			else { // patrol search
-				IRouteListIf routeList = getMsoManager().getCmdPost().getRouteList();
+				IRouteListIf routeList = cmdPost.getRouteList();
 				List routeGraphics = getMap().searchGraphics(currentAction);
 				for (int i = 0; i < routeGraphics.size(); i++) {
 					LineElement le = (LineElement)routeGraphics.get(i);
@@ -235,14 +245,20 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 					if (command.equals("ELEMENT_OPERATION_AREA")) {
 						showOperationAreaButtons();
 						drawTool.setDrawMode(DrawTool.DRAW_MODE_POLYGON);
+						POIType[] poiTypes = {POIType.INTELLIGENCE};
+						poiDialog.setTypes(poiTypes);
 					}
 					else if (command.equals("ELEMENT_SEARCH_AREA")) {
 						showSearchAreaButtons();
 						drawTool.setDrawMode(DrawTool.DRAW_MODE_POLYGON);
+						POIType[] poiTypes = {POIType.INTELLIGENCE};
+						poiDialog.setTypes(poiTypes);
 					}
 					else {
 						showSearchButtons();
 						drawTool.setDrawMode(DrawTool.DRAW_MODE_POLYLINE);
+						POIType[] poiTypes = {POIType.START, POIType.VIA, POIType.STOP};
+						poiDialog.setTypes(poiTypes);
 					}
 				}
 			});
