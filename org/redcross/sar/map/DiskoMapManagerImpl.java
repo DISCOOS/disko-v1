@@ -14,6 +14,7 @@ import org.redcross.sar.mso.data.IOperationAreaIf;
 import org.redcross.sar.mso.data.IPOIIf;
 import org.redcross.sar.mso.data.IRouteIf;
 import org.redcross.sar.mso.data.ISearchAreaIf;
+import org.redcross.sar.mso.data.IPOIIf.POIType;
 import org.redcross.sar.mso.event.IMsoCommitListenerIf;
 import org.redcross.sar.mso.event.IMsoDerivedUpdateListenerIf;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
@@ -95,7 +96,9 @@ public class DiskoMapManagerImpl implements IDiskoMapManager,
 	 */
 	public void refreshAllMaps(IEnvelope env) {
 		try {
-			env.expand(50, 50, false);
+			if (env != null) {
+				env.expand(50, 50, false);
+			}
 			for (int i = 0; i < maps.size(); i++) {
 				DiskoMap map = (DiskoMap)maps.get(i);
 				if (map.isShowing()) {
@@ -224,6 +227,10 @@ public class DiskoMapManagerImpl implements IDiskoMapManager,
 			if (poiFL != null) {
 				IFeature feature = poiFL.getFeatureClass().createFeature();
 				feature.setShapeByRef(p);
+				POIType type = poi.getType();
+				if (type != null) {
+					feature.setValue(2, poi.getType().toString());
+				}
 				feature.setValue(4, poi.getRemarks());
 				feature.store();
 				refreshEnv.union(MapUtil.getEnvelope(p, 50));

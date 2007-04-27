@@ -79,7 +79,9 @@ public class POITool extends AbstractCommandTool {
 		}
 		else {
 			selectedElement = new MarkerElement();
-			selectedElement.setCustomProperty(new PoiProperties());
+			PoiProperties props = new PoiProperties();
+			props.setType(poiDialog.getSelectedType());
+			selectedElement.setCustomProperty(props);
 			selectedElement.setName(getElementName());
 			graphics.addElement(selectedElement, 0);
 		}
@@ -144,7 +146,9 @@ public class POITool extends AbstractCommandTool {
 		selectedElement.setGeometry(p);
 		selectedElement.setSymbol(selectionSymbol);
 		selectedElement.setName(getElementName());
-		selectedElement.setCustomProperty(new PoiProperties());
+		PoiProperties props = new PoiProperties();
+		props.setType(poiDialog.getSelectedType());
+		selectedElement.setCustomProperty(props);
 		graphics.addElement(selectedElement, 0);
 		map.partialRefreshGraphics(null);
 	}

@@ -1,10 +1,12 @@
 package org.redcross.sar.map;
 
+import org.redcross.sar.mso.data.IPOIIf.POIType;
+
 public class PoiProperties {
 	
 	private String name = null;
 	private String desrciption = null;
-	private String type = null;
+	private POIType type = null;
 	
 	public String getDesrciption() {
 		return desrciption;
@@ -18,10 +20,10 @@ public class PoiProperties {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getType() {
+	public POIType getType() {
 		return type;
 	}
-	public void setType(String type) {
+	public void setType(POIType type) {
 		this.type = type;
 	}
 }
