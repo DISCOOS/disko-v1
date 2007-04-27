@@ -117,7 +117,7 @@ public class NavBar extends JPanel {
 		add(dummy);
 		bgroup.add(dummy);
 			
-		addCommand(getPUIToggleButton(), getPUITool());
+		addCommand(getPUIToggleButton(), getPOITool());
 		addCommand(getFlankToggleButton(), getFlankTool());
 		addCommand(getDrawLineToggleButton(), getDrawTool());
 		addCommand(getEraseToggleButton(), getEraseTool());
@@ -182,7 +182,7 @@ public class NavBar extends JPanel {
 		return splitTool;
 	}
 	
-	public POITool getPUITool() {
+	public POITool getPOITool() {
 		if (puiTool == null) {
 			try {
 				puiTool = new POITool(app);
