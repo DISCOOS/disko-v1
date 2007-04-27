@@ -3,32 +3,37 @@ package org.redcross.sar.wp;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.JToggleButton;
-import org.redcross.sar.app.IDiskoApplication;
+
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.gui.NavBar;
-import org.redcross.sar.gui.UIFactory;
 import org.redcross.sar.map.DiskoMap;
-import org.redcross.sar.map.FlankProperties;
+import org.redcross.sar.map.DrawTool;
 import org.redcross.sar.map.MapUtil;
+import org.redcross.sar.map.POITool;
 import org.redcross.sar.map.PoiProperties;
-import org.redcross.sar.mso.IMsoManagerIf;
+import org.redcross.sar.mso.data.IOperationAreaIf;
+import org.redcross.sar.mso.data.IOperationAreaListIf;
 import org.redcross.sar.mso.data.IPOIIf;
+import org.redcross.sar.mso.data.IPOIListIf;
+import org.redcross.sar.mso.data.IRouteListIf;
+import org.redcross.sar.mso.data.ISearchAreaIf;
+import org.redcross.sar.mso.data.ISearchAreaListIf;
 
-import com.esri.arcgis.carto.FeatureLayer;
-import com.esri.arcgis.carto.IElement;
 import com.esri.arcgis.carto.IGraphicsContainer;
 import com.esri.arcgis.carto.LineElement;
 import com.esri.arcgis.carto.MarkerElement;
 import com.esri.arcgis.carto.PolygonElement;
-import com.esri.arcgis.geodatabase.IFeature;
 import com.esri.arcgis.geometry.Envelope;
 import com.esri.arcgis.geometry.IEnvelope;
 import com.esri.arcgis.geometry.Point;
+import com.esri.arcgis.geometry.Polygon;
+import com.esri.arcgis.geometry.Polyline;
 import com.esri.arcgis.interop.AutomationException;
 
 /**
@@ -38,9 +43,6 @@ import com.esri.arcgis.interop.AutomationException;
  */
 public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDiskoWpTacktics {
 
-	private FeatureLayer basicLineFL = null;
-	private FeatureLayer flankFL = null;
-	private FeatureLayer poiFL = null;
 	private IGraphicsContainer graphics = null;
 	private ElementDialog elementDialog = null;
 	private JToggleButton elementToggleButton = null;
@@ -51,6 +53,10 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	private JToggleButton requirementToggleButton = null;
 	private JToggleButton descriptionToggleButton = null;
 	private JToggleButton unitToggleButton = null;
+	
+	private String currentAction = null;
+	private POITool poiTool = null;
+	private DrawTool drawTool = null;
 	
 	/**
 	 * Constructs a DiskoApTaktikkImpl
@@ -78,12 +84,6 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	public void onMapReplaced(DiskoMapEvent e) throws IOException {
 		DiskoMap map = (DiskoMap)getMap();
 		map.setName(getName()+"Map");	
-		basicLineFL = map.getFeatureLayer(getProperty("BasicLine.featureClass.Name"));
-		basicLineFL.setSelectable(true);
-		flankFL = map.getFeatureLayer(getProperty("BufferPath.featureClass.Name"));
-		flankFL.setSelectable(true);
-		poiFL = map.getFeatureLayer(getProperty("PUI.featureClass.Name"));
-		poiFL.setSelectable(true);
 		graphics = map.getActiveView().getGraphicsContainer();
 	}
 	
@@ -104,6 +104,14 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 				NavBar.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND
 		};
 		navBar.showButtons(buttonIndexes);
+		
+		currentAction = "ELEMENT_PATROL_SEARCH";
+		drawTool = getApplication().getNavBar().getDrawTool();
+		drawTool.setDrawMode(DrawTool.DRAW_MODE_POLYLINE);
+		drawTool.setElementName(currentAction);
+		
+		poiTool = getApplication().getNavBar().getPOITool();
+		poiTool.setElementName("POI");
 	}
 	
 	public void deactivated() {
@@ -140,42 +148,67 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	public void finish() {
 		try {
 			hideDialogs();
-			IMsoManagerIf msoManager = getMsoManager();
+			IPOIListIf poiList = getMsoManager().getCmdPost().getPOIList();
 			IEnvelope refreshEnv = new Envelope();
-			graphics.reset();
-			IElement elem = null;
-			while ((elem = graphics.next()) != null) {
-				if (elem instanceof MarkerElement) {
-					MarkerElement marker = (MarkerElement)elem;
-					PoiProperties properties = (PoiProperties)marker.getCustomProperty();
-					Point p = (Point)marker.getGeometry();
-					refreshEnv.union(p.getEnvelope());
-					IPOIIf poi = msoManager.createPOI(IPOIIf.POIType.INTELLIGENCE, 
-							MapUtil.getPosistion(p));
-					poi.setRemarks(properties.getDesrciption());
-				}
-				else if (elem instanceof LineElement) {
-					LineElement line = (LineElement)elem;
-					//DrawProperties properties = (DrawProperties)line.getCustomProperty();
-					IFeature feature = basicLineFL.getFeatureClass().createFeature();
-					feature.setShapeByRef(line.getGeometry());
-					feature.store();
-				}
-				else if (elem instanceof PolygonElement) {
-					PolygonElement polygon = (PolygonElement)elem;
-					FlankProperties properties = (FlankProperties)polygon.getCustomProperty();
-					IFeature feature = flankFL.getFeatureClass().createFeature();
-					feature.setShapeByRef(polygon.getGeometry());
-					int field = flankFL.getFeatureClass().findField("Side");
-					feature.setValue(field, properties.getSide());
-					feature.store();
-				}
-				graphics.deleteElement(elem);
+			
+			// committing POIs
+			List poiGraphics = getMap().searchGraphics("POI");
+			for (int i = 0; i < poiGraphics.size(); i++) {
+				MarkerElement marker = (MarkerElement)poiGraphics.get(i);
+				PoiProperties properties = (PoiProperties)marker.getCustomProperty();
+				Point p = (Point)marker.getGeometry();
+				IPOIIf poi = poiList.createPOI(IPOIIf.POIType.INTELLIGENCE, 
+						MapUtil.getMsoPosistion(p));
+				poi.setRemarks(properties.getDesrciption());
+				refreshEnv.union(p.getEnvelope());
+				graphics.deleteElement(marker);
 			}
-			refreshEnv.expand(50, 50, false);
-			getMap().partialRefreshGraphics(refreshEnv);
-			// commits to MSO
+			
+			if (currentAction.equals("ELEMENT_OPERATION_AREA")) {
+				IOperationAreaListIf opAreaList = getMsoManager().getCmdPost().getOperationAreaList();
+				List opAreaGraphics = getMap().searchGraphics(currentAction);
+				if (opAreaGraphics.size() == 1) {
+					PolygonElement pe = (PolygonElement)opAreaGraphics.get(0);
+					Polygon polygon = (Polygon)pe.getGeometry();
+					IOperationAreaIf opArea = opAreaList.createOperationArea();
+					org.redcross.sar.util.mso.Polygon msoPolygon = MapUtil.getMsoPolygon(polygon);
+					opArea.setGeodata(msoPolygon);
+					refreshEnv.union(polygon.getEnvelope());
+					graphics.deleteElement(pe);
+					getMsoModel().commit();
+				}
+				else {
+					// ERROR
+				}
+			}
+			else if (currentAction.equals("ELEMENT_SEARCH_AREA")) {
+				ISearchAreaListIf searchAreaList = getMsoManager().getCmdPost().getSearchAreaList();
+				List searchAreaGraphics = getMap().searchGraphics(currentAction);
+				for (int i = 0; i < searchAreaGraphics.size(); i++) {
+					PolygonElement pe = (PolygonElement)searchAreaGraphics.get(i);
+					Polygon polygon = (Polygon)pe.getGeometry();
+					ISearchAreaIf searchArea = searchAreaList.createSearchArea();
+					org.redcross.sar.util.mso.Polygon msoPolygon = MapUtil.getMsoPolygon(polygon);
+					searchArea.setGeodata(msoPolygon);
+					refreshEnv.union(polygon.getEnvelope());
+					graphics.deleteElement(pe);
+					getMsoModel().commit();
+				}
+			}
+			else { // patrol search
+				IRouteListIf routeList = getMsoManager().getCmdPost().getRouteList();
+				List routeGraphics = getMap().searchGraphics(currentAction);
+				for (int i = 0; i < routeGraphics.size(); i++) {
+					LineElement le = (LineElement)routeGraphics.get(i);
+					Polyline polyline = (Polyline)le.getGeometry();
+					routeList.createRoute(MapUtil.getMsoRoute(polyline));
+					refreshEnv.union(polyline.getEnvelope());
+					graphics.deleteElement(le);
+					getMsoModel().commit();
+				}
+			}
 			getMsoModel().commit();
+			getMap().partialRefreshGraphics(refreshEnv);
 		} catch (AutomationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -197,35 +230,19 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 					getElementDialog().setVisible(false);
 					getElementToggleButton().setSelected(false);
 					String command = e.getActionCommand();
+					currentAction = command;
+					drawTool.setElementName(currentAction);
 					if (command.equals("ELEMENT_OPERATION_AREA")) {
 						showOperationAreaButtons();
+						drawTool.setDrawMode(DrawTool.DRAW_MODE_POLYGON);
 					}
 					else if (command.equals("ELEMENT_SEARCH_AREA")) {
 						showSearchAreaButtons();
+						drawTool.setDrawMode(DrawTool.DRAW_MODE_POLYGON);
 					}
-					else if (command.equals("ELEMENT_PATROL_SEARCH")) {
+					else {
 						showSearchButtons();
-					}
-					else if (command.equals("ELEMENT_LINE_SEARCH")) {
-						showSearchButtons();
-					}
-					else if (command.equals("ELEMENT_RODE_SEARCH")) {
-						showSearchButtons();
-					}
-					else if (command.equals("ELEMENT_BEACH_SEARCH")) {
-						showSearchButtons();
-					}
-					else if (command.equals("ELEMENT_MARITIME_SEARCH")) {
-						showSearchButtons();
-					}
-					else if (command.equals("ELEMENT_DOG_SEARCH")) {
-						showSearchButtons();
-					}
-					else if (command.equals("ELEMENT_AIR_SEARCH")) {
-						showSearchButtons();
-					}
-					else if (command.equals("ELEMENT_GENERAL_TASK")) {
-						showSearchButtons();
+						drawTool.setDrawMode(DrawTool.DRAW_MODE_POLYLINE);
 					}
 				}
 			});
