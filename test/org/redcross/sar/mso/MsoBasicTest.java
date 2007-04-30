@@ -1,4 +1,4 @@
-package org;
+package org.redcross.sar.mso;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
