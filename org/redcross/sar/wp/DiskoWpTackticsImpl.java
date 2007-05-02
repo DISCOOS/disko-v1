@@ -6,13 +6,17 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.swing.Icon;
+import javax.swing.JComponent;
 import javax.swing.JToggleButton;
 
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.event.DiskoMapEvent;
+import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.gui.NavBar;
 import org.redcross.sar.gui.POIDialog;
+import org.redcross.sar.gui.TextAreaDialog;
 import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.DrawTool;
 import org.redcross.sar.map.MapUtil;
@@ -48,6 +52,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 
 	private IGraphicsContainer graphics = null;
 	private ElementDialog elementDialog = null;
+	private JToggleButton dummyToggleButton = null;
 	private JToggleButton elementToggleButton = null;
 	private JToggleButton listToggleButton = null;
 	private JToggleButton missionToggleButton = null;
@@ -61,7 +66,8 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	private POITool poiTool = null;
 	private DrawTool drawTool = null;
 	private POIDialog poiDialog = null;
-	
+	private TextAreaDialog textAreaDialog = null;
+
 	/**
 	 * Constructs a DiskoApTaktikkImpl
 	 * @param rolle A reference to the DiskoRolle
@@ -83,6 +89,10 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 		layoutButton(getRequirementToggleButton(), true);
 		layoutButton(getDescriptionToggleButton(), true);
 		layoutButton(getUnitToggleButton(), true);
+		
+		//Add a not visible dummy JToggleButton, used to unselect all
+		//(visbible) JToggleButtons. This is a hack suggested by Java dev forum
+		layoutButton(getDummyToggleButton(), true);
 	}
 	
 	public void onMapReplaced(DiskoMapEvent e) throws IOException {
@@ -156,6 +166,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	public void finish() {
 		try {
 			hideDialogs();
+			getTextAreaDialog().setText(null);
 			IEnvelope refreshEnv = new Envelope();
 			ICmdPostIf cmdPost = getMsoManager().getCmdPost();
 			
@@ -182,12 +193,16 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 					org.redcross.sar.util.mso.Polygon msoPolygon = 
 						MapUtil.getMsoPolygon(polygon);
 					opArea.setGeodata(msoPolygon);
+					opArea.setRemarks(getTextAreaDialog().getText());
 					refreshEnv.union(polygon.getEnvelope());
 					graphics.deleteElement(pe);
 					getMsoModel().commit();
 				}
+				else if (opAreaGraphics.size() == 0) {
+					showError("Det er ikke tegnet operasjonsområde i kartet", null);
+				}
 				else {
-					// ERROR
+					showError("Det er tegnet flere enn ett operasjonsområde i kartet", null);
 				}
 			}
 			else if (currentAction.equals("ELEMENT_SEARCH_AREA")) {
@@ -228,15 +243,24 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 		}
 	}
 	
+	private void showError(String msg, String description) {
+		ErrorDialog dialog = getApplication().getUIFactory().getErrorDialog();
+		dialog.showError(msg, description);
+		dialog.setLocationRelativeTo((JComponent)getMap());
+	}
+	
 	private void hideDialogs() {
 		getElementDialog().setVisible(false);
 		getElementToggleButton().setSelected(false);
+		getTextAreaDialog().setVisible(false);
 	}
 	
 	private ElementDialog getElementDialog() {
 		if (elementDialog == null) {
 			elementDialog = new ElementDialog(getApplication().getFrame(), new ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
+					hideDialogs();
+					getDummyToggleButton().doClick(); // HACK: unselect all toggle buttons
 					getElementDialog().setVisible(false);
 					getElementToggleButton().setSelected(false);
 					String command = e.getActionCommand();
@@ -267,6 +291,15 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 		return elementDialog;
 	}
 	
+	public TextAreaDialog getTextAreaDialog() {
+		if (textAreaDialog == null) {
+			textAreaDialog = new TextAreaDialog(getApplication().getFrame());
+			textAreaDialog.setIsToggable(false);
+			textAreaDialog.setHeaderText("Aksjonens oppdrag:");
+		}
+		return textAreaDialog;
+	}
+	
 	private void showOperationAreaButtons() {
 		getMissionToggleButton().setVisible(true);
 		getHypotheseToggleButton().setVisible(false);
@@ -292,6 +325,14 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 		getRequirementToggleButton().setVisible(true);
 		getDescriptionToggleButton().setVisible(true);
 		getUnitToggleButton().setVisible(true);
+	}
+	
+	private JToggleButton getDummyToggleButton() {
+		if (dummyToggleButton == null) {
+			dummyToggleButton = new JToggleButton();
+			dummyToggleButton.setVisible(false);
+		}
+		return dummyToggleButton;
 	}
 
 	private JToggleButton getElementToggleButton() {
@@ -406,7 +447,15 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 				missionToggleButton.setVisible(false);
 				missionToggleButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
-						hideDialogs();
+						TextAreaDialog dialog = getTextAreaDialog();
+						if (missionToggleButton.isSelected() && dialog.isVisible()) {
+							dialog.setVisible(false);
+						}
+						else {
+							dialog.setLocationRelativeTo((JComponent)getMap(), 
+									DiskoDialog.POS_SOUTH, true);
+							dialog.setVisible(true);
+						}
 					}
 				});
 			} catch (Exception e) {
