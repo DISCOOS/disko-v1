@@ -76,7 +76,7 @@ public class POIDialog extends DiskoDialog {
 	 */
 	private void initialize() {
 		try {
-            this.setPreferredSize(new Dimension(175, 270));
+            this.setPreferredSize(new Dimension(185, 270));
             //this.setSize(new Dimension(175, 350));
             this.setSize(new Dimension(200, 247));
             this.setContentPane(getContentPanel());
@@ -254,7 +254,7 @@ public class POIDialog extends DiskoDialog {
 	
 	public void setTypes(POIType[] poiTypes) {
 		JComboBox cb = getTypeComboBox();
-		cb.removeAll();
+		cb.removeAllItems();
 		for (int i = 0; i < poiTypes.length; i++) {
 			cb.addItem(poiTypes[i]);
 		}
