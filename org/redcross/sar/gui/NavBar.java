@@ -113,9 +113,7 @@ public class NavBar extends JPanel {
 			
 		// Add a not visible dummy JToggleButton, used to unselect all
 		// (visbible) JToggleButtons. This is a hack suggested by Java dev forum
-		JToggleButton dummy = getDummyToggleButton();
-		add(dummy);
-		bgroup.add(dummy);
+		bgroup.add(getDummyToggleButton());
 			
 		addCommand(getPUIToggleButton(), getPOITool());
 		addCommand(getFlankToggleButton(), getFlankTool());
