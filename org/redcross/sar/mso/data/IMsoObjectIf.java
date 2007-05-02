@@ -5,6 +5,8 @@ import org.redcross.sar.mso.committer.ICommittableIf;
 import org.redcross.sar.util.except.UnknownAttributeException;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Interface for MSO object
@@ -22,16 +24,16 @@ public interface IMsoObjectIf
 
     /**
      * Set value to an attribute with a given name
-     * @param aName  The name
-     * @param aValue  Value to set
-     * @throws UnknownAttributeException If attribute of the given type does not exist
      *
-     *          .
+     * @param aName  The name
+     * @param aValue Value to set
+     * @throws UnknownAttributeException If attribute of the given type does not exist
+     *                                   <p/>
+     *                                   .
      */
     public void setAttribute(String aName, Object aValue) throws UnknownAttributeException;
 
     /**
-     *
      * @param anIndex
      * @param aValue
      * @throws UnknownAttributeException
@@ -65,6 +67,24 @@ public interface IMsoObjectIf
      * @return <code>true</code> if object has been deleted, <code>false</code> otherwise.
      */
     public boolean deleteObject();
+
+    /**
+     * Get a map of the attributes for the object
+     * @return The attributes
+     */
+    public Map getAttributes();
+
+    /**
+     * Get a map of the reference objects for the object
+     * @return The reference objects
+     */
+    public Map getReferenceObjects();
+
+    /**
+     * Get a map of the reference lists for the object
+     * @return The reference lists
+     */
+    public Map getReferenceLists();
 
     /**
      * Resume notification of listeners.

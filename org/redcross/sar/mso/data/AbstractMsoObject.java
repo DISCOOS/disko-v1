@@ -30,9 +30,9 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     protected final IMsoEventManagerIf m_eventManager;
 
     /**
-     * HashMap of attributes for name lookup.
+     * Map of attributes for name lookup.
      */
-    private final HashMap<String, AttributeImpl> m_attributeMap = new LinkedHashMap<String, AttributeImpl>();
+    private final Map<String, AttributeImpl> m_attributeMap = new LinkedHashMap<String, AttributeImpl>();
 
     /**
      * ArrayList of attributes for index lookup.
@@ -42,12 +42,12 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     /**
      * Set of reference lists.
      */
-    private final Set<MsoListImpl> m_referenceLists = new HashSet<MsoListImpl>();
+    private final Map<String,MsoListImpl> m_referenceLists = new LinkedHashMap<String,MsoListImpl>();
 
     /**
      * Set of reference objects.
      */
-    private final Set<MsoReferenceImpl> m_referenceObjects = new HashSet<MsoReferenceImpl>();
+    private final Map<String,MsoReferenceImpl> m_referenceObjects = new LinkedHashMap<String, MsoReferenceImpl>();
 
     /**
      * Mask for update events for client
@@ -139,12 +139,12 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     {
         if (canDelete())
         {
-            for (MsoListImpl list : m_referenceLists)
+            for (MsoListImpl list : m_referenceLists.values())
             {
                 list.deleteAll();
             }
 
-            for (MsoReferenceImpl reference : m_referenceObjects)
+            for (MsoReferenceImpl reference : m_referenceObjects.values())
             {
                 reference.setReference(null);
             }
@@ -217,7 +217,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     {
         if (aList != null)
         {
-            m_referenceLists.add(aList);
+            m_referenceLists.put(aList.getName().toLowerCase(),aList);
         } else
         {
             System.out.println("Error in setup: " + this + ": Try to add null list");
@@ -228,7 +228,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     {
         if (aReference != null)
         {
-            m_referenceObjects.add(aReference);
+            m_referenceObjects.put(aReference.getName().toLowerCase(),aReference);
         } else
         {
             System.out.println("Error in setup: " + this + ": Try to add null reference");
@@ -281,6 +281,20 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         throw new UnknownAttributeException("Unkbown attribute index " + anIndex + " in " + this.getClass().toString());
     }
 
+    public Map getAttributes()
+    {
+        return m_attributeMap;
+    }
+
+    public Map getReferenceObjects()
+    {
+        return m_referenceObjects;
+    }
+
+    public Map getReferenceLists()
+    {
+        return m_referenceLists;
+    }
 
     public IAttributeIf.IMsoBooleanIf getBooleanAttribute(int anIndex) throws UnknownAttributeException
     {
@@ -707,12 +721,12 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
             registerModifiedData();
         }
 
-        for (MsoListImpl list : m_referenceLists)
+        for (MsoListImpl list : m_referenceLists.values())
         {
             list.rollback();
         }
 
-        for (MsoReferenceImpl reference : m_referenceObjects)
+        for (MsoReferenceImpl reference : m_referenceObjects.values())
         {
             reference.rollback();
         }
@@ -736,12 +750,12 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
             registerModifiedData();
         }
 
-        for (MsoListImpl list : m_referenceLists)
+        for (MsoListImpl list : m_referenceLists.values())
         {
             list.commitLocal();
         }
 
-        for (MsoReferenceImpl reference : m_referenceObjects)
+        for (MsoReferenceImpl reference : m_referenceObjects.values())
         {
             reference.commitLocal();
         }
@@ -801,7 +815,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
      */
     public void resumeNotifications()
     {
-        for (MsoListImpl list : m_referenceLists)
+        for (MsoListImpl list : m_referenceLists.values())
         {
             list.resumeNotifications();
         }
@@ -810,7 +824,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     public Collection<ICommittableIf.ICommitReferenceIf> getCommittableAttributeRelations()
     {
         Vector<ICommittableIf.ICommitReferenceIf> retVal = new Vector<ICommittableIf.ICommitReferenceIf>();
-        for (MsoReferenceImpl reference : m_referenceObjects)
+        for (MsoReferenceImpl reference : m_referenceObjects.values())
         {
             retVal.addAll(reference.getCommittableRelations());
         }
@@ -820,7 +834,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     public Collection<ICommittableIf.ICommitReferenceIf> getCommittableListRelations()
     {
         Vector<ICommittableIf.ICommitReferenceIf> retVal = new Vector<ICommittableIf.ICommitReferenceIf>();
-        for (MsoListImpl list : m_referenceLists)
+        for (MsoListImpl list : m_referenceLists.values())
         {
             retVal.addAll(list.getCommittableRelations());
         }
