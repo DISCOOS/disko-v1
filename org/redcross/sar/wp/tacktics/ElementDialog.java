@@ -5,7 +5,6 @@ import java.awt.Frame;
 
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.mso.IMsoManagerIf;
-import org.redcross.sar.mso.data.ISearchIf;
 import org.redcross.sar.mso.data.ISearchIf.SearchSubType;
 
 import com.borland.jbcl.layout.VerticalFlowLayout;
