@@ -55,7 +55,7 @@ public interface IAreaIf extends IMsoObjectIf
      */
     public void verifyAssignable(IAssignmentIf anAssignment) throws IllegalOperationException;
 
-    public void setAreaHypothesis(IHypothesisIf anHypothesis);
-
-    public IHypothesisIf getAreaHypothesis();
+//    public void setAreaHypothesis(IHypothesisIf anHypothesis);           todo slett
+//
+//    public IHypothesisIf getAreaHypothesis();
 }

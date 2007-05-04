@@ -30,7 +30,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
     private final POIListImpl m_assignmentFindings = new POIListImpl(this, "AssignmentFindings", false);
 
     private final MsoReferenceImpl<IBriefingIf> m_assignmentBriefing = new MsoReferenceImpl<IBriefingIf>(this, "AssignmentBriefing", true);
-    private final MsoReferenceImpl<IHypothesisIf> m_assignmentHypothesis = new MsoReferenceImpl<IHypothesisIf>(this, "AssignmentHypothesis", true);
+//    private final MsoReferenceImpl<IHypothesisIf> m_assignmentHypothesis = new MsoReferenceImpl<IHypothesisIf>(this, "AssignmentHypothesis", true); todo slett
     private final MsoReferenceImpl<IAreaIf> m_plannedArea = new MsoReferenceImpl<IAreaIf>(this, "PlannedArea", true);
     private final MsoReferenceImpl<IAreaIf> m_reportedArea = new MsoReferenceImpl<IAreaIf>(this, "ReportedArea", true);
 
@@ -68,7 +68,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
     protected void defineReferences()
     {
         addReference(m_assignmentBriefing);
-        addReference(m_assignmentHypothesis);
+//        addReference(m_assignmentHypothesis);
         addReference(m_plannedArea);
         addReference(m_reportedArea);
     }
@@ -324,26 +324,26 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         return m_assignmentBriefing;
     }
 
-    public void setAssignmentHypothesis(IHypothesisIf anHypothesis)
-    {
-        m_assignmentHypothesis.setReference(anHypothesis);
-    }
-
-    public IHypothesisIf getAssignmentHypothesis()
-    {
-        return m_assignmentHypothesis.getReference();
-    }
-
-    public IMsoModelIf.ModificationState getAssignmentHypothesisState()
-    {
-        return m_assignmentHypothesis.getState();
-    }
-
-    public IMsoReferenceIf<IHypothesisIf> getAssignmentHypothesisAttribute()
-    {
-        return m_assignmentHypothesis;
-    }
-
+//    public void setAssignmentHypothesis(IHypothesisIf anHypothesis)
+//    {
+//        m_assignmentHypothesis.setReference(anHypothesis);
+//    }
+//
+//    public IHypothesisIf getAssignmentHypothesis()
+//    {
+//        return m_assignmentHypothesis.getReference();
+//    }
+//
+//    public IMsoModelIf.ModificationState getAssignmentHypothesisState()
+//    {
+//        return m_assignmentHypothesis.getState();
+//    }
+//
+//    public IMsoReferenceIf<IHypothesisIf> getAssignmentHypothesisAttribute()
+//    {
+//        return m_assignmentHypothesis;
+//    }
+//
     public void setPlannedArea(IAreaIf anArea) throws IllegalOperationException
     {
         anArea.verifyAssignable(this);

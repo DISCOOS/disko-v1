@@ -15,6 +15,8 @@ public class SearchAreaImpl extends AbstractMsoObject implements ISearchAreaIf
 
     private final AttributeImpl.MsoEnum<SearchAreaStatus> m_status = new AttributeImpl.MsoEnum<SearchAreaStatus>(this, "Status", SearchAreaStatus.PROCESSING);
 
+    private final MsoReferenceImpl<IHypothesisIf> m_searchAreaHypothesis = new MsoReferenceImpl<IHypothesisIf>(this, "SearchAreaHypothesis", false);
+
 
     public SearchAreaImpl(IMsoObjectIf.IObjectIdIf anObjectId)
     {
@@ -35,6 +37,7 @@ public class SearchAreaImpl extends AbstractMsoObject implements ISearchAreaIf
 
     protected void defineReferences()
     {
+        addReference(m_searchAreaHypothesis);
     }
 
     public static SearchAreaImpl implementationOf(ISearchAreaIf anInterface) throws MsoCastException
@@ -147,4 +150,27 @@ public class SearchAreaImpl extends AbstractMsoObject implements ISearchAreaIf
         return m_remarks;
     }
 
+    /*-------------------------------------------------------------------------------------------
+    * Methods for references
+    *-------------------------------------------------------------------------------------------*/
+
+    public void setSearchAreaHypothesis(IHypothesisIf aHypothesis)
+    {
+        m_searchAreaHypothesis.setReference(aHypothesis);
+    }
+
+    public IHypothesisIf getSearchAreaHypothesis()
+    {
+        return m_searchAreaHypothesis.getReference();
+    }
+
+    public IMsoModelIf.ModificationState getSearchAreaHypothesisState()
+    {
+        return m_searchAreaHypothesis.getState();
+    }
+
+    public IMsoReferenceIf<IHypothesisIf> getSearchAreaHypothesisAttribute()
+    {
+        return m_searchAreaHypothesis;
+    }
 }

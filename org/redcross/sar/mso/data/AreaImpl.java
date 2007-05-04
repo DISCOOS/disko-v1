@@ -149,13 +149,13 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
         }
     }
 
-    public void setAreaHypothesis(IHypothesisIf anHypothesis)
-    {
-        getOwningAssignment().setAssignmentHypothesis(anHypothesis);
-    }
-
-    public IHypothesisIf getAreaHypothesis()
-    {
-        return getOwningAssignment().getAssignmentHypothesis();
-    }
+//    public void setAreaHypothesis(IHypothesisIf anHypothesis) todo slett
+//    {
+//        getOwningAssignment().setAssignmentHypothesis(anHypothesis);
+//    }
+//
+//    public IHypothesisIf getAreaHypothesis()
+//    {
+//        return getOwningAssignment().getAssignmentHypothesis();
+//    }
 }

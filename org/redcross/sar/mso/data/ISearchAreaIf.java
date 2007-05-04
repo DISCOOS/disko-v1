@@ -54,4 +54,17 @@ public interface ISearchAreaIf extends IMsoObjectIf
     public IMsoModelIf.ModificationState getRemarksState();
 
     public IAttributeIf.IMsoStringIf getRemarksAttribute();
+
+    /*-------------------------------------------------------------------------------------------
+    * Methods for references
+    *-------------------------------------------------------------------------------------------*/
+
+    public void setSearchAreaHypothesis(IHypothesisIf aHypothesis);
+
+    public IHypothesisIf getSearchAreaHypothesis();
+
+    public IMsoModelIf.ModificationState getSearchAreaHypothesisState();
+
+    public IMsoReferenceIf<IHypothesisIf> getSearchAreaHypothesisAttribute();
+
 }
