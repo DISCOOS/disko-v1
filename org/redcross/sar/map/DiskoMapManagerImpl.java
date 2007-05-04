@@ -3,17 +3,22 @@ package org.redcross.sar.map;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
+import java.util.Iterator;
 import java.util.List;
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.mso.IMsoManagerIf;
+import org.redcross.sar.mso.CommitManager.CommitType;
 import org.redcross.sar.mso.committer.ICommitWrapperIf;
 import org.redcross.sar.mso.committer.ICommittableIf.ICommitObjectIf;
+import org.redcross.sar.mso.data.IAreaIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.IOperationAreaIf;
 import org.redcross.sar.mso.data.IPOIIf;
 import org.redcross.sar.mso.data.IRouteIf;
 import org.redcross.sar.mso.data.ISearchAreaIf;
+import org.redcross.sar.mso.data.ITrackIf;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
 import org.redcross.sar.mso.event.IMsoCommitListenerIf;
 import org.redcross.sar.mso.event.IMsoDerivedUpdateListenerIf;
@@ -24,6 +29,8 @@ import org.redcross.sar.mso.event.MsoEvent.Commit;
 import org.redcross.sar.mso.event.MsoEvent.DerivedUpdate;
 import org.redcross.sar.mso.event.MsoEvent.Gis;
 import org.redcross.sar.mso.event.MsoEvent.Update;
+import org.redcross.sar.util.mso.GeoCollection;
+import org.redcross.sar.util.mso.IGeodataIf;
 import org.redcross.sar.util.mso.Route;
 
 import com.esri.arcgis.carto.FeatureLayer;
@@ -60,6 +67,7 @@ public class DiskoMapManagerImpl implements IDiskoMapManager,
 		myInterests = EnumSet.of(IMsoManagerIf.MsoClassCode.CLASSCODE_POI);
 		myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA);
 		myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA);
+		myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
 		myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_TRACK);
 		myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_SKETCH);
 		myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_ROUTE);
@@ -186,21 +194,73 @@ public class DiskoMapManagerImpl implements IDiskoMapManager,
 		for (int i = 0; i < commitObjects.size(); i++) {
 			ICommitObjectIf commitable = (ICommitObjectIf) commitObjects.get(i);
 			Object commitObject = commitable.getObject();
+			CommitType type = commitable.getType();
 			if (commitObject instanceof IPOIIf) {
 				IPOIIf poi = (IPOIIf) commitObject;
-				createPoiFeature(poi, refreshEnv);
+				if (type == CommitType.COMMIT_CREATED) {
+					createPoiFeature(poi, refreshEnv);
+				}
+				else if (type == CommitType.COMMIT_DELETED) {
+				}
+				else if (type == CommitType.COMMIT_MODIFIED) {
+				}
 			} 
 			else if (commitObject instanceof IOperationAreaIf) {
 				IOperationAreaIf opArea = (IOperationAreaIf) commitObject;
-				createOperationAreaFeature(opArea, refreshEnv);
+				if (type == CommitType.COMMIT_CREATED) {
+					createOperationAreaFeature(opArea, refreshEnv);
+				}
+				else if (type == CommitType.COMMIT_DELETED) {
+				}
+				else if (type == CommitType.COMMIT_MODIFIED) {
+				}
 			}
 			else if (commitObject instanceof ISearchAreaIf) {
 				ISearchAreaIf searchArea = (ISearchAreaIf) commitObject;
-				createSearchAreaFeature(searchArea, refreshEnv);
+				if (type == CommitType.COMMIT_CREATED) {
+					createSearchAreaFeature(searchArea, refreshEnv);
+				}
+				else if (type == CommitType.COMMIT_DELETED) {
+				}
+				else if (type == CommitType.COMMIT_MODIFIED) {
+				}
+			}
+			else if (commitObject instanceof IAreaIf) {
+				IAreaIf area = (IAreaIf) commitObject;
+				if (type == CommitType.COMMIT_CREATED) {
+					Iterator iter = area.getGeodata().getPositions().iterator();
+					while(iter.hasNext()) {
+						IGeodataIf geodata = (IGeodataIf)iter.next();
+						System.out.println(geodata);
+						if (geodata instanceof Route) {
+							createRouteFeature((Route)geodata, refreshEnv);
+						}
+					}
+				}
+				else if (type == CommitType.COMMIT_DELETED) {
+				}
+				else if (type == CommitType.COMMIT_MODIFIED) {
+				}
 			}
 			else if (commitObject instanceof IRouteIf) {
 				IRouteIf route = (IRouteIf) commitObject;
-				createRouteFeature(route, refreshEnv);
+				if (type == CommitType.COMMIT_CREATED) {
+					createRouteFeature(route.getGeodata(), refreshEnv);
+				}
+				else if (type == CommitType.COMMIT_DELETED) {
+				}
+				else if (type == CommitType.COMMIT_MODIFIED) {
+				}
+			}
+			else if (commitObject instanceof ITrackIf) {
+				ITrackIf track = (ITrackIf) commitObject;
+				if (type == CommitType.COMMIT_CREATED) {
+					createTrackFeature(track, refreshEnv);
+				}
+				else if (type == CommitType.COMMIT_DELETED) {
+				}
+				else if (type == CommitType.COMMIT_MODIFIED) {
+				}
 			}
 		}
 		refreshAllMaps(refreshEnv);
@@ -208,7 +268,9 @@ public class DiskoMapManagerImpl implements IDiskoMapManager,
 	
 	private IEnvelope getRefreshEnvelope() {
 		try {
-			return new Envelope();
+			IEnvelope env = new Envelope();
+			env.putCoords(0, 0, 0, 0);
+			return env;
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -293,11 +355,10 @@ public class DiskoMapManagerImpl implements IDiskoMapManager,
 	}
 	
 	private void createRouteFeature(
-			IRouteIf msoRoute, IEnvelope refreshEnv) {
+			Route route, IEnvelope refreshEnv) {
 		try {
 			ISpatialReference srs = getDefaultMap().getSpatialReference();
 			IFeatureLayer basicLineFL = getBasicLineFeatureLayer();
-			Route route = msoRoute.getGeodata();
 			if (basicLineFL != null && route != null) {
 				Polyline polyline = MapUtil.getEsriPolyline(route, srs);
 				IFeature feature = basicLineFL.getFeatureClass().createFeature();
@@ -305,6 +366,20 @@ public class DiskoMapManagerImpl implements IDiskoMapManager,
 				feature.store();
 				refreshEnv.union(polyline.getEnvelope());
 			}
+		} catch (AutomationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void createTrackFeature(
+			ITrackIf msoTrack, IEnvelope refreshEnv) {
+		try {
+			ISpatialReference srs = getDefaultMap().getSpatialReference();
+			IFeatureLayer basicLineFL = getBasicLineFeatureLayer();
 		} catch (AutomationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
