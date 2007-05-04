@@ -76,6 +76,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	private DrawTool drawTool = null;
 	private POIDialog poiDialog = null;
 	private TextAreaDialog textAreaDialog = null;
+	private HypothesesDialog hypothesesDialog = null;
 
 	/**
 	 * Constructs a DiskoApTaktikkImpl
@@ -301,6 +302,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 		getElementDialog().setVisible(false);
 		getElementToggleButton().setSelected(false);
 		getTextAreaDialog().setVisible(false);
+		getHypothesesSelectionDialog().setVisible(false);
 	}
 	
 	private ElementDialog getElementDialog() {
@@ -342,7 +344,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 		return elementDialog;
 	}
 	
-	public TextAreaDialog getTextAreaDialog() {
+	private TextAreaDialog getTextAreaDialog() {
 		if (textAreaDialog == null) {
 			textAreaDialog = new TextAreaDialog(getApplication().getFrame());
 			textAreaDialog.setIsToggable(false);
@@ -351,6 +353,17 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 		return textAreaDialog;
 	}
 	
+	
+	
+	private HypothesesDialog getHypothesesSelectionDialog() {
+		if (hypothesesDialog == null) {
+			hypothesesDialog = new HypothesesDialog(
+					getApplication().getFrame());
+			hypothesesDialog.setIsToggable(false);
+		}
+		return hypothesesDialog;
+	}
+
 	private void showOperationAreaButtons() {
 		getMissionToggleButton().setVisible(true);
 		getHypotheseToggleButton().setVisible(false);
@@ -453,7 +466,15 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 				hypotheseToggleButton.setVisible(false);
 				hypotheseToggleButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
-						hideDialogs();
+						HypothesesDialog selectionDialog = getHypothesesSelectionDialog();
+						JComponent mapComp = (JComponent)getMap();
+						if (hypotheseToggleButton.isSelected() && selectionDialog.isVisible()) {
+							selectionDialog.setVisible(false);
+						}
+						else {
+							selectionDialog.setLocationRelativeTo(mapComp, DiskoDialog.POS_EAST, true);
+							selectionDialog.setVisible(true);
+						}
 					}
 				});
 			} catch (Exception e) {
