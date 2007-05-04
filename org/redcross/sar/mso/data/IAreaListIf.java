@@ -7,6 +7,6 @@ public interface IAreaListIf extends IMsoListIf<IAreaIf>
 
     public IAreaIf createArea();
 
-    public IAreaIf createArea(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException;
+    public IAreaIf createArea(IMsoObjectIf.IObjectIdIf anObjectId);
 
 }

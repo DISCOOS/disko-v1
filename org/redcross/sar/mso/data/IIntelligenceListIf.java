@@ -6,6 +6,6 @@ public interface IIntelligenceListIf extends IMsoListIf<IIntelligenceIf>
 {
     public IIntelligenceIf createIntelligence();
 
-    public IIntelligenceIf createIntelligence(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException;
+    public IIntelligenceIf createIntelligence(IMsoObjectIf.IObjectIdIf anObjectId);
 
 }

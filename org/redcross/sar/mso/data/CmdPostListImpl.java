@@ -10,20 +10,21 @@ public class CmdPostListImpl extends MsoListImpl<ICmdPostIf> implements ICmdPost
         super(anOwner, theName, isMain);
     }
 
-    public ICmdPostIf createCmdPost() throws DuplicateIdException
+    public ICmdPostIf createCmdPost()
     {
         if (size() > 0)
         {
-            throw new DuplicateIdException();
+            throw new DuplicateIdException("Duplicate id for cmd post");
         }
         checkCreateOp();
         return createdUniqueItem(new CmdPostImpl(makeUniqueId()));
     }
 
-    public ICmdPostIf createCmdPost(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public ICmdPostIf createCmdPost(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         checkCreateOp();
-        return createdItem(new CmdPostImpl(anObjectId));
+        ICmdPostIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new CmdPostImpl(anObjectId));
     }
 
 

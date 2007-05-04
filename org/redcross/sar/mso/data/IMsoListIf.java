@@ -53,7 +53,7 @@ public interface IMsoListIf<M extends IMsoObjectIf>
      * @param anObject The object to add
      * @throws DuplicateIdException if the list already contains an object with the same object ID.
      */
-    public void add(M anObject) throws DuplicateIdException;
+    public void add(M anObject);
 
     /**
      * Returns the number of objects in the list.

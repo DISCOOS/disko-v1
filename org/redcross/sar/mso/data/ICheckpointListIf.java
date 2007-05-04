@@ -6,5 +6,5 @@ public interface ICheckpointListIf extends IMsoListIf<ICheckpointIf>
 {
     public ICheckpointIf createCheckpoint();
 
-    public ICheckpointIf createCheckpoint(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException;
+    public ICheckpointIf createCheckpoint(IMsoObjectIf.IObjectIdIf anObjectId);
 }

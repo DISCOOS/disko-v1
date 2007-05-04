@@ -6,6 +6,6 @@ public interface IEquipmentListIf extends IMsoListIf<IEquipmentIf>
 {
     public IEquipmentIf createEquipment();
 
-    public IEquipmentIf createEquipment(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException;
+    public IEquipmentIf createEquipment(IMsoObjectIf.IObjectIdIf anObjectId);
 
 }

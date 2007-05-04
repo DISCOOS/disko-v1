@@ -21,10 +21,11 @@ public class EquipmentListImpl extends MsoListImpl<IEquipmentIf> implements IEqu
         return createdUniqueItem(new EquipmentImpl(makeUniqueId()));
     }
 
-    public IEquipmentIf createEquipment(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public IEquipmentIf createEquipment(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         checkCreateOp();
-        return createdItem(new EquipmentImpl(anObjectId));
+        IEquipmentIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new EquipmentImpl(anObjectId));
     }
 
 

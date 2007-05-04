@@ -9,6 +9,11 @@ public class EnvironmentImpl extends AbstractTimeItem implements IEnvironmentIf
 {
     private final AttributeImpl.MsoString m_someText = new AttributeImpl.MsoString(this, "someText");
 
+    public EnvironmentImpl(IMsoObjectIf.IObjectIdIf anObjectId)
+    {
+        super(anObjectId);
+    }
+
     public EnvironmentImpl(IMsoObjectIf.IObjectIdIf anObjectId,Calendar aCalendar, String aText)
     {
         super(anObjectId,aCalendar);

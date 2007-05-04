@@ -8,5 +8,5 @@ public interface ITaskListIf extends IMsoListIf<ITaskIf>
 {
     public ITaskIf createTask(Calendar aCalendar);
 
-    public ITaskIf createTask(IMsoObjectIf.IObjectIdIf anObjectId,Calendar aCalendar) throws DuplicateIdException;
+    public ITaskIf createTask(IMsoObjectIf.IObjectIdIf anObjectId);
 }

@@ -17,29 +17,23 @@ public class MessageLogImpl extends MsoListImpl<IMessageIf> implements IMessageL
         super(anOwner, theName, isMain, aSize);
     }
 
-    public IMessageIf createMessage() throws DuplicateIdException
+    public IMessageIf createMessage()
     {
         checkCreateOp();
         return createdUniqueItem(new MessageImpl(makeUniqueId(), makeSerialNumber()));
     }
 
-    public IMessageIf createMessage(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber) throws DuplicateIdException
-    {
-        checkCreateOp();
-        return createdItem(new MessageImpl(anObjectId, aNumber));
-    }
-
-    public IMessageIf createMessage(Calendar aCalendar) throws DuplicateIdException
+    public IMessageIf createMessage(Calendar aCalendar)
     {
         checkCreateOp();
         return createdUniqueItem(new MessageImpl(makeUniqueId(), makeSerialNumber(), aCalendar));
     }
 
-    public IMessageIf createMessage(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber, Calendar aCalendar) throws DuplicateIdException
+    public IMessageIf createMessage(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         checkCreateOp();
-        return createdItem(new MessageImpl(anObjectId, aNumber, aCalendar));
+        IMessageIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new MessageImpl(anObjectId, -1));
+
     }
-
-
 }

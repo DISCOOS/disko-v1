@@ -5,6 +5,12 @@ public abstract class AbstractTransportUnit extends AbstractUnit implements ITra
     protected AttributeImpl.MsoString m_identifier = new AttributeImpl.MsoString(this, "identifier");
     protected AttributeImpl.MsoInteger m_speed = new AttributeImpl.MsoInteger(this, "speed");
 
+
+    public AbstractTransportUnit(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
+    {
+        super(anObjectId, aNumber);
+    }
+
     public AbstractTransportUnit(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber, String anIdentifier)
     {
         super(anObjectId, aNumber);

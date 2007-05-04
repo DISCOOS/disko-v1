@@ -4,6 +4,7 @@ import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.util.except.DuplicateIdException;
 import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.except.MsoException;
+import org.redcross.sar.util.except.MsoRuntimeException;
 
 public class CalloutImpl extends AbstractMsoObject implements ICalloutIf
 {
@@ -39,9 +40,9 @@ public class CalloutImpl extends AbstractMsoObject implements ICalloutIf
         }
     }
 
-    public IPersonnelIf createPersonnel(IMsoObjectIf.IObjectIdIf anObjectId, String aPersonellId, IPersonnelListIf aPesonnelList) throws DuplicateIdException
+    public IPersonnelIf createPersonnel(IMsoObjectIf.IObjectIdIf anObjectId, IPersonnelListIf aPesonnelList) 
     {
-        IPersonnelIf retVal = aPesonnelList.createPersonnel(anObjectId, aPersonellId);
+        IPersonnelIf retVal = aPesonnelList.createPersonnel(anObjectId);
         if (addPersonel(retVal))
         {
             return retVal;
@@ -56,7 +57,7 @@ public class CalloutImpl extends AbstractMsoObject implements ICalloutIf
             m_personnel.add(aPersonnel);
             return true;
         }
-        catch (MsoException e)
+        catch (MsoRuntimeException e)
         {
             return false;
         }
@@ -66,7 +67,5 @@ public class CalloutImpl extends AbstractMsoObject implements ICalloutIf
     {
         return IMsoManagerIf.MsoClassCode.CLASSCODE_CALLOUT;
     }
-
-
 
 }

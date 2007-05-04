@@ -102,7 +102,7 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
     * Methods for lists
     *-------------------------------------------------------------------------------------------*/
 
-    public void addAreaPOI(IPOIIf anIPOIIf) throws DuplicateIdException
+    public void addAreaPOI(IPOIIf anIPOIIf)
     {
         m_areaPOIs.add(anIPOIIf);
     }

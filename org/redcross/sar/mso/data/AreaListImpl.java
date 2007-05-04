@@ -21,10 +21,11 @@ public class AreaListImpl extends MsoListImpl<IAreaIf> implements IAreaListIf
         return createdUniqueItem(new AreaImpl(makeUniqueId()));
     }
 
-    public IAreaIf createArea(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public IAreaIf createArea(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         checkCreateOp();
-        return createdItem(new AreaImpl(anObjectId));
+        IAreaIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new AreaImpl(anObjectId));
     }
 
 

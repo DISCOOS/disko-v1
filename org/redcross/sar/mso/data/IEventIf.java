@@ -16,7 +16,7 @@ public interface IEventIf extends ITimeItemIf, ISerialNumberedIf
     * Methods for lists
     *-------------------------------------------------------------------------------------------*/
 
-    public void addEventTask(ITaskIf anITaskIf) throws DuplicateIdException;
+    public void addEventTask(ITaskIf anITaskIf);
 
     public ITaskListIf getEventTasks();
 

@@ -136,7 +136,7 @@ public interface IBriefingIf extends IMsoObjectIf
     * Methods for lists
     *-------------------------------------------------------------------------------------------*/
 
-    public void addBriefingForecast(IForecastIf anIForecastIf) throws DuplicateIdException;
+    public void addBriefingForecast(IForecastIf anIForecastIf);
 
     public IForecastListIf getBriefingForecasts();
 
@@ -144,7 +144,7 @@ public interface IBriefingIf extends IMsoObjectIf
 
     public Collection<IForecastIf> getBriefingForecastsItems();
 
-    public void addBriefingEnvironment(IEnvironmentIf anIEnvironmentIf) throws DuplicateIdException;
+    public void addBriefingEnvironment(IEnvironmentIf anIEnvironmentIf);
 
     public IEnvironmentListIf getBriefingEnvironments();
 
@@ -152,7 +152,7 @@ public interface IBriefingIf extends IMsoObjectIf
 
     public Collection<IEnvironmentIf> getBriefingEnvironmentsItems();
 
-    public void addBriefingSubject(ISubjectIf anISubjectIf) throws DuplicateIdException;
+    public void addBriefingSubject(ISubjectIf anISubjectIf);
 
     public ISubjectListIf getBriefingSubjects();
 

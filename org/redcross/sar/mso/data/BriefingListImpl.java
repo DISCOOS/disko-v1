@@ -21,9 +21,10 @@ public class BriefingListImpl extends MsoListImpl<IBriefingIf> implements IBrief
         return createdUniqueItem(new BriefingImpl(makeUniqueId()));
     }
 
-    public IBriefingIf createBriefing(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public IBriefingIf createBriefing(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         checkCreateOp();
-        return createdItem(new BriefingImpl(anObjectId));
+        IBriefingIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new BriefingImpl(anObjectId));
     }
 }

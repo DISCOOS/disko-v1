@@ -14,16 +14,17 @@ public class UnitListImpl extends MsoListImpl<IUnitIf> implements IUnitListIf
         super(anOwner, theName, isMain, aSize);
     }
 
-    public VehicleImpl createVehicle(String anIdentifier)
+    public IVehicleIf createVehicle(String anIdentifier)
     {
         checkCreateOp();
         return (VehicleImpl) createdUniqueItem(new VehicleImpl(makeUniqueId(), makeSerialNumber(), anIdentifier));
     }
 
-    public VehicleImpl createVehicle(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber, String anIdentifier) throws DuplicateIdException
+    public IVehicleIf createVehicle(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         checkCreateOp();
-        return (VehicleImpl) createdItem(new VehicleImpl(anObjectId, aNumber, anIdentifier));
+        IVehicleIf retVal = (IVehicleIf) getItem(anObjectId);
+        return retVal != null ? retVal : (IVehicleIf) createdItem(new VehicleImpl(anObjectId, -1));
     }
 
     public IUnitIf getUnit(int aUnitNr)

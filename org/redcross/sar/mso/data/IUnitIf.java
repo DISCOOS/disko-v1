@@ -126,7 +126,7 @@ public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf, ISerialNu
      * @throws org.redcross.sar.util.except.IllegalOperationException
      *                              if the assignment cannot be assigned.
      */
-    public void addUnitAssignment(IAssignmentIf anIAssignmentIf) throws DuplicateIdException, IllegalOperationException;
+    public void addUnitAssignment(IAssignmentIf anIAssignmentIf) throws IllegalOperationException;
 
     public void removeUnitAssignment(IAssignmentIf anIAssignmentIf, IAssignmentIf.AssignmentStatus newStatus) throws IllegalOperationException;
 
@@ -136,7 +136,7 @@ public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf, ISerialNu
 
     public Collection<IAssignmentIf> getUnitAssignmentsItems();
 
-    public void addUnitPersonnel(IPersonnelIf anIPersonnelIf) throws DuplicateIdException;
+    public void addUnitPersonnel(IPersonnelIf anIPersonnelIf);
 
     public IPersonnelListIf getUnitPersonnel();
 

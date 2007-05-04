@@ -13,9 +13,9 @@ public interface IEnvironmentListIf extends IMsoListIf<IEnvironmentIf>
 
     public IEnvironmentIf createEnvironment(long aDTG, String aText) throws IllegalMsoArgumentException;
 
-    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId, Calendar aCalendar, String aText) throws DuplicateIdException;
+    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId);
 
-    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId, String aDTG, String aText) throws DuplicateIdException, IllegalMsoArgumentException;
+    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId, String aDTG, String aText) throws IllegalMsoArgumentException;
 
-    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId, long aDTG, String aText) throws DuplicateIdException, IllegalMsoArgumentException;
+    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId, long aDTG, String aText) throws IllegalMsoArgumentException;
 }

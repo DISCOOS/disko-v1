@@ -18,10 +18,11 @@ public class RouteListImpl extends MsoListImpl<IRouteIf> implements IRouteListIf
         return createdUniqueItem(new RouteImpl(makeUniqueId(), aRoute));
     }
 
-    public IRouteIf createRoute(IMsoObjectIf.IObjectIdIf anObjectId, Route aRoute) throws DuplicateIdException
+    public IRouteIf createRoute(IMsoObjectIf.IObjectIdIf anObjectId, Route aRoute)
     {
         checkCreateOp();
-        return createdItem(new RouteImpl(anObjectId, aRoute));
+        IRouteIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new RouteImpl(anObjectId, aRoute));
     }
 
 

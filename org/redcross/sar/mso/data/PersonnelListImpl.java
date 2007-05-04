@@ -15,15 +15,16 @@ public class PersonnelListImpl extends MsoListImpl<IPersonnelIf> implements IPer
         super(anOwner, theName, isMain, aSize);
     }
 
-    public IPersonnelIf createPersonnel(String aName)
+    public IPersonnelIf createPersonnel()
     {
         checkCreateOp();
-        return createdUniqueItem(new PersonnelImpl(makeUniqueId(), aName));
+        return createdUniqueItem(new PersonnelImpl(makeUniqueId()));
     }
 
-    public IPersonnelIf createPersonnel(IMsoObjectIf.IObjectIdIf anObjectId,String aName) throws DuplicateIdException
+    public IPersonnelIf createPersonnel(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         checkCreateOp();
-        return createdItem(new PersonnelImpl(anObjectId, aName));
+        IPersonnelIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new PersonnelImpl(anObjectId));
     }
 }

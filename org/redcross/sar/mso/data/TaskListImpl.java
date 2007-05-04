@@ -23,9 +23,10 @@ public class TaskListImpl extends MsoListImpl<ITaskIf> implements ITaskListIf
         return createdUniqueItem(new TaskImpl(makeUniqueId(), aCalendar));
     }
 
-    public ITaskIf createTask(IMsoObjectIf.IObjectIdIf anObjectId, Calendar aCalendar) throws DuplicateIdException
+    public ITaskIf createTask(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         checkCreateOp();
-        return createdItem(new TaskImpl(anObjectId, aCalendar));
+        ITaskIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new TaskImpl(anObjectId));
     }
 }

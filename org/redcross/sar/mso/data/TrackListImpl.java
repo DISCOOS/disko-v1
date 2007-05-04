@@ -17,10 +17,11 @@ public class TrackListImpl extends MsoListImpl<ITrackIf> implements ITrackListIf
         return createdUniqueItem(new TrackImpl(makeUniqueId()));
     }
 
-    public ITrackIf createTrack(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public ITrackIf createTrack(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         checkCreateOp();
-        return createdItem(new TrackImpl(anObjectId));
+        ITrackIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new TrackImpl(anObjectId));
     }
 
     public ITrackIf createTrack(Track aTrack)
@@ -29,10 +30,11 @@ public class TrackListImpl extends MsoListImpl<ITrackIf> implements ITrackListIf
         return createdUniqueItem(new TrackImpl(makeUniqueId(), aTrack));
     }
 
-    public ITrackIf createTrack(IMsoObjectIf.IObjectIdIf anObjectId, Track aTrack) throws DuplicateIdException
+    public ITrackIf createTrack(IMsoObjectIf.IObjectIdIf anObjectId, Track aTrack)
     {
         checkCreateOp();
-        return createdItem(new TrackImpl(anObjectId, aTrack));
+        ITrackIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new TrackImpl(anObjectId, aTrack));
     }
 
 }

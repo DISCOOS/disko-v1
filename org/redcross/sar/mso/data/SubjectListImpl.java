@@ -15,16 +15,17 @@ public class SubjectListImpl extends MsoListImpl<ISubjectIf> implements ISubject
         super(anOwner, theName, isMain, aSize);
     }
 
-    public ISubjectIf createSubject(String aName, String aDescription)
+    public ISubjectIf createSubject()
     {
         checkCreateOp();
-        return createdUniqueItem(new SubjectImpl(makeUniqueId(), aName, aDescription));
+        return createdUniqueItem(new SubjectImpl(makeUniqueId()));
     }
 
-    public ISubjectIf createSubject(IMsoObjectIf.IObjectIdIf anObjectId, String aName, String aDescription) throws DuplicateIdException
+    public ISubjectIf createSubject(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         checkCreateOp();
-        return createdItem(new SubjectImpl(anObjectId, aName, aDescription));
+        ISubjectIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new SubjectImpl(anObjectId));
     }
 
 

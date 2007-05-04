@@ -1,7 +1,5 @@
 package org.redcross.sar.mso.data;
 
-import org.redcross.sar.util.except.DuplicateIdException;
-
 public class HypothesisListImpl extends MsoListImpl<IHypothesisIf> implements IHypothesisListIf
 {
 
@@ -21,11 +19,10 @@ public class HypothesisListImpl extends MsoListImpl<IHypothesisIf> implements IH
         return createdUniqueItem(new HypothesisImpl(makeUniqueId(), makeSerialNumber()));
     }
 
-    public IHypothesisIf createHypothesis(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber) throws DuplicateIdException
+    public IHypothesisIf createHypothesis(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         checkCreateOp();
-        return createdItem(new HypothesisImpl(anObjectId, aNumber));
+        IHypothesisIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new HypothesisImpl(anObjectId, -1));
     }
-
-
 }

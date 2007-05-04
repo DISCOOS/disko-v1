@@ -91,7 +91,7 @@ public class OperationImpl extends AbstractMsoObject implements IOperationIf
     * Methods for lists
     *-------------------------------------------------------------------------------------------*/
 
-    public void addCmdPostList(ICmdPostIf anICmdPostIf) throws DuplicateIdException
+    public void addCmdPostList(ICmdPostIf anICmdPostIf)
     {
         m_cmdPostList.add(anICmdPostIf);
     }

@@ -98,6 +98,11 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         return null;
     }
 
+    public M getItem(IMsoObjectIf.IObjectIdIf anObjectId)
+    {
+        return getItem(anObjectId.getId());
+    }
+
     public M getItem(String anObjectId)
     {
         M retVal = m_items.get(anObjectId);
@@ -108,7 +113,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         return retVal;
     }
 
-    public void add(M anObject) throws DuplicateIdException
+    public void add(M anObject)
     {
         if (anObject == null)
         {
@@ -372,7 +377,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         return retVal;
     }
 
-    protected M createdItem(M anObject) throws DuplicateIdException
+    protected M createdItem(M anObject)
     {
         ((AbstractMsoObject) anObject).setupReferences();
         add(anObject);

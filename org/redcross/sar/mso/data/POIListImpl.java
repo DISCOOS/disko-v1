@@ -22,10 +22,11 @@ public class POIListImpl extends MsoListImpl<IPOIIf> implements IPOIListIf
         return createdUniqueItem(new POIImpl(makeUniqueId()));
     }
 
-    public IPOIIf createPOI(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public IPOIIf createPOI(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         checkCreateOp();
-        return createdItem(new POIImpl(anObjectId));
+        IPOIIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new POIImpl(anObjectId));
     }
 
     public IPOIIf createPOI(IPOIIf.POIType aType, Position aPosition)
@@ -34,10 +35,11 @@ public class POIListImpl extends MsoListImpl<IPOIIf> implements IPOIListIf
         return createdUniqueItem(new POIImpl(makeUniqueId(), aType, aPosition));
     }
 
-    public IPOIIf createPOI(IMsoObjectIf.IObjectIdIf anObjectId, IPOIIf.POIType aType, Position aPosition) throws DuplicateIdException
+    public IPOIIf createPOI(IMsoObjectIf.IObjectIdIf anObjectId, IPOIIf.POIType aType, Position aPosition)
     {
         checkCreateOp();
-        return createdItem(new POIImpl(anObjectId, aType, aPosition));
+        IPOIIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new POIImpl(anObjectId, aType, aPosition));
     }
 
 

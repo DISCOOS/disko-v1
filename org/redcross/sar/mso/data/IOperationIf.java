@@ -34,7 +34,7 @@ public interface IOperationIf extends IMsoObjectIf
     * Methods for lists
     *-------------------------------------------------------------------------------------------*/
 
-    public void addCmdPostList(ICmdPostIf anICmdPostIf) throws DuplicateIdException;
+    public void addCmdPostList(ICmdPostIf anICmdPostIf);
 
     public ICmdPostListIf getCmdPostList();
 

@@ -21,10 +21,11 @@ public class CalloutListImpl extends MsoListImpl<ICalloutIf> implements ICallout
         return createdUniqueItem(new CalloutImpl(makeUniqueId()));
     }
 
-    public ICalloutIf createCallout(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public ICalloutIf createCallout(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         checkCreateOp();
-        return createdItem(new CalloutImpl(anObjectId));
+        ICalloutIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new CalloutImpl(anObjectId));
     }
 
 }

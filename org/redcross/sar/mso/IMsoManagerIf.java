@@ -1,7 +1,6 @@
 package org.redcross.sar.mso;
 
 import org.redcross.sar.mso.data.*;
-import org.redcross.sar.util.except.DuplicateIdException;
 import org.redcross.sar.util.except.MsoNullPointerException;
 import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.mso.*;
@@ -54,10 +53,8 @@ public interface IMsoManagerIf
      * @param aNumberPrefix Number prefix types with format yyyy-[text], where yyyy = current year. List of prefix types is given in config file.
      * @param aNumber Variable part of operation number. The readable operation number is a concatenation of Number and NumberPrefix.
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if an Operation object (Universe) already exists.
      */
-    public IOperationIf createOperation(String aNumberPrefix, String aNumber) throws DuplicateIdException;
+    public IOperationIf createOperation(String aNumberPrefix, String aNumber);
 
     /**
      * Get the {@link org.redcross.sar.mso.data.IOperationIf} object
@@ -70,20 +67,16 @@ public interface IMsoManagerIf
      * Create a new {@link org.redcross.sar.mso.data.ICmdPostIf} object and add it to the collection of CmdPost objects.
      *
      * @return The created object, with an empty MSO structure.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if a CmdPost object already exists.
      */
-    public ICmdPostIf createCmdPost() throws DuplicateIdException;
+    public ICmdPostIf createCmdPost();
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.ICmdPostIf} object and add it to the collection of CmdPost objects.
      *
      * @param anObjectId The Object id
      * @return The created object, with an empty MSO structure.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if a CmdPost object already exists.
      */
-    public ICmdPostIf createCmdPost(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException;
+    public ICmdPostIf createCmdPost(IMsoObjectIf.IObjectIdIf anObjectId);
 
     /**
      * Get (Unique) {@link org.redcross.sar.mso.data.ICmdPostIf} object
@@ -136,10 +129,8 @@ public interface IMsoManagerIf
      *
      * @param anObjectId The Object id
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if a Area object already exists with the same ObjectId value.
      */
-    public IAreaIf createArea(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException;
+    public IAreaIf createArea(IMsoObjectIf.IObjectIdIf anObjectId);
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.IAssignmentIf} object and add it to the collection of Assignment objects.
@@ -152,12 +143,9 @@ public interface IMsoManagerIf
      * Create a new {@link org.redcross.sar.mso.data.IAssignmentIf} object and add it to the collection of Assignment objects.
      *
      * @param anObjectId The Object id
-     * @param aNumber The assigments's sequence number
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if an Assignment object already exists with the same ObjectId value.
      */
-    public IAssignmentIf createAssignment(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber) throws DuplicateIdException;
+    public IAssignmentIf createAssignment(IMsoObjectIf.IObjectIdIf anObjectId);
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.ISearchIf} object and add it to the collection of Assignment objects.
@@ -170,12 +158,9 @@ public interface IMsoManagerIf
      * Create a new {@link org.redcross.sar.mso.data.ISearchIf} object and add it to the collection of Assignment objects.
      *
      * @param anObjectId The Object id
-     * @param aNumber The assigments's sequence number
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if an Assignment object already exists with the same ObjectId value.
      */
-    public ISearchIf createSearch(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber) throws DuplicateIdException;
+    public ISearchIf createSearch(IMsoObjectIf.IObjectIdIf anObjectId);
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.IAssistanceIf} object and add it to the collection of Assignment objects.
@@ -188,12 +173,9 @@ public interface IMsoManagerIf
      * Create a new {@link org.redcross.sar.mso.data.IAssistanceIf} object and add it to the collection of Assignment objects.
      *
      * @param anObjectId The Object id
-     * @param aNumber The assigments's sequence number
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if an Assignment object already exists with the same ObjectId value.
      */
-    public IAssistanceIf createAssistance(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber) throws DuplicateIdException;
+    public IAssistanceIf createAssistance(IMsoObjectIf.IObjectIdIf anObjectId);
 
 
     /**
@@ -208,10 +190,8 @@ public interface IMsoManagerIf
      *
      * @param anObjectId The Object id
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if a Briefing object already exists with the same ObjectId value.
      */
-    public IBriefingIf createBriefing(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException;
+    public IBriefingIf createBriefing(IMsoObjectIf.IObjectIdIf anObjectId);
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.ICalloutIf} object and add it to the collection of Callout objects.
@@ -225,10 +205,8 @@ public interface IMsoManagerIf
      *
      * @param anObjectId The Object id
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if a Callout object already exists with the same ObjectId value.
      */
-    public ICalloutIf createCallout(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException;
+    public ICalloutIf createCallout(IMsoObjectIf.IObjectIdIf anObjectId);
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.ICheckpointIf} object and add it to the collection of Checkpoint objects.
@@ -242,10 +220,8 @@ public interface IMsoManagerIf
      *
      * @param anObjectId The Object id
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if a Checkpoint object already exists with the same ObjectId value.
      */
-    public ICheckpointIf createCheckpoint(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException;
+    public ICheckpointIf createCheckpoint(IMsoObjectIf.IObjectIdIf anObjectId);
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.IDataSourceIf} object and add it to the collection of DataSource objects.
@@ -259,10 +235,8 @@ public interface IMsoManagerIf
      *
      * @param anObjectId The Object id
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if a DataSource object already exists with the same ObjectId value.
      */
-    public IDataSourceIf createDataSource(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException;
+    public IDataSourceIf createDataSource(IMsoObjectIf.IObjectIdIf anObjectId);
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.IEnvironmentIf} object and add it to the collection of Environment objects.
@@ -295,24 +269,19 @@ public interface IMsoManagerIf
      * Create a new {@link org.redcross.sar.mso.data.IEnvironmentIf} object and add it to the collection of Environment objects.
      *
      * @param anObjectId The Object id
-     * @param aCalendar The time from which the information is valid.
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if an Environment object already exists with the same ObjectId value.
      */
-    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId, Calendar aCalendar, String aText) throws DuplicateIdException;
+    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId);
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.IEnvironmentIf} object and add it to the collection of Environment objects.
      *
      * @param aDTG The time (in DateTimeGroup format) from which the information is valid.
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if an Environment object already exists with the same ObjectId value.
      * @throws org.redcross.sar.util.except.IllegalMsoArgumentException
      *          if paramter aDTG holds an illegal DateTimeGroup value.
      */
-    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId, String aDTG, String aText) throws DuplicateIdException, IllegalMsoArgumentException;
+    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId, String aDTG, String aText) throws IllegalMsoArgumentException;
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.IEnvironmentIf} object and add it to the collection of Environment objects.
@@ -320,12 +289,10 @@ public interface IMsoManagerIf
      * @param aDTG The time (in DateTimeGroup format) from which the information is valid.
      * @param anObjectId The Object id
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if an Environment object already exists with the same ObjectId value.
      * @throws org.redcross.sar.util.except.IllegalMsoArgumentException
      *          if paramter aDTG holds an illegal DateTimeGroup value.
      */
-    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId, long aDTG, String aText) throws DuplicateIdException, IllegalMsoArgumentException;
+    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId, long aDTG, String aText) throws IllegalMsoArgumentException;
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.IEquipmentIf} object and add it to the collection of Equipment objects.
@@ -339,10 +306,8 @@ public interface IMsoManagerIf
      *
      * @param anObjectId The Object id
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if an Equipment object already exists with the same ObjectId value.
      */
-    public IEquipmentIf createEquipment(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException;
+    public IEquipmentIf createEquipment(IMsoObjectIf.IObjectIdIf anObjectId);
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.IForecastIf} object and add it to the collection of Forecast objects.
@@ -379,13 +344,9 @@ public interface IMsoManagerIf
      * Create a new {@link org.redcross.sar.mso.data.IForecastIf} object and add it to the collection of Forecast objects.
      *
      * @param anObjectId The Object id
-     * @param aText A forecast text
-     * @param aCalendar The time from which the information is valid.
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if a Forecast object already exists with the same ObjectId value.
      */
-    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId, Calendar aCalendar, String aText) throws DuplicateIdException;
+    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId);
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.IForecastIf} object and add it to the collection of Forecast objects.
@@ -393,12 +354,10 @@ public interface IMsoManagerIf
      * @param aDTG The time (in DateTimeGroup format) from which the information is valid.
      * @param aText A forecast text
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if a Forecast object already exists with the same ObjectId value.
      * @throws org.redcross.sar.util.except.IllegalMsoArgumentException
      *          if paramter aDTG holds an illegal DateTimeGroup value.
      */
-    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId, String aDTG, String aText) throws DuplicateIdException, IllegalMsoArgumentException;
+    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId, String aDTG, String aText) throws IllegalMsoArgumentException;
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.IForecastIf} object and add it to the collection of Forecast objects.
@@ -407,12 +366,10 @@ public interface IMsoManagerIf
      * @param aDTG The time (in DateTimeGroup format) from which the information is valid.
      * @param aText A forecast text
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if a Forecast object already exists with the same ObjectId value.
      * @throws org.redcross.sar.util.except.IllegalMsoArgumentException
      *          if paramter aDTG holds an illegal DateTimeGroup value.
      */
-    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId, long aDTG, String aText) throws DuplicateIdException, IllegalMsoArgumentException;
+    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId, long aDTG, String aText) throws IllegalMsoArgumentException;
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.IHypothesisIf} object and add it to the collection of Hypothesis objects.
@@ -425,12 +382,9 @@ public interface IMsoManagerIf
      * Create a new {@link org.redcross.sar.mso.data.IHypothesisIf} object and add it to the collection of Hypothesis objects.
      *
      * @param anObjectId The Object id
-     * @param aNumber The serial number
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if a Hypothesis object already exists with the same ObjectId value.
      */
-    public IHypothesisIf createHypothesis(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber) throws DuplicateIdException;
+    public IHypothesisIf createHypothesis(IMsoObjectIf.IObjectIdIf anObjectId);
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.IIntelligenceIf} object and add it to the collection of Intelligence objects.
@@ -444,10 +398,8 @@ public interface IMsoManagerIf
      *
      * @param anObjectId The Object id
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if an Intelligence object already exists with the same ObjectId value.
      */
-    public IIntelligenceIf createIntelligence(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException;
+    public IIntelligenceIf createIntelligence(IMsoObjectIf.IObjectIdIf anObjectId);
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.IOperationAreaIf} object and add it to the collection of OperationArea objects.
@@ -461,27 +413,23 @@ public interface IMsoManagerIf
      *
      * @param anObjectId The Object id
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if an OperationArea object already exists with the same ObjectId value.
      */
-    public IOperationAreaIf createOperationArea(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException;
+    public IOperationAreaIf createOperationArea(IMsoObjectIf.IObjectIdIf anObjectId);
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.IPersonnelIf} object and add it to the collection of Personnel objects.
      *
      * @return The created object.
      */
-    public IPersonnelIf createPersonnel(String aPersonellId);
+    public IPersonnelIf createPersonnel();
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.IPersonnelIf} object and add it to the collection of Personnel objects.
      *
      * @param anObjectId The Object id
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if a Personnel object already exists with the same ObjectId value.
      */
-    public IPersonnelIf createPersonnel(IMsoObjectIf.IObjectIdIf anObjectId, String aPersonellId) throws DuplicateIdException;
+    public IPersonnelIf createPersonnel(IMsoObjectIf.IObjectIdIf anObjectId);
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.IPOIIf} object and add it to the collection of POI objects.
@@ -495,10 +443,8 @@ public interface IMsoManagerIf
      *
      * @param anObjectId The Object id
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if a POI object already exists with the same ObjectId value.
      */
-    public IPOIIf createPOI(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException;
+    public IPOIIf createPOI(IMsoObjectIf.IObjectIdIf anObjectId);
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.IPOIIf} object and add it to the collection of POI objects.
@@ -506,8 +452,6 @@ public interface IMsoManagerIf
      * @param aType The POI type
      * @param aPosition The POI position
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if a POI object already exists with the same ObjectId value.
      */
     public IPOIIf createPOI(IPOIIf.POIType aType, Position aPosition);
 
@@ -518,10 +462,8 @@ public interface IMsoManagerIf
      * @param aType The POI type
      * @param aPosition The POI position
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if a POI object already exists with the same ObjectId value.
      */
-    public IPOIIf createPOI(IMsoObjectIf.IObjectIdIf anObjectId, IPOIIf.POIType aType, Position aPosition) throws DuplicateIdException;
+    public IPOIIf createPOI(IMsoObjectIf.IObjectIdIf anObjectId, IPOIIf.POIType aType, Position aPosition);
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.IRouteIf} object and add it to the collection of Route objects.
@@ -535,10 +477,8 @@ public interface IMsoManagerIf
      *
      * @param anObjectId The Object id
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if a Route object already exists with the same ObjectId value.
      */
-    public IRouteIf createRoute(IMsoObjectIf.IObjectIdIf anObjectId, Route aRoute) throws DuplicateIdException;
+    public IRouteIf createRoute(IMsoObjectIf.IObjectIdIf anObjectId, Route aRoute);
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.ISearchAreaIf} object and add it to the collection of SearchArea objects.
@@ -552,10 +492,8 @@ public interface IMsoManagerIf
      *
      * @param anObjectId The Object id
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if a SearchArea object already exists with the same ObjectId value.
      */
-    public ISearchAreaIf createSearchArea(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException;
+    public ISearchAreaIf createSearchArea(IMsoObjectIf.IObjectIdIf anObjectId);
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.ISketchIf} object and add it to the collection of Sketch objects.
@@ -569,27 +507,23 @@ public interface IMsoManagerIf
      *
      * @param anObjectId The Object id
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if a Sketch object already exists with the same ObjectId value.
      */
-    public ISketchIf createSketch(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException;
+    public ISketchIf createSketch(IMsoObjectIf.IObjectIdIf anObjectId);
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.ISubjectIf} object and add it to the collection of Subject objects.
      *
      * @return The created object.
      */
-    public ISubjectIf createSubject(String aName, String aDescription);
+    public ISubjectIf createSubject();
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.ISubjectIf} object and add it to the collection of Subject objects.
      *
      * @param anObjectId The Object id
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if a Subject object already exists with the same ObjectId value.
      */
-    public ISubjectIf createSubject(IMsoObjectIf.IObjectIdIf anObjectId, String aName, String aDescription) throws DuplicateIdException;
+    public ISubjectIf createSubject(IMsoObjectIf.IObjectIdIf anObjectId);
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.ITaskIf} object and add it to the collection of Task objects.
@@ -603,12 +537,9 @@ public interface IMsoManagerIf
      * Create a new {@link org.redcross.sar.mso.data.ITaskIf} object and add it to the collection of Task objects.
      *
      * @param anObjectId The Object id
-     * @param aCalendar Task due time
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if a Task object already exists with the same ObjectId value.
      */
-    public ITaskIf createTask(IMsoObjectIf.IObjectIdIf anObjectId, Calendar aCalendar) throws DuplicateIdException;
+    public ITaskIf createTask(IMsoObjectIf.IObjectIdIf anObjectId);
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.ITrackIf} object and add it to the collection of Track objects.
@@ -622,10 +553,8 @@ public interface IMsoManagerIf
      *
      * @param anObjectId The Object id
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if a Track object already exists with the same ObjectId value.
      */
-    public ITrackIf createTrack(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException;
+    public ITrackIf createTrack(IMsoObjectIf.IObjectIdIf anObjectId);
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.IVehicleIf} object and add it to the collection of Unit objects.
@@ -639,11 +568,7 @@ public interface IMsoManagerIf
      * Create a new {@link org.redcross.sar.mso.data.IVehicleIf} object and add it to the collection of Unit objects.
      *
      * @param anObjectId The Object id
-     * @param aNumber The unit number
-     * @param anIdentifier The unit's identifier (if needed here??)
      * @return The created object.
-     * @throws org.redcross.sar.util.except.DuplicateIdException
-     *          if a Unit object already exists with the same ObjectId value.
      */
-    public IVehicleIf createVehicle(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber, String anIdentifier) throws DuplicateIdException;
+    public IVehicleIf createVehicle(IMsoObjectIf.IObjectIdIf anObjectId);
 }

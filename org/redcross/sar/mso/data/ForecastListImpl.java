@@ -35,21 +35,24 @@ public class ForecastListImpl extends MsoListImpl<IForecastIf> implements IForec
         return createdUniqueItem(new ForecastImpl(makeUniqueId(), aDTG, aText));
     }
 
-    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId, Calendar aCalendar, String aText) throws DuplicateIdException
+    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         checkCreateOp();
-        return createdItem(new ForecastImpl(anObjectId, aCalendar, aText));
+        IForecastIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new ForecastImpl(anObjectId));
     }
 
-    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId, String aDTG, String aText) throws DuplicateIdException, IllegalMsoArgumentException
+    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId, String aDTG, String aText) throws IllegalMsoArgumentException
     {
         checkCreateOp();
-        return createdItem(new ForecastImpl(anObjectId, aDTG, aText));
+        IForecastIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new ForecastImpl(anObjectId, aDTG, aText));
     }
 
-    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId, long aDTG, String aText) throws DuplicateIdException, IllegalMsoArgumentException
+    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId, long aDTG, String aText) throws IllegalMsoArgumentException
     {
         checkCreateOp();
-        return createdItem(new ForecastImpl(anObjectId, aDTG, aText));
+        IForecastIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new ForecastImpl(anObjectId, aDTG, aText));
     }
 }

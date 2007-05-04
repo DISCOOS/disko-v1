@@ -21,10 +21,11 @@ public class OperationAreaListImpl extends MsoListImpl<IOperationAreaIf> impleme
         return createdUniqueItem(new OperationAreaImpl(makeUniqueId()));
     }
 
-    public IOperationAreaIf createOperationArea(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public IOperationAreaIf createOperationArea(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         checkCreateOp();
-        return createdItem(new OperationAreaImpl(anObjectId));
+        IOperationAreaIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new OperationAreaImpl(anObjectId));
     }
 
 

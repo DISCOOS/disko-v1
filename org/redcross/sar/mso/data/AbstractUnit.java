@@ -5,6 +5,7 @@ import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.DuplicateIdException;
 import org.redcross.sar.util.except.IllegalOperationException;
+import org.redcross.sar.util.except.MsoRuntimeException;
 import org.redcross.sar.util.mso.*;
 
 import java.util.ArrayList;
@@ -34,13 +35,13 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
     private final MsoReferenceImpl<IHierarchicalUnitIf> m_superiorUnit = new MsoReferenceImpl<IHierarchicalUnitIf>(this, "SuperiorUnit", false);
     private final MsoReferenceImpl<IPersonnelIf> m_unitLeader = new MsoReferenceImpl<IPersonnelIf>(this, "UnitLeader", true);
 
+
     public AbstractUnit(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
     {
         super(anObjectId);
         setNumber(aNumber);
         setType(getTypeBySubclass());
     }
-
 
     public IMsoManagerIf.MsoClassCode getMsoClassCode()
     {
@@ -308,7 +309,7 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
     * Methods for lists
     *-------------------------------------------------------------------------------------------*/
 
-    public void addUnitAssignment(IAssignmentIf anIAssignmentIf) throws DuplicateIdException, IllegalOperationException
+    public void addUnitAssignment(IAssignmentIf anIAssignmentIf) throws IllegalOperationException
     {
         anIAssignmentIf.verifyAllocatable(this, IAssignmentIf.AssignmentStatus.ALLOCATED, true);
         m_unitAssignments.add(anIAssignmentIf);
@@ -338,7 +339,7 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
         return m_unitAssignments.getItems();
     }
 
-    public void addUnitPersonnel(IPersonnelIf anIPersonnelIf) throws DuplicateIdException
+    public void addUnitPersonnel(IPersonnelIf anIPersonnelIf)
     {
         m_unitPersonnel.add(anIPersonnelIf);
     }

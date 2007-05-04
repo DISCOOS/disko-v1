@@ -9,6 +9,11 @@ public class ForecastImpl extends AbstractTimeItem implements IForecastIf
 {
     private final AttributeImpl.MsoString m_someText = new AttributeImpl.MsoString(this, "someText");
 
+    public ForecastImpl(IMsoObjectIf.IObjectIdIf anObjectId)
+    {
+        super(anObjectId);
+    }
+
     public ForecastImpl(IMsoObjectIf.IObjectIdIf anObjectId, Calendar aCalendar, String aText)
     {
         super(anObjectId, aCalendar);

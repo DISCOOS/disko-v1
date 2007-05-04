@@ -53,7 +53,7 @@ public interface IMessageIf extends ITimeItemIf, ISerialNumberedIf
     * Methods for lists
     *-------------------------------------------------------------------------------------------*/
 
-    public void addConfirmedReceiver(ICommunicatorIf anICommunicatorIf) throws DuplicateIdException;
+    public void addConfirmedReceiver(ICommunicatorIf anICommunicatorIf);
 
     public IMsoListIf<ICommunicatorIf> getConfirmedReceivers();
 
@@ -61,7 +61,7 @@ public interface IMessageIf extends ITimeItemIf, ISerialNumberedIf
 
     public Collection<ICommunicatorIf> getConfirmedReceiversItems();
 
-    public void addMessageTask(ITaskIf anITaskIf) throws DuplicateIdException;
+    public void addMessageTask(ITaskIf anITaskIf);
 
     public ITaskListIf getMessageTasks();
 
@@ -69,7 +69,7 @@ public interface IMessageIf extends ITimeItemIf, ISerialNumberedIf
 
     public Collection<ITaskIf> getMessageTasksItems();
 
-    public void addUnconfirmedReceiver(ICommunicatorIf anICommunicatorIf) throws DuplicateIdException;
+    public void addUnconfirmedReceiver(ICommunicatorIf anICommunicatorIf);
 
     public IMsoListIf<ICommunicatorIf> getUnconfirmedReceivers();
 

@@ -5,9 +5,9 @@ import org.redcross.sar.util.except.MsoCastException;
 
 public class PersonnelImpl extends AbstractPerson implements IPersonnelIf
 {
-    public PersonnelImpl(IMsoObjectIf.IObjectIdIf anObjectId,String aName)
+    public PersonnelImpl(IMsoObjectIf.IObjectIdIf anObjectId)
     {
-        super(anObjectId,aName);
+        super(anObjectId);
     }
 
     protected void defineAttributes()

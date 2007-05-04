@@ -21,10 +21,11 @@ public class SketchListImpl extends MsoListImpl<ISketchIf> implements ISketchLis
         return createdUniqueItem(new SketchImpl(makeUniqueId()));
     }
 
-    public ISketchIf createSketch(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public ISketchIf createSketch(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         checkCreateOp();
-        return createdItem(new SketchImpl(anObjectId));
+        ISketchIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new SketchImpl(anObjectId));
     }
 
 }

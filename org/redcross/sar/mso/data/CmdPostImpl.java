@@ -313,11 +313,11 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
         return m_telephone3;
     }
 
-    public void addAreaList(IAreaIf anIAreaIf) throws DuplicateIdException
-    {
-        m_areaList.add(anIAreaIf);
-    }
-
+//    public void addAreaList(IAreaIf anIAreaIf) todo delete
+//    {
+//        m_areaList.add(anIAreaIf);
+//    }
+//
     /*-------------------------------------------------------------------------------------------
     * Methods for lists
     *-------------------------------------------------------------------------------------------*/

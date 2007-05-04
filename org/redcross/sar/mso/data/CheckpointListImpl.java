@@ -21,10 +21,11 @@ public class CheckpointListImpl extends MsoListImpl<ICheckpointIf> implements IC
         return createdUniqueItem(new CheckpointImpl(makeUniqueId()));
     }
 
-    public ICheckpointIf createCheckpoint(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public ICheckpointIf createCheckpoint(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         checkCreateOp();
-        return createdItem(new CheckpointImpl(anObjectId));
+        ICheckpointIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new CheckpointImpl(anObjectId));
     }
 
 

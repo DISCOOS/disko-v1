@@ -13,11 +13,11 @@ public interface IForecastListIf extends IMsoListIf<IForecastIf>
 
     public IForecastIf createForecast( long aDTG, String aText) throws IllegalMsoArgumentException;
 
-    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId,Calendar aCalendar, String aText) throws DuplicateIdException;
+    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId);
 
-    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId,String aDTG, String aText) throws DuplicateIdException, IllegalMsoArgumentException;
+    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId,String aDTG, String aText) throws IllegalMsoArgumentException;
 
-    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId, long aDTG, String aText) throws DuplicateIdException, IllegalMsoArgumentException;
+    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId, long aDTG, String aText) throws IllegalMsoArgumentException;
 
 
 }

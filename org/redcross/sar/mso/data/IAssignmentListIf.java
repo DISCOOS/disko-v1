@@ -9,13 +9,13 @@ public interface IAssignmentListIf extends IMsoListIf<IAssignmentIf>
 {
     public IAssignmentIf createAssignment();
 
-    public IAssignmentIf createAssignment(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber) throws DuplicateIdException;
+    public IAssignmentIf createAssignment(IMsoObjectIf.IObjectIdIf anObjectId);
 
     public ISearchIf createSearch();
 
-    public ISearchIf createSearch(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber) throws DuplicateIdException;
+    public ISearchIf createSearch(IMsoObjectIf.IObjectIdIf anObjectId);
 
     public IAssistanceIf createAssistance();
 
-    public IAssistanceIf createAssistance(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber) throws DuplicateIdException;
+    public IAssistanceIf createAssistance(IMsoObjectIf.IObjectIdIf anObjectId);
 }

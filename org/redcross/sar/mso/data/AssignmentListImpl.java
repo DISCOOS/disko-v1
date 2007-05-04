@@ -21,10 +21,11 @@ public class AssignmentListImpl extends MsoListImpl<IAssignmentIf> implements IA
         return createdUniqueItem(new AssignmentImpl(makeUniqueId(), makeSerialNumber()));
     }
 
-    public IAssignmentIf createAssignment(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber) throws DuplicateIdException
+    public IAssignmentIf createAssignment(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         checkCreateOp();
-        return createdItem(new AssignmentImpl(anObjectId, aNumber));
+        IAssignmentIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new AssignmentImpl(anObjectId, -1));
     }
 
     public ISearchIf createSearch()
@@ -33,10 +34,11 @@ public class AssignmentListImpl extends MsoListImpl<IAssignmentIf> implements IA
         return (ISearchIf) createdUniqueItem(new SearchImpl(makeUniqueId(), makeSerialNumber()));
     }
 
-    public ISearchIf createSearch(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber) throws DuplicateIdException
+    public ISearchIf createSearch(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         checkCreateOp();
-        return (ISearchIf) createdItem(new SearchImpl(anObjectId, aNumber));
+        ISearchIf retVal = (ISearchIf) getItem(anObjectId);
+        return retVal != null ? retVal : (ISearchIf) createdItem(new SearchImpl(anObjectId, -1));
     }
 
     public IAssistanceIf createAssistance()
@@ -45,10 +47,11 @@ public class AssignmentListImpl extends MsoListImpl<IAssignmentIf> implements IA
         return (IAssistanceIf) createdUniqueItem(new AssistanceImpl(makeUniqueId(), makeSerialNumber()));
     }
 
-    public IAssistanceIf createAssistance(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber) throws DuplicateIdException
+    public IAssistanceIf createAssistance(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         checkCreateOp();
-        return (IAssistanceIf) createdItem(new AssistanceImpl(anObjectId, aNumber));
+        IAssistanceIf retVal = (IAssistanceIf) getItem(anObjectId);
+        return retVal != null ? retVal :  (IAssistanceIf) createdItem(new AssistanceImpl(anObjectId, -1));
     }
 
 }

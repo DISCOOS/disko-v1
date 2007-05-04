@@ -7,6 +7,6 @@ public interface ICalloutListIf extends IMsoListIf<ICalloutIf>
 
     public ICalloutIf createCallout();
 
-    public ICalloutIf createCallout(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException;
+    public ICalloutIf createCallout(IMsoObjectIf.IObjectIdIf anObjectId);
 
 }

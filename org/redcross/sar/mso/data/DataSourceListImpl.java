@@ -16,9 +16,10 @@ public class DataSourceListImpl extends MsoListImpl<IDataSourceIf> implements ID
         return createdUniqueItem(new DataSourceImpl(makeUniqueId()));
     }
 
-    public IDataSourceIf createDataSource(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public IDataSourceIf createDataSource(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         checkCreateOp();
-        return createdItem(new DataSourceImpl(anObjectId));
+        IDataSourceIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new DataSourceImpl(anObjectId));
     }
 }

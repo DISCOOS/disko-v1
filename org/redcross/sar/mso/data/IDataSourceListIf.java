@@ -9,5 +9,5 @@ public interface IDataSourceListIf extends IMsoListIf<IDataSourceIf>
 {
     public IDataSourceIf createDataSource();
 
-    public IDataSourceIf createDataSource(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException;
+    public IDataSourceIf createDataSource(IMsoObjectIf.IObjectIdIf anObjectId);
 }

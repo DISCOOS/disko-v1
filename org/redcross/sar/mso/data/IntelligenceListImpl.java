@@ -16,10 +16,11 @@ public class IntelligenceListImpl extends MsoListImpl<IIntelligenceIf> implement
         return createdUniqueItem(new IntelligenceImpl(makeUniqueId()));
     }
 
-    public IIntelligenceIf createIntelligence(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public IIntelligenceIf createIntelligence(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         checkCreateOp();
-        return createdItem(new IntelligenceImpl(anObjectId));
+        IIntelligenceIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new IntelligenceImpl(anObjectId));
     }
 
 }

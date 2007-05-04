@@ -5,6 +5,7 @@ import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.except.MsoException;
 import org.redcross.sar.util.except.DuplicateIdException;
+import org.redcross.sar.util.except.MsoRuntimeException;
 
 import java.util.Calendar;
 import java.util.Collection;
@@ -28,15 +29,14 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
     public MessageImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
     {
         super(anObjectId);
-        setCreated(Calendar.getInstance());
         setNumber(aNumber);
     }
 
     public MessageImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber, Calendar aCalendar)
     {
         super(anObjectId, aCalendar);
-        setCreated(Calendar.getInstance());
         setNumber(aNumber);
+        setCreated(Calendar.getInstance());
     }
 
     protected void defineAttributes()
@@ -177,7 +177,7 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
     * Methods for lists
     *-------------------------------------------------------------------------------------------*/
 
-    public void addConfirmedReceiver(ICommunicatorIf anICommunicatorIf) throws DuplicateIdException
+    public void addConfirmedReceiver(ICommunicatorIf anICommunicatorIf)
     {
         m_confirmedReceivers.add(anICommunicatorIf);
     }
@@ -197,7 +197,7 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
         return m_confirmedReceivers.getItems();
     }
 
-    public void addMessageTask(ITaskIf anITaskIf) throws DuplicateIdException
+    public void addMessageTask(ITaskIf anITaskIf)
     {
         m_messageTasks.add(anITaskIf);
     }
@@ -217,7 +217,7 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
         return m_messageTasks.getItems();
     }
 
-    public void addUnconfirmedReceiver(ICommunicatorIf anICommunicatorIf) throws DuplicateIdException
+    public void addUnconfirmedReceiver(ICommunicatorIf anICommunicatorIf)
     {
         m_unconfirmedReceivers.add(anICommunicatorIf);
     }
@@ -286,7 +286,7 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
             m_unconfirmedReceivers.add(aReceiver);
             return true;
         }
-        catch (MsoException e)
+        catch (MsoRuntimeException e)
         {
             return false;
         }
@@ -303,7 +303,7 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
             m_confirmedReceivers.add(anICommunicatorIf);
             return true;
         }
-        catch (MsoException e)
+        catch (MsoRuntimeException e)
         {
             return false;
         }

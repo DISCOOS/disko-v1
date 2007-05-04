@@ -34,25 +34,28 @@ public class EnvironmentListImpl extends MsoListImpl<IEnvironmentIf> implements 
     public IEnvironmentIf createEnvironment(long aDTG, String aText) throws IllegalMsoArgumentException
     {
         checkCreateOp();
-        return createdUniqueItem(new EnvironmentImpl(makeUniqueId() ,aDTG, aText));
-    }
-    
-    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId, Calendar aCalendar, String aText) throws DuplicateIdException
-    {
-        checkCreateOp();
-        return createdItem(new EnvironmentImpl(anObjectId, aCalendar, aText));
+        return createdUniqueItem(new EnvironmentImpl(makeUniqueId(), aDTG, aText));
     }
 
-    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId, String aDTG, String aText) throws DuplicateIdException, IllegalMsoArgumentException
+    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         checkCreateOp();
-        return createdItem(new EnvironmentImpl(anObjectId, aDTG, aText));
+        IEnvironmentIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new EnvironmentImpl(anObjectId));
     }
 
-    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId, long aDTG, String aText) throws DuplicateIdException, IllegalMsoArgumentException
+    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId, String aDTG, String aText) throws IllegalMsoArgumentException
     {
         checkCreateOp();
-        return createdItem(new EnvironmentImpl(anObjectId ,aDTG, aText));
+        IEnvironmentIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new EnvironmentImpl(anObjectId, aDTG, aText));
+    }
+
+    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId, long aDTG, String aText) throws IllegalMsoArgumentException
+    {
+        checkCreateOp();
+        IEnvironmentIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new EnvironmentImpl(anObjectId, aDTG, aText));
     }
 
 

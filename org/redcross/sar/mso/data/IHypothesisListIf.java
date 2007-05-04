@@ -9,5 +9,5 @@ public interface IHypothesisListIf extends IMsoListIf<IHypothesisIf>
 {
     public IHypothesisIf createHypothesis();
 
-    public IHypothesisIf createHypothesis(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber) throws DuplicateIdException;
+    public IHypothesisIf createHypothesis(IMsoObjectIf.IObjectIdIf anObjectId);
 }

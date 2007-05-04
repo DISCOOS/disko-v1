@@ -9,8 +9,12 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
 {
     private final MsoReferenceImpl<IEventIf> m_createdEvent = new MsoReferenceImpl<IEventIf>(this, "CreatedEvent", true);
 
-    public TaskImpl(IMsoObjectIf.IObjectIdIf anObjectId, Calendar aCalendar)
+    public TaskImpl(IMsoObjectIf.IObjectIdIf anObjectId)
+    {
+        super(anObjectId);
+    }
 
+    public TaskImpl(IMsoObjectIf.IObjectIdIf anObjectId, Calendar aCalendar)
     {
         super(anObjectId, aCalendar);
     }

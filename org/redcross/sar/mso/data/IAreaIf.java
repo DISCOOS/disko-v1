@@ -33,7 +33,7 @@ public interface IAreaIf extends IMsoObjectIf
     * Methods for lists
     *-------------------------------------------------------------------------------------------*/
 
-    public void addAreaPOI(IPOIIf anIPOIIf) throws DuplicateIdException;
+    public void addAreaPOI(IPOIIf anIPOIIf);
 
     public IPOIListIf getAreaPOIs();
 

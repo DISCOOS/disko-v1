@@ -6,5 +6,5 @@ public interface IBriefingListIf extends IMsoListIf<IBriefingIf>
 {
     public IBriefingIf createBriefing();
 
-    public IBriefingIf createBriefing(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException;
+    public IBriefingIf createBriefing(IMsoObjectIf.IObjectIdIf anObjectId);
 }

@@ -18,6 +18,12 @@ public class EventImpl extends AbstractTimeItem implements IEventIf
      */
     private final TaskListImpl m_eventTasks = new TaskListImpl(this, "EventTasks", false);
 
+    public EventImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
+    {
+        super(anObjectId);
+        setNumber(aNumber);
+    }
+
     public EventImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber, Calendar aCalendar)
     {
         super(anObjectId, aCalendar);
@@ -86,7 +92,7 @@ public class EventImpl extends AbstractTimeItem implements IEventIf
     * Methods for lists
     *-------------------------------------------------------------------------------------------*/
 
-    public void addEventTask(ITaskIf anITaskIf) throws DuplicateIdException
+    public void addEventTask(ITaskIf anITaskIf)
     {
         m_eventTasks.add(anITaskIf);
     }

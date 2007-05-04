@@ -7,10 +7,9 @@ public class SubjectImpl extends AbstractPerson implements ISubjectIf
 {
     private final AttributeImpl.MsoString m_description = new AttributeImpl.MsoString(this, "Description");
 
-    public SubjectImpl(IMsoObjectIf.IObjectIdIf anObjectId, String aName, String aDescription)
+    public SubjectImpl(IMsoObjectIf.IObjectIdIf anObjectId)
     {
-        super(anObjectId, aName);
-        m_description.setValue(aDescription);
+        super(anObjectId);
     }
 
     protected void defineAttributes()

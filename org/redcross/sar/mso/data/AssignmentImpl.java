@@ -26,7 +26,6 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
 
     private final AttributeImpl.MsoInteger m_number = new AttributeImpl.MsoInteger(this, "Number");
 
-
     private final EquipmentListImpl m_assignmentEquipment = new EquipmentListImpl(this, "AssignmentEquipment", false);
     private final POIListImpl m_assignmentFindings = new POIListImpl(this, "AssignmentFindings", false);
 
@@ -38,10 +37,10 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
     private final static EnumSet<AssignmentStatus> m_activeSet = EnumSet.range(AssignmentStatus.EXECUTING, AssignmentStatus.PAUSED);
     private final static EnumSet<AssignmentStatus> m_readySet = EnumSet.range(AssignmentStatus.READY, AssignmentStatus.ASSIGNED);
     private final static EnumSet<AssignmentStatus> m_finishedSet = EnumSet.range(AssignmentStatus.ABORTED, AssignmentStatus.REPORTED);
-    private final static StatusSelector<IAssignmentIf,AssignmentStatus> m_allocatedSelector = new StatusSelector<IAssignmentIf,AssignmentStatus>(AssignmentStatus.ALLOCATED);
-    private final static StatusSelector<IAssignmentIf,AssignmentStatus> m_assignedSelector = new StatusSelector<IAssignmentIf,AssignmentStatus>(AssignmentStatus.ASSIGNED);
-    private final static StatusSetSelector<IAssignmentIf,AssignmentStatus> m_executingSelector = new StatusSetSelector<IAssignmentIf,AssignmentStatus>(m_activeSet);
-    private final static StatusSetSelector<IAssignmentIf,AssignmentStatus> m_finishedSelector = new StatusSetSelector<IAssignmentIf,AssignmentStatus>(m_finishedSet);
+    private final static StatusSelector<IAssignmentIf, AssignmentStatus> m_allocatedSelector = new StatusSelector<IAssignmentIf, AssignmentStatus>(AssignmentStatus.ALLOCATED);
+    private final static StatusSelector<IAssignmentIf, AssignmentStatus> m_assignedSelector = new StatusSelector<IAssignmentIf, AssignmentStatus>(AssignmentStatus.ASSIGNED);
+    private final static StatusSetSelector<IAssignmentIf, AssignmentStatus> m_executingSelector = new StatusSetSelector<IAssignmentIf, AssignmentStatus>(m_activeSet);
+    private final static StatusSetSelector<IAssignmentIf, AssignmentStatus> m_finishedSelector = new StatusSetSelector<IAssignmentIf, AssignmentStatus>(m_finishedSet);
     private final static PrioritySequenceComparator m_prioritySequenceComparator = new PrioritySequenceComparator();
 
     public AssignmentImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
@@ -261,7 +260,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
     * Methods for lists
     *-------------------------------------------------------------------------------------------*/
 
-    public void addAssignmentEquipment(IEquipmentIf anIEquipmentIf) throws DuplicateIdException
+    public void addAssignmentEquipment(IEquipmentIf anIEquipmentIf)
     {
         m_assignmentEquipment.add(anIEquipmentIf);
     }
@@ -281,7 +280,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         return m_assignmentEquipment.getItems();
     }
 
-    public void addAssignmentFinding(IPOIIf anIPOIIf) throws DuplicateIdException
+    public void addAssignmentFinding(IPOIIf anIPOIIf)
     {
         m_assignmentFindings.add(anIPOIIf);
     }
@@ -486,22 +485,22 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         }
     }
 
-    public static StatusSelector<IAssignmentIf,AssignmentStatus> getAllocatedSelector()
+    public static StatusSelector<IAssignmentIf, AssignmentStatus> getAllocatedSelector()
     {
         return m_allocatedSelector;
     }
 
-    public static StatusSelector<IAssignmentIf,AssignmentStatus> getAssignedSelector()
+    public static StatusSelector<IAssignmentIf, AssignmentStatus> getAssignedSelector()
     {
         return m_assignedSelector;
     }
 
-    public static StatusSetSelector<IAssignmentIf,AssignmentStatus> getExecutingSelector()
+    public static StatusSetSelector<IAssignmentIf, AssignmentStatus> getExecutingSelector()
     {
         return m_executingSelector;
     }
 
-    public static StatusSetSelector<IAssignmentIf,AssignmentStatus> getFinishedSelector()
+    public static StatusSetSelector<IAssignmentIf, AssignmentStatus> getFinishedSelector()
     {
         return m_finishedSelector;
     }

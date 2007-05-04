@@ -59,7 +59,7 @@ public class MsoManagerImpl implements IMsoManagerIf
         });
     }
 
-    public IOperationIf createOperation(String aNumberPrefix, String aNumber) throws DuplicateIdException
+    public IOperationIf createOperation(String aNumberPrefix, String aNumber)
     {
         if (m_operation != null)
         {
@@ -138,7 +138,7 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getAreaList().createArea();
     }
 
-    public IAreaIf createArea(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public IAreaIf createArea(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         return getExistingCmdPost().getAreaList().createArea(anObjectId);
     }
@@ -148,9 +148,9 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getAssignmentList().createAssignment();
     }
 
-    public IAssignmentIf createAssignment(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber) throws DuplicateIdException
+    public IAssignmentIf createAssignment(IMsoObjectIf.IObjectIdIf anObjectId)
     {
-        return getExistingCmdPost().getAssignmentList().createAssignment(anObjectId, aNumber);
+        return getExistingCmdPost().getAssignmentList().createAssignment(anObjectId);
     }
 
     public ISearchIf createSearch()
@@ -158,9 +158,9 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getAssignmentList().createSearch();
     }
 
-    public ISearchIf createSearch(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber) throws DuplicateIdException
+    public ISearchIf createSearch(IMsoObjectIf.IObjectIdIf anObjectId)
     {
-        return getExistingCmdPost().getAssignmentList().createSearch(anObjectId, aNumber);
+        return getExistingCmdPost().getAssignmentList().createSearch(anObjectId);
     }
 
     public IAssistanceIf createAssistance()
@@ -168,9 +168,9 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getAssignmentList().createAssistance();
     }
 
-    public IAssistanceIf createAssistance(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber) throws DuplicateIdException
+    public IAssistanceIf createAssistance(IMsoObjectIf.IObjectIdIf anObjectId)
     {
-        return getExistingCmdPost().getAssignmentList().createAssistance(anObjectId, aNumber);
+        return getExistingCmdPost().getAssignmentList().createAssistance(anObjectId);
     }
 
     public IBriefingIf createBriefing()
@@ -178,7 +178,7 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getBriefingList().createBriefing();
     }
 
-    public IBriefingIf createBriefing(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public IBriefingIf createBriefing(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         return getExistingCmdPost().getBriefingList().createBriefing(anObjectId);
     }
@@ -188,7 +188,7 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getCalloutList().createCallout();
     }
 
-    public ICalloutIf createCallout(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public ICalloutIf createCallout(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         return getExistingCmdPost().getCalloutList().createCallout(anObjectId);
     }
@@ -198,18 +198,18 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getCheckpointList().createCheckpoint();
     }
 
-    public ICheckpointIf createCheckpoint(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public ICheckpointIf createCheckpoint(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         return getExistingCmdPost().getCheckpointList().createCheckpoint(
                 anObjectId);
     }
 
-    public ICmdPostIf createCmdPost() throws DuplicateIdException
+    public ICmdPostIf createCmdPost()
     {
         return m_operation.getCmdPostList().createCmdPost();
     }
 
-    public ICmdPostIf createCmdPost(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public ICmdPostIf createCmdPost(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         return m_operation.getCmdPostList().createCmdPost(anObjectId);
     }
@@ -219,7 +219,7 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getDataSourceList().createDataSource();
     }
 
-    public IDataSourceIf createDataSource(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public IDataSourceIf createDataSource(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         return getExistingCmdPost().getDataSourceList().createDataSource(anObjectId);
     }
@@ -240,17 +240,17 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getEnvironmentList().createEnvironment(aDTG, aText);
     }
 
-    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId, Calendar aCalendar, String aText) throws DuplicateIdException
+    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId)
     {
-        return getExistingCmdPost().getEnvironmentList().createEnvironment(anObjectId, aCalendar, aText);
+        return getExistingCmdPost().getEnvironmentList().createEnvironment(anObjectId);
     }
 
-    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId, String aDTG, String aText) throws DuplicateIdException, IllegalMsoArgumentException
+    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId, String aDTG, String aText) throws IllegalMsoArgumentException
     {
         return getExistingCmdPost().getEnvironmentList().createEnvironment(anObjectId, aDTG, aText);
     }
 
-    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId, long aDTG, String aText) throws DuplicateIdException, IllegalMsoArgumentException
+    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId, long aDTG, String aText) throws IllegalMsoArgumentException
     {
         return getExistingCmdPost().getEnvironmentList().createEnvironment(anObjectId, aDTG, aText);
     }
@@ -260,7 +260,7 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getEquipmentList().createEquipment();
     }
 
-    public IEquipmentIf createEquipment(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public IEquipmentIf createEquipment(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         return getExistingCmdPost().getEquipmentList().createEquipment(anObjectId);
     }
@@ -280,17 +280,17 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getForecastList().createForecast(aDTG, aText);
     }
 
-    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId, Calendar aCalendar, String aText) throws DuplicateIdException
+    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId)
     {
-        return getExistingCmdPost().getForecastList().createForecast(anObjectId, aCalendar, aText);
+        return getExistingCmdPost().getForecastList().createForecast(anObjectId);
     }
 
-    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId, String aDTG, String aText) throws DuplicateIdException, IllegalMsoArgumentException
+    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId, String aDTG, String aText) throws IllegalMsoArgumentException
     {
         return getExistingCmdPost().getForecastList().createForecast(anObjectId, aDTG, aText);
     }
 
-    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId, long aDTG, String aText) throws DuplicateIdException, IllegalMsoArgumentException
+    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId, long aDTG, String aText) throws IllegalMsoArgumentException
     {
         return getExistingCmdPost().getForecastList().createForecast(anObjectId, aDTG, aText);
     }
@@ -300,9 +300,9 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getHypothesisList().createHypothesis();
     }
 
-    public IHypothesisIf createHypothesis(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber) throws DuplicateIdException
+    public IHypothesisIf createHypothesis(IMsoObjectIf.IObjectIdIf anObjectId)
     {
-        return getExistingCmdPost().getHypothesisList().createHypothesis(anObjectId, aNumber);
+        return getExistingCmdPost().getHypothesisList().createHypothesis(anObjectId);
     }
 
     public IIntelligenceIf createIntelligence()
@@ -310,7 +310,7 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getIntelligenceList().createIntelligence();
     }
 
-    public IIntelligenceIf createIntelligence(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public IIntelligenceIf createIntelligence(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         return getExistingCmdPost().getIntelligenceList().createIntelligence(
                 anObjectId);
@@ -321,20 +321,20 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getOperationAreaList().createOperationArea();
     }
 
-    public IOperationAreaIf createOperationArea(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public IOperationAreaIf createOperationArea(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         return getExistingCmdPost().getOperationAreaList().createOperationArea(
                 anObjectId);
     }
 
-    public IPersonnelIf createPersonnel(String aPersonellId)
+    public IPersonnelIf createPersonnel()
     {
-        return getExistingCmdPost().getAttendanceList().createPersonnel(aPersonellId);
+        return getExistingCmdPost().getAttendanceList().createPersonnel();
     }
 
-    public IPersonnelIf createPersonnel(IMsoObjectIf.IObjectIdIf anObjectId, String aPersonellId) throws DuplicateIdException
+    public IPersonnelIf createPersonnel(IMsoObjectIf.IObjectIdIf anObjectId)
     {
-        return getExistingCmdPost().getAttendanceList().createPersonnel(anObjectId, aPersonellId);
+        return getExistingCmdPost().getAttendanceList().createPersonnel(anObjectId);
     }
 
     public IPOIIf createPOI()
@@ -342,7 +342,7 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getPOIList().createPOI();
     }
 
-    public IPOIIf createPOI(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public IPOIIf createPOI(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         return getExistingCmdPost().getPOIList().createPOI(anObjectId);
     }
@@ -352,7 +352,7 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getPOIList().createPOI(aType, aPosition);
     }
 
-    public IPOIIf createPOI(IMsoObjectIf.IObjectIdIf anObjectId, IPOIIf.POIType aType, Position aPosition) throws DuplicateIdException
+    public IPOIIf createPOI(IMsoObjectIf.IObjectIdIf anObjectId, IPOIIf.POIType aType, Position aPosition)
     {
         return getExistingCmdPost().getPOIList().createPOI(anObjectId, aType, aPosition);
     }
@@ -362,7 +362,7 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getRouteList().createRoute(aRoute);
     }
 
-    public IRouteIf createRoute(IMsoObjectIf.IObjectIdIf anObjectId, Route aRoute) throws DuplicateIdException
+    public IRouteIf createRoute(IMsoObjectIf.IObjectIdIf anObjectId, Route aRoute)
     {
         return getExistingCmdPost().getRouteList().createRoute(anObjectId, aRoute);
     }
@@ -372,7 +372,7 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getSearchAreaList().createSearchArea();
     }
 
-    public ISearchAreaIf createSearchArea(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public ISearchAreaIf createSearchArea(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         return getExistingCmdPost().getSearchAreaList().createSearchArea(
                 anObjectId);
@@ -383,20 +383,20 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getSketchList().createSketch();
     }
 
-    public ISketchIf createSketch(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public ISketchIf createSketch(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         return getExistingCmdPost().getSketchList().createSketch(
                 anObjectId);
     }
 
-    public ISubjectIf createSubject(String aName, String aDescription)
+    public ISubjectIf createSubject()
     {
-        return getExistingCmdPost().getSubjectList().createSubject(aName, aDescription);
+        return getExistingCmdPost().getSubjectList().createSubject();
     }
 
-    public ISubjectIf createSubject(IMsoObjectIf.IObjectIdIf anObjectId, String aName, String aDescription) throws DuplicateIdException
+    public ISubjectIf createSubject(IMsoObjectIf.IObjectIdIf anObjectId)
     {
-        return getExistingCmdPost().getSubjectList().createSubject(anObjectId, aName, aDescription);
+        return getExistingCmdPost().getSubjectList().createSubject(anObjectId);
     }
 
     public ITaskIf createTask(Calendar aCalendar)
@@ -404,9 +404,9 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getTaskList().createTask(aCalendar);
     }
 
-    public ITaskIf createTask(IMsoObjectIf.IObjectIdIf anObjectId, Calendar aCalendar) throws DuplicateIdException
+    public ITaskIf createTask(IMsoObjectIf.IObjectIdIf anObjectId)
     {
-        return getExistingCmdPost().getTaskList().createTask(anObjectId, aCalendar);
+        return getExistingCmdPost().getTaskList().createTask(anObjectId);
     }
 
     public ITrackIf createTrack()
@@ -414,7 +414,7 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getTrackList().createTrack();
     }
 
-    public ITrackIf createTrack(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public ITrackIf createTrack(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         return getExistingCmdPost().getTrackList().createTrack(anObjectId);
     }
@@ -424,7 +424,7 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getTrackList().createTrack(aTrack);
     }
 
-    public ITrackIf createTrack(IMsoObjectIf.IObjectIdIf anObjectId, Track aTrack) throws DuplicateIdException
+    public ITrackIf createTrack(IMsoObjectIf.IObjectIdIf anObjectId, Track aTrack)
     {
         return getExistingCmdPost().getTrackList().createTrack(anObjectId, aTrack);
     }
@@ -434,9 +434,9 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getUnitList().createVehicle(anIdentifier);
     }
 
-    public IVehicleIf createVehicle(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber, String anIdentifier) throws DuplicateIdException
+    public IVehicleIf createVehicle(IMsoObjectIf.IObjectIdIf anObjectId)
     {
-        return getExistingCmdPost().getUnitList().createVehicle(anObjectId, aNumber, anIdentifier);
+        return getExistingCmdPost().getUnitList().createVehicle(anObjectId);
     }
 
 }

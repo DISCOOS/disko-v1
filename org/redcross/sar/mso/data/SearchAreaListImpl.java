@@ -21,10 +21,11 @@ public class SearchAreaListImpl extends MsoListImpl<ISearchAreaIf> implements IS
         return createdUniqueItem(new SearchAreaImpl(makeUniqueId()));
     }
 
-    public ISearchAreaIf createSearchArea(IMsoObjectIf.IObjectIdIf anObjectId) throws DuplicateIdException
+    public ISearchAreaIf createSearchArea(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         checkCreateOp();
-        return createdItem(new SearchAreaImpl(anObjectId));
+        ISearchAreaIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new SearchAreaImpl(anObjectId));
     }
 
 

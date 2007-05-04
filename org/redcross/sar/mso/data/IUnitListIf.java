@@ -9,7 +9,7 @@ public interface IUnitListIf extends IMsoListIf<IUnitIf>
 {
     public IVehicleIf createVehicle(String anIdentifier);
 
-    public IVehicleIf createVehicle(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber, String anIdentifier) throws DuplicateIdException;
+    public IVehicleIf createVehicle(IMsoObjectIf.IObjectIdIf anObjectId);
 
     /**
      * Find a unit with a given unit number.

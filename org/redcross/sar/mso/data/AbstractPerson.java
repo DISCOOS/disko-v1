@@ -7,10 +7,9 @@ public abstract class AbstractPerson extends AbstractMsoObject implements IPerso
     private AttributeImpl.MsoString m_name = new AttributeImpl.MsoString(this,"Name",1);
     private AttributeImpl.MsoCalendar m_dateOfBirth;
 
-    public AbstractPerson(IMsoObjectIf.IObjectIdIf anObjectId,String aName)
+    public AbstractPerson(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         super(anObjectId);
-        m_name.setValue(aName);
     }
 
     protected void defineAttributes()

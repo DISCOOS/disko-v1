@@ -93,7 +93,7 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
     * Methods for lists
     *-------------------------------------------------------------------------------------------*/
 
-    public void addAssignmentEquipment(IEquipmentIf anIEquipmentIf) throws DuplicateIdException;
+    public void addAssignmentEquipment(IEquipmentIf anIEquipmentIf);
 
     public IEquipmentListIf getAssignmentEquipment();
 
@@ -101,7 +101,7 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
 
     public Collection<IEquipmentIf> getAssignmentEquipmentItems();
 
-    public void addAssignmentFinding(IPOIIf anIPOIIf) throws DuplicateIdException;
+    public void addAssignmentFinding(IPOIIf anIPOIIf);
 
     public IPOIListIf getAssignmentFindings();
 

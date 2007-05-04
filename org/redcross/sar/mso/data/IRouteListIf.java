@@ -7,6 +7,6 @@ public interface IRouteListIf extends IMsoListIf<IRouteIf>
 {
     public IRouteIf createRoute(Route aRoute);
 
-    public IRouteIf createRoute(IMsoObjectIf.IObjectIdIf anObjectId, Route aRoute) throws DuplicateIdException;
+    public IRouteIf createRoute(IMsoObjectIf.IObjectIdIf anObjectId, Route aRoute);
 
 }
