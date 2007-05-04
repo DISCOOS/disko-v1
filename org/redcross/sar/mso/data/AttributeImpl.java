@@ -4,7 +4,7 @@ import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.mso.*;
-import org.redcross.sar.util.except.MsoRuntimeException;
+import org.redcross.sar.util.except.MsoException;
 
 import java.awt.geom.Point2D;
 import java.util.Calendar;
@@ -785,7 +785,7 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
             E anEnum = enumValue(aName);
             if (anEnum == null)
             {
-                throw new MsoRuntimeException("Cannot set enum value " + aName + " to " + this);
+                //throw new MsoException("Cannot set enum value " + aName + " to " + this);
             }
             super.setAttrValue(enumValue(aName));
         }
