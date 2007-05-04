@@ -4,7 +4,7 @@ import org.redcross.sar.mso.CommitManager;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.mso.committer.CommittableImpl;
-import org.redcross.sar.util.except.MsoRuntimeException;
+import org.redcross.sar.util.except.MsoException;
 import org.redcross.sar.util.except.DuplicateIdException;
 import org.redcross.sar.util.mso.Selector;
 
@@ -66,7 +66,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
     {
         if (!m_isMain)
         {
-            throw new MsoRuntimeException(aMessage);
+            //throw new MsoRuntimeException(aMessage);
         }
     }
 
@@ -117,7 +117,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
     {
         if (anObject == null)
         {
-            throw new MsoRuntimeException(getName() + ": Cannot add null object");
+            //throw new MsoRuntimeException(getName() + ": Cannot add null object");
         }
         if (m_items.containsKey(anObject.getObjectId()) || m_added.containsKey(anObject.getObjectId()) || m_deleted.containsKey(anObject.getObjectId()))
         {
@@ -125,7 +125,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         }
         if (!((AbstractMsoObject) anObject).isSetup())
         {
-            throw new MsoRuntimeException(getName() + ": Cannot add uninitialized object");
+            //throw new MsoRuntimeException(getName() + ": Cannot add uninitialized object");
         }
 
 
@@ -392,8 +392,9 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         }
         catch (DuplicateIdException e)
         {
-            throw new MsoRuntimeException("Duplicate object id, should be unique: " + anObject.getObjectId());
+            //throw new MsoRuntimeException("Duplicate object id, should be unique: " + anObject.getObjectId());
         }
+        return null;
     }
 
     protected IMsoObjectIf.IObjectIdIf makeUniqueId()
@@ -436,7 +437,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
             }
             catch (ClassCastException e)
             {
-                throw new MsoRuntimeException("Object " + item + " is not implementing ISerialNumberedIf");
+                //throw new MsoRuntimeException("Object " + item + " is not implementing ISerialNumberedIf");
             }
         }
         return retVal + 1;

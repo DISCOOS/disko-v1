@@ -5,7 +5,7 @@ import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.mso.committer.ICommittableIf;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.MsoEvent;
-import org.redcross.sar.util.except.MsoRuntimeException;
+import org.redcross.sar.util.except.MsoException;
 import org.redcross.sar.util.except.IllegalDeleteException;
 import org.redcross.sar.util.except.MsoNullPointerException;
 import org.redcross.sar.util.except.UnknownAttributeException;
@@ -88,7 +88,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     {
         if (anObjectId == null || anObjectId.getId() == null || anObjectId.getId().length() == 0)
         {
-            throw new MsoRuntimeException("Try to create object with no well defined object id.");
+            //throw new MsoException("Try to create object with no well defined object id.");
         }
         m_MsoObjectId = anObjectId;
         m_eventManager = MsoModelImpl.getInstance().getEventManager();
