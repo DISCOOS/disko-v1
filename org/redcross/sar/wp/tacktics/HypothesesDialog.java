@@ -3,6 +3,12 @@ package org.redcross.sar.wp.tacktics;
 import java.awt.Frame;
 
 import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.mso.data.IAssignmentIf;
+import org.redcross.sar.mso.data.ICmdPostIf;
+import org.redcross.sar.mso.data.IHypothesisIf;
+import org.redcross.sar.mso.data.IHypothesisIf.HypothesisStatus;
+
 import javax.swing.JPanel;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
@@ -16,6 +22,9 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JList;
 import javax.swing.border.BevelBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import javax.swing.JTextArea;
@@ -23,6 +32,7 @@ import javax.swing.JTextArea;
 public class HypothesesDialog extends DiskoDialog {
 
 	private static final long serialVersionUID = 1L;
+	private IMsoModelIf msoModel = null;
 	private JPanel contentPanel = null;
 	private JPanel buttonPanel = null;
 	private JButton newButton = null;
@@ -36,9 +46,12 @@ public class HypothesesDialog extends DiskoDialog {
 	private JLabel priorityLabel;
 	private JComboBox priorityComboBox;
 	private JComboBox statusComboBox;
+	
+	private IHypothesisIf selectedHypotheses = null;
 
-	public HypothesesDialog(Frame owner) {
+	public HypothesesDialog(Frame owner, IMsoModelIf msoModel) {
 		super(owner);
+		this.msoModel = msoModel;
 		initialize();
 		// TODO Auto-generated constructor stub
 	}
@@ -50,12 +63,31 @@ public class HypothesesDialog extends DiskoDialog {
 	private void initialize() {
 		try {
             this.setContentPane(getContentPanel());
-            this.setPreferredSize(new Dimension(175, 500));
-            this.setSize(new Dimension(200, 500));
+            this.setPreferredSize(new Dimension(500, 150));
             this.pack();
 		}
 		catch (java.lang.Throwable e) {
 			//  Do Something
+		}
+	}
+	
+	public IHypothesisIf getSelectedHypotheses() {
+		applyChanges();
+		return selectedHypotheses;
+	}
+	
+	private void applyChanges() {
+		if (selectedHypotheses == null) {
+			return;
+		}
+		if (!selectedHypotheses.getDescription().equals(getDescriptionTextArea().getText())) {
+			selectedHypotheses.setDescription(getDescriptionTextArea().getText());
+		}
+		if (selectedHypotheses.getPriority()-1 != getPriorityComboBox().getSelectedIndex()) {
+			selectedHypotheses.setPriority(getPriorityComboBox().getSelectedIndex()+1);
+		}
+		if (selectedHypotheses.getStatus() != getStatusComboBox().getSelectedItem()) {
+			selectedHypotheses.setStatus((HypothesisStatus)getStatusComboBox().getSelectedItem());
 		}
 	}
 
@@ -69,8 +101,10 @@ public class HypothesesDialog extends DiskoDialog {
 			try {
 				contentPanel = new JPanel();
 				contentPanel.setLayout(new BorderLayout());
-				contentPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-				contentPanel.add(getListScrollPane(), BorderLayout.NORTH);
+				contentPanel.setBorder(BorderFactory.createCompoundBorder(
+						BorderFactory.createBevelBorder(BevelBorder.RAISED), 
+						BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+				contentPanel.add(getListScrollPane(), BorderLayout.WEST);
 				contentPanel.add(getCenterPanel(), BorderLayout.CENTER);
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
@@ -110,6 +144,14 @@ public class HypothesesDialog extends DiskoDialog {
 				newButton = new JButton();
 				newButton.setPreferredSize(new Dimension(50, 50));
 				newButton.setText("NY");
+				newButton.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent e) {
+						// create a new hypotheses
+						ICmdPostIf cmdPost = msoModel.getMsoManager().getCmdPost();
+						IHypothesisIf hypotheses = cmdPost.getHypothesisList().createHypothesis();
+						getHypothesesList().setSelectedValue(hypotheses, true);
+					}
+				});
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
@@ -127,7 +169,7 @@ public class HypothesesDialog extends DiskoDialog {
 			try {
 				listScrollPane = new JScrollPane();
 				listScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-				listScrollPane.setPreferredSize(new Dimension(150, 350));
+				listScrollPane.setPreferredSize(new Dimension(150, 150));
 				listScrollPane.setViewportView(getHypothesesList());
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
@@ -144,7 +186,23 @@ public class HypothesesDialog extends DiskoDialog {
 	private JList getHypothesesList() {
 		if (hypothesesList == null) {
 			try {
-				hypothesesList = new JList();
+				HypothesesListModel listModel = new HypothesesListModel(msoModel);
+				hypothesesList = new JList(listModel);
+				hypothesesList.setCellRenderer(new HypothesesListCellRenderer());
+				hypothesesList.addListSelectionListener(new ListSelectionListener() {
+					public void valueChanged(ListSelectionEvent e) {
+						applyChanges();
+						selectedHypotheses = (IHypothesisIf)hypothesesList.getSelectedValue();
+						getDescriptionTextArea().setText(selectedHypotheses.getDescription());
+						if (selectedHypotheses.getPriority() > 0) {
+							getPriorityComboBox().setSelectedIndex(selectedHypotheses.getPriority()-1);
+						}
+						else {
+							getPriorityComboBox().setSelectedIndex(0);
+						}
+						getStatusComboBox().setSelectedItem(selectedHypotheses.getStatus());
+					}
+				});
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
@@ -162,9 +220,9 @@ public class HypothesesDialog extends DiskoDialog {
 			try {
 				centerPanel = new JPanel();
 				centerPanel.setLayout(new BorderLayout());
-				centerPanel.add(getButtonPanel(), BorderLayout.NORTH);
+				centerPanel.add(getButtonPanel(), BorderLayout.WEST);
 				centerPanel.add(getTextAreaScrollPane(), BorderLayout.CENTER);
-				centerPanel.add(getPropertiesPanel(), BorderLayout.SOUTH);
+				centerPanel.add(getPropertiesPanel(), BorderLayout.EAST);
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
@@ -243,6 +301,7 @@ public class HypothesesDialog extends DiskoDialog {
 				priorityLabel.setText("Prioritet:");
 				propertiesPanel = new JPanel();
 				propertiesPanel.setLayout(new GridBagLayout());
+				propertiesPanel.setPreferredSize(new Dimension(130, 150));
 				propertiesPanel.add(priorityLabel, gridBagConstraints2);
 				propertiesPanel.add(statusLabel, gridBagConstraints);
 				propertiesPanel.add(getPriorityComboBox(), gridBagConstraints1);
@@ -263,6 +322,10 @@ public class HypothesesDialog extends DiskoDialog {
 		if (priorityComboBox == null) {
 			try {
 				priorityComboBox = new JComboBox();
+				for (int i = 1; i < 6; i++) {
+					priorityComboBox.addItem(new Integer(i));
+				}
+				priorityComboBox.setSelectedIndex(0);
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
@@ -279,6 +342,11 @@ public class HypothesesDialog extends DiskoDialog {
 		if (statusComboBox == null) {
 			try {
 				statusComboBox = new JComboBox();
+				HypothesisStatus[] values = HypothesisStatus.values();
+				for (int i = 0; i < values.length; i++) {
+					statusComboBox.addItem(values[i]);
+				}
+				statusComboBox.setSelectedIndex(0);
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}

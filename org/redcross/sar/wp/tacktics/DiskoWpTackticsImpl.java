@@ -4,10 +4,12 @@ import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JToggleButton;
 
 import org.redcross.sar.app.IDiskoRole;
@@ -75,8 +77,11 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	private POITool poiTool = null;
 	private DrawTool drawTool = null;
 	private POIDialog poiDialog = null;
+	private ArrayList dialogs = null;
 	private TextAreaDialog textAreaDialog = null;
 	private HypothesesDialog hypothesesDialog = null;
+	private PriorityDialog priorityDialog = null;
+	private SearchRequirementDialog searchRequirementDialog = null;
 
 	/**
 	 * Constructs a DiskoApTaktikkImpl
@@ -84,6 +89,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	 */
 	public DiskoWpTackticsImpl(IDiskoRole rolle) {
 		super(rolle);
+		dialogs = new ArrayList();
 		initialize();
 	}
 	
@@ -94,8 +100,8 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 		layoutButton(getElementToggleButton(), false);
 		layoutButton(getListToggleButton(), true);
 		layoutButton(getMissionToggleButton(), true);
-		layoutButton(getHypotheseToggleButton(), true);
 		layoutButton(getPriorityToggleButton(), true);
+		layoutButton(getHypotheseToggleButton(), true);
 		layoutButton(getRequirementToggleButton(), true);
 		layoutButton(getDescriptionToggleButton(), true);
 		layoutButton(getUnitToggleButton(), true);
@@ -143,7 +149,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	}
 	
 	public void deactivated() {
-		hideDialogs();
+		hideDialogs(null);
     }
 	
 	/* (non-Javadoc)
@@ -158,9 +164,10 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	 */
 	public void cancel() {
 		try {
-			hideDialogs();
+			hideDialogs(null);
 			graphicsContainer.deleteAllElements();
 			getMap().partialRefreshGraphics(null);
+			getMsoModel().rollback();
 		} catch (AutomationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -176,7 +183,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	public void finish() {
 		List graphics = null;
 		try {
-			hideDialogs();
+			hideDialogs(null);
 			getTextAreaDialog().setText(null);
 			ICmdPostIf cmdPost = getMsoManager().getCmdPost();
 			graphics = getMap().searchGraphics(currentAction);
@@ -212,6 +219,8 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 						org.redcross.sar.util.mso.Polygon msoPolygon = 
 							MapUtil.getMsoPolygon(polygon);
 						searchArea.setGeodata(msoPolygon);
+						searchArea.setSearchAreaHypothesis(getHypothesesDialog().getSelectedHypotheses());
+						searchArea.setPriority(getPriorityDialog().getPriority());
 					}
 					else if (elem instanceof MarkerElement) { // POI
 						createPOI((MarkerElement)elem);
@@ -243,6 +252,12 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 				}
 				area.setGeodata(geoCollection);
 				search.setPlannedArea(area);
+				SearchRequirementDialog dialog = getSearchRequirementDialog();
+				search.setPlannedAccuracy(dialog.getAccuracy());
+				search.setPriority(dialog.getPriority());
+				search.setPlannedPersonnel(dialog.getPersonelNeed());
+				search.setPlannedProgress(dialog.getEstimatedProgress());
+				search.setPriority(dialog.getPriority());
 			}
 		} catch (AutomationException e) {
 			getMsoModel().rollback();
@@ -298,18 +313,21 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 		return poi;
 	}
 	
-	private void hideDialogs() {
-		getElementDialog().setVisible(false);
+	private void hideDialogs(JDialog notToHideDialog) {
+		for (int i = 0; i < dialogs.size(); i++) {
+			JDialog dialog = (JDialog)dialogs.get(i);
+			if (dialog != notToHideDialog) {
+				dialog.setVisible(false);
+			}
+		}
 		getElementToggleButton().setSelected(false);
-		getTextAreaDialog().setVisible(false);
-		getHypothesesSelectionDialog().setVisible(false);
 	}
 	
 	private ElementDialog getElementDialog() {
 		if (elementDialog == null) {
 			elementDialog = new ElementDialog(getApplication().getFrame(), new ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					hideDialogs();
+					hideDialogs(null);
 					getDummyToggleButton().doClick(); // HACK: unselect all toggle buttons
 					getElementDialog().setVisible(false);
 					getElementToggleButton().setSelected(false);
@@ -340,6 +358,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 				}
 			});
 			elementDialog.setIsToggable(false);
+			dialogs.add(elementDialog);
 		}
 		return elementDialog;
 	}
@@ -349,19 +368,38 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 			textAreaDialog = new TextAreaDialog(getApplication().getFrame());
 			textAreaDialog.setIsToggable(false);
 			textAreaDialog.setHeaderText("Aksjonens oppdrag:");
+			dialogs.add(textAreaDialog);
 		}
 		return textAreaDialog;
 	}
 	
-	
-	
-	private HypothesesDialog getHypothesesSelectionDialog() {
+	private HypothesesDialog getHypothesesDialog() {
 		if (hypothesesDialog == null) {
-			hypothesesDialog = new HypothesesDialog(
-					getApplication().getFrame());
+			hypothesesDialog = new HypothesesDialog(getApplication().getFrame(), getMsoModel());
 			hypothesesDialog.setIsToggable(false);
+			dialogs.add(hypothesesDialog);
 		}
 		return hypothesesDialog;
+	}
+
+	private PriorityDialog getPriorityDialog() {
+		if (priorityDialog == null) {
+			priorityDialog = new PriorityDialog(getApplication().getFrame());
+			priorityDialog.setIsToggable(false);
+			dialogs.add(priorityDialog);
+		}
+		return priorityDialog;
+	}
+	
+	
+
+	private SearchRequirementDialog getSearchRequirementDialog() {
+		if (searchRequirementDialog == null) {
+			searchRequirementDialog = new SearchRequirementDialog(getApplication());
+			searchRequirementDialog.setIsToggable(false);
+			dialogs.add(searchRequirementDialog);
+		}
+		return searchRequirementDialog;
 	}
 
 	private void showOperationAreaButtons() {
@@ -443,7 +481,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 				descriptionToggleButton.setPreferredSize(size);
 				descriptionToggleButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
-						hideDialogs();
+						hideDialogs(null);
 					}
 				});
 			} catch (Exception e) {
@@ -466,14 +504,15 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 				hypotheseToggleButton.setVisible(false);
 				hypotheseToggleButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
-						HypothesesDialog selectionDialog = getHypothesesSelectionDialog();
+						HypothesesDialog dialog = getHypothesesDialog();
+						hideDialogs(dialog);
 						JComponent mapComp = (JComponent)getMap();
-						if (hypotheseToggleButton.isSelected() && selectionDialog.isVisible()) {
-							selectionDialog.setVisible(false);
+						if (hypotheseToggleButton.isSelected() & dialog.isVisible()) {
+							dialog.setVisible(false);
 						}
 						else {
-							selectionDialog.setLocationRelativeTo(mapComp, DiskoDialog.POS_EAST, true);
-							selectionDialog.setVisible(true);
+							dialog.setLocationRelativeTo(mapComp, DiskoDialog.POS_SOUTH, true);
+							dialog.setVisible(true);
 						}
 					}
 				});
@@ -496,7 +535,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 				listToggleButton.setPreferredSize(size);
 				listToggleButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
-						hideDialogs();
+						hideDialogs(null);
 					}
 				});
 			} catch (Exception e) {
@@ -520,6 +559,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 				missionToggleButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
 						TextAreaDialog dialog = getTextAreaDialog();
+						hideDialogs(dialog);
 						if (missionToggleButton.isSelected() && dialog.isVisible()) {
 							dialog.setVisible(false);
 						}
@@ -551,7 +591,17 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 				priorityToggleButton.setVisible(false);
 				priorityToggleButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
-						hideDialogs();
+						PriorityDialog dialog = getPriorityDialog();
+						hideDialogs(dialog);
+						if (priorityToggleButton.isSelected() && dialog.isVisible()) {
+							dialog.setVisible(false);
+						}
+						else {
+							java.awt.Point p = priorityToggleButton.getLocationOnScreen();
+							p.setLocation(p.x - dialog.getWidth()-2, p.y);
+							dialog.setLocation(p);
+							dialog.setVisible(true);
+						}
 					}
 				});
 			} catch (Exception e) {
@@ -574,7 +624,16 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 				requirementToggleButton.setPreferredSize(size);
 				requirementToggleButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
-						hideDialogs();
+						SearchRequirementDialog dialog = getSearchRequirementDialog();
+						hideDialogs(dialog);
+						if (requirementToggleButton.isSelected() && dialog.isVisible()) {
+							dialog.setVisible(false);
+						}
+						else {
+							dialog.setLocationRelativeTo((JComponent)getMap(), 
+									DiskoDialog.POS_SOUTH, true);
+							dialog.setVisible(true);
+						}
 					}
 				});
 			} catch (Exception e) {
@@ -597,7 +656,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 				unitToggleButton.setPreferredSize(size);
 				unitToggleButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
-						hideDialogs();
+						hideDialogs(null);
 					}
 				});
 			} catch (Exception e) {
