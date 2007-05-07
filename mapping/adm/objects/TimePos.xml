@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object id="00000000165" name="TimePos" objectType="test" pos="54">
+<fact comp="n" edit="y" id="00000000166" label="m_time" pos1="999" pos2="999" relTo="00000000165" version="1">
+<date_fact/>
+</fact>
+</object>

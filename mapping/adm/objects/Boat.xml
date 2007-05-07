@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object id="00000000023" name="Boat" objectType="test" pos="6">
+<fact comp="n" edit="y" id="00000000024" label="Length" pos1="999" pos2="999" relTo="00000000023" version="1">
+<num_fact antdec="0" max="1.0E8" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000002" label="AverageSpeed" pos1="999" pos2="999" relTo="00000000023" version="1">
+<num_fact antdec="0" max="1.0E8" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000025" label="Type" pos1="999" pos2="999" relTo="00000000023" version="1">
+<num_fact antdec="0" max="1.0E8" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000026" label="Capacity" pos1="999" pos2="999" relTo="00000000023" version="1">
+<num_fact antdec="0" max="1.0E8" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000027" label="Depth" pos1="999" pos2="999" relTo="00000000023" version="1">
+<num_fact antdec="0" max="1.0E8" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000028" label="Freeboard" pos1="999" pos2="999" relTo="00000000023" version="1">
+<num_fact antdec="0" max="1.0E8" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000029" label="Height" pos1="999" pos2="999" relTo="00000000023" version="1">
+<num_fact antdec="0" max="1.0E8" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000009" label="MaxSpeed" pos1="999" pos2="999" relTo="00000000023" version="1">
+<num_fact antdec="0" max="1.0E8" min="0.0"/>
+</fact>
+</object>

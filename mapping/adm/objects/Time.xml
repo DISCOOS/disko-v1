@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object id="00000000162" name="Time" objectType="test" pos="52">
+<fact comp="n" edit="y" id="00000000072" label="Value" pos1="999" pos2="999" relTo="00000000162" version="1">
+<str_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000163" label="Visible" pos1="999" pos2="999" relTo="00000000162" version="1">
+<num_fact antdec="0" max="1.0" min="0.0"/>
+</fact>
+</object>

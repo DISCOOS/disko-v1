@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object id="00000000001" name="Aircraft" objectType="test" pos="0">
+<fact comp="n" edit="y" id="00000000002" label="AverageSpeed" pos1="999" pos2="999" relTo="00000000001" version="1">
+<num_fact antdec="0" max="1.0E8" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000003" label="Visibility" pos1="999" pos2="999" relTo="00000000001" version="1">
+<num_fact antdec="0" max="1.0E8" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000004" label="Photo" pos1="999" pos2="999" relTo="00000000001" version="1">
+<num_fact antdec="0" max="1.0" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000005" label="Nightvision" pos1="999" pos2="999" relTo="00000000001" version="1">
+<num_fact antdec="0" max="1.0" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000006" label="Infrared" pos1="999" pos2="999" relTo="00000000001" version="1">
+<num_fact antdec="0" max="1.0" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000007" label="Video" pos1="999" pos2="999" relTo="00000000001" version="1">
+<num_fact antdec="0" max="1.0" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000008" label="Seats" pos1="999" pos2="999" relTo="00000000001" version="1">
+<num_fact antdec="0" max="1.0E8" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000009" label="MaxSpeed" pos1="999" pos2="999" relTo="00000000001" version="1">
+<num_fact antdec="0" max="1.0E8" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000010" label="FlightTime" pos1="999" pos2="999" relTo="00000000001" version="1">
+<num_fact antdec="0" max="1.0E8" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000011" label="Range" pos1="999" pos2="999" relTo="00000000001" version="1">
+<num_fact antdec="0" max="1.0E8" min="0.0"/>
+</fact>
+</object>

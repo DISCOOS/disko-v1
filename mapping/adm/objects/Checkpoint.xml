@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object id="00000000049" name="Checkpoint" objectType="test" pos="11">
+<fact comp="n" edit="y" id="00000000013" label="ID" pos1="999" pos2="999" relTo="00000000049" version="1">
+<str_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000050" label="Name" pos1="999" pos2="999" relTo="00000000049" version="1">
+<str_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000051" label="Checked" pos1="999" pos2="999" relTo="00000000049" version="1">
+<num_fact antdec="0" max="1.0" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000052" label="Description" pos1="999" pos2="999" relTo="00000000049" version="1">
+<str_fact/>
+</fact>
+</object>

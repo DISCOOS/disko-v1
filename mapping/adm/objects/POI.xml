@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object id="00000000185" name="POI" objectType="test" pos="66">
+<object id="00000000123" name="Position" objectType="test" pos="40">
+<fact comp="n" edit="y" id="00000000124" label="Latitude" pos1="999" pos2="999" relTo="00000000123" version="1">
+<num_fact antdec="12" max="1.0E9" min="-1.0E9"/>
+</fact>
+<fact comp="n" edit="y" id="00000000125" label="Longitude" pos1="999" pos2="999" relTo="00000000123" version="1">
+<num_fact antdec="12" max="1.0E9" min="-1.0E9"/>
+</fact>
+<fact comp="n" edit="y" id="00000000126" label="Address1" pos1="999" pos2="999" relTo="00000000123" version="1">
+<str_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000127" label="Address2" pos1="999" pos2="999" relTo="00000000123" version="1">
+<str_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000128" label="ZipCode" pos1="999" pos2="999" relTo="00000000123" version="1">
+<num_fact antdec="0" max="1.0E8" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000129" label="Place" pos1="999" pos2="999" relTo="00000000123" version="1">
+<str_fact/>
+</fact>
+</object>
+<fact comp="n" edit="y" id="00000000025" label="Type" pos1="999" pos2="999" relTo="00000000185" version="1">
+<num_fact antdec="0" max="1.0E8" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000014" label="Remarks" pos1="999" pos2="999" relTo="00000000185" version="1">
+<num_fact antdec="0" max="1.0E8" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000013" label="ID" pos1="999" pos2="999" relTo="00000000185" version="1">
+<str_fact/>
+</fact>
+</object>
