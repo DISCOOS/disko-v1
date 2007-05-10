@@ -139,5 +139,26 @@ public class Position implements IGeodataIf
         return GeoPos.bearing(aPos1.m_position, aPos2.m_position);
     }
 
+   public boolean equals(Object o)
+   {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
 
+      Position position = (Position) o;
+
+      if (m_id != null ? !m_id.equals(position.m_id) : position.m_id != null) return false;
+      if (m_layout != null ? !m_layout.equals(position.m_layout) : position.m_layout != null) return false;
+      if (m_position != null ? !m_position.equals(position.m_position) : position.m_position != null) return false;
+
+      return true;
+   }
+
+   public int hashCode()
+   {
+      int result;
+      result = (m_id != null ? m_id.hashCode() : 0);
+      result = 31 * result + (m_layout != null ? m_layout.hashCode() : 0);
+      result = 31 * result + (m_position != null ? m_position.hashCode() : 0);
+      return result;
+   }
 }

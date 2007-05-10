@@ -108,4 +108,28 @@ public class Route implements IGeodataIf
         return m_layout;
     }
 
+   public boolean equals(Object o)
+   {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      Route route = (Route) o;
+
+      if (m_id != null ? !m_id.equals(route.m_id) : route.m_id != null) return false;
+      if (m_layout != null ? !m_layout.equals(route.m_layout) : route.m_layout != null) return false;
+      if (m_name != null ? !m_name.equals(route.m_name) : route.m_name != null) return false;
+      if (m_route != null ? !m_route.equals(route.m_route) : route.m_route != null) return false;
+
+      return true;
+   }
+
+   public int hashCode()
+   {
+      int result;
+      result = (m_id != null ? m_id.hashCode() : 0);
+      result = 31 * result + (m_layout != null ? m_layout.hashCode() : 0);
+      result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
+      result = 31 * result + (m_route != null ? m_route.hashCode() : 0);
+      return result;
+   }
 }

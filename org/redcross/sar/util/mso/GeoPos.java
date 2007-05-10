@@ -112,4 +112,27 @@ public class GeoPos
     {
         return 0;  // todo fix
     }
+
+   @Override
+   public boolean equals(Object obj)
+   {
+      if(obj instanceof GeoPos)
+      {
+         GeoPos in=(GeoPos)obj;
+         return getPosition().getY()==in.getPosition().getY() &&
+               getPosition().getX()==in.getPosition().getX();
+      }
+      else
+      {
+         return false;
+      }
+   }
+
+   public int hashCode()
+   {
+      int result=37;
+      result=51*result+(int)(Double.doubleToLongBits(getPosition().getX())^((Double.doubleToLongBits(getPosition().getX())>>>32)));
+      result=51*result+(int)(Double.doubleToLongBits(getPosition().getY())^((Double.doubleToLongBits(getPosition().getY())>>>32)));
+      return result;
+   }
 }

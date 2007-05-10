@@ -71,4 +71,33 @@ public class TimePos extends GeoPos implements Comparable<TimePos>
     {
         return m_time.compareTo(aTimePos.m_time);
     }
+
+   public Calendar getTime()
+   {
+      return m_time;
+   }
+
+   public boolean equals(Object obj)
+   {
+      if(obj instanceof TimePos)
+      {
+         TimePos in=(TimePos)obj;
+         return getPosition().getY()==in.getPosition().getY() &&
+               getPosition().getX()==in.getPosition().getX() &&
+               m_time.equals(in.getTime());
+      }
+      else
+      {
+         return false;
+      }
+   }
+   public int hashCode()
+   {
+      int result=37;
+      result=51*result+(int)(Double.doubleToLongBits(getPosition().getX())^((Double.doubleToLongBits(getPosition().getX())>>>32)));
+      result=51*result+(int)(Double.doubleToLongBits(getPosition().getY())^((Double.doubleToLongBits(getPosition().getY())>>>32)));
+      result=51*result+m_time.hashCode();
+      return result;
+   }
+
 }

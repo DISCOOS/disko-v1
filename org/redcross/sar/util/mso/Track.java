@@ -112,4 +112,29 @@ public class Track implements IGeodataIf
     {
         return m_layout;
     }
+
+   public boolean equals(Object o)
+   {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      Track track = (Track) o;
+
+      if (m_id != null ? !m_id.equals(track.m_id) : track.m_id != null) return false;
+      if (m_layout != null ? !m_layout.equals(track.m_layout) : track.m_layout != null) return false;
+      if (m_name != null ? !m_name.equals(track.m_name) : track.m_name != null) return false;
+      if (m_track != null ? !m_track.equals(track.m_track) : track.m_track != null) return false;
+
+      return true;
+   }
+
+   public int hashCode()
+   {
+      int result;
+      result = (m_id != null ? m_id.hashCode() : 0);
+      result = 31 * result + (m_layout != null ? m_layout.hashCode() : 0);
+      result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
+      result = 31 * result + (m_track != null ? m_track.hashCode() : 0);
+      return result;
+   }
 }
