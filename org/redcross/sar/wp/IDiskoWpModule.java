@@ -21,7 +21,7 @@ public interface IDiskoWpModule {
 	public String getName();
 	
 	/**
-	 * Get a reference to the DiskoMap. If the implementing class haqs no map, 
+	 * Get a reference to the DiskoMap. If the implementing class has no map, 
 	 * null should be returned
 	 * @return A reference to a DiskoMap
 	 */
