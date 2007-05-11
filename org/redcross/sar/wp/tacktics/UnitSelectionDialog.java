@@ -17,7 +17,6 @@ import java.awt.BorderLayout;
 public class UnitSelectionDialog extends DiskoDialog {
 
 	private static final long serialVersionUID = 1L;
-	private IDiskoApplication app = null;
 	private IMsoModelIf msoModel = null;
 	private JPanel contentPanel = null;
 	private JScrollPane jScrollPane = null;
@@ -25,7 +24,6 @@ public class UnitSelectionDialog extends DiskoDialog {
 	
 	public UnitSelectionDialog(IDiskoApplication app) {
 		super(app.getFrame());
-		this.app = app;
 		this.msoModel = app.getMsoModel();
 		initialize();
 		// TODO Auto-generated constructor stub

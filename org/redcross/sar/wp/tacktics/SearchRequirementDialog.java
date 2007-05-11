@@ -1,6 +1,5 @@
 package org.redcross.sar.wp.tacktics;
 
-import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
 import org.redcross.sar.mso.data.IAssignmentIf;
@@ -26,7 +25,7 @@ import javax.swing.JComboBox;
 public class SearchRequirementDialog extends DiskoDialog {
 
 	private static final long serialVersionUID = 1L;
-	//private IDiskoApplication app = null;
+	private DiskoWpTackticsImpl wp = null;
 	private JPanel contentPanel = null;
 	private JLabel accuracyLabel = null;
 	private JSlider accuracySlider = null;
@@ -45,8 +44,9 @@ public class SearchRequirementDialog extends DiskoDialog {
 	private JComboBox statusComboBox = null;
 	
 	
-	public SearchRequirementDialog(IDiskoApplication app) {
-		super(app.getFrame());
+	public SearchRequirementDialog(DiskoWpTackticsImpl wp) {
+		super(wp.getApplication().getFrame());
+		this.wp = wp;
 		initialize();
 		// TODO Auto-generated constructor stub
 	}
@@ -410,11 +410,22 @@ public class SearchRequirementDialog extends DiskoDialog {
 				statusComboBox = new JComboBox();
 				statusComboBox.setRenderer(new SimpleListCellRenderer());
 				statusComboBox.setPreferredSize(new Dimension(125, 20));
-				IAssignmentIf.AssignmentStatus[] values = IAssignmentIf.AssignmentStatus.values();
-				for (int i = 0; i <values.length; i++) {
-					statusComboBox.addItem(values[i]);
-				}
-				statusComboBox.setSelectedItem(IAssignmentIf.AssignmentStatus.DRAFT);
+				statusComboBox.addItem(IAssignmentIf.AssignmentStatus.READY);
+				statusComboBox.addItem(IAssignmentIf.AssignmentStatus.DRAFT);
+				statusComboBox.setSelectedIndex(0);
+				statusComboBox.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent e) {
+						IAssignmentIf.AssignmentStatus status = 
+							(IAssignmentIf.AssignmentStatus)statusComboBox.getSelectedItem();
+						if (status == IAssignmentIf.AssignmentStatus.READY) {
+							wp.getUnitToggleButton().setEnabled(true);
+						}
+						else {
+							wp.getUnitToggleButton().setEnabled(false);
+						}
+					}
+				});
+				
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}

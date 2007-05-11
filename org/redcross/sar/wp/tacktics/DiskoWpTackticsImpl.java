@@ -428,7 +428,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	
 	private SearchRequirementDialog getSearchRequirementDialog() {
 		if (searchRequirementDialog == null) {
-			searchRequirementDialog = new SearchRequirementDialog(getApplication());
+			searchRequirementDialog = new SearchRequirementDialog(this);
 			searchRequirementDialog.setIsToggable(false);
 			dialogs.add(searchRequirementDialog);
 		}
@@ -716,7 +716,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 		return requirementToggleButton;
 	}
 
-	private JToggleButton getUnitToggleButton() {
+	JToggleButton getUnitToggleButton() {
 		if (unitToggleButton == null) {
 			try {
 				Dimension size = getApplication().getUIFactory().getLargeButtonSize();
