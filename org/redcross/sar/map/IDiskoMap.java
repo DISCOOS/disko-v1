@@ -6,7 +6,6 @@ import java.util.List;
 import org.redcross.sar.event.IDiskoMapEventListener;
 import org.redcross.sar.gui.ClipLayerSelectionModel;
 import org.redcross.sar.gui.SnapLayerSelectionModel;
-
 import com.esri.arcgis.carto.FeatureLayer;
 import com.esri.arcgis.carto.IElement;
 import com.esri.arcgis.geodatabase.Feature;
@@ -67,6 +66,8 @@ public interface IDiskoMap {
 	 */
 	public void setSelected(FeatureLayer layer, String whereclause)
 			throws IOException, AutomationException;
+	
+	public void zoomToSelected () throws IOException, AutomationException;
 
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#getFeatureLayer(java.lang.String)

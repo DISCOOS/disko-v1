@@ -231,9 +231,8 @@ public class DiskoMapManagerImpl implements IDiskoMapManager,
 					Iterator iter = area.getGeodata().getPositions().iterator();
 					while(iter.hasNext()) {
 						IGeodataIf geodata = (IGeodataIf)iter.next();
-						System.out.println(geodata);
 						if (geodata instanceof Route) {
-							createRouteFeature((Route)geodata, refreshEnv);
+							createRouteFeature((Route)geodata, refreshEnv, area.getObjectId());
 						}
 					}
 				}
@@ -245,7 +244,7 @@ public class DiskoMapManagerImpl implements IDiskoMapManager,
 			else if (commitObject instanceof IRouteIf) {
 				IRouteIf route = (IRouteIf) commitObject;
 				if (type == CommitType.COMMIT_CREATED) {
-					createRouteFeature(route.getGeodata(), refreshEnv);
+					createRouteFeature(route.getGeodata(), refreshEnv, route.getObjectId());
 				}
 				else if (type == CommitType.COMMIT_DELETED) {
 				}
@@ -269,7 +268,6 @@ public class DiskoMapManagerImpl implements IDiskoMapManager,
 	private IEnvelope getRefreshEnvelope() {
 		try {
 			IEnvelope env = new Envelope();
-			env.putCoords(0, 0, 0, 0);
 			return env;
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
@@ -293,7 +291,10 @@ public class DiskoMapManagerImpl implements IDiskoMapManager,
 				if (type != null) {
 					feature.setValue(2, poi.getType().toString());
 				}
-				feature.setValue(4, poi.getRemarks());
+				int field = poiFL.getFeatureClass().findField("Remark");
+				feature.setValue(field, poi.getRemarks());
+				field = poiFL.getFeatureClass().findField("MSOID");
+				feature.setValue(field, poi.getObjectId());
 				feature.store();
 				refreshEnv.union(MapUtil.getEnvelope(p, 50));
 			}
@@ -318,6 +319,8 @@ public class DiskoMapManagerImpl implements IDiskoMapManager,
 				feature.setShapeByRef(polygon);
 				int field = flankFL.getFeatureClass().findField("Side");
 				feature.setValue(field, "venstre");
+				field = flankFL.getFeatureClass().findField("MSOID");
+				feature.setValue(field, opArea.getObjectId());
 				feature.store();
 				refreshEnv.union(polygon.getEnvelope());
 			}
@@ -342,6 +345,8 @@ public class DiskoMapManagerImpl implements IDiskoMapManager,
 				feature.setShapeByRef(polygon);
 				int field = flankFL.getFeatureClass().findField("Side");
 				feature.setValue(field, "hoyre");
+				field = flankFL.getFeatureClass().findField("MSOID");
+				feature.setValue(field, searchArea.getObjectId());
 				feature.store();
 				refreshEnv.union(polygon.getEnvelope());
 			}
@@ -355,7 +360,7 @@ public class DiskoMapManagerImpl implements IDiskoMapManager,
 	}
 	
 	private void createRouteFeature(
-			Route route, IEnvelope refreshEnv) {
+			Route route, IEnvelope refreshEnv, String objID) {
 		try {
 			ISpatialReference srs = getDefaultMap().getSpatialReference();
 			IFeatureLayer basicLineFL = getBasicLineFeatureLayer();
@@ -363,6 +368,8 @@ public class DiskoMapManagerImpl implements IDiskoMapManager,
 				Polyline polyline = MapUtil.getEsriPolyline(route, srs);
 				IFeature feature = basicLineFL.getFeatureClass().createFeature();
 				feature.setShapeByRef(polyline);
+				int field = basicLineFL.getFeatureClass().findField("MSOID");
+				feature.setValue(field, objID);
 				feature.store();
 				refreshEnv.union(polyline.getEnvelope());
 			}

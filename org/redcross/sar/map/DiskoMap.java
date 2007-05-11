@@ -28,6 +28,7 @@ import com.esri.arcgis.controls.IMapControlEvents2OnMapReplacedEvent;
 import com.esri.arcgis.geodatabase.Feature;
 import com.esri.arcgis.geodatabase.IEnumIDs;
 import com.esri.arcgis.geodatabase.QueryFilter;
+import com.esri.arcgis.geometry.Envelope;
 import com.esri.arcgis.geometry.IEnvelope;
 import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.interop.AutomationException;
@@ -239,6 +240,17 @@ public final class DiskoMap extends MapBean implements IDiskoMap {
 		return selection;
 	}
 	
+	public void zoomToSelected() throws IOException, AutomationException {
+		Feature[] selection = getSelection();
+		if (selection != null && selection.length > 0) {
+			IEnvelope env = new Envelope();
+			for (int i = 0; i < selection.length; i++) {
+				env.union(selection[i].getExtent());
+			}
+			setExtent(env);
+		}
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#setSelected(java.lang.String, java.lang.String, java.lang.Object)
 	 */
@@ -252,7 +264,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap {
 	 */
 	public void setSelected(FeatureLayer layer, String fieldName, Object value) 
 			throws IOException, AutomationException {
-		String whereclause = "["+fieldName+"] =";
+		String whereclause = "\""+fieldName+"\"=";
 		if (value instanceof String) {
 			whereclause += "'"+(String)value+"'";
 		}
@@ -273,6 +285,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap {
 				esriSelectionResultEnum.esriSelectionResultNew, false);
 	}
 	
+	
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#getFeatureLayer(java.lang.String)
 	 */
@@ -290,7 +303,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap {
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#deleteSelected()
 	 */
-	public void deleteSelected() throws IOException {
+	public void deleteSelected() throws IOException, AutomationException {
 		Feature[] selection = getSelection();
 		for (int i = 0; i < selection.length; i++) {
 			selection[i].delete();
