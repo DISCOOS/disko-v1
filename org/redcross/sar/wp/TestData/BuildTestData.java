@@ -90,6 +90,7 @@ public class BuildTestData
                 asg = asgList.createSearch();
                 asg.setStatus(IAssignmentIf.AssignmentStatus.DRAFT);
                 asg.setStatus(IAssignmentIf.AssignmentStatus.READY);
+                ((ISearchIf)asg).setSubType(ISearchIf.SearchSubType.LINE);
                 unit.addUnitAssignment(asg);
             }
 
@@ -99,6 +100,7 @@ public class BuildTestData
                 asg = asgList.createSearch();
                 asg.setStatus(IAssignmentIf.AssignmentStatus.DRAFT);
                 asg.setStatus(IAssignmentIf.AssignmentStatus.READY);
+                ((ISearchIf)asg).setSubType(ISearchIf.SearchSubType.DOG);
                 unit.addUnitAssignment(asg);
             }
 
@@ -107,6 +109,7 @@ public class BuildTestData
                 asg = asgList.createSearch();
                 asg.setStatus(IAssignmentIf.AssignmentStatus.DRAFT);
                 asg.setStatus(IAssignmentIf.AssignmentStatus.READY);
+                ((ISearchIf)asg).setSubType(ISearchIf.SearchSubType.PATROL);
             }
 
         }
