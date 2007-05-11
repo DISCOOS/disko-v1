@@ -195,10 +195,10 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication {
 		return moduleLoader;
 	}
 	
-	private Properties getProperties() {
+	public Properties getProperties() {
 		if (properties == null) {
 			try {
-				properties = Utils.getProperties("properties");
+				properties = Utils.loadProperties("properties");
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
