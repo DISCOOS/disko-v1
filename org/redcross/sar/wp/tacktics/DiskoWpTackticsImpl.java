@@ -227,7 +227,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 						org.redcross.sar.util.mso.Polygon msoPolygon = MapUtil.getMsoPolygon(polygon);
 						searchArea.setGeodata(msoPolygon);
 						searchArea.setSearchAreaHypothesis(getHypothesesDialog().getSelectedHypotheses());
-						((AssignmentImpl)searchArea).setPriority(getPriorityDialog().getPriority());
+						//searchArea.setPriority(getPriorityDialog().getPriority());
 					}
 					else if (elem instanceof MarkerElement) { // POI
 						createPOI((MarkerElement)elem);
