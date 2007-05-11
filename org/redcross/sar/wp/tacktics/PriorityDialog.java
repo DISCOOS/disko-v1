@@ -34,7 +34,7 @@ public class PriorityDialog extends DiskoDialog {
 	private void initialize() {
 		try {
             this.setContentPane(getContentPanel());
-            this.setPreferredSize(new Dimension(100, 75));
+            this.setPreferredSize(new Dimension(100, 80));
             this.pack();
 		}
 		catch (java.lang.Throwable e) {
