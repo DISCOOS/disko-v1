@@ -1,10 +1,11 @@
 package org.redcross.sar.wp.tacktics;
 
-import java.awt.Frame;
-
+import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.gui.models.HypothesesListModel;
+import org.redcross.sar.gui.renderers.HypothesesListCellRenderer;
+import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IHypothesisIf;
 import org.redcross.sar.mso.data.IHypothesisIf.HypothesisStatus;
@@ -49,9 +50,9 @@ public class HypothesesDialog extends DiskoDialog {
 	
 	private IHypothesisIf selectedHypotheses = null;
 
-	public HypothesesDialog(Frame owner, IMsoModelIf msoModel) {
-		super(owner);
-		this.msoModel = msoModel;
+	public HypothesesDialog(IDiskoApplication app) {
+		super(app.getFrame());
+		this.msoModel = app.getMsoModel();
 		initialize();
 		// TODO Auto-generated constructor stub
 	}
@@ -342,6 +343,7 @@ public class HypothesesDialog extends DiskoDialog {
 		if (statusComboBox == null) {
 			try {
 				statusComboBox = new JComboBox();
+				statusComboBox.setRenderer(new SimpleListCellRenderer());
 				HypothesisStatus[] values = HypothesisStatus.values();
 				for (int i = 0; i < values.length; i++) {
 					statusComboBox.addItem(values[i]);

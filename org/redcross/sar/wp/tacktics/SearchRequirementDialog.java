@@ -2,6 +2,7 @@ package org.redcross.sar.wp.tacktics;
 
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IAssignmentIf.AssignmentPriority;
 
@@ -407,6 +408,7 @@ public class SearchRequirementDialog extends DiskoDialog {
 		if (statusComboBox == null) {
 			try {
 				statusComboBox = new JComboBox();
+				statusComboBox.setRenderer(new SimpleListCellRenderer());
 				statusComboBox.setPreferredSize(new Dimension(125, 20));
 				IAssignmentIf.AssignmentStatus[] values = IAssignmentIf.AssignmentStatus.values();
 				for (int i = 0; i <values.length; i++) {

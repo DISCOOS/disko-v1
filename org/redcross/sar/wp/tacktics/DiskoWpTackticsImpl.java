@@ -1,7 +1,6 @@
 package org.redcross.sar.wp.tacktics;
 
 import java.awt.Dimension;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -10,7 +9,10 @@ import java.util.List;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JList;
 import javax.swing.JToggleButton;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.app.Utils;
@@ -21,12 +23,15 @@ import org.redcross.sar.gui.POIDialog;
 import org.redcross.sar.gui.TextAreaDialog;
 import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.DrawTool;
+import org.redcross.sar.map.IDiskoMap;
 import org.redcross.sar.map.MapUtil;
 import org.redcross.sar.map.POITool;
 import org.redcross.sar.map.PoiProperties;
 import org.redcross.sar.mso.IMsoManagerIf;
+import org.redcross.sar.mso.data.AssignmentImpl;
 import org.redcross.sar.mso.data.IAreaIf;
 import org.redcross.sar.mso.data.IAreaListIf;
+import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IAssignmentListIf;
 import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IOperationAreaIf;
@@ -36,6 +41,7 @@ import org.redcross.sar.mso.data.IPOIListIf;
 import org.redcross.sar.mso.data.ISearchAreaIf;
 import org.redcross.sar.mso.data.ISearchAreaListIf;
 import org.redcross.sar.mso.data.ISearchIf;
+import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
 import org.redcross.sar.mso.data.ISearchIf.SearchSubType;
 import org.redcross.sar.util.except.IllegalOperationException;
@@ -73,7 +79,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	private JToggleButton descriptionToggleButton = null;
 	private JToggleButton unitToggleButton = null;
 	
-	private String currentAction = null;
+	private Enum currentAction = null;
 	private POITool poiTool = null;
 	private DrawTool drawTool = null;
 	private POIDialog poiDialog = null;
@@ -81,7 +87,9 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	private TextAreaDialog textAreaDialog = null;
 	private HypothesesDialog hypothesesDialog = null;
 	private PriorityDialog priorityDialog = null;
+	private UnitSelectionDialog unitSelectionDialog = null;
 	private SearchRequirementDialog searchRequirementDialog = null;
+	private ListDialog listDialog = null;
 
 	/**
 	 * Constructs a DiskoApTaktikkImpl
@@ -97,7 +105,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 		loadProperties("properties");
 		DiskoMap map = (DiskoMap)getMap();
 		layoutComponent(map);
-		layoutButton(getElementToggleButton(), false);
+		layoutButton(getElementToggleButton(), true);
 		layoutButton(getListToggleButton(), true);
 		layoutButton(getMissionToggleButton(), true);
 		layoutButton(getPriorityToggleButton(), true);
@@ -135,13 +143,13 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 		};
 		navBar.showButtons(buttonIndexes);
 		
-		currentAction = SearchSubType.PATROL.toString();
+		currentAction = SearchSubType.PATROL;
 		drawTool = getApplication().getNavBar().getDrawTool();
 		drawTool.setDrawMode(DrawTool.DRAW_MODE_POLYLINE);
-		drawTool.setElementName(currentAction);
+		drawTool.setElementName(currentAction.name());
 		
 		poiTool = getApplication().getNavBar().getPOITool();
-		poiTool.setElementName(currentAction);
+		poiTool.setElementName(currentAction.name());
 		
 		poiDialog = (POIDialog)poiTool.getDialog();
 		POIType[] poiTypes = {POIType.START, POIType.VIA, POIType.STOP};
@@ -150,6 +158,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	
 	public void deactivated() {
 		hideDialogs(null);
+		getDummyToggleButton().doClick();
     }
 	
 	/* (non-Javadoc)
@@ -165,6 +174,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	public void cancel() {
 		try {
 			hideDialogs(null);
+			getDummyToggleButton().doClick();
 			graphicsContainer.deleteAllElements();
 			getMap().partialRefreshGraphics(null);
 			getMsoModel().rollback();
@@ -186,10 +196,9 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 			hideDialogs(null);
 			getTextAreaDialog().setText(null);
 			ICmdPostIf cmdPost = getMsoManager().getCmdPost();
-			graphics = getMap().searchGraphics(currentAction);
+			graphics = getMap().searchGraphics(currentAction.name());
 			
-			if (currentAction.equals(IMsoManagerIf.MsoClassCode.
-					CLASSCODE_OPERATIONAREA.toString())) {
+			if (currentAction == IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA) {
 				IOperationAreaListIf opAreaList = cmdPost.getOperationAreaList();
 				for (int i = 0; i < graphics.size(); i++) {
 					IElement elem = (IElement)graphics.get(i);
@@ -197,18 +206,17 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 						PolygonElement pe = (PolygonElement)elem;
 						Polygon polygon = (Polygon)pe.getGeometry();
 						IOperationAreaIf opArea = opAreaList.createOperationArea();
-						org.redcross.sar.util.mso.Polygon msoPolygon = 
-							MapUtil.getMsoPolygon(polygon);
+						org.redcross.sar.util.mso.Polygon msoPolygon = MapUtil.getMsoPolygon(polygon);
 						opArea.setGeodata(msoPolygon);
 						opArea.setRemarks(getTextAreaDialog().getText());
+						getTextAreaDialog().setText(null);
 					}
 					else if (elem instanceof MarkerElement) { // POI
 						createPOI((MarkerElement)elem);
 					}
 				}
 			}
-			else if (currentAction.equals(IMsoManagerIf.MsoClassCode.
-					CLASSCODE_SEARCHAREA.toString())) {
+			else if (currentAction == IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA) {
 				ISearchAreaListIf searchAreaList = cmdPost.getSearchAreaList();
 				for (int i = 0; i < graphics.size(); i++) {
 					IElement elem = (IElement)graphics.get(i);
@@ -216,11 +224,10 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 						PolygonElement pe = (PolygonElement)elem;
 						Polygon polygon = (Polygon)pe.getGeometry();
 						ISearchAreaIf searchArea = searchAreaList.createSearchArea();
-						org.redcross.sar.util.mso.Polygon msoPolygon = 
-							MapUtil.getMsoPolygon(polygon);
+						org.redcross.sar.util.mso.Polygon msoPolygon = MapUtil.getMsoPolygon(polygon);
 						searchArea.setGeodata(msoPolygon);
 						searchArea.setSearchAreaHypothesis(getHypothesesDialog().getSelectedHypotheses());
-						searchArea.setPriority(getPriorityDialog().getPriority());
+						((AssignmentImpl)searchArea).setPriority(getPriorityDialog().getPriority());
 					}
 					else if (elem instanceof MarkerElement) { // POI
 						createPOI((MarkerElement)elem);
@@ -231,7 +238,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 				int size = graphics.size();
 				IAssignmentListIf assignmentList = cmdPost.getAssignmentList();
 				ISearchIf search = assignmentList.createSearch();
-				search.setSubType(SearchSubType.valueOf(currentAction));
+				search.setSubType((SearchSubType)currentAction);
 				IAreaListIf areaList = cmdPost.getAreaList();
 				IAreaIf area = areaList.createArea();
 				GeoCollection geoCollection = new GeoCollection(null, null, size);
@@ -257,7 +264,14 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 				search.setPriority(dialog.getPriority());
 				search.setPlannedPersonnel(dialog.getPersonelNeed());
 				search.setPlannedProgress(dialog.getEstimatedProgress());
-				search.setPriority(dialog.getPriority());
+				search.setStatus(dialog.getStatus());
+				search.setRemarks(getTextAreaDialog().getText());
+				
+				IUnitIf unit = getUnitSelectionDialog().getSelectedUnit();
+				if (unit != null) {
+					unit.addUnitAssignment(search);
+				}
+				getTextAreaDialog().setText(null);
 			}
 		} catch (AutomationException e) {
 			getMsoModel().rollback();
@@ -301,6 +315,30 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 		}
 	}
 	
+	
+	public void startEdit(IAssignmentIf assignment, boolean makeCopy) {
+		try {
+			IDiskoMap map = getMap();
+			IAreaIf area = assignment.getPlannedArea();
+			if (area != null) {
+				String layerName = getProperty("BasicLine.featureClass.Name");
+				String msoid = area.getObjectId();
+				map.setSelected(layerName, "MSOID", msoid);
+				map.zoomToSelected();
+			}
+			
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (AutomationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	private IPOIIf createPOI(MarkerElement marker) 
 			throws AutomationException, IOException {
 		ICmdPostIf cmdPost = getMsoManager().getCmdPost();
@@ -320,30 +358,28 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 				dialog.setVisible(false);
 			}
 		}
-		getElementToggleButton().setSelected(false);
 	}
 	
 	private ElementDialog getElementDialog() {
 		if (elementDialog == null) {
-			elementDialog = new ElementDialog(getApplication().getFrame(), new ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
+			elementDialog = new ElementDialog(getApplication().getFrame(), new ListSelectionListener() {
+				public void valueChanged(ListSelectionEvent e) {
 					hideDialogs(null);
 					getDummyToggleButton().doClick(); // HACK: unselect all toggle buttons
 					getElementDialog().setVisible(false);
 					getElementToggleButton().setSelected(false);
-					String command = e.getActionCommand();
-					currentAction = command;
-					drawTool.setElementName(currentAction);
-					poiTool.setElementName(currentAction);
-					if (command.equals(IMsoManagerIf.MsoClassCode.
-							CLASSCODE_OPERATIONAREA.toString())) {
+					
+					JList list = (JList)e.getSource();
+					currentAction = (Enum)list.getSelectedValue();
+					drawTool.setElementName(currentAction.name());
+					poiTool.setElementName(currentAction.name());
+					if (currentAction == IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA) {
 						showOperationAreaButtons();
 						drawTool.setDrawMode(DrawTool.DRAW_MODE_POLYGON);
 						POIType[] poiTypes = {POIType.INTELLIGENCE};
 						poiDialog.setTypes(poiTypes);
 					}
-					else if (command.equals(IMsoManagerIf.MsoClassCode.
-							CLASSCODE_SEARCHAREA.toString())) {
+					else if (currentAction == IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA) {
 						showSearchAreaButtons();
 						drawTool.setDrawMode(DrawTool.DRAW_MODE_POLYGON);
 						POIType[] poiTypes = {POIType.INTELLIGENCE};
@@ -367,7 +403,6 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 		if (textAreaDialog == null) {
 			textAreaDialog = new TextAreaDialog(getApplication().getFrame());
 			textAreaDialog.setIsToggable(false);
-			textAreaDialog.setHeaderText("Aksjonens oppdrag:");
 			dialogs.add(textAreaDialog);
 		}
 		return textAreaDialog;
@@ -375,7 +410,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 	
 	private HypothesesDialog getHypothesesDialog() {
 		if (hypothesesDialog == null) {
-			hypothesesDialog = new HypothesesDialog(getApplication().getFrame(), getMsoModel());
+			hypothesesDialog = new HypothesesDialog(getApplication());
 			hypothesesDialog.setIsToggable(false);
 			dialogs.add(hypothesesDialog);
 		}
@@ -391,8 +426,6 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 		return priorityDialog;
 	}
 	
-	
-
 	private SearchRequirementDialog getSearchRequirementDialog() {
 		if (searchRequirementDialog == null) {
 			searchRequirementDialog = new SearchRequirementDialog(getApplication());
@@ -400,6 +433,24 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 			dialogs.add(searchRequirementDialog);
 		}
 		return searchRequirementDialog;
+	}
+
+	private UnitSelectionDialog getUnitSelectionDialog() {
+		if (unitSelectionDialog == null) {
+			unitSelectionDialog = new UnitSelectionDialog(getApplication());
+			unitSelectionDialog.setIsToggable(false);
+			dialogs.add(unitSelectionDialog);
+		}
+		return unitSelectionDialog;
+	}
+	
+	private ListDialog getListDialog() {
+		if (listDialog == null) {
+			listDialog = new ListDialog(this);
+			listDialog.setIsToggable(false);
+			dialogs.add(listDialog);
+		}
+		return listDialog;
 	}
 
 	private void showOperationAreaButtons() {
@@ -450,14 +501,15 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 				elementToggleButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
 						ElementDialog dialog = getElementDialog();
-						if (elementToggleButton.isSelected()) {
+						hideDialogs(dialog);
+						if (elementToggleButton.isSelected() && dialog.isVisible()) {
+							dialog.setVisible(false);
+						}
+						else {
 							java.awt.Point p = elementToggleButton.getLocationOnScreen();
 							p.setLocation(p.x - dialog.getWidth()-2, p.y);
 							dialog.setLocation(p);
 							dialog.setVisible(true);
-						}
-						else {
-							dialog.setVisible(false);
 						}
 					}
 				});
@@ -481,7 +533,17 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 				descriptionToggleButton.setPreferredSize(size);
 				descriptionToggleButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
-						hideDialogs(null);
+						TextAreaDialog dialog = getTextAreaDialog();
+						dialog.setHeaderText("Beskrivelse av oppdrag:");
+						hideDialogs(dialog);
+						if (missionToggleButton.isSelected() && dialog.isVisible()) {
+							dialog.setVisible(false);
+						}
+						else {
+							dialog.setLocationRelativeTo((JComponent)getMap(), 
+									DiskoDialog.POS_SOUTH, true);
+							dialog.setVisible(true);
+						}
 					}
 				});
 			} catch (Exception e) {
@@ -535,7 +597,16 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 				listToggleButton.setPreferredSize(size);
 				listToggleButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
-						hideDialogs(null);
+						ListDialog dialog = getListDialog();
+						hideDialogs(dialog);
+						JComponent mapComp = (JComponent)getMap();
+						if (listToggleButton.isSelected() & dialog.isVisible()) {
+							dialog.setVisible(false);
+						}
+						else {
+							dialog.setLocationRelativeTo(mapComp);
+							dialog.setVisible(true);
+						}
 					}
 				});
 			} catch (Exception e) {
@@ -559,6 +630,7 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 				missionToggleButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
 						TextAreaDialog dialog = getTextAreaDialog();
+						dialog.setHeaderText("Aksjonens oppdrag:");
 						hideDialogs(dialog);
 						if (missionToggleButton.isSelected() && dialog.isVisible()) {
 							dialog.setVisible(false);
@@ -656,7 +728,17 @@ public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements IDisko
 				unitToggleButton.setPreferredSize(size);
 				unitToggleButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
-						hideDialogs(null);
+						UnitSelectionDialog dialog = getUnitSelectionDialog();
+						hideDialogs(dialog);
+						if (unitToggleButton.isSelected() && dialog.isVisible()) {
+							dialog.setVisible(false);
+						}
+						else {
+							java.awt.Point p = unitToggleButton.getLocationOnScreen();
+							p.setLocation(p.x - dialog.getWidth()-2, p.y);
+							dialog.setLocation(p);
+							dialog.setVisible(true);
+						}
 					}
 				});
 			} catch (Exception e) {
