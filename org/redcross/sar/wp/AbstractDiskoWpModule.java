@@ -99,6 +99,10 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMap
     {
         return hasSubMenu;
     }
+    
+    public Properties getProperties() {
+    	return properties;
+    }
 
     public String getProperty(String key)
     {
@@ -116,7 +120,7 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMap
     {
         try
         {
-            properties = Utils.getProperties("properties");
+            properties = Utils.loadProperties("properties");
         }
         catch (Exception ex)
         {
