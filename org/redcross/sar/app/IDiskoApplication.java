@@ -1,5 +1,7 @@
 package org.redcross.sar.app;
 
+import java.util.Properties;
+
 import org.redcross.sar.gui.NavBar;
 import org.redcross.sar.gui.SysBar;
 import org.redcross.sar.gui.UIFactory;
@@ -35,6 +37,12 @@ public interface IDiskoApplication {
 	 * @return The main frame
 	 */
 	public JFrame getFrame();
+	
+	/**
+	 * Get the properties.
+	 * @return
+	 */
+	public Properties getProperties();
 	
 	/**
 	 * Get a property whith the given name.
