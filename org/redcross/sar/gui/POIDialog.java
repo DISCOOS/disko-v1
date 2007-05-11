@@ -16,6 +16,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
 import org.redcross.sar.app.IDiskoApplication;
+import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
 import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.POITool;
 import org.redcross.sar.map.PoiProperties;
@@ -273,6 +274,7 @@ public class POIDialog extends DiskoDialog {
 	private JComboBox getTypeComboBox() {
 		if (typeComboBox == null) {
 			typeComboBox = new JComboBox();
+			typeComboBox.setRenderer(new SimpleListCellRenderer());
 			typeComboBox.setMaximumRowCount(8);
 			typeComboBox.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
