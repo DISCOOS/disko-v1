@@ -55,8 +55,11 @@ public class Utils {
 	public static ImageIcon createImageIcon(String path, String name) 
 			throws Exception {
 		if (path != null) {
-			java.net.URL imgURL = (new File(path)).toURI().toURL();
-			return new ImageIcon(imgURL, name);
+			File file = new File(path);
+			if (file.exists()) {
+				java.net.URL imgURL = file.toURI().toURL();
+				return new ImageIcon(imgURL, name);
+			}
 		}
 		return null;
 	 }
