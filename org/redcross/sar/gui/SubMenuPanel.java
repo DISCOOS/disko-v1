@@ -19,6 +19,8 @@ import javax.swing.BorderFactory;
 
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.app.Utils;
+import org.redcross.sar.event.DiskoWpEvent;
+import org.redcross.sar.event.IDiskoWpEventListener;
 import org.redcross.sar.wp.IDiskoWp;
 
 public class SubMenuPanel extends JPanel {
@@ -124,12 +126,12 @@ public class SubMenuPanel extends JPanel {
 				cancelButton.setPreferredSize(size);
 				cancelButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
-						String msg = "Dette vil slette allt som er gjort til nå."+
+						/*String msg = "Dette vil slette allt som er gjort til nå."+
 						"Vil du allikevel avbryte?";
-						if (showYesNoDialog(msg) == 0) {
+						if (showYesNoDialog(msg) == 0) {*/
 							IDiskoWp wp = (IDiskoWp)app.getCurrentRole().getCurrentDiskoWpModule();
 							wp.cancel();
-						}
+						//}
 					}
 				});
 			} catch (java.lang.Throwable e) {
@@ -155,12 +157,12 @@ public class SubMenuPanel extends JPanel {
 				finishButton.setPreferredSize(size);
 				finishButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
-						String msg = "Dette vil lagre det du har gjort. "+
+						/*String msg = "Dette vil lagre det du har gjort. "+
 						"Vil du avslutte nå?";
-						if (showYesNoDialog(msg) == 0) {
+						if (showYesNoDialog(msg) == 0) {*/
 							IDiskoWp wp = (IDiskoWp)app.getCurrentRole().getCurrentDiskoWpModule();
 							wp.finish();
-						}
+						//}
 					}
 				});
 			} catch (java.lang.Throwable e) {
@@ -176,5 +178,4 @@ public class SubMenuPanel extends JPanel {
 			JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE, 
 			null, options, options[1]);
 	}
-
 }  //  @jve:decl-index=0:visual-constraint="10,10"

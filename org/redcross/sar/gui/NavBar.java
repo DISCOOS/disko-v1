@@ -5,11 +5,13 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.Hashtable;
+import java.util.Iterator;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
-import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
@@ -41,26 +43,28 @@ public class NavBar extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
 	
-	public static final int PUI_TOOL = 0;
-	public static final int FLANK_TOOL = 1;
-	public static final int DRAW_TOOL = 2;
-	public static final int ERASE_TOOL = 3;
-	public static final int SPLIT_TOOL = 4;
-	public static final int SELECT_FEATURES_TOOL = 5;
-	public static final int ZOOM_IN_TOOL = 6;
-	public static final int ZOOM_OUT_TOOL = 7;
-	public static final int PAN_TOOL = 8;
-	public static final int ZOOM_IN_FIXED_COMMAND = 9;
-	public static final int ZOOM_OUT_FIXED_COMMAND = 10;
-	public static final int ZOOM_FULL_EXTENT_COMMAND = 11;
-	public static final int ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND = 12;
-	public static final int ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND = 13;
+	public enum ToolCommandType {
+		POI_TOOL,
+		FLANK_TOOL,
+		DRAW_TOOL,
+		ERASE_TOOL,
+		SPLIT_TOOL,
+		SELECT_FEATURES_TOOL,
+		ZOOM_IN_TOOL,
+		ZOOM_OUT_TOOL,
+		PAN_TOOL,
+		ZOOM_IN_FIXED_COMMAND,
+		ZOOM_OUT_FIXED_COMMAND,
+		ZOOM_FULL_EXTENT_COMMAND,
+		ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND,
+		ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND
+    }
 	
 	private IDiskoApplication app = null;
 	private ButtonGroup bgroup  = null;
 	private JToggleButton dummyToggleButton = null;
-	private ArrayList<ICommand> commands  = null;
-	private ArrayList<AbstractButton> buttons  = null;
+	private Hashtable commands  = null;
+	private Hashtable buttons  = null;
 	private JToggleButton flankToggleButton = null;
 	private JToggleButton drawLineToggleButton = null;
 	private JToggleButton eraseToggleButton = null;
@@ -101,8 +105,8 @@ public class NavBar extends JPanel {
 	}
 	
 	private void initialize() {
-		commands = new ArrayList<ICommand>();
-		buttons = new ArrayList<AbstractButton>();
+		commands = new Hashtable();
+		buttons = new Hashtable();
 		bgroup = new ButtonGroup();
 			
 		FlowLayout flowLayout = new FlowLayout();
@@ -115,20 +119,34 @@ public class NavBar extends JPanel {
 		// (visbible) JToggleButtons. This is a hack suggested by Java dev forum
 		bgroup.add(getDummyToggleButton());
 			
-		addCommand(getPUIToggleButton(), getPOITool());
-		addCommand(getFlankToggleButton(), getFlankTool());
-		addCommand(getDrawLineToggleButton(), getDrawTool());
-		addCommand(getEraseToggleButton(), getEraseTool());
-		addCommand(getSplitToggleButton(), getSplitTool());
-		addCommand(getSelectFeaturesToggleButton(), getSelectFeaturesTool());
-		addCommand(getZoomInToggleButton(), getZoomInTool());
-		addCommand(getZoomOutToggleButton(), getZoomOutTool());
-		addCommand(getPanToggleButton(), getPanTool());
-		addCommand(getZoomInFixedButton(), getZoomInFixedCommand());
-		addCommand(getZoomOutFixedButton(), getZoomOutFixedCommand());
-		addCommand(getFullExtentButton(), getFullExtentCommand());
-		addCommand(getZoomToLastExtentForwardButton(), getZoomToLastExtentForwardCommand());
-		addCommand(getZoomToLastExtentBackwardButton(), getZoomToLastExtentBackCommand());	
+		addCommand(getPUIToggleButton(), getPOITool(), 
+				ToolCommandType.POI_TOOL);
+		addCommand(getFlankToggleButton(), getFlankTool(), 
+				ToolCommandType.FLANK_TOOL);
+		addCommand(getDrawLineToggleButton(), getDrawTool(), 
+				ToolCommandType.DRAW_TOOL);
+		addCommand(getEraseToggleButton(), getEraseTool(), 
+				ToolCommandType.ERASE_TOOL);
+		addCommand(getSplitToggleButton(), getSplitTool(), 
+				ToolCommandType.SPLIT_TOOL);
+		addCommand(getSelectFeaturesToggleButton(), getSelectFeaturesTool(), 
+				ToolCommandType.SELECT_FEATURES_TOOL);
+		addCommand(getZoomInToggleButton(), getZoomInTool(), 
+				ToolCommandType.ZOOM_IN_TOOL);
+		addCommand(getZoomOutToggleButton(), getZoomOutTool(), 
+				ToolCommandType.ZOOM_OUT_TOOL);
+		addCommand(getPanToggleButton(), getPanTool(), 
+				ToolCommandType.PAN_TOOL);
+		addCommand(getZoomInFixedButton(), getZoomInFixedCommand(),
+				ToolCommandType.ZOOM_IN_FIXED_COMMAND);
+		addCommand(getZoomOutFixedButton(), getZoomOutFixedCommand(),
+				ToolCommandType.ZOOM_OUT_FIXED_COMMAND);
+		addCommand(getFullExtentButton(), getFullExtentCommand(), 
+				ToolCommandType.ZOOM_FULL_EXTENT_COMMAND);
+		addCommand(getZoomToLastExtentForwardButton(), getZoomToLastExtentForwardCommand(), 
+				ToolCommandType.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND);
+		addCommand(getZoomToLastExtentBackwardButton(), getZoomToLastExtentBackCommand(), 
+				ToolCommandType.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND);	
 	}
 	
 	
@@ -342,10 +360,7 @@ public class NavBar extends JPanel {
 		if (flankToggleButton == null) {
 			try {
 				Dimension size = app.getUIFactory().getSmallButtonSize();
-				//String iconName = "MapDrawLineTool.icon";
-				//Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
-				flankToggleButton = new JToggleButton("FL");
-				//flankToggleButton.setIcon(icon);
+				flankToggleButton = new JToggleButton();
 				flankToggleButton.setPreferredSize(size);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -359,10 +374,7 @@ public class NavBar extends JPanel {
 		if (drawLineToggleButton == null) {
 			try {
 				Dimension size = app.getUIFactory().getSmallButtonSize();
-				String iconName = "MapDrawLineTool.icon";
-				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
 				drawLineToggleButton = new JToggleButton();
-				drawLineToggleButton.setIcon(icon);
 				drawLineToggleButton.setPreferredSize(size);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -376,10 +388,7 @@ public class NavBar extends JPanel {
 		if (splitToggleButton == null) {
 			try {
 				Dimension size = app.getUIFactory().getSmallButtonSize();
-				//String iconName = "MapSelectionTool.icon";
-				//Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
-				splitToggleButton = new JToggleButton("SP");
-				//splitToggleButton.setIcon(icon);
+				splitToggleButton = new JToggleButton();
 				splitToggleButton.setPreferredSize(size);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -393,10 +402,7 @@ public class NavBar extends JPanel {
 		if (eraseToggleButton == null) {
 			try {
 				Dimension size = app.getUIFactory().getSmallButtonSize();
-				String iconName = "MapEraseTool.icon";
-				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
 				eraseToggleButton = new JToggleButton();
-				eraseToggleButton.setIcon(icon);
 				eraseToggleButton.setPreferredSize(size);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -410,10 +416,7 @@ public class NavBar extends JPanel {
 		if (puiToggleButton == null) {
 			try {
 				Dimension size = app.getUIFactory().getSmallButtonSize();
-				String iconName = "MapDrawPointTool.icon";
-				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
 				puiToggleButton = new JToggleButton();
-				puiToggleButton.setIcon(icon);
 				puiToggleButton.setPreferredSize(size);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -427,10 +430,7 @@ public class NavBar extends JPanel {
 		if (zoomInToggleButton == null) {
 			try {
 				Dimension size = app.getUIFactory().getSmallButtonSize();
-				String iconName = "MapZoomInTool.icon";
-				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
 				zoomInToggleButton = new JToggleButton();
-				zoomInToggleButton.setIcon(icon);
 				zoomInToggleButton.setPreferredSize(size);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -444,10 +444,7 @@ public class NavBar extends JPanel {
 		if (zoomOutToggleButton == null) {
 			try {
 				Dimension size = app.getUIFactory().getSmallButtonSize();
-				String iconName = "MapZoomOutTool.icon";
-				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
 				zoomOutToggleButton = new JToggleButton();
-				zoomOutToggleButton.setIcon(icon);
 				zoomOutToggleButton.setPreferredSize(size);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -461,10 +458,7 @@ public class NavBar extends JPanel {
 		if (panToggleButton == null)  {
 			try {
 				Dimension size = app.getUIFactory().getSmallButtonSize();
-				String iconName = "MapPanTool.icon";
-				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
 				panToggleButton = new JToggleButton();
-				panToggleButton.setIcon(icon);
 				panToggleButton.setPreferredSize(size);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -478,10 +472,7 @@ public class NavBar extends JPanel {
 		if (selectFeaturesToggleButton == null)  {
 			try {
 				Dimension size = app.getUIFactory().getSmallButtonSize();
-				String iconName = "MapSelectionTool.icon";
-				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
 				selectFeaturesToggleButton = new JToggleButton();
-				selectFeaturesToggleButton.setIcon(icon);
 				selectFeaturesToggleButton.setPreferredSize(size);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -495,10 +486,7 @@ public class NavBar extends JPanel {
 		if (zoomInFixedButton == null) {
 			try {
 				Dimension size = app.getUIFactory().getSmallButtonSize();
-				String iconName = "MapZoomInFixedCommand.icon";
-				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
 				zoomInFixedButton = new JButton();
-				zoomInFixedButton.setIcon(icon);
 				zoomInFixedButton.setPreferredSize(size);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -512,10 +500,7 @@ public class NavBar extends JPanel {
 		if (zoomOutFixedButton == null) {
 			try {
 				Dimension size = app.getUIFactory().getSmallButtonSize();
-				String iconName = "MapZoomOutFixedCommand.icon";
-				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
 				zoomOutFixedButton = new JButton();
-				zoomOutFixedButton.setIcon(icon);
 				zoomOutFixedButton.setPreferredSize(size);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -530,10 +515,7 @@ public class NavBar extends JPanel {
 		if (fullExtentButton == null) {
 			try {
 				Dimension size = app.getUIFactory().getSmallButtonSize();
-				String iconName = "MapFullExtentCommand.icon";
-				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
 				fullExtentButton = new JButton();
-				fullExtentButton.setIcon(icon);
 				fullExtentButton.setPreferredSize(size);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -547,10 +529,7 @@ public class NavBar extends JPanel {
 		if (zoomToLastExtentForwardButton == null) {
 			try {
 				Dimension size = app.getUIFactory().getSmallButtonSize();
-				String iconName = "MapZoomToLastExtentForwardCommand.icon";
-				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
 				zoomToLastExtentForwardButton = new JButton();
-				zoomToLastExtentForwardButton.setIcon(icon);
 				zoomToLastExtentForwardButton.setPreferredSize(size);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -564,10 +543,7 @@ public class NavBar extends JPanel {
 		if (zoomToLastExtentBackwardButton == null) {
 			try {
 				Dimension size = app.getUIFactory().getSmallButtonSize();
-				String iconName = "MapZoomToLastExtentBackCommand.icon";
-				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
 				zoomToLastExtentBackwardButton = new JButton();
-				zoomToLastExtentBackwardButton.setIcon(icon);
 				zoomToLastExtentBackwardButton.setPreferredSize(size);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -585,10 +561,12 @@ public class NavBar extends JPanel {
 				public void run() {
 					try {
 						IDiskoMap map = app.getCurrentMap();
-						for (int i = 0; i < commands.size(); i++) {
-							ICommand command = (ICommand)commands.get(i);
+						Iterator commandIter = commands.values().iterator();
+						Iterator buttonIter  = buttons.values().iterator();
+						while (commandIter.hasNext() && buttonIter.hasNext()) {
+							ICommand command = (ICommand)commandIter.next();
 							if (command != null) {
-								AbstractButton b = (AbstractButton)buttons.get(i);
+								AbstractButton b = (AbstractButton)buttonIter.next();
 								if (map != null && b.isVisible() && b.isEnabled()) {
 									command.onCreate(map);
 								}
@@ -608,45 +586,56 @@ public class NavBar extends JPanel {
 		);
 	}
 	
-	public AbstractButton getButtonAt(int index) {
-		return (AbstractButton)buttons.get(index);
+	public AbstractButton getButton(Enum key) {
+		return (AbstractButton)buttons.get(key);
 	}
 	
-	public int addCommand(AbstractButton button, ICommand command) {
+	public void addCommand(AbstractButton button, ICommand command, Enum key) {
 		add(button);
 		if (button instanceof JToggleButton) {
 			bgroup.add(button);
 		}
-		buttons.add(button);
-		commands.add(command);
+		buttons.put(key, button);
+		commands.put(key, command);
 		if (command != null) {
 			button.addActionListener(new NavActionListener(command));
 		}
-		return buttons.indexOf(button);
-	}
-	
-	public int addButton(AbstractButton button) {
-		return addCommand(button, null);
-	}
-	
-	public void enableButtons(int[] indexes) {
-		for (int i = 0; i < buttons.size(); i++) {
-			getButtonAt(i).setEnabled(false);
+		ImageIcon icon = Utils.getIcon(key);
+		if (icon != null) {
+			button.setIcon(icon);
 		}
-		if (indexes != null) {
-			for (int i = 0; i < indexes.length; i++) {
-				getButtonAt(indexes[i]).setEnabled(true);
+		else {
+			button.setText(key.name());
+		}
+	}
+	
+	
+	public void enableButtons(EnumSet<NavBar.ToolCommandType> myInterests) {
+		Iterator buttonIter = buttons.values().iterator();
+		while (buttonIter.hasNext()) {
+			((AbstractButton)buttonIter.next()).setEnabled(false);
+		}
+		Iterator enmuIter = myInterests.iterator();
+		while (enmuIter.hasNext()) {
+			Enum key = (Enum)enmuIter.next();
+			AbstractButton button = (AbstractButton)buttons.get(key);
+			if (button != null) {
+				button.setEnabled(true);
 			}
 		}
 	}
 	
-	public void showButtons(int[] indexes) {
-		for (int i = 0; i < buttons.size(); i++) {
-			getButtonAt(i).setVisible(false);
+	public void showButtons(EnumSet<NavBar.ToolCommandType> myInterests) {
+		Iterator buttonIter = buttons.values().iterator();
+		while (buttonIter.hasNext()) {
+			((AbstractButton)buttonIter.next()).setVisible(false);
 		}
-		if (indexes != null) {
-			for (int i = 0; i < indexes.length; i++) {
-				getButtonAt(indexes[i]).setVisible(true);
+		Iterator enmuIter = myInterests.iterator();
+		while (enmuIter.hasNext()) {
+			Enum key = (Enum)enmuIter.next();
+			AbstractButton button = (AbstractButton)buttons.get(key);
+			if (button != null) {
+				button.setVisible(true);
 			}
 		}
 	}

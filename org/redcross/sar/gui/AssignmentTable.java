@@ -2,13 +2,11 @@ package org.redcross.sar.gui;
 
 import java.awt.Dimension;
 import java.util.Hashtable;
-import java.util.Properties;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.JTable;
 import javax.swing.RowFilter;
 import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
 
@@ -45,6 +43,7 @@ public class AssignmentTable extends JTable {
 				new AssignmentTableCellRenderer());
 		
 		setRowHeight(34);
+		setColumnSelectionAllowed(false);
 		setIntercellSpacing(new Dimension(10, 1));
 		setColumnWidths();
 	}
@@ -73,7 +72,6 @@ public class AssignmentTable extends JTable {
 	public void setEditActionEditor(AbstractCellEditor editor) {
 		TableColumn editColumn = getColumnModel().getColumn(3);
 		editColumn.setCellEditor((TableCellEditor)editor);
-		setDefaultRenderer(EditAction.class, (TableCellRenderer)editor);
 	}
 	
 	public void showOnly(Object obj) {
