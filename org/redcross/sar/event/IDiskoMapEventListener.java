@@ -15,4 +15,7 @@ public interface IDiskoMapEventListener extends EventListener {
 	
 	public void editLayerChanged(DiskoMapEvent e);
 	
+	public void graphicsAdded(DiskoMapEvent e);
+	
+	public void graphicsDeleted(DiskoMapEvent e);
 }
