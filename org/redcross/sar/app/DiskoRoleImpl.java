@@ -1,13 +1,18 @@
 package org.redcross.sar.app;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JToggleButton;
+import javax.swing.border.Border;
 
+import org.redcross.sar.event.DiskoWpEvent;
+import org.redcross.sar.event.IDiskoWpEventListener;
 import org.redcross.sar.gui.MainMenuPanel;
 import org.redcross.sar.gui.MainPanel;
 import org.redcross.sar.gui.NavBar;
@@ -23,7 +28,7 @@ import org.redcross.sar.wp.IDiskoWpModule;
  * @author geira
  *
  */
-public class DiskoRoleImpl implements IDiskoRole {
+public class DiskoRoleImpl implements IDiskoRole, IDiskoWpEventListener {
 	
 	private IDiskoApplication app = null;
 	private String name = null;
@@ -31,6 +36,8 @@ public class DiskoRoleImpl implements IDiskoRole {
 	private String description = null;
 	private IDiskoWpModule currentModule = null;
 	private ArrayList<IDiskoWpModule> modules = null;
+	private Border bussyBorder = null;
+	private Border normalBorder = null;
 	
 	/**
 	 * Constructs a DiskoRolleImpl
@@ -53,6 +60,7 @@ public class DiskoRoleImpl implements IDiskoRole {
 		this.title = title;
 		this.description = description;
 		this.modules = new ArrayList<IDiskoWpModule>();
+		this.bussyBorder = BorderFactory.createLineBorder(Color.red, 2);
 	}
 	
 	
@@ -62,7 +70,9 @@ public class DiskoRoleImpl implements IDiskoRole {
 	public void addDiskoWpModule(final IDiskoWpModule module) {
 		try {
 			final String id = getName()+module.getName();
+			module.addDiskoWpEventListener(this);
 			JToggleButton tbutton = new JToggleButton();
+			normalBorder = tbutton.getBorder();
 			String iconName = module.getName()+".icon";
 			Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
 			tbutton.setIcon(icon);
@@ -82,15 +92,22 @@ public class DiskoRoleImpl implements IDiskoRole {
 		}
 	}
 	
+	private int searchModule(String id) {
+		for (int i = 0; i < modules.size(); i++) {
+			if ((getName()+modules.get(i).getName()).equals(id)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.app.IDiskoRole#selectDiskoWpModule(java.lang.String)
 	 */
 	public void selectDiskoWpModule(String id)  {
-		for (int i = 0; i < modules.size(); i++) {
-			if ((getName()+modules.get(i).getName()).equals(id)) {
-				selectDiskoWpModule(i);
-				return;
-			}
+		int index = searchModule(id);
+		if (index > -1) {
+			selectDiskoWpModule(index);
 		}
 	}
 	
@@ -128,8 +145,6 @@ public class DiskoRoleImpl implements IDiskoRole {
 			if (button != null) {
 				button.setSelected(true);
 			}
-			app.getFrame().setTitle("DISKO "+getTitle()+" "+
-					currentModule.getName());
 		}
 	}
 	
@@ -176,5 +191,27 @@ public class DiskoRoleImpl implements IDiskoRole {
 	 */
 	public IDiskoApplication getApplication() {
 		return app;
+	}
+
+	public void taskCanceled(DiskoWpEvent e) {
+		setBorder(normalBorder);
+	}
+
+	public void taskFinished(DiskoWpEvent e) {
+		setBorder(normalBorder);
+	}
+
+	public void taskStarted(DiskoWpEvent e) {
+		setBorder(bussyBorder);
+	}
+	
+	private void setBorder(Border border) {
+		MainMenuPanel mainMenu = app.getUIFactory().getMainMenuPanel();
+		String id = getName()+currentModule.getName();
+		int index = searchModule(id);
+		if (index > -1) {
+			AbstractButton button = mainMenu.getButton(getName() ,index);
+			button.setBorder(border);
+		}
 	}
 }
