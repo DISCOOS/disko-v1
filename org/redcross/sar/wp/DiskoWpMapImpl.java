@@ -3,9 +3,9 @@
  */
 package org.redcross.sar.wp;
 
+import java.util.EnumSet;
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.gui.NavBar;
-import org.redcross.sar.gui.UIFactory;
 import org.redcross.sar.map.DiskoMap;
 
 /**
@@ -31,15 +31,14 @@ public class DiskoWpMapImpl extends AbstractDiskoWpModule implements IDiskoWpMap
 	
 	public void activated() {
 		NavBar navBar = getApplication().getNavBar();
-		int[] buttonIndexes = {
-				NavBar.ZOOM_IN_TOOL,
-				NavBar.ZOOM_OUT_TOOL,
-				NavBar.PAN_TOOL,
-				NavBar.ZOOM_FULL_EXTENT_COMMAND,
-				NavBar.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND,
-				NavBar.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND
-		};
-		navBar.showButtons(buttonIndexes);
+		EnumSet<NavBar.ToolCommandType> myInterests = 
+			EnumSet.of(NavBar.ToolCommandType.ZOOM_IN_TOOL);
+		myInterests.add(NavBar.ToolCommandType.ZOOM_OUT_TOOL);
+		myInterests.add(NavBar.ToolCommandType.PAN_TOOL);
+		myInterests.add(NavBar.ToolCommandType.ZOOM_FULL_EXTENT_COMMAND);
+		myInterests.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND);
+		myInterests.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND);
+		navBar.showButtons(myInterests);
 	}
 	
 	/* (non-Javadoc)

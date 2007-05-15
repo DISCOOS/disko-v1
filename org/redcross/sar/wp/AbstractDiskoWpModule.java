@@ -42,6 +42,8 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMap
     public AbstractDiskoWpModule(IDiskoRole role)
     {
         this.role = role;
+        listeners = new ArrayList();
+        diskoWpEvent = new DiskoWpEvent(this);
     }
 
     public IDiskoRole getDiskoRole()
@@ -140,20 +142,28 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMap
     {
         listeners.remove(listener);
     }
-
-    protected void fireWpCanceled()
+    
+    protected void fireTaskStarted()
     {
         for (int i = 0; i < listeners.size(); i++)
         {
-            listeners.get(i).wpCanceled(diskoWpEvent);
+            listeners.get(i).taskStarted(diskoWpEvent);
         }
     }
 
-    protected void fireWpFinished()
+    protected void fireTaskCanceled()
     {
         for (int i = 0; i < listeners.size(); i++)
         {
-            listeners.get(i).wpFinished(diskoWpEvent);
+            listeners.get(i).taskCanceled(diskoWpEvent);
+        }
+    }
+
+    protected void fireTaskFinished()
+    {
+        for (int i = 0; i < listeners.size(); i++)
+        {
+            listeners.get(i).taskFinished(diskoWpEvent);
         }
     }
     
@@ -161,13 +171,23 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMap
      * @see org.redcross.sar.wp.IDiskoWpModule#activated()
      */
     public void activated() {
+    	setFrameText(null);
 	}
+    
     
     /* (non-Javadoc)
      * @see org.redcross.sar.wp.IDiskoWpModule#deactivated()
      */
     public void deactivated() {
-    	
+    	getApplication().getFrame().setTitle(null);
+    }
+    
+    public void setFrameText(String text) {
+    	String s = "DISKO "+getDiskoRole().getTitle()+" "+getName();
+    	if (text != null) {
+    		s += " "+text;
+    	}
+    	getApplication().getFrame().setTitle(s);
     }
 
     protected void layoutComponent(JComponent comp)
@@ -238,6 +258,14 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMap
     {
         // TODO Auto-generated method stub
     }
+    
+    public void graphicsAdded(DiskoMapEvent e) {
+		// TODO Auto-generated method stub
+	}
+
+	public void graphicsDeleted(DiskoMapEvent e) {
+		// TODO Auto-generated method stub
+	}
 
     public IMsoModelIf getMsoModel()
     {

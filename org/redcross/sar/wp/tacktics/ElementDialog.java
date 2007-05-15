@@ -4,8 +4,6 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.renderers.CheckableListCellRenderer;
-import org.redcross.sar.mso.IMsoManagerIf;
-import org.redcross.sar.mso.data.ISearchIf;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
@@ -68,19 +66,11 @@ public class ElementDialog extends DiskoDialog {
 	 * 	
 	 * @return javax.swing.JList	
 	 */
-	private JList getElementList() {
+	JList getElementList() {
 		if (elementList == null) {
 			try {
 				elementList = new JList();
 				elementList.setCellRenderer(new CheckableListCellRenderer());
-				ISearchIf.SearchSubType[] values = ISearchIf.SearchSubType.values();
-				Object[] listData = new Object[values.length+2];
-				listData[0] = IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA;
-				listData[1] = IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA;
-				for (int i = 0; i < values.length; i++) {
-					listData[i+2] = values[i];
-				}
-				elementList.setListData(listData);
 				elementList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 				elementList.addListSelectionListener(listener);
 			} catch (java.lang.Throwable e) {

@@ -1,6 +1,7 @@
 package org.redcross.sar.wp;
 
 import org.redcross.sar.app.IDiskoApplication;
+import org.redcross.sar.event.IDiskoWpEventListener;
 import org.redcross.sar.map.IDiskoMap;
 
 /**
@@ -52,4 +53,8 @@ public interface IDiskoWpModule {
 	 * Called when this IDiskoWpModule is deactivated
 	 */
 	public void deactivated();
+	
+	public void addDiskoWpEventListener(IDiskoWpEventListener listener);
+
+    public void removeDiskoWpEventListener(IDiskoWpEventListener listener);
 }

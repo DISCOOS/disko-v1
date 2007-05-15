@@ -2,9 +2,10 @@ package org.redcross.sar.wp.tacktics;
 
 import java.awt.Dimension;
 import java.awt.Frame;
+
+import org.redcross.sar.app.Utils;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.renderers.CheckableListCellRenderer;
-import org.redcross.sar.mso.data.IAssignmentIf;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
@@ -18,7 +19,6 @@ public class PriorityDialog extends DiskoDialog {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPanel = null;
-	private IAssignmentIf.AssignmentPriority priority = IAssignmentIf.AssignmentPriority.MEDIUM;
 	private JList priorityList = null;
 	
 	public PriorityDialog(Frame frame) {
@@ -34,7 +34,7 @@ public class PriorityDialog extends DiskoDialog {
 	private void initialize() {
 		try {
             this.setContentPane(getContentPanel());
-            this.setPreferredSize(new Dimension(100, 80));
+            this.setPreferredSize(new Dimension(140, 125));
             this.pack();
 		}
 		catch (java.lang.Throwable e) {
@@ -42,8 +42,8 @@ public class PriorityDialog extends DiskoDialog {
 		}
 	}
 	
-	public IAssignmentIf.AssignmentPriority getPriority() {
-		return priority;
+	public int getPriority() {
+		return getPriorityList().getSelectedIndex()+1;
 	}
 
 	/**
@@ -76,17 +76,18 @@ public class PriorityDialog extends DiskoDialog {
 			try {
 				priorityList = new JList();
 				priorityList.setCellRenderer(new CheckableListCellRenderer());
-				IAssignmentIf.AssignmentPriority[] values = IAssignmentIf.AssignmentPriority.values();
-				Object[] listData = new Object[values.length];
-				for (int i = 0; i < values.length; i++) {
-					listData[i] = values[i];
-				}
+				Object[] listData = new Object[5];
+				listData[0] = Utils.translate("PRIMARY_SEARCH_AREA");
+				listData[1] = Utils.translate("SECONDARY_SEARCH_AREA");
+				listData[2] = Utils.translate("PRIORITY3_SEARCH_AREA");
+				listData[3] = Utils.translate("PRIORITY4_SEARCH_AREA");
+				listData[4] = Utils.translate("PRIORITY5_SEARCH_AREA");
+				
 				priorityList.setListData(listData);
 				priorityList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-				priorityList.setSelectedIndex(1);
+				priorityList.setSelectedIndex(0);
 				priorityList.addListSelectionListener(new ListSelectionListener() {
 					public void valueChanged(ListSelectionEvent e) {
-						priority = (IAssignmentIf.AssignmentPriority)priorityList.getSelectedValue();
 						setVisible(false);
 					}
 				});

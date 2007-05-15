@@ -16,6 +16,7 @@ import java.awt.*;
  * Date: 11.apr.2007
  * To change this template use File | Settings | File Templates.
  */
+import java.util.EnumSet;
 
 /**
  *
@@ -50,17 +51,16 @@ public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDisk
     }
     
     public void activated() {
+    	super.activated();
 		NavBar navBar = getApplication().getNavBar();
-		int[] buttonIndexes = {
-				//NavBar.INDEX_ERASE_TOGGLE_BUTTON,
-				NavBar.ZOOM_IN_TOOL,
-				NavBar.ZOOM_OUT_TOOL,
-				NavBar.PAN_TOOL,
-				NavBar.ZOOM_FULL_EXTENT_COMMAND,
-				NavBar.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND,
-				NavBar.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND
-		};
-		navBar.showButtons(buttonIndexes);
+		EnumSet<NavBar.ToolCommandType> myInterests = 
+			EnumSet.of(NavBar.ToolCommandType.ZOOM_IN_TOOL);
+		myInterests.add(NavBar.ToolCommandType.ZOOM_OUT_TOOL);
+		myInterests.add(NavBar.ToolCommandType.PAN_TOOL);
+		myInterests.add(NavBar.ToolCommandType.ZOOM_FULL_EXTENT_COMMAND);
+		myInterests.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND);
+		myInterests.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND);
+		navBar.showButtons(myInterests);
     }
 
     /* (non-Javadoc)
