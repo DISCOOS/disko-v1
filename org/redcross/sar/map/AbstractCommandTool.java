@@ -211,4 +211,12 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public void graphicsAdded(DiskoMapEvent e) {
+		// TODO Auto-generated method stub
+	}
+
+	public void graphicsDeleted(DiskoMapEvent e) {
+		// TODO Auto-generated method stub
+	}
 }

@@ -1,10 +1,8 @@
 package org.redcross.sar.map;
 
 import java.io.IOException;
-
-import com.esri.arcgis.carto.IActiveView;
 import com.esri.arcgis.carto.IElement;
-import com.esri.arcgis.carto.IGraphicsContainer;
+import com.esri.arcgis.geometry.IEnvelope;
 import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.interop.AutomationException;
 
@@ -40,10 +38,9 @@ public class EraseTool extends AbstractCommandTool {
 		transform(p);
 		IElement elem = map.searchGraphics(p);
 		if (elem != null) {
-			IActiveView av = map.getActiveView();
-			IGraphicsContainer graphics = av.getGraphicsContainer();
-			graphics.deleteElement(elem);
-			map.partialRefreshGraphics(map.getActiveView().getExtent());
+			IEnvelope env = elem.getGeometry().getEnvelope();
+			map.deleteGraphics(elem);
+			map.partialRefreshGraphics(env);
 		}
 	}
 }

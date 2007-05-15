@@ -44,6 +44,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap {
 	
 	private static final long serialVersionUID = 1L;
 	private String mxdDoc = null;
+	private IDiskoMapManager mapManager = null;
 	private SnapLayerSelectionModel snapLayerSelectionModel = null;
 	private ClipLayerSelectionModel clipLayerSelectionModel = null;
 	private IDiskoTool currentTool = null;
@@ -53,8 +54,10 @@ public final class DiskoMap extends MapBean implements IDiskoMap {
 	/**
 	 * Default constructor
 	 */
-	public DiskoMap(String mxdDoc)  throws IOException, AutomationException {
+	public DiskoMap(String mxdDoc, IDiskoMapManager mapManager)  
+			throws IOException, AutomationException {
 		this.mxdDoc = mxdDoc;
+		this.mapManager = mapManager;
 		listeners = new ArrayList<IDiskoMapEventListener>();
 		diskoMapEvent = new DiskoMapEvent(this);
 		initialize();
@@ -174,6 +177,18 @@ public final class DiskoMap extends MapBean implements IDiskoMap {
 		}
 	}
 	
+	protected void fireGraphicsAdded() {
+		for (int i = 0; i < listeners.size(); i++) {
+			listeners.get(i).graphicsAdded(diskoMapEvent);
+		}
+	}
+	
+	protected void fireGraphicsDeleted() {
+		for (int i = 0; i < listeners.size(); i++) {
+			listeners.get(i).graphicsDeleted(diskoMapEvent);
+		}
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#setCurrentToolByRef(com.esri.arcgis.systemUI.ITool)
 	 */
@@ -212,6 +227,10 @@ public final class DiskoMap extends MapBean implements IDiskoMap {
 			clipLayerSelectionModel = new ClipLayerSelectionModel(this);
 		}
 		return clipLayerSelectionModel;
+	}
+	
+	public IDiskoMapManager getMapManager() {
+		return mapManager;
 	}
 
 	/* (non-Javadoc)
@@ -310,6 +329,25 @@ public final class DiskoMap extends MapBean implements IDiskoMap {
 		}
 	}
 	
+	public void addGraphics(IElement elem) throws IOException, AutomationException {
+		IGraphicsContainer graphics = getActiveView().getGraphicsContainer();
+		graphics.addElement(elem, 0);
+		fireGraphicsAdded();
+	}
+
+	public void deleteGraphics(IElement elem) throws IOException, AutomationException {
+		IGraphicsContainer graphics = getActiveView().getGraphicsContainer();
+		graphics.deleteElement(elem);
+		fireGraphicsDeleted();
+	}
+	
+
+	public void deleteAllGraphics() throws IOException, AutomationException {
+		IGraphicsContainer graphics = getActiveView().getGraphicsContainer();
+		graphics.deleteAllElements();
+		fireGraphicsDeleted();
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#searchGraphics(com.esri.arcgis.geometry.Point)
 	 */
@@ -340,6 +378,20 @@ public final class DiskoMap extends MapBean implements IDiskoMap {
 			}
 		}
 		return result;
+	}
+	
+	public boolean hasGraphics(String name) 
+			throws IOException, AutomationException {
+		IGraphicsContainer graphics = getActiveView().getGraphicsContainer();
+		graphics.reset();
+		IElement elem = null;
+		while ((elem = graphics.next()) != null) {
+			if (elem instanceof IElementProperties && 
+					((IElementProperties)elem).getName().equals(name)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/* (non-Javadoc)

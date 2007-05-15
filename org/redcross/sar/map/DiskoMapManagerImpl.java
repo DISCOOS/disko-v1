@@ -3,7 +3,6 @@ package org.redcross.sar.map;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
@@ -29,7 +28,6 @@ import org.redcross.sar.mso.event.MsoEvent.Commit;
 import org.redcross.sar.mso.event.MsoEvent.DerivedUpdate;
 import org.redcross.sar.mso.event.MsoEvent.Gis;
 import org.redcross.sar.mso.event.MsoEvent.Update;
-import org.redcross.sar.util.mso.GeoCollection;
 import org.redcross.sar.util.mso.IGeodataIf;
 import org.redcross.sar.util.mso.Route;
 
@@ -80,7 +78,7 @@ public class DiskoMapManagerImpl implements IDiskoMapManager,
 		DiskoMap map = null;
         try {
 			String mxdDoc = app.getProperty("MxdDocument.path");
-			map = new DiskoMap(mxdDoc);
+			map = new DiskoMap(mxdDoc, this);
 			maps.add(map);
 		} catch (AutomationException e) {
 			// TODO Auto-generated catch block

@@ -2,9 +2,7 @@ package org.redcross.sar.map;
 
 import java.awt.Toolkit;
 import java.io.IOException;
-import com.esri.arcgis.carto.IActiveView;
 import com.esri.arcgis.carto.IElement;
-import com.esri.arcgis.carto.IGraphicsContainer;
 import com.esri.arcgis.carto.LineElement;
 import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.geometry.Polyline;
@@ -42,17 +40,15 @@ public class SplitTool extends AbstractCommandTool {
 		transform(p);
 		IElement elem = map.searchGraphics(p);
 		if (elem != null && elem instanceof LineElement) {
-			IActiveView av = map.getActiveView();
-			IGraphicsContainer graphics = av.getGraphicsContainer();
 			Polyline pl = (Polyline)elem.getGeometry();
 			// splitting and adding new elements
-			split(graphics, pl, p);
+			split(pl, p);
 			// delete the orginal element
-			graphics.deleteElement(elem);
+			map.deleteGraphics(elem);
 		}
 	}
 	
-	private void split(IGraphicsContainer graphics, Polyline orginal, Point nearPoint) 
+	private void split(Polyline orginal, Point nearPoint) 
 			throws IOException, AutomationException {
 		
 		boolean[] splitHappened = new boolean[2];
@@ -68,11 +64,11 @@ public class SplitTool extends AbstractCommandTool {
 		
 		LineElement le1 = new LineElement();
 		le1.setGeometry(pline1);
-		graphics.addElement(le1, 0);
+		map.addGraphics(le1);
 		
 		LineElement le2 = new LineElement();
 		le2.setGeometry(pline2);
-		graphics.addElement(le2, 0);
+		map.addGraphics(le2);
 		
 		Toolkit.getDefaultToolkit().beep();
 	}

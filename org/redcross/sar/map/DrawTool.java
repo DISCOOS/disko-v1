@@ -12,7 +12,6 @@ import com.esri.arcgis.display.IScreenDisplay;
 import com.esri.arcgis.display.RgbColor;
 import com.esri.arcgis.display.SimpleLineSymbol;
 import com.esri.arcgis.display.esriScreenCache;
-import com.esri.arcgis.carto.IGraphicsContainer;
 import com.esri.arcgis.carto.InvalidArea;
 import com.esri.arcgis.carto.LineElement;
 import com.esri.arcgis.carto.PolygonElement;
@@ -149,21 +148,19 @@ public class DrawTool extends AbstractCommandTool {
 	public void onDblClick() throws IOException, AutomationException {
 		pathGeometry.simplify();
 		pathGeometry.setSpatialReferenceByRef(map.getSpatialReference());
-		// add to graphics coontainer
-		IGraphicsContainer graphics = map.getActiveView().getGraphicsContainer();
 		if (drawMode == DRAW_MODE_POLYLINE) {
 			LineElement le = new LineElement();
 			le.setGeometry(pathGeometry);
 			le.setName(getElementName());
 			le.setCustomProperty(new DrawProperties());
-			graphics.addElement(le, 0);
+			map.addGraphics(le);
 		}
 		else if (drawMode == DRAW_MODE_POLYGON) {
 			PolygonElement pe = new PolygonElement();
 			pe.setGeometry(getPolygon(pathGeometry));
 			pe.setName(getElementName());
 			pe.setCustomProperty(new DrawProperties());
-			graphics.addElement(pe, 0);
+			map.addGraphics(pe);
 		}
 		map.partialRefreshGraphics(pathGeometry.getEnvelope());
 		reset();

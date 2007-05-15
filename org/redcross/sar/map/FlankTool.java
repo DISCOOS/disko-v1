@@ -10,7 +10,6 @@ import org.redcross.sar.gui.FlankDialog;
 
 import com.esri.arcgis.carto.FeatureLayer;
 import com.esri.arcgis.carto.IElement;
-import com.esri.arcgis.carto.IGraphicsContainer;
 import com.esri.arcgis.carto.LineElement;
 import com.esri.arcgis.carto.PolygonElement;
 import com.esri.arcgis.display.LineFillSymbol;
@@ -40,7 +39,6 @@ public class FlankTool extends AbstractCommandTool {
 
 	private static final long serialVersionUID = 1L;
 	private IDiskoApplication app = null;
-	private IGraphicsContainer graphics = null;
 	private Point p = null;
 	private IEnvelope refreshEnvelope = null;
 	private LineFillSymbol redFill  = null;
@@ -89,7 +87,6 @@ public class FlankTool extends AbstractCommandTool {
 	public void onCreate(Object obj) throws IOException, AutomationException {
 		if (obj instanceof IDiskoMap) {
 			map = (DiskoMap)obj;
-			graphics = map.getActiveView().getGraphicsContainer();
 			FlankDialog flankDialog = (FlankDialog)dialog;
 			flankDialog.onLoad(map);
 			flankDialog.setLocationRelativeTo(map, DiskoDialog.POS_WEST, false);
@@ -175,7 +172,7 @@ public class FlankTool extends AbstractCommandTool {
 			pe.setSymbol(redFill);
 			pe.setName(getElementName());
 			pe.setCustomProperty(properties);
-			graphics.addElement(pe, 0);
+			map.addGraphics(pe);
 			refreshEnvelope.union(leftPoly.getEnvelope());
 		}
 		else if (side == RIGHT_SIDE_FLANK) {
@@ -187,7 +184,7 @@ public class FlankTool extends AbstractCommandTool {
 			pe.setSymbol(blueFill);
 			pe.setName(getElementName());
 			pe.setCustomProperty(properties);
-			graphics.addElement(pe, 0);
+			map.addGraphics(pe);
 			refreshEnvelope.union(rightPoly.getEnvelope());
 		}
 	}

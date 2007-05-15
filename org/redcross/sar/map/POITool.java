@@ -11,7 +11,6 @@ import com.esri.arcgis.display.RgbColor;
 import com.esri.arcgis.display.SimpleMarkerSymbol;
 import com.esri.arcgis.display.esriScreenCache;
 import com.esri.arcgis.carto.IElement;
-import com.esri.arcgis.carto.IGraphicsContainer;
 import com.esri.arcgis.carto.InvalidArea;
 import com.esri.arcgis.carto.MarkerElement;
 import com.esri.arcgis.geometry.Envelope;
@@ -27,7 +26,6 @@ public class POITool extends AbstractCommandTool {
 
 	private static final long serialVersionUID = 1L;
 	
-	private IGraphicsContainer graphics = null;
 	private POIDialog poiDialog = null;
 	private Point movePoint = null;
 	private Envelope refreshEnvelope = null;
@@ -61,7 +59,6 @@ public class POITool extends AbstractCommandTool {
 			map.addDiskoMapEventListener(this);
 			poiDialog = (POIDialog)dialog;
 			poiDialog.setLocationRelativeTo(map, DiskoDialog.POS_WEST, false);
-			graphics = map.getActiveView().getGraphicsContainer();
 		}
 	}
 
@@ -83,7 +80,7 @@ public class POITool extends AbstractCommandTool {
 			props.setType(poiDialog.getSelectedType());
 			selectedElement.setCustomProperty(props);
 			selectedElement.setName(getElementName());
-			graphics.addElement(selectedElement, 0);
+			map.addGraphics(selectedElement);
 		}
 		selectedElement.setSymbol(selectionSymbol);
 		map.partialRefreshGraphics(refreshEnvelope);
@@ -149,7 +146,7 @@ public class POITool extends AbstractCommandTool {
 		PoiProperties props = new PoiProperties();
 		props.setType(poiDialog.getSelectedType());
 		selectedElement.setCustomProperty(props);
-		graphics.addElement(selectedElement, 0);
+		map.addGraphics(selectedElement);
 		map.partialRefreshGraphics(null);
 	}
 	

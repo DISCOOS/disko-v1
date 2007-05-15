@@ -43,6 +43,8 @@ public interface IDiskoMap {
 	 */
 	public ClipLayerSelectionModel getClipLayerSelectionModel()
 			throws IOException, AutomationException;
+	
+	public IDiskoMapManager getMapManager();
 
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#getSelection()
@@ -88,6 +90,14 @@ public interface IDiskoMap {
 	
 	public List searchGraphics(String name) 
 			throws IOException, AutomationException;
+	
+	public void addGraphics(IElement elem) throws IOException, AutomationException;
+	
+	public void deleteGraphics(IElement elem) throws IOException, AutomationException;
+	
+	public void deleteAllGraphics() throws IOException, AutomationException;
+	
+	public boolean hasGraphics(String name) throws IOException, AutomationException;
 
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#partialRefresh(com.esri.arcgis.geometry.IEnvelope)
