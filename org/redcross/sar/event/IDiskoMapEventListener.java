@@ -14,8 +14,4 @@ public interface IDiskoMapEventListener extends EventListener {
 	public void onSelectionChanged(DiskoMapEvent e) throws IOException; 
 	
 	public void editLayerChanged(DiskoMapEvent e);
-	
-	public void graphicsAdded(DiskoMapEvent e);
-	
-	public void graphicsDeleted(DiskoMapEvent e);
 }
