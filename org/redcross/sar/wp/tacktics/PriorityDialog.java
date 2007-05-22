@@ -45,6 +45,10 @@ public class PriorityDialog extends DiskoDialog {
 	public int getPriority() {
 		return getPriorityList().getSelectedIndex()+1;
 	}
+	
+	public void setPriority(int priority) {
+		getPriorityList().setSelectedIndex(priority-1);
+	}
 
 	/**
 	 * This method initializes contentPanel	

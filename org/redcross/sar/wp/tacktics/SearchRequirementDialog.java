@@ -97,6 +97,38 @@ public class SearchRequirementDialog extends DiskoDialog {
 	public String getCriticalQuestions() {
 		return getCriticalQuestionsTextArea().getText();
 	}
+	
+	public void setAccuracy(int accuracy) {
+		getAccuracySlider().setValue(accuracy);
+	}
+	
+	public void setPriority(AssignmentPriority priority) {
+		if (priority == AssignmentPriority.LOW) {
+			getPrioritySlider().setValue(1);
+		}
+		else if (priority == AssignmentPriority.MEDIUM) {
+			getPrioritySlider().setValue(2);
+		}
+		if (priority == AssignmentPriority.HIGH) {
+			getPrioritySlider().setValue(3);
+		}
+	}
+	
+	public void setPersonelNeed(int need) {
+		getPersonelSpinner().setValue(need);
+	}
+	
+	public void setEstimatedProgress(int estimatedProgress) {
+		getProgressSpinner().setValue(estimatedProgress);
+	}
+	
+	public void setStatus(IAssignmentIf.AssignmentStatus status) {
+		getStatusComboBox().setSelectedItem(status);
+	}
+	
+	public void setCriticalQuestions(String questions) {
+		getCriticalQuestionsTextArea().setText(questions);
+	}
 
 	/**
 	 * This method initializes contentPanel	

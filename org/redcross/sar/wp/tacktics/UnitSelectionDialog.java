@@ -4,6 +4,7 @@ import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.UnitTable;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IUnitIf;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -13,6 +14,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.BevelBorder;
 import java.awt.BorderLayout;
+import java.util.List;
 
 public class UnitSelectionDialog extends DiskoDialog {
 
@@ -53,6 +55,25 @@ public class UnitSelectionDialog extends DiskoDialog {
 		}
 		return null;
 	}
+	
+	public void selectedAssignedUnit(IAssignmentIf assignment) {
+		JTable table = getUnitTable();
+		for (int row = 0; row < table.getRowCount(); row++) {
+			for (int col = 0; col < table.getColumnCount(); col++) {
+				IUnitIf unit = (IUnitIf)table.getValueAt(row, col);
+				if (unit != null) {
+					List list = unit.getAssignedAssignments();
+					if (list != null && list.contains(unit)) {
+						table.setRowSelectionInterval(row, row);
+						table.setColumnSelectionInterval(col, col);
+						return;
+					}
+				}
+			}
+		}
+	}
+	
+	
 
 	/**
 	 * This method initializes contentPanel	
