@@ -3,7 +3,8 @@ package org.redcross.sar.map;
 import java.io.IOException;
 
 import org.redcross.sar.gui.DiskoDialog;
-
+import org.redcross.sar.map.layer.MsoFeature;
+import com.esri.arcgis.geodatabase.IFeatureClass;
 import com.esri.arcgis.interop.AutomationException;
 
 public interface IDiskoTool {
@@ -16,17 +17,15 @@ public interface IDiskoTool {
 	
 	public IDiskoMap getMap();
 	
-	/**
-	 * Set the graphic element name for tools adding graphics to the graphics layer. 
-	 * This name is used for identifying graphics in the map.
-	 * @param name The name of the graphic element
-	 */
-	public void setElementName(String name);
+	public IFeatureClass getFeatureClass();
+
+	public void setFeatureClass(IFeatureClass featureClass);
 	
-	/**
-	 * Get the graphic element name for tools adding graphics to the graphics layer. 
-	 * This name is used for identifying graphics in the map.
-	 * @return The name of the graphic element
-	 */
-	public String getElementName();
+	public void setEditFeature(MsoFeature msoFeature);
+	
+	public MsoFeature getEditFeature();
+	
+	public IEditFeedback getEditFeedback();
+
+	public void setEditFeedback(IEditFeedback editFeedback);
 }

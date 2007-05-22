@@ -5,7 +5,10 @@ import java.util.Properties;
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.event.IDiskoMapEventListener;
 import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.map.layer.MsoFeature;
+
 import com.esri.arcgis.display.IDisplayTransformation;
+import com.esri.arcgis.geodatabase.IFeatureClass;
 import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.systemUI.ICommand;
@@ -17,7 +20,9 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 	protected DiskoDialog dialog = null;
 	protected Properties properties = null;
 	protected IDisplayTransformation transform = null;
-	private String elementName = null;
+	protected IFeatureClass featureClass = null;
+	protected MsoFeature editFeature = null;
+	protected IEditFeedback editFeedback = null;
 	
 	protected IDisplayTransformation getTransform() 
 			throws IOException, AutomationException {
@@ -56,19 +61,28 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 		return map;
 	}
 	
-	
-	/* (non-Javadoc)
-	 * @see org.redcross.sar.map.IDiskoTool#getElementName()
-	 */
-	public String getElementName() {
-		return elementName;
+	public IFeatureClass getFeatureClass() {
+		return featureClass;
+	}
+
+	public void setFeatureClass(IFeatureClass featureClass) {
+		this.featureClass = featureClass;
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.redcross.sar.map.IDiskoTool#setElementName(java.lang.String)
-	 */
-	public void setElementName(String name) {
-		elementName = name;
+	public void setEditFeature(MsoFeature editFeature) {
+		this.editFeature = editFeature;
+	}
+
+	public MsoFeature getEditFeature() {
+		return editFeature;
+	}
+
+	public IEditFeedback getEditFeedback() {
+		return editFeedback;
+	}
+
+	public void setEditFeedback(IEditFeedback editFeedback) {
+		this.editFeedback = editFeedback;
 	}
 
 	public int getBitmap() throws IOException, AutomationException {

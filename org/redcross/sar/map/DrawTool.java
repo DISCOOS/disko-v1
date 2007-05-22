@@ -8,13 +8,12 @@ import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.DrawDialog;
 import org.redcross.sar.map.index.IndexedGeometry;
+
 import com.esri.arcgis.display.IScreenDisplay;
 import com.esri.arcgis.display.RgbColor;
 import com.esri.arcgis.display.SimpleLineSymbol;
 import com.esri.arcgis.display.esriScreenCache;
 import com.esri.arcgis.carto.InvalidArea;
-import com.esri.arcgis.carto.LineElement;
-import com.esri.arcgis.carto.PolygonElement;
 import com.esri.arcgis.geometry.Envelope;
 import com.esri.arcgis.geometry.GeometryBag;
 import com.esri.arcgis.geometry.IGeometry;
@@ -22,9 +21,9 @@ import com.esri.arcgis.geometry.IPoint;
 import com.esri.arcgis.geometry.ISegmentGraphCursor;
 import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.geometry.Polygon;
-//import com.esri.arcgis.geometry.Polygon;
 import com.esri.arcgis.geometry.Polyline;
 import com.esri.arcgis.geometry.SegmentGraph;
+import com.esri.arcgis.geometry.esriGeometryType;
 import com.esri.arcgis.interop.AutomationException;
 
 /**
@@ -56,10 +55,6 @@ public class DrawTool extends AbstractCommandTool {
 	
 	private SimpleLineSymbol drawSymbol = null;	
 	private SimpleLineSymbol flashSymbol = null;
-	
-	public static final int DRAW_MODE_POLYLINE = 1;
-	public static final int DRAW_MODE_POLYGON  = 2;
-	private int drawMode = DRAW_MODE_POLYLINE;
 	
 	/**
 	 * Constructs the DrawTool
@@ -127,14 +122,6 @@ public class DrawTool extends AbstractCommandTool {
 		return searchEnvelope.getHeight();
 	}
 	
-	public void setDrawMode(int mode) {
-		drawMode = mode;
-	}
-	
-	public int getDrawMode() {
-		return drawMode;
-	}
-	
 	public void onClick() throws IOException, AutomationException {
 		isActive = true;
 		updateIndexedGeometry();
@@ -147,23 +134,24 @@ public class DrawTool extends AbstractCommandTool {
 
 	public void onDblClick() throws IOException, AutomationException {
 		pathGeometry.simplify();
-		pathGeometry.setSpatialReferenceByRef(map.getSpatialReference());
-		if (drawMode == DRAW_MODE_POLYLINE) {
-			LineElement le = new LineElement();
-			le.setGeometry(pathGeometry);
-			le.setName(getElementName());
-			le.setCustomProperty(new DrawProperties());
-			map.addGraphics(le);
+		if (featureClass.getShapeType() == esriGeometryType.esriGeometryPolygon) {
+			Polygon polygon = getPolygon(pathGeometry);
+			polygon.setSpatialReferenceByRef(map.getSpatialReference());
+			editFeature.setShapeByRef(polygon);
 		}
-		else if (drawMode == DRAW_MODE_POLYGON) {
-			PolygonElement pe = new PolygonElement();
-			pe.setGeometry(getPolygon(pathGeometry));
-			pe.setName(getElementName());
-			pe.setCustomProperty(new DrawProperties());
-			map.addGraphics(pe);
+		else if (featureClass.getShapeType() == esriGeometryType.esriGeometryPolyline) {
+			
 		}
-		map.partialRefreshGraphics(pathGeometry.getEnvelope());
+		else if (featureClass.getShapeType() == esriGeometryType.esriGeometryBag) {
+			pathGeometry.setSpatialReferenceByRef(map.getSpatialReference());
+			GeometryBag geomBag = (GeometryBag)editFeature.getShape();
+			geomBag.addGeometry(pathGeometry, null, null);
+		}
+		map.partialRefresh(pathGeometry.getEnvelope());
 		reset();
+		if (editFeedback != null) {
+			editFeedback.editFinished(editFeature);
+		}
 	}
 	
 	private Polygon getPolygon(Polyline pline) throws IOException, AutomationException {
@@ -179,6 +167,9 @@ public class DrawTool extends AbstractCommandTool {
 
 	public void onMouseDown(int button, int shift, int x, int y)
 			throws IOException, AutomationException {
+		if (editFeedback != null) {
+			editFeedback.editStarted(editFeature);
+		}
 		p2 = transform(x,y);
 		//try snapping
 		searchEnvelope.centerAt(p2);

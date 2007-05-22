@@ -38,14 +38,14 @@ public class SplitTool extends AbstractCommandTool {
 		p.setX(x);
 		p.setY(y); 
 		transform(p);
-		IElement elem = map.searchGraphics(p);
+		/*IElement elem = map.searchGraphics(p);
 		if (elem != null && elem instanceof LineElement) {
 			Polyline pl = (Polyline)elem.getGeometry();
 			// splitting and adding new elements
 			split(pl, p);
 			// delete the orginal element
 			map.deleteGraphics(elem);
-		}
+		}*/
 	}
 	
 	private void split(Polyline orginal, Point nearPoint) 
@@ -64,11 +64,11 @@ public class SplitTool extends AbstractCommandTool {
 		
 		LineElement le1 = new LineElement();
 		le1.setGeometry(pline1);
-		map.addGraphics(le1);
+		//map.addGraphics(le1);
 		
 		LineElement le2 = new LineElement();
 		le2.setGeometry(pline2);
-		map.addGraphics(le2);
+		//map.addGraphics(le2);
 		
 		Toolkit.getDefaultToolkit().beep();
 	}

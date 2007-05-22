@@ -8,18 +8,13 @@ import javax.swing.border.SoftBevelBorder;
 
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.event.IDiskoMapEventListener;
-import org.redcross.sar.gui.ClipLayerSelectionModel;
-import org.redcross.sar.gui.SnapLayerSelectionModel;
+import org.redcross.sar.map.layer.AbstractMsoLayer;
+import org.redcross.sar.mso.IMsoModelIf;
 
 import com.esri.arcgis.beans.map.MapBean;
 import com.esri.arcgis.carto.FeatureLayer;
-import com.esri.arcgis.carto.IActiveView;
-import com.esri.arcgis.carto.IElement;
-import com.esri.arcgis.carto.IElementProperties;
-import com.esri.arcgis.carto.IEnumElement;
 import com.esri.arcgis.carto.IFeatureLayerSelectionEventsAdapter;
 import com.esri.arcgis.carto.IFeatureLayerSelectionEventsFeatureLayerSelectionChangedEvent;
-import com.esri.arcgis.carto.IGraphicsContainer;
 import com.esri.arcgis.carto.ILayer;
 import com.esri.arcgis.controls.IMapControlEvents2Adapter;
 import com.esri.arcgis.controls.IMapControlEvents2OnAfterDrawEvent;
@@ -30,7 +25,6 @@ import com.esri.arcgis.geodatabase.IEnumIDs;
 import com.esri.arcgis.geodatabase.QueryFilter;
 import com.esri.arcgis.geometry.Envelope;
 import com.esri.arcgis.geometry.IEnvelope;
-import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.systemUI.ITool;
 
@@ -54,10 +48,11 @@ public final class DiskoMap extends MapBean implements IDiskoMap {
 	/**
 	 * Default constructor
 	 */
-	public DiskoMap(String mxdDoc, IDiskoMapManager mapManager)  
+	public DiskoMap(String mxdDoc, IDiskoMapManager mapManager, IMsoModelIf msoModel)  
 			throws IOException, AutomationException {
 		this.mxdDoc = mxdDoc;
 		this.mapManager = mapManager;
+		
 		listeners = new ArrayList<IDiskoMapEventListener>();
 		diskoMapEvent = new DiskoMapEvent(this);
 		initialize();
@@ -90,6 +85,15 @@ public final class DiskoMap extends MapBean implements IDiskoMap {
 	}
 	
 	private void mapLoaded() throws java.io.IOException, AutomationException {
+		// add custom layers
+		List customLayers = mapManager.getMsoLayers();
+		for (int i = 0; i < customLayers.size(); i++) {
+			AbstractMsoLayer customLayer = (AbstractMsoLayer)customLayers.get(i);
+			customLayer.setSpatialReferenceByRef(getSpatialReference());
+			customLayer.setExtent(getFullExtent());
+			getActiveView().getFocusMap().addLayer(customLayer);
+		}
+		
 		// set all featurelayers not selectabel
 		for (int i = 0; i < getLayerCount(); i++) {
 			ILayer layer = getLayer(i);
@@ -177,18 +181,6 @@ public final class DiskoMap extends MapBean implements IDiskoMap {
 		}
 	}
 	
-	protected void fireGraphicsAdded() {
-		for (int i = 0; i < listeners.size(); i++) {
-			listeners.get(i).graphicsAdded(diskoMapEvent);
-		}
-	}
-	
-	protected void fireGraphicsDeleted() {
-		for (int i = 0; i < listeners.size(); i++) {
-			listeners.get(i).graphicsDeleted(diskoMapEvent);
-		}
-	}
-	
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#setCurrentToolByRef(com.esri.arcgis.systemUI.ITool)
 	 */
@@ -259,13 +251,21 @@ public final class DiskoMap extends MapBean implements IDiskoMap {
 		return selection;
 	}
 	
-	public void zoomToSelected() throws IOException, AutomationException {
+	public IEnvelope getSelectionExtent() throws IOException, AutomationException {
 		Feature[] selection = getSelection();
 		if (selection != null && selection.length > 0) {
 			IEnvelope env = new Envelope();
 			for (int i = 0; i < selection.length; i++) {
 				env.union(selection[i].getExtent());
 			}
+			return env;
+		}
+		return null;
+	}
+	
+	public void zoomToSelected() throws IOException, AutomationException {
+		IEnvelope env = getSelectionExtent();
+		if (env != null) {
 			setExtent(env);
 		}
 	}
@@ -329,71 +329,6 @@ public final class DiskoMap extends MapBean implements IDiskoMap {
 		}
 	}
 	
-	public void addGraphics(IElement elem) throws IOException, AutomationException {
-		IGraphicsContainer graphics = getActiveView().getGraphicsContainer();
-		graphics.addElement(elem, 0);
-		fireGraphicsAdded();
-	}
-
-	public void deleteGraphics(IElement elem) throws IOException, AutomationException {
-		IGraphicsContainer graphics = getActiveView().getGraphicsContainer();
-		graphics.deleteElement(elem);
-		fireGraphicsDeleted();
-	}
-	
-
-	public void deleteAllGraphics() throws IOException, AutomationException {
-		IGraphicsContainer graphics = getActiveView().getGraphicsContainer();
-		graphics.deleteAllElements();
-		fireGraphicsDeleted();
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.redcross.sar.map.IDiskoMap#searchGraphics(com.esri.arcgis.geometry.Point)
-	 */
-	public IElement searchGraphics(Point p) 
-			throws IOException, AutomationException {
-
-		IActiveView av = getActiveView();
-		double tolerance = av.getExtent().getWidth()/50;
-		IGraphicsContainer graphics = av.getGraphicsContainer();
-		graphics.reset();
-		IEnumElement enumElement = graphics.locateElements(p, tolerance);
-		if (enumElement != null) {
-			return enumElement.next();
-		}
-		return null;
-	}
-	
-	public List searchGraphics(String name) 
-			throws IOException, AutomationException {
-		ArrayList result = new ArrayList();
-		IGraphicsContainer graphics = getActiveView().getGraphicsContainer();
-		graphics.reset();
-		IElement elem = null;
-		while ((elem = graphics.next()) != null) {
-			if (elem instanceof IElementProperties && 
-					((IElementProperties)elem).getName().equals(name)) {
-				result.add(elem);
-			}
-		}
-		return result;
-	}
-	
-	public boolean hasGraphics(String name) 
-			throws IOException, AutomationException {
-		IGraphicsContainer graphics = getActiveView().getGraphicsContainer();
-		graphics.reset();
-		IElement elem = null;
-		while ((elem = graphics.next()) != null) {
-			if (elem instanceof IElementProperties && 
-					((IElementProperties)elem).getName().equals(name)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#partialRefresh(com.esri.arcgis.geometry.IEnvelope)
 	 */
@@ -406,17 +341,5 @@ public final class DiskoMap extends MapBean implements IDiskoMap {
 		else {
 			getActiveView().refresh();
 		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.redcross.sar.map.IDiskoMap#partialRefreshGraphics(com.esri.arcgis.geometry.IEnvelope)
-	 */
-	public void partialRefreshGraphics(IEnvelope env) throws IOException, AutomationException {
-		if (env == null) {
-			env = getActiveView().getExtent();
-		}
-		getActiveView().partialRefresh(
-				com.esri.arcgis.carto.esriViewDrawPhase.esriViewGraphics, 
-				null, env);
 	}
 }

@@ -1,16 +1,11 @@
 package org.redcross.sar.map;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.redcross.sar.event.IDiskoMapEventListener;
-import org.redcross.sar.gui.ClipLayerSelectionModel;
-import org.redcross.sar.gui.SnapLayerSelectionModel;
 import com.esri.arcgis.carto.FeatureLayer;
-import com.esri.arcgis.carto.IElement;
 import com.esri.arcgis.geodatabase.Feature;
 import com.esri.arcgis.geometry.IEnvelope;
-import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.systemUI.ITool;
 
@@ -50,6 +45,8 @@ public interface IDiskoMap {
 	 * @see org.redcross.sar.map.IDiskoMap#getSelection()
 	 */
 	public Feature[] getSelection() throws IOException, AutomationException;
+	
+	public IEnvelope getSelectionExtent() throws IOException, AutomationException;
 
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#setSelected(java.lang.String, java.lang.String, java.lang.Object)
@@ -83,32 +80,9 @@ public interface IDiskoMap {
 	public void deleteSelected() throws IOException;
 
 	/* (non-Javadoc)
-	 * @see org.redcross.sar.map.IDiskoMap#searchGraphics(com.esri.arcgis.geometry.Point)
-	 */
-	public IElement searchGraphics(Point p) throws IOException,
-			AutomationException;
-	
-	public List searchGraphics(String name) 
-			throws IOException, AutomationException;
-	
-	public void addGraphics(IElement elem) throws IOException, AutomationException;
-	
-	public void deleteGraphics(IElement elem) throws IOException, AutomationException;
-	
-	public void deleteAllGraphics() throws IOException, AutomationException;
-	
-	public boolean hasGraphics(String name) throws IOException, AutomationException;
-
-	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#partialRefresh(com.esri.arcgis.geometry.IEnvelope)
 	 */
 	public void partialRefresh(IEnvelope env) throws IOException,
-			AutomationException;
-
-	/* (non-Javadoc)
-	 * @see org.redcross.sar.map.IDiskoMap#partialRefreshGraphics(com.esri.arcgis.geometry.IEnvelope)
-	 */
-	public void partialRefreshGraphics(IEnvelope env) throws IOException,
 			AutomationException;
 
 }

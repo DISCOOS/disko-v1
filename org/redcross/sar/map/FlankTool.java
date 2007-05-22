@@ -98,11 +98,11 @@ public class FlankTool extends AbstractCommandTool {
 		p.setX(x);
 		p.setY(y); 
 		transform(p);
-		IElement elem = map.searchGraphics(p);
+		/*IElement elem = map.searchGraphics(p);
 		if (elem != null && elem instanceof LineElement) {
 			Polyline pl = (Polyline)elem.getGeometry();
 			createFlankes(pl);
-		}
+		}*/
 	}
 	
 	private void createFlankes(Polyline pl)  throws IOException {
@@ -126,7 +126,7 @@ public class FlankTool extends AbstractCommandTool {
 				showError("Kan ikke lage høyre flanke. Ugyldig geometri. Tegn på nytt", e.getDescription());
 			}
 		}
-		map.partialRefreshGraphics(refreshEnvelope);
+		//map.partialRefreshGraphics(refreshEnvelope);
 	}
 	
 	private void showError(String msg, String description) {
@@ -162,29 +162,26 @@ public class FlankTool extends AbstractCommandTool {
 		
 		((Polygon) coll.getGeometry(1)).cut(path,leftGeom,rightGeom);
 
-		FlankProperties properties = new FlankProperties();
 		if (side == LEFT_SIDE_FLANK) {
-			properties.setSide("venstre");
 			Polygon leftPoly = clip((Polygon) leftGeom[0]);
 			leftPoly.setSpatialReferenceByRef(map.getSpatialReference());
 			PolygonElement pe = new PolygonElement();
 			pe.setGeometry(leftPoly);
 			pe.setSymbol(redFill);
-			pe.setName(getElementName());
+			//pe.setName(getElementName());
 			pe.setCustomProperty(properties);
-			map.addGraphics(pe);
+			//map.addGraphics(pe);
 			refreshEnvelope.union(leftPoly.getEnvelope());
 		}
 		else if (side == RIGHT_SIDE_FLANK) {
-			properties.setSide("hoyre");
 			Polygon rightPoly = clip((Polygon) rightGeom[0]);
 			rightPoly.setSpatialReferenceByRef(map.getSpatialReference());
 			PolygonElement pe = new PolygonElement();
 			pe.setGeometry(rightPoly);
 			pe.setSymbol(blueFill);
-			pe.setName(getElementName());
+			//pe.setName(getElementName());
 			pe.setCustomProperty(properties);
-			map.addGraphics(pe);
+			//map.addGraphics(pe);
 			refreshEnvelope.union(rightPoly.getEnvelope());
 		}
 	}

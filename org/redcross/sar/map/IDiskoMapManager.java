@@ -1,9 +1,10 @@
 package org.redcross.sar.map;
 
+import java.io.IOException;
 import java.util.List;
-import com.esri.arcgis.carto.FeatureLayer;
-import com.esri.arcgis.carto.IFeatureLayer;
+import org.redcross.sar.map.layer.AbstractMsoLayer;
 import com.esri.arcgis.geometry.IEnvelope;
+import com.esri.arcgis.interop.AutomationException;
 
 public interface IDiskoMapManager {
 
@@ -15,11 +16,9 @@ public interface IDiskoMapManager {
 	 * Refresh all map in this DiskoApplication. Should be called after database updates.
 	 * @param env A envelope to define the area to refresh
 	 */
-	public void refreshAllMaps(IEnvelope env);
+	public void refreshAllMaps(IEnvelope env) throws AutomationException, IOException;
 	
-	public IFeatureLayer getPoiFeatureLayer();
+	public List getMsoLayers();
 	
-	public FeatureLayer getBasicLineFeatureLayer();
-
-	public FeatureLayer getFlankFeatureLayer();
+	public AbstractMsoLayer getMsoLayer(Enum classCode);
 }
