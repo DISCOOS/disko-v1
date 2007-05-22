@@ -3,7 +3,8 @@
 	<DiskoRolle name="nl" title="Nestleder">
 		<DiskoModule classname="org.redcross.sar.wp.tacktics.DiskoWpTackticsImpl"/>
 		<DiskoModule classname="org.redcross.sar.wp.A008.DiskoWpLogisticsImpl"/>
-		<DiskoModule classname="org.redcross.sar.wp.DiskoWpMapImpl"/>
+		<DiskoModule classname="org.redcross.sar.wp.DiskoWpPlanImpl"/>
+		<DiskoModule classname="org.redcross.sar.wp.DiskoWpUnitImpl"/>
 	</DiskoRolle>
 	<DiskoRolle name="al" title="Aksjonsleder">
 		<DiskoModule classname="org.redcross.sar.wp.DiskoWpMapImpl"/>
