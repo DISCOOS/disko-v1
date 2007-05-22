@@ -9,6 +9,7 @@ import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.IUnitIf;
+import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.EventType;
 import org.redcross.sar.mso.event.MsoEvent.Update;
@@ -24,6 +25,8 @@ public class UnitTableModel extends AbstractTableModel implements
 	public UnitTableModel(IMsoModelIf msoModel, int numColumns) {
 		this.numColumns = numColumns;
 		myInterests = EnumSet.of(IMsoManagerIf.MsoClassCode.CLASSCODE_UNIT);
+		IMsoEventManagerIf msoEventManager = msoModel.getEventManager();
+		msoEventManager.addClientUpdateListener(this);
 		rows = new ArrayList(4);
 		rows.add(new ArrayList(numColumns));
 		

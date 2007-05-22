@@ -174,7 +174,7 @@ public class NavBar extends JPanel {
 		return flankTool;
 	}
 	
-	private EraseTool getEraseTool() {
+	public EraseTool getEraseTool() {
 		if (eraseTool == null) {
 			try {
 				eraseTool = new EraseTool();
@@ -186,7 +186,7 @@ public class NavBar extends JPanel {
 		return eraseTool;
 	}
 	
-	private SplitTool getSplitTool() {
+	public SplitTool getSplitTool() {
 		if (splitTool == null) {
 			try {
 				splitTool = new SplitTool();

@@ -22,6 +22,7 @@ import javax.swing.JSpinner;
 
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.app.Utils;
+import org.redcross.sar.map.ClipLayerSelectionModel;
 import org.redcross.sar.map.FlankTool;
 import org.redcross.sar.map.IDiskoMap;
 

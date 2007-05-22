@@ -17,6 +17,7 @@ import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.map.DrawTool;
 import org.redcross.sar.map.IDiskoMap;
+import org.redcross.sar.map.SnapLayerSelectionModel;
 
 import com.borland.jbcl.layout.VerticalFlowLayout;
 import com.esri.arcgis.carto.FeatureLayer;

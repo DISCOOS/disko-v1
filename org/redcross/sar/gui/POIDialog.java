@@ -9,8 +9,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
@@ -19,10 +17,9 @@ import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
 import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.POITool;
-import org.redcross.sar.map.PoiProperties;
+import org.redcross.sar.map.layer.MsoFeature;
+import org.redcross.sar.mso.data.IPOIIf;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
-
-import com.esri.arcgis.carto.MarkerElement;
 import com.esri.arcgis.geometry.IEnvelope;
 import com.esri.arcgis.geometry.IPoint;
 import com.esri.arcgis.interop.AutomationException;
@@ -57,7 +54,6 @@ public class POIDialog extends DiskoDialog {
 	private JLabel yCoordLabel = null;
 	private JLabel typeLabel = null;
 	private JScrollPane textAreaScrollPane = null;
-	private CoordinateDocumentListener coordinateDocumentListener = null;
 	private JPanel northPanel = null;
 	private JPanel textAreaPanel = null;
 	
@@ -66,7 +62,6 @@ public class POIDialog extends DiskoDialog {
 		super(app.getFrame());
 		this.app = app;
 		this.tool = tool;
-		coordinateDocumentListener = new CoordinateDocumentListener();
 		initialize();
 		// TODO Auto-generated constructor stub
 	}
@@ -134,8 +129,12 @@ public class POIDialog extends DiskoDialog {
 					}
 				}
 			});	
+			xCoordTextField.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					checkCoords();
+				}
+			});
 			CoordinateDocument doc = new CoordinateDocument(6);
-			doc.addDocumentListener(coordinateDocumentListener);
 			xCoordTextField.setDocument(doc);
 		}
 		return xCoordTextField;
@@ -162,21 +161,25 @@ public class POIDialog extends DiskoDialog {
 					}
 				}
 			});
+			yCoordTextField.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					checkCoords();
+				}
+			});
 			CoordinateDocument doc = new CoordinateDocument(7);
-			doc.addDocumentListener(coordinateDocumentListener);
 			yCoordTextField.setDocument(doc);
 		}
 		return yCoordTextField;
 	}
 	
-	public void setPOI(MarkerElement elem) {
+	public void setMsoFeature(MsoFeature msoFeature) {
 		try {
-			IPoint p = (IPoint)elem.getGeometry();
+			IPOIIf poi = (IPOIIf)msoFeature.getMsoObject();
+			IPoint p = (IPoint)msoFeature.getShape();
 			setXCoordinateField(p.getX());
 			setYCoordinateField(p.getY());
-			PoiProperties properties = (PoiProperties)elem.getCustomProperty();
-			getTxtArea().setText(properties.getDesrciption());
-			POIType type = properties.getType();
+			getTxtArea().setText(poi.getRemarks());
+			POIType type = poi.getType();
 			if (type != null) {
 				getTypeComboBox().setSelectedItem(type);
 			}
@@ -204,17 +207,11 @@ public class POIDialog extends DiskoDialog {
 	}
 	
 	private void setXCoordinateField(String str) {
-		JTextField f = getXCoordTextField();
-		f.getDocument().removeDocumentListener(coordinateDocumentListener);
-		f.setText(str);
-		f.getDocument().addDocumentListener(coordinateDocumentListener);
+		getXCoordTextField().setText(str);
 	}
 	
 	private void setYCoordinateField(String str) {
-		JTextField f = getYCoordTextField();
-		f.getDocument().removeDocumentListener(coordinateDocumentListener);
-		f.setText(str);
-		f.getDocument().addDocumentListener(coordinateDocumentListener);
+		getYCoordTextField().setText(str);
 	}
 	
 	private void checkCoords() {
@@ -233,15 +230,7 @@ public class POIDialog extends DiskoDialog {
 				IEnvelope env = map.getExtent();
 				if (x > env.getLowerLeft().getX() & x < env.getLowerRight().getX() &
 					y > env.getLowerLeft().getY() & y < env.getUpperLeft().getY()) {
-					com.esri.arcgis.geometry.Point p  = new com.esri.arcgis.geometry.Point();
-					p.setX(x);
-					p.setY(y);
-					if (tool.getSelectedPUI() != null) {
-						tool.moveSelectedPOI(x, y);
-					}
-					else {
-						tool.addPOIAt(x, y);
-					}
+					//tool.addPOIAt(x, y);
 				}
 			} catch (AutomationException e) {
 				// TODO Auto-generated catch block
@@ -278,18 +267,10 @@ public class POIDialog extends DiskoDialog {
 			typeComboBox.setMaximumRowCount(8);
 			typeComboBox.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					MarkerElement selectedPUI = tool.getSelectedPUI();
-					if (selectedPUI != null) {
-						try {
-							PoiProperties properties = (PoiProperties)selectedPUI.getCustomProperty();
-							properties.setType((POIType)getTypeComboBox().getSelectedItem());
-						} catch (AutomationException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
+					MsoFeature msoFeature = tool.getSelectedMsoFeature();
+					if (msoFeature != null) {
+						IPOIIf poi = (IPOIIf)msoFeature.getMsoObject();
+						poi.setType((POIType)getTypeComboBox().getSelectedItem());
 					}
 				}
 			});
@@ -308,21 +289,13 @@ public class POIDialog extends DiskoDialog {
 			txtArea = new JTextArea();
 			txtArea.addKeyListener(new java.awt.event.KeyAdapter() {
 				public void keyTyped(java.awt.event.KeyEvent e) {
-					try {
-						MarkerElement selectedPUI = tool.getSelectedPUI();
-						if (selectedPUI != null) {
-							PoiProperties properties = (PoiProperties)selectedPUI.getCustomProperty();
-							String description = properties.getDesrciption();
-							char c = e.getKeyChar();
-							String text = description != null ? description+c : ""+c; 
-							properties.setDesrciption(text);
-						}
-					} catch (AutomationException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+					MsoFeature msoFeature = tool.getSelectedMsoFeature();
+					if (msoFeature != null) {
+						IPOIIf poi = (IPOIIf)msoFeature.getMsoObject();
+						String remarks = poi.getRemarks();
+						char c = e.getKeyChar();
+						String text = remarks != null ? remarks+c : ""+c; 
+						poi.setRemarks(text);
 					}
 				}
 			});
@@ -443,16 +416,6 @@ public class POIDialog extends DiskoDialog {
 			}
 	     }
 	 }
-	
-	class CoordinateDocumentListener implements DocumentListener {
-		public void changedUpdate(DocumentEvent e) {}
-		public void insertUpdate(DocumentEvent e) {
-			checkCoords();
-		}
-		public void removeUpdate(DocumentEvent e) {
-			checkCoords();
-		}
-	}
 
 	/**
 	 * This method initializes northPanel	

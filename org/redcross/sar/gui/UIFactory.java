@@ -141,8 +141,8 @@ public class UIFactory {
 	 */
 	public Dimension getLargeButtonSize() {
 		if (largeButtonSize == null) {
-			int width  = 80; // default width
-			int height = 80; // default height
+			int width  = 50; // default width
+			int height = 50; // default height
 			String widthProp  = app.getProperty("LargeButton.width");
 			String heightProp = app.getProperty("LargeButton.height");
 			if (widthProp != null && heightProp != null) {
