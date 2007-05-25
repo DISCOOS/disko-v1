@@ -1,9 +1,8 @@
 package org.redcross.sar.wp;
 
-import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.app.IDiskoApplication;
+import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.map.DiskoMap;
-import org.redcross.sar.wp.A008.LogisticsPanel;
 
 import javax.swing.*;
 import java.awt.*;
