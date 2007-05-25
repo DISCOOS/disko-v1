@@ -1,4 +1,4 @@
-package org.redcross.sar.wp.logistikk;
+package org.redcross.sar.wp.logistics;
 /*
  * AssignmentLabelTransferHandler.java is mainly fetched from the 1.4
  * DragPictureDemo.java example.

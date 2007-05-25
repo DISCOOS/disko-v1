@@ -1,4 +1,4 @@
-package org.redcross.sar.wp.logistikk;
+package org.redcross.sar.wp.logistics;
 
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.AssignmentImpl;

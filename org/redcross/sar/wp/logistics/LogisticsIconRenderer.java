@@ -1,4 +1,4 @@
-package org.redcross.sar.wp.logistikk;
+package org.redcross.sar.wp.logistics;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;

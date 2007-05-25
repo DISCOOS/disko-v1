@@ -1,4 +1,4 @@
-package org.redcross.sar.wp.logistikk;
+package org.redcross.sar.wp.logistics;
 
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.gui.NavBar;

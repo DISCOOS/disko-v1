@@ -1,4 +1,4 @@
-package org.redcross.sar.wp.logistikk;
+package org.redcross.sar.wp.logistics;
 /*
  * DTAssignmentLabel.java is used by the 1.4 DragLabelDemo.java example.
  */
