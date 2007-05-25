@@ -1,10 +1,12 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.util.except.DuplicateIdException;
 import org.redcross.sar.util.except.IllegalOperationException;
 
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.EnumSet;
 
 /**
  *
@@ -19,7 +21,7 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
         ALLOCATED,
         ASSIGNED,
         EXECUTING,
-        PAUSED,
+//        PAUSED,
         ABORTED,
         FINISHED,
         REPORTED
@@ -45,7 +47,11 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
 
     public void setStatus(AssignmentStatus aStatus) throws IllegalOperationException;
 
-    public void setStatus(String aStatus);
+    public void setStatusAndOwner(AssignmentStatus aStatus, IUnitIf aUnit) throws IllegalOperationException;
+
+    public void setStatus(String aStatus) throws IllegalOperationException;
+
+    public void setStatusAndOwner(String aStatus, IUnitIf aUnit) throws IllegalOperationException;
 
     public AssignmentStatus getStatus();
 
@@ -88,6 +94,30 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
     public IMsoModelIf.ModificationState getPrioritySequenceState();
 
     public IAttributeIf.IMsoIntegerIf getPrioritySequenceAttribute();
+
+    public void setTimeAssigned(Calendar aTimeAssigned);
+
+    public Calendar getTimeAssigned();
+
+    public IMsoModelIf.ModificationState getTimeAssignedState();
+
+    public IAttributeIf.IMsoCalendarIf getTimeAssignedAttribute();
+
+    public void setTimeEstimatedFinished(Calendar aTimeEstimatedFinished);
+
+    public Calendar getTimeEstimatedFinished();
+
+    public IMsoModelIf.ModificationState getTimeEstimatedFinishedState();
+
+    public IAttributeIf.IMsoCalendarIf getTimeEstimatedFinishedAttribute();
+
+    public void setTimeStarted(Calendar aTimeStarted);
+
+    public Calendar getTimeStarted();
+
+    public IMsoModelIf.ModificationState getTimeStartedState();
+
+    public IAttributeIf.IMsoCalendarIf getTimeStartedAttribute();
 
     /*-------------------------------------------------------------------------------------------
     * Methods for lists
@@ -171,21 +201,66 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
 
     public boolean hasBeenFinished();
 
-    public boolean canChangeToStatus(AssignmentStatus newState);
+    public boolean canChangeToStatus(AssignmentStatus newStatus, IUnitIf newUnit);
 
-    public boolean canChangeToStatus(String newState);
+    public boolean canChangeToStatus(String newStatus, IUnitIf newUnit);
 
     public IUnitIf getOwningUnit();
 
     /**
      * Verify that the assigment can be assigned to a given unit.
      *
-     * @param aUnit              The unit that shall have the assigment.
      * @param newStatus          The new status that the assignment shall have.
+     * @param aUnit              The unit that shall have the assigment.
      * @param unassignIfPossible If <code>true</code>, the assigment will be assigned from any other possible other unit.
      * @throws IllegalOperationException If the assignment cannot be done (verification failed).
      */
-    public void verifyAllocatable(IUnitIf aUnit, IAssignmentIf.AssignmentStatus newStatus, boolean unassignIfPossible) throws IllegalOperationException;
+    public void verifyAllocatable(AssignmentStatus newStatus, IUnitIf aUnit, boolean unassignIfPossible) throws IllegalOperationException;
 
     int getTypenr();
+
+
+//    public final static EnumSet<AssignmentStatus> CAN_START_SET = EnumSet.of(AssignmentStatus.ALLOCATED, AssignmentStatus.ASSIGNED);
+    public final static EnumSet<AssignmentStatus> ACTIVE_SET = EnumSet.of(AssignmentStatus.ALLOCATED, AssignmentStatus.ASSIGNED,AssignmentStatus.EXECUTING);
+    public final static EnumSet<AssignmentStatus> FINISHED_SET = EnumSet.of(AssignmentStatus.ABORTED, AssignmentStatus.FINISHED);
+    public final static EnumSet<AssignmentStatus> FINISHED_AND_REPORTED_SET = EnumSet.of(AssignmentStatus.ABORTED, AssignmentStatus.FINISHED, AssignmentStatus.REPORTED);
+    public final static AbstractMsoObject.StatusSelector<IAssignmentIf, AssignmentStatus> READY_SELECTOR = new AbstractMsoObject.StatusSelector<IAssignmentIf, AssignmentStatus>(AssignmentStatus.READY);
+    public final static AbstractMsoObject.StatusSelector<IAssignmentIf, AssignmentStatus> ALLOCATED_SELECTOR = new AbstractMsoObject.StatusSelector<IAssignmentIf, AssignmentStatus>(AssignmentStatus.ALLOCATED);
+    public final static AbstractMsoObject.StatusSelector<IAssignmentIf, AssignmentStatus> ASSIGNED_SELECTOR = new AbstractMsoObject.StatusSelector<IAssignmentIf, AssignmentStatus>(AssignmentStatus.ASSIGNED);
+    public final static AbstractMsoObject.StatusSelector<IAssignmentIf, AssignmentStatus> EXECUTING_SELECTOR = new AbstractMsoObject.StatusSelector<IAssignmentIf, AssignmentStatus>(AssignmentStatus.EXECUTING);
+    public final static AbstractMsoObject.StatusSetSelector<IAssignmentIf, AssignmentStatus> FINISHED_SELECTOR = new AbstractMsoObject.StatusSetSelector<IAssignmentIf, AssignmentStatus>(FINISHED_AND_REPORTED_SET);
+
+    public final static Comparator<IAssignmentIf> PRIORITY_SEQUENCE_COMPARATOR = new Comparator<IAssignmentIf>()
+    {
+        public int compare(IAssignmentIf o1, IAssignmentIf o2)
+        {
+            return o1.getPrioritySequence() - o2.getPrioritySequence();
+        }
+    };
+
+    public final static Comparator<IAssignmentIf> PRIORITY_COMPARATOR = new Comparator<IAssignmentIf>()
+    {
+        public int compare(IAssignmentIf o1, IAssignmentIf o2)
+        {
+            return o1.getPriority().compareTo(o2.getPriority());
+        }
+    };
+
+    public final static Comparator<IAssignmentIf> PRIORITY_AND_NUMBER_COMPARATOR = new Comparator<IAssignmentIf>()
+    {
+        public int compare(IAssignmentIf u1, IAssignmentIf u2)
+        {
+            if (u1.getPriority().equals(u2.getPriority()))
+            {
+                return u1.getNumber() - u2.getNumber();
+            } else
+            {
+                // Compare priorities so that high priority comes first (high priority is "smaller than" low priority)
+                return u1.getPriority().compareTo(u2.getPriority());
+            }
+        }
+    };
+
+
+
 }

@@ -30,6 +30,11 @@ public class DogImpl extends AbstractUnit implements IDogIf
         return IUnitIf.UnitType.DOG;
     }
 
+    public String getSubTypeName()
+    {
+        return "CAR"; // todo expand
+    }
+
     public String toString()
     {
         return super.toString();

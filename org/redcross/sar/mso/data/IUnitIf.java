@@ -1,12 +1,9 @@
 package org.redcross.sar.mso.data;
 
-import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.util.except.MsoCastException;
-import org.redcross.sar.util.except.MsoException;
 import org.redcross.sar.util.except.DuplicateIdException;
 import org.redcross.sar.util.except.IllegalOperationException;
-import org.redcross.sar.util.mso.*;
+import org.redcross.sar.util.mso.Position;
 
 import java.util.Collection;
 import java.util.List;
@@ -14,7 +11,7 @@ import java.util.List;
 /**
  *
  */
-public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf, ISerialNumberedIf,IEnumStatusHolder<IUnitIf.UnitStatus>
+public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf, ISerialNumberedIf, IEnumStatusHolder<IUnitIf.UnitStatus>
 {
     public enum UnitType
     {
@@ -45,6 +42,7 @@ public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf, ISerialNu
 
     public IAttributeIf.IMsoEnumIf<UnitType> getTypeAttribute();
 
+    public String getCompleteTypeName();
 
     public void setStatus(UnitStatus aStatus);
 
@@ -122,13 +120,16 @@ public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf, ISerialNu
 
     /**
      * @param anIAssignmentIf The assigment to add
+     * @param newStatus       New status for the assignment
      * @throws DuplicateIdException if the list already contains an object with the same object ID.
      * @throws org.redcross.sar.util.except.IllegalOperationException
      *                              if the assignment cannot be assigned.
      */
-    public void addUnitAssignment(IAssignmentIf anIAssignmentIf) throws IllegalOperationException;
+    public void addUnitAssignment(IAssignmentIf anIAssignmentIf, IAssignmentIf.AssignmentStatus newStatus) throws IllegalOperationException;
 
-    public void removeUnitAssignment(IAssignmentIf anIAssignmentIf, IAssignmentIf.AssignmentStatus newStatus) throws IllegalOperationException;
+    public void addUnitReference(IAssignmentIf anIAssignmentIf);
+
+    public void removeUnitReference(IAssignmentIf anIAssignmentIf);
 
     public IAssignmentListIf getUnitAssignments();
 

@@ -94,7 +94,7 @@ public class BoatImpl extends AbstractTransportUnit implements IBoatIf
 
     public String getSubTypeName()
     {
-        return null; /*todo*/
+        return getSubType().name();
     }
 
     /*-------------------------------------------------------------------------------------------

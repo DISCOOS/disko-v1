@@ -1,16 +1,14 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoManagerIf;
-import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.util.except.DuplicateIdException;
+import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.util.except.IllegalOperationException;
-import org.redcross.sar.util.except.MsoRuntimeException;
-import org.redcross.sar.util.mso.*;
+import org.redcross.sar.util.mso.Position;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Search or rescue unit.
@@ -114,6 +112,18 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
     {
         return m_type;
     }
+
+    public String getTypeName()
+    {
+        return getType().name();
+    }
+
+    public String getCompleteTypeName()
+    {
+        return getTypeName() + "_" + getSubTypeName();
+    }
+
+    public abstract String getSubTypeName();
 
     public void setStatus(UnitStatus aStatus)
     {
@@ -309,19 +319,22 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
     * Methods for lists
     *-------------------------------------------------------------------------------------------*/
 
-    public void addUnitAssignment(IAssignmentIf anIAssignmentIf) throws IllegalOperationException
+    public void addUnitAssignment(IAssignmentIf anIAssignmentIf, IAssignmentIf.AssignmentStatus newStatus) throws IllegalOperationException
     {
-        anIAssignmentIf.verifyAllocatable(this, IAssignmentIf.AssignmentStatus.ALLOCATED, true);
-        m_unitAssignments.add(anIAssignmentIf);
-        anIAssignmentIf.setPrioritySequence(Integer.MAX_VALUE);
-        anIAssignmentIf.setStatus(IAssignmentIf.AssignmentStatus.ALLOCATED);
+//        anIAssignmentIf.verifyAllocatable(newStatus, this, true);
+//        m_unitAssignments.add(anIAssignmentIf);
+//        anIAssignmentIf.setPrioritySequence(Integer.MAX_VALUE);
+        anIAssignmentIf.setStatusAndOwner(newStatus,this);
     }
 
-    public void removeUnitAssignment(IAssignmentIf anIAssignmentIf, IAssignmentIf.AssignmentStatus newStatus) throws IllegalOperationException
+    public void addUnitReference(IAssignmentIf anIAssignmentIf)
     {
+        m_unitAssignments.add(anIAssignmentIf);
+    }
 
+    public void removeUnitReference(IAssignmentIf anIAssignmentIf)
+    {
         m_unitAssignments.removeReference(anIAssignmentIf);
-        anIAssignmentIf.setStatus(newStatus);
     }
 
     public IAssignmentListIf getUnitAssignments()
@@ -474,22 +487,22 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
 
     public List<IAssignmentIf> getAllocatedAssignments()
     {
-        return m_unitAssignments.selectItems(AssignmentImpl.getAllocatedSelector(), AssignmentImpl.getPrioritySequenceComparator());
+        return m_unitAssignments.selectItems(IAssignmentIf.ALLOCATED_SELECTOR, IAssignmentIf.PRIORITY_SEQUENCE_COMPARATOR);
     }
 
     public List<IAssignmentIf> getAssignedAssignments()
     {
-        return m_unitAssignments.selectItems(AssignmentImpl.getAssignedSelector(), null);
+        return m_unitAssignments.selectItems(IAssignmentIf.ASSIGNED_SELECTOR, null);
     }
 
     public List<IAssignmentIf> getExecutingAssigment()
     {
-        return m_unitAssignments.selectItems(AssignmentImpl.getExecutingSelector(), null);
+        return m_unitAssignments.selectItems(IAssignmentIf.EXECUTING_SELECTOR, null);
     }
 
     public List<IAssignmentIf> getFinishedAssigment()
     {
-        return m_unitAssignments.selectItems(AssignmentImpl.getFinishedSelector(), null);
+        return m_unitAssignments.selectItems(IAssignmentIf.FINISHED_SELECTOR, null);
     }
 }
 

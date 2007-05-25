@@ -86,7 +86,7 @@ public class AircraftImpl extends AbstractTransportUnit implements IAircraftIf
 
     public String getSubTypeName()
     {
-        return null; /*todo*/
+        return getSubType().name();
     }
 
     /*-------------------------------------------------------------------------------------------
@@ -292,5 +292,4 @@ public class AircraftImpl extends AbstractTransportUnit implements IAircraftIf
     {
         return m_visibility;
     }
-
 }

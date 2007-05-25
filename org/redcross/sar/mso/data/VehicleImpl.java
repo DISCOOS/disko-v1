@@ -33,6 +33,11 @@ public class VehicleImpl extends AbstractTransportUnit implements IVehicleIf
     }
 
 
+    public String getSubTypeName()
+    {
+        return "CAR"; // todo expand
+    }
+
     public String toString()
     {
         return super.toString();
