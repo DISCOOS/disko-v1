@@ -1,14 +1,10 @@
 package org.redcross.sar.wp.TestData;
 
-import org.redcross.sar.mso.data.*;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.util.except.MsoException;
+import org.redcross.sar.mso.data.*;
 import org.redcross.sar.util.except.DuplicateIdException;
-import org.redcross.sar.util.except.IllegalOperationException;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.redcross.sar.util.except.MsoException;
 /**
  * Created by IntelliJ IDEA.
  * User: vinjar
@@ -88,28 +84,41 @@ public class BuildTestData
             for (int i = 0; i < 10; i++)
             {
                 asg = asgList.createSearch();
-                asg.setStatus(IAssignmentIf.AssignmentStatus.DRAFT);
-                asg.setStatus(IAssignmentIf.AssignmentStatus.READY);
+                asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.DRAFT,null);
+                asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY,null);
                 ((ISearchIf)asg).setSubType(ISearchIf.SearchSubType.LINE);
-                unit.addUnitAssignment(asg);
+                unit.addUnitAssignment(asg,IAssignmentIf.AssignmentStatus.ALLOCATED);
             }
 
             unit = unitList.getUnit(2);
             for (int i = 0; i < 8; i++)
             {
                 asg = asgList.createSearch();
-                asg.setStatus(IAssignmentIf.AssignmentStatus.DRAFT);
-                asg.setStatus(IAssignmentIf.AssignmentStatus.READY);
+                asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.DRAFT,null);
+                asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY,null);
                 ((ISearchIf)asg).setSubType(ISearchIf.SearchSubType.DOG);
-                unit.addUnitAssignment(asg);
+                unit.addUnitAssignment(asg,IAssignmentIf.AssignmentStatus.ALLOCATED);
             }
 
-            for (int i = 0; i < 13; i++)
+            for (int i = 0; i < 20; i++)
             {
                 asg = asgList.createSearch();
-                asg.setStatus(IAssignmentIf.AssignmentStatus.DRAFT);
-                asg.setStatus(IAssignmentIf.AssignmentStatus.READY);
+                asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.DRAFT,null);
+                asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY,null);
                 ((ISearchIf)asg).setSubType(ISearchIf.SearchSubType.PATROL);
+                switch (i % 3)
+                {
+                    case 0:
+                        asg.setPriority(IAssignmentIf.AssignmentPriority.LOW);
+                        break;
+                    case 1:
+                        asg.setPriority(IAssignmentIf.AssignmentPriority.MEDIUM);
+                        break;
+                    default:
+                        asg.setPriority(IAssignmentIf.AssignmentPriority.HIGH);
+                        break;
+                }
+
             }
 
         }
