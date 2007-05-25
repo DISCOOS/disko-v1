@@ -173,25 +173,25 @@ public interface IMsoObjectIf
      */
     public IAttributeIf.IMsoIntegerIf getIntegerAttribute(String aName) throws UnknownAttributeException;
 
-    /**
-     * Get a Long attribute with the given index.
-     *
-     * @param anIndex Attribute index.
-     * @return The attribute, if it exists a and is of the right type, otherwise null.
-     * @throws org.redcross.sar.util.except.UnknownAttributeException
-     *          If attribute of the given type does not exist.
-     */
-    public IAttributeIf.IMsoLongIf getLongAttribute(int anIndex) throws UnknownAttributeException;
-
-    /**
-     * Get a Long attribute with the given name.
-     *
-     * @param aName Attribute name.
-     * @return The attribute, if it exists a and is of the right type, otherwise null.
-     * @throws org.redcross.sar.util.except.UnknownAttributeException
-     *          If attribute of the given type does not exist.
-     */
-    public IAttributeIf.IMsoLongIf getLongAttribute(String aName) throws UnknownAttributeException;
+//    /**
+//     * Get a Long attribute with the given index.
+//     *
+//     * @param anIndex Attribute index.
+//     * @return The attribute, if it exists a and is of the right type, otherwise null.
+//     * @throws org.redcross.sar.util.except.UnknownAttributeException
+//     *          If attribute of the given type does not exist.
+//     */
+//    public IAttributeIf.IMsoLongIf getLongAttribute(int anIndex) throws UnknownAttributeException;
+//
+//    /**
+//     * Get a Long attribute with the given name.
+//     *
+//     * @param aName Attribute name.
+//     * @return The attribute, if it exists a and is of the right type, otherwise null.
+//     * @throws org.redcross.sar.util.except.UnknownAttributeException
+//     *          If attribute of the given type does not exist.
+//     */
+//    public IAttributeIf.IMsoLongIf getLongAttribute(String aName) throws UnknownAttributeException;
 
     /**
      * Get a Double attribute with the given index.

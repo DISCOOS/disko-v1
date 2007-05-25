@@ -267,6 +267,7 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
         {
             return getAttrValue();
         }
+
     }
 
     public static class MsoInteger extends AttributeImpl<Integer> implements IMsoIntegerIf
@@ -313,7 +314,7 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
         }
     }
 
-    public static class MsoLong extends AttributeImpl<Long> implements IMsoLongIf
+/*    public static class MsoLong extends AttributeImpl<Long> implements IMsoLongIf
     {
         public MsoLong(AbstractMsoObject theOwner, String theName)
         {
@@ -361,7 +362,7 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
             return getAttrValue();
         }
     }
-
+  */
     public static class MsoDouble extends AttributeImpl<Double> implements IMsoDoubleIf
     {
         public MsoDouble(AbstractMsoObject theOwner, String theName)
@@ -814,4 +815,39 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
             return retVal;
         }
     }
+
+   public boolean equals(Object o)
+   {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      AttributeImpl attribute = (AttributeImpl) o;
+
+      if (m_indexNo != attribute.m_indexNo) return false;
+      if (m_required != attribute.m_required) return false;
+      if (m_class != null ? !m_class.equals(attribute.m_class) : attribute.m_class != null) return false;
+      if (m_localValue != null ? !m_localValue.equals(attribute.m_localValue) : attribute.m_localValue != null)
+         return false;
+      if (m_name != null ? !m_name.equals(attribute.m_name) : attribute.m_name != null) return false;
+      if (m_owner != null ? !m_owner.equals(attribute.m_owner) : attribute.m_owner != null) return false;
+      if (m_serverValue != null ? !m_serverValue.equals(attribute.m_serverValue) : attribute.m_serverValue != null)
+         return false;
+      if (m_state != attribute.m_state) return false;
+
+      return true;
+   }
+
+   public int hashCode()
+   {
+      int result;
+      result = (m_class != null ? m_class.hashCode() : 0);
+      result = 31 * result + (m_owner != null ? m_owner.hashCode() : 0);
+      result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
+      result = 31 * result + m_indexNo;
+      result = 31 * result + (m_required ? 1 : 0);
+      result = 31 * result + (m_localValue != null ? m_localValue.hashCode() : 0);
+      result = 31 * result + (m_serverValue != null ? m_serverValue.hashCode() : 0);
+      result = 31 * result + (m_state != null ? m_state.hashCode() : 0);
+      return result;
+   }
 }

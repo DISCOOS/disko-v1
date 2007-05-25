@@ -123,7 +123,16 @@ public class Track implements IGeodataIf
       if (m_id != null ? !m_id.equals(track.m_id) : track.m_id != null) return false;
       if (m_layout != null ? !m_layout.equals(track.m_layout) : track.m_layout != null) return false;
       if (m_name != null ? !m_name.equals(track.m_name) : track.m_name != null) return false;
-      if (m_track != null ? !m_track.equals(track.m_track) : track.m_track != null) return false;
+      if (m_track != null )
+      {
+         if(track.m_track==null || m_track.size()!=track.m_track.size() ) return false;
+         for(int i=0;i<m_track.size();i++)
+         {
+            if(!m_track.get(i).equals(track.m_track.get(i)))return false;
+         }
+
+      }
+      else if(track.m_track!=null) return false;
 
       return true;
    }

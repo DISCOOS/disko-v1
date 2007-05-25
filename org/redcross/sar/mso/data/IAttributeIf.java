@@ -119,21 +119,21 @@ public interface IAttributeIf<T>
         public long longValue();
     }
 
-    /**
-     * Interface for {@link Long} attributes.
-     */
-    public interface IMsoLongIf extends IAttributeIf<Long>
-    {
-        public void setValue(long aValue);
-
-        public void setValue(Integer aValue);
-
-        public void setValue(Long aValue);
-
-        public int intValue();
-
-        public long longValue();
-    }
+//    /**
+//     * Interface for {@link Long} attributes.
+//     */
+//    public interface IMsoLongIf extends IAttributeIf<Long>
+//    {
+//        public void setValue(long aValue);
+//
+//        public void setValue(Integer aValue);
+//
+//        public void setValue(Long aValue);
+//
+//        public int intValue();
+//
+//        public long longValue();
+//    }
 
     /**
      * Interface for {@link Double} attributes.

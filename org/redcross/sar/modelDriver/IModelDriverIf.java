@@ -12,4 +12,10 @@ public interface IModelDriverIf
      * @return  The Object ID
      */
     public IMsoObjectIf.IObjectIdIf makeObjectId();
+
+   /**
+    * This method checks to see if a SaraOperation (Hendelse) is running and initiates a mapping
+    * between SaraOperation (Hendelse) and a running MsoModel
+    */
+   public void initiate();
 }

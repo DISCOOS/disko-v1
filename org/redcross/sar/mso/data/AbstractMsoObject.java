@@ -344,29 +344,29 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
     }
 
-    public IAttributeIf.IMsoLongIf getLongAttribute(int anIndex) throws UnknownAttributeException
-    {
-        try
-        {
-            return (IAttributeIf.IMsoLongIf) getAttribute(anIndex);
-        }
-        catch (ClassCastException e)
-        {
-            throw attributeCast(anIndex, Long.class);
-        }
-    }
-
-    public IAttributeIf.IMsoLongIf getLongAttribute(String aName) throws UnknownAttributeException
-    {
-        try
-        {
-            return (IAttributeIf.IMsoLongIf) getAttribute(aName);
-        }
-        catch (ClassCastException e)
-        {
-            throw attributeCast(aName, Long.class);
-        }
-    }
+//    public IAttributeIf.IMsoLongIf getLongAttribute(int anIndex) throws UnknownAttributeException
+//    {
+//        try
+//        {
+//            return (IAttributeIf.IMsoLongIf) getAttribute(anIndex);
+//        }
+//        catch (ClassCastException e)
+//        {
+//            throw attributeCast(anIndex, Long.class);
+//        }
+//    }
+//
+//    public IAttributeIf.IMsoLongIf getLongAttribute(String aName) throws UnknownAttributeException
+//    {
+//        try
+//        {
+//            return (IAttributeIf.IMsoLongIf) getAttribute(aName);
+//        }
+//        catch (ClassCastException e)
+//        {
+//            throw attributeCast(aName, Long.class);
+//        }
+//    }
 
     public IAttributeIf.IMsoDoubleIf getDoubleAttribute(int anIndex) throws UnknownAttributeException
     {

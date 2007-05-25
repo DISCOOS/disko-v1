@@ -118,7 +118,17 @@ public class Route implements IGeodataIf
       if (m_id != null ? !m_id.equals(route.m_id) : route.m_id != null) return false;
       if (m_layout != null ? !m_layout.equals(route.m_layout) : route.m_layout != null) return false;
       if (m_name != null ? !m_name.equals(route.m_name) : route.m_name != null) return false;
-      if (m_route != null ? !m_route.equals(route.m_route) : route.m_route != null) return false;
+      if (m_route != null )
+      {
+         if(route.m_route==null || m_route.size()!=route.m_route.size() ) return false;
+         for(int i=0;i<m_route.size();i++)
+         {
+            if(!m_route.get(i).equals(route.m_route.get(i)))return false;
+         }
+
+      }
+      else if(route.m_route!=null) return false;
+
 
       return true;
    }

@@ -118,6 +118,16 @@ public class Polygon implements IGeodataIf
       if (m_layout != null ? !m_layout.equals(polygon.m_layout) : polygon.m_layout != null) return false;
       if (m_name != null ? !m_name.equals(polygon.m_name) : polygon.m_name != null) return false;
       if (m_polygon != null ? !m_polygon.equals(polygon.m_polygon) : polygon.m_polygon != null) return false;
+       if (m_polygon != null )
+       {
+          if(polygon.m_polygon==null || m_polygon.size()!=polygon.m_polygon.size() ) return false;
+          for(int i=0;i<m_polygon.size();i++)
+          {
+             if(!m_polygon.get(i).equals(polygon.m_polygon.get(i)))return false;
+          }
+
+       }
+       else if(polygon.m_polygon!=null) return false;
 
       return true;
    }
