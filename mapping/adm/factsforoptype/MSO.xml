@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rot>
+    <fact comp="n" edit="n" id="00000000000000000" label="Nr" pos1="0" pos2="0" relTo="" version="0">
+        <str_fact/>
+    </fact>
+    <fact comp="n" edit="y" id="00000000000000001" label="Hendelsestype" pos1="1" pos2="0" relTo="" version="0">
+<combo_fact selectedItem="Savnet person">
+<combo_el>Alpinulykke - fjell - bre - grotte</combo_el>
+<combo_el>Andre</combo_el>
+<combo_el>Assistanse fartøy</combo_el>
+<combo_el>Assistanse person</combo_el>
+<combo_el>Atomulykke</combo_el>
+<combo_el>Bailout</combo_el>
+<combo_el>Bombe- eller terrortrussel</combo_el>
+<combo_el>Brann</combo_el>
+<combo_el>Drivende fartøy - gjenstand</combo_el>
+<combo_el>Drukning - Kantring</combo_el>
+<combo_el>Dykkerulykke</combo_el>
+<combo_el>Fallskjerm eller glider</combo_el>
+<combo_el>Farlig gods</combo_el>
+<combo_el>Farlig gods - Forurensing</combo_el>
+<combo_el>Grunnstøting</combo_el>
+<combo_el>Havari luftfartøy - på land</combo_el>
+<combo_el>Havari luftfartøy - på sjøen</combo_el>
+<combo_el>Industriulykke</combo_el>
+<combo_el>Kantring -  Slagside</combo_el>
+<combo_el>Kapring</combo_el>
+<combo_el>Kollisjon</combo_el>
+<combo_el>Lekkasje</combo_el>
+<combo_el>Luftambulanse</combo_el>
+<combo_el>MAS-Andre meldinger</combo_el>
+<combo_el>MAS-Atomulykke, stråling</combo_el>
+<combo_el>MAS-Drivende objekt</combo_el>
+<combo_el>MAS-Drivis, isingfare</combo_el>
+<combo_el>MAS-Farlig gods, pakket/bulk</combo_el>
+<combo_el>MAS-Forurensning</combo_el>
+<combo_el>MAS-Inngrep (konsultasjon)</combo_el>
+<combo_el>MAS-Værforhold-vind</combo_el>
+<combo_el>MEDEVAC</combo_el>
+<combo_el>MEDICO</combo_el>
+<combo_el>MOB - Drukning</combo_el>
+<combo_el>Naturkatastrofe - flom - storm - orkan</combo_el>
+<combo_el>Nødlanding</combo_el>
+<combo_el>Nødpeilesender - ELT - EPIRB - PLB</combo_el>
+<combo_el>Nødsignal - DSC</combo_el>
+<combo_el>Nødsignal - Inmarsat</combo_el>
+<combo_el>Nødsignal - Pyroteknisk</combo_el>
+<combo_el>Nødsignal - Telekomm</combo_el>
+<combo_el>Nødsignaler - IFF - Mayday - PAN</combo_el>
+<combo_el>Nødsignaler - pyro - lys - andre</combo_el>
+<combo_el>Offshorehendelse</combo_el>
+<combo_el>Pyro - Lys- og lydsignaler</combo_el>
+<combo_el>SUBMISS - SUBSUNK</combo_el>
+<combo_el>Savnet  fiskebåt</combo_el>
+<combo_el>Savnet  fritidsbåt</combo_el>
+<combo_el>Savnet  kommersielt fartøy</combo_el>
+<combo_el>Savnet luftfartøy - Passasjerfly</combo_el>
+<combo_el>Savnet luftfartøy - Småfly</combo_el>
+<combo_el>Savnet person</combo_el>
+<combo_el>Skogbrann</combo_el>
+<combo_el>Skred - Ras</combo_el>
+<combo_el>SSAS</combo_el>
+<combo_el>Telekommunikasjon</combo_el>
+<combo_el>Transportulykke - jernbane</combo_el>
+<combo_el>Transportulykke - vei</combo_el>
+<combo_el>Udefinert - LAND</combo_el>
+<combo_el>Udefinert - LUFT</combo_el>
+<combo_el>Udefinert - SJØ</combo_el>
+</combo_fact>
+</fact>
+    <fact comp="n" edit="y" id="00000000000000002" label="Fase" pos1="2" pos2="0" relTo="" version="0">
+<combo_fact selectedItem="Usikkerhet">
+<combo_el>Usikkerhet</combo_el>
+<combo_el>Beredskap</combo_el>
+<combo_el>Nød</combo_el>
+<combo_el>Avsluttet</combo_el>
+<combo_el>Monitorering</combo_el>
+</combo_fact>
+</fact>
+    <fact comp="n" edit="y" id="00000000000000003" label="First alert RCC" pos1="3" pos2="0" relTo="" version="0">
+        <date_fact/>
+    </fact>
+ </rot>
