@@ -1,21 +1,2 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<object id="00000000059" name="DataSource" objectType="test" pos="17">
-<fact comp="n" edit="y" id="00000000060" label="UserName" pos1="999" pos2="999" relTo="00000000059" version="1">
-<str_fact/>
-</fact>
-<fact comp="n" edit="y" id="00000000061" label="Password" pos1="999" pos2="999" relTo="00000000059" version="1">
-<str_fact/>
-</fact>
-<fact comp="n" edit="y" id="00000000062" label="ConnectionString" pos1="999" pos2="999" relTo="00000000059" version="1">
-<str_fact/>
-</fact>
-<fact comp="n" edit="y" id="00000000063" label="Protocol" pos1="999" pos2="999" relTo="00000000059" version="1">
-<str_fact/>
-</fact>
-<fact comp="n" edit="y" id="00000000050" label="Name" pos1="999" pos2="999" relTo="00000000059" version="1">
-<str_fact/>
-</fact>
-<fact comp="n" edit="y" id="00000000013" label="ID" pos1="999" pos2="999" relTo="00000000059" version="1">
-<str_fact/>
-</fact>
-</object>
+<object id="00000000055" name="DataSource" objectType="test" pos="9"/>

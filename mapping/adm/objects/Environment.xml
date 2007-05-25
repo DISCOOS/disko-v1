@@ -1,38 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<object id="00000000180" name="Environment" objectType="test" pos="62">
-<fact comp="n" edit="y" id="00000000050" label="Name" pos1="999" pos2="999" relTo="00000000180" version="1">
-<str_fact/>
-</fact>
-<fact comp="n" edit="y" id="00000000071" label="Comment" pos1="999" pos2="999" relTo="00000000180" version="1">
-<str_fact/>
-</fact>
-<fact comp="n" edit="y" id="00000000072" label="Value" pos1="999" pos2="999" relTo="00000000180" version="1">
-<str_fact/>
-</fact>
-<fact comp="n" edit="y" id="00000000073" label="To" pos1="999" pos2="999" relTo="00000000180" version="1">
+<object id="00000000057" name="Environment" objectType="test" pos="11">
+<fact comp="n" edit="y" id="00000000058" label="Calendar" pos1="999" pos2="999" relTo="00000000057" version="1">
 <date_fact/>
 </fact>
-<object id="00000000123" name="Position" objectType="test" pos="40">
-<fact comp="n" edit="y" id="00000000124" label="Latitude" pos1="999" pos2="999" relTo="00000000123" version="1">
-<num_fact antdec="12" max="1.0E9" min="-1.0E9"/>
-</fact>
-<fact comp="n" edit="y" id="00000000125" label="Longitude" pos1="999" pos2="999" relTo="00000000123" version="1">
-<num_fact antdec="12" max="1.0E9" min="-1.0E9"/>
-</fact>
-<fact comp="n" edit="y" id="00000000126" label="Address1" pos1="999" pos2="999" relTo="00000000123" version="1">
+<fact comp="n" edit="y" id="00000000059" label="DTG" pos1="999" pos2="999" relTo="00000000057" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000127" label="Address2" pos1="999" pos2="999" relTo="00000000123" version="1">
-<str_fact/>
+<fact comp="n" edit="y" id="00000000060" label="Visible" pos1="999" pos2="999" relTo="00000000057" version="1">
+<num_fact antdec="0" max="1.0" min="0.0"/>
 </fact>
-<fact comp="n" edit="y" id="00000000128" label="ZipCode" pos1="999" pos2="999" relTo="00000000123" version="1">
-<num_fact antdec="0" max="1.0E8" min="0.0"/>
-</fact>
-<fact comp="n" edit="y" id="00000000129" label="Place" pos1="999" pos2="999" relTo="00000000123" version="1">
-<str_fact/>
-</fact>
-</object>
-<fact comp="n" edit="y" id="00000000013" label="ID" pos1="999" pos2="999" relTo="00000000180" version="1">
+<fact comp="n" edit="y" id="00000000061" label="Text" pos1="999" pos2="999" relTo="00000000057" version="1">
 <str_fact/>
 </fact>
 </object>

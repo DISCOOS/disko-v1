@@ -1,12 +1,2 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<object id="00000000147" name="Sketch" objectType="test" pos="45">
-<fact comp="n" edit="y" id="00000000015" label="Geodata" pos1="999" pos2="999" relTo="00000000147" version="1">
-<num_fact antdec="0" max="1.0E8" min="0.0"/>
-</fact>
-<fact comp="n" edit="y" id="00000000013" label="ID" pos1="999" pos2="999" relTo="00000000147" version="1">
-<str_fact/>
-</fact>
-<fact comp="n" edit="y" id="00000000052" label="Description" pos1="999" pos2="999" relTo="00000000147" version="1">
-<str_fact/>
-</fact>
-</object>
+<object id="00000000098" name="Sketch" objectType="test" pos="28"/>

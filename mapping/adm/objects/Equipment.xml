@@ -1,12 +1,2 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<object id="00000000075" name="Equipment" objectType="test" pos="22">
-<fact comp="n" edit="y" id="00000000013" label="ID" pos1="999" pos2="999" relTo="00000000075" version="1">
-<str_fact/>
-</fact>
-<fact comp="n" edit="y" id="00000000050" label="Name" pos1="999" pos2="999" relTo="00000000075" version="1">
-<str_fact/>
-</fact>
-<fact comp="n" edit="y" id="00000000052" label="Description" pos1="999" pos2="999" relTo="00000000075" version="1">
-<str_fact/>
-</fact>
-</object>
+<object id="00000000062" name="Equipment" objectType="test" pos="12"/>
