@@ -25,6 +25,13 @@ mission.icon=icons/mission.gif
 print.icon=icons/printout.gif
 sort.icon=icons/sort.gif
 ready.icon=icons/ready.gif
+CarUnit.icon=icons/car.gif
+DogUnit.icon=icons/dog.gif
+ManUnit.icon=icons/man.gif
+
+OnionSearch.icon=icons/onion.gif
+PointSearch.icon=icons/point.gif
+PathSearch.icon=icons/path.gif
 
 ApplyButton.text=Utfør
 OkButton.text=OK
