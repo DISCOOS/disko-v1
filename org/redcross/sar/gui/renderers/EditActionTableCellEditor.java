@@ -1,18 +1,13 @@
 package org.redcross.sar.gui.renderers;
 
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.event.ActionListener;
-import java.util.EnumSet;
+import org.redcross.sar.mso.data.IAssignmentIf;
 
-import javax.swing.AbstractCellEditor;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
-
-import org.redcross.sar.mso.data.IAssignmentIf;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.util.EnumSet;
 
 public class EditActionTableCellEditor extends AbstractCellEditor implements
 		TableCellEditor, TableCellRenderer {
@@ -27,7 +22,7 @@ public class EditActionTableCellEditor extends AbstractCellEditor implements
 		editable = EnumSet.of(IAssignmentIf.AssignmentStatus.DRAFT);
 		editable.add(IAssignmentIf.AssignmentStatus.READY);
 		editable.add(IAssignmentIf.AssignmentStatus.EMPTY);
-		editable.add(IAssignmentIf.AssignmentStatus.PAUSED);
+//		editable.add(IAssignmentIf.AssignmentStatus.PAUSED);  Fjernet VW
 		editable.add(IAssignmentIf.AssignmentStatus.ABORTED);
 		
 		panel = new JPanel();
