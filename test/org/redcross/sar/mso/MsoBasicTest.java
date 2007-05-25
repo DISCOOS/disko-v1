@@ -1,16 +1,13 @@
 package org.redcross.sar.mso;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import org.redcross.sar.mso.IMsoManagerIf;
-import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.mso.data.*;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
-import org.redcross.sar.util.except.MsoException;
 import org.redcross.sar.util.except.DuplicateIdException;
 import org.redcross.sar.util.except.IllegalOperationException;
+import org.redcross.sar.util.except.MsoException;
+import org.redcross.sar.util.except.MsoRuntimeException;
 import org.redcross.sar.util.mso.Selector;
 
 import java.util.Calendar;
@@ -90,7 +87,7 @@ public class MsoBasicTest
             cmdPostA.setStatus(cmdstat);
             assertEquals(cmdPostB.getStatus().name(), "RELEASED");
         }
-        catch (MsoException e)
+        catch (MsoRuntimeException e)
         {
             assertTrue(false);
         }
@@ -274,7 +271,7 @@ public class MsoBasicTest
             assertEquals(((AbstractMsoObject) vUnit3).listenerCount(), 0);
             assertEquals(((AbstractMsoObject) vUnit5).listenerCount(), 0);
         }
-        catch (MsoException e)
+        catch (MsoRuntimeException e)
         {
             e.printStackTrace();
         }
@@ -321,14 +318,14 @@ public class MsoBasicTest
             AbstractUnit aUnit1 = (AbstractUnit) vUnit1;
 
             IAssignmentIf assign11 = assignmentList.createAssignment();
-            assign11.setStatus(IAssignmentIf.AssignmentStatus.READY);
-            vUnit1.addUnitAssignment(assign11);
+            assign11.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY,null);
+            vUnit1.addUnitAssignment(assign11,IAssignmentIf.AssignmentStatus.ALLOCATED);
             assertEquals(assign11.getOwningUnit(), vUnit1);
             int vmCount1 = 1;
             IAssignmentIf assign12 = assignmentList.createAssignment();
-            assign12.setStatus(IAssignmentIf.AssignmentStatus.READY);
+            assign12.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY,null);
             assertNull(assign12.getOwningUnit());
-            vUnit1.addUnitAssignment(assign12);
+            vUnit1.addUnitAssignment(assign12,IAssignmentIf.AssignmentStatus.ALLOCATED);
             assertEquals(assign12.getOwningUnit(), vUnit1);
             vmCount1++;
             assertEquals(aUnit1.getUnitAssignmentsItems().size(), vmCount1);
@@ -340,8 +337,8 @@ public class MsoBasicTest
 
             IAssignmentIf assign13 = assignmentList.createAssignment();
             AssignmentImpl misImpl13 = (AssignmentImpl) assign13;
-            assign13.setStatus(IAssignmentIf.AssignmentStatus.READY);
-            vUnit1.addUnitAssignment(assign13);
+            assign13.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY,null);
+            vUnit1.addUnitAssignment(assign13,IAssignmentIf.AssignmentStatus.ALLOCATED);
             vmCount1++;
             assertEquals(aUnit1.getUnitAssignmentsItems().size(), vmCount1);
             assertEquals(misImpl13.listenerCount(), 2);
@@ -432,8 +429,8 @@ public class MsoBasicTest
 
         try
         {
-            assign11.setStatus(IAssignmentIf.AssignmentStatus.READY);
-            vUnit1.addUnitAssignment(assign11);
+            assign11.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY,null);
+            vUnit1.addUnitAssignment(assign11,IAssignmentIf.AssignmentStatus.ALLOCATED);
         }
         catch (DuplicateIdException e)
         {
@@ -488,7 +485,7 @@ public class MsoBasicTest
             IEventIf event2 = eventLog.createEvent(Calendar.getInstance());
             event2.setDTG(131313L);
             assertEquals(timeLine.size(), 2);
-            ITaskIf task1 = taskListImpl.createTask(null);
+            ITaskIf task1 = taskListImpl.createTask(Calendar.getInstance());
             task1.setDTG(121313L);
             assertEquals(timeLine.size(), 3);
             assertTrue(isSorted(timeLine));
@@ -558,6 +555,18 @@ public class MsoBasicTest
         assertNull(area11.getOwningAssignment());
         assertNull(area12.getOwningAssignment());
 
+
+        IUnitListIf unitList = cmdPost.getUnitList();
+        UnitListImpl unitListImpl = (UnitListImpl) unitList;
+        assertNotNull(unitList);
+
+        unitListImpl.clear();
+
+        IUnitIf vUnit1 = unitList.createVehicle("V1");
+        IUnitIf vUnit2 = unitList.createVehicle("V2");
+
+
+
         try
         {
             assign11.setPlannedArea(area11);
@@ -571,11 +580,30 @@ public class MsoBasicTest
         assertEquals(assign11, area11.getOwningAssignment());
         assertEquals(assign12, area12.getOwningAssignment());
 
-        assign11.setStatus("ASSIGNED");
+        try
+        {
+            assign11.setStatusAndOwner("DRAFT",null);
+            assign11.setStatusAndOwner("READY",null);
+            vUnit1.addUnitAssignment(assign11,IAssignmentIf.AssignmentStatus.ALLOCATED);
+            vUnit2.addUnitAssignment(assign11,IAssignmentIf.AssignmentStatus.ASSIGNED);
+        }
+        catch (IllegalOperationException e)
+        {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
         assertEquals(assign11.getStatus(), IAssignmentIf.AssignmentStatus.ASSIGNED);
         assertTrue(assign11.hasBeenAssigned());
         assertFalse(assign11.hasBeenFinished());
-        assign11.setStatus("REPORTED");
+        try
+        {
+            assign11.setStatusAndOwner("EXECUTING",vUnit1);
+            assign11.setStatusAndOwner("FINISHED",vUnit1);
+            assign11.setStatusAndOwner("REPORTED",vUnit1);
+        }
+        catch (IllegalOperationException e)
+        {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
         assertTrue(assign11.hasBeenFinished());
 
         assertNotNull(assign11.getPlannedArea());
@@ -641,7 +669,7 @@ public class MsoBasicTest
             IEventIf event2 = eventLog.createEvent(Calendar.getInstance());
             event2.setDTG(131313L);
             assertEquals(timeLine.size(), 2);
-            ITaskIf task1 = taskListImpl.createTask(null);
+            ITaskIf task1 = taskListImpl.createTask(Calendar.getInstance());
             task1.setDTG(121313L);
             assertEquals(timeLine.size(), 3);
             assertTrue(isSorted(timeLine));
