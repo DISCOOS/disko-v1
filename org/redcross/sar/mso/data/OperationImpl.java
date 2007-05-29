@@ -5,7 +5,6 @@ package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.util.except.DuplicateIdException;
 
 import java.util.Collection;
 
@@ -36,6 +35,22 @@ public class OperationImpl extends AbstractMsoObject implements IOperationIf
 
     protected void defineReferences()
     {
+    }
+
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        if (anObject instanceof ICmdPostIf)
+        {
+            m_cmdPostList.add((ICmdPostIf)anObject);
+        }
+    }
+
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        if (anObject instanceof ICmdPostIf)
+        {
+            m_cmdPostList.removeReference((ICmdPostIf)anObject);
+        }
     }
 
     public IMsoManagerIf.MsoClassCode getMsoClassCode()

@@ -70,6 +70,29 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         addReference(m_reportedArea);
     }
 
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        if (anObject instanceof IPOIIf)
+        {
+            m_assignmentFindings.add((IPOIIf) anObject);
+
+        } else if (anObject instanceof IEquipmentIf)
+        {
+            m_assignmentEquipment.add((IEquipmentIf) anObject);
+        }
+    }
+
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        if (anObject instanceof IPOIIf)
+        {
+            m_assignmentFindings.removeReference((IPOIIf) anObject);
+        } else if (anObject instanceof IEquipmentIf)
+        {
+            m_assignmentEquipment.removeReference((IEquipmentIf) anObject);
+        }
+    }
+
     protected AssignmentType getTypeBySubclass()
     {
         return AssignmentType.GENERAL;
@@ -133,7 +156,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         {
             System.out.print("none");
         }
-        System.out.print(". New status: " + aStatus  + " New owner: ");
+        System.out.print(". New status: " + aStatus + " New owner: ");
 
         if (aUnit != null)
         {
@@ -166,7 +189,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         {
             System.out.print("none");
         }
-        System.out.print(". New status: " + aStatus  + " New owner: ");
+        System.out.print(". New status: " + aStatus + " New owner: ");
 
         if (aUnit != null)
         {

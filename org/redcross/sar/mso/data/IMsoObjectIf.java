@@ -5,7 +5,6 @@ import org.redcross.sar.mso.committer.ICommittableIf;
 import org.redcross.sar.util.except.UnknownAttributeException;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -85,6 +84,27 @@ public interface IMsoObjectIf
      * @return The reference lists
      */
     public Map getReferenceLists();
+
+    /**
+     * Add a reference to an IMsoObjectIf object.
+     *
+     * The type of object (class) determines which list to use
+     * @param anObject The object to add
+     * @param aReferenceName
+     * @return <code><code/> if the object has been successfully added, <code>false<code/> otherwise.
+     */
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName);
+
+    /**
+     * Remove a reference to an IMsoObjectIf object.
+     *
+     * The type of object (class) determines which list to use
+     * @param anObject The object to remove
+     * @param aReferenceName
+     * @return <code><code/> if the object has been successfully removed, <code>false<code/> otherwise.
+     */
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName);
+
 
     /**
      * Resume notification of listeners.
@@ -381,4 +401,5 @@ public interface IMsoObjectIf
     {
         public String getId();
     }
+
 }

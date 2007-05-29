@@ -73,6 +73,27 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
         addReference(m_unitLeader);
     }
 
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        if (anObject instanceof IAssignmentIf)
+        {
+            m_unitAssignments.add((IAssignmentIf) anObject);
+        } else if (anObject instanceof IPersonIf)
+        {
+            m_unitPersonnel.add((IPersonnelIf) anObject);
+        }
+    }
+
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        if (anObject instanceof IAssignmentIf)
+        {
+            m_unitAssignments.removeReference((IAssignmentIf) anObject);
+        } else if (anObject instanceof IPersonIf)
+        {
+            m_unitPersonnel.removeReference((IPersonnelIf) anObject);
+        }
+    }
 
     protected abstract UnitType getTypeBySubclass();
 
@@ -324,7 +345,7 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
 //        anIAssignmentIf.verifyAllocatable(newStatus, this, true);
 //        m_unitAssignments.add(anIAssignmentIf);
 //        anIAssignmentIf.setPrioritySequence(Integer.MAX_VALUE);
-        anIAssignmentIf.setStatusAndOwner(newStatus,this);
+        anIAssignmentIf.setStatusAndOwner(newStatus, this);
     }
 
     public void addUnitReference(IAssignmentIf anIAssignmentIf)

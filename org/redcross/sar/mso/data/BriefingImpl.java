@@ -3,10 +3,9 @@ package org.redcross.sar.mso.data;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.MsoCastException;
-import org.redcross.sar.util.except.DuplicateIdException;
 
-import java.util.Collection;
 import java.util.Calendar;
+import java.util.Collection;
 
 public class BriefingImpl extends AbstractMsoObject implements IBriefingIf
 {
@@ -66,6 +65,40 @@ public class BriefingImpl extends AbstractMsoObject implements IBriefingIf
     protected void defineReferences()
     {
         addReference(m_briefingHypothesis);
+    }
+
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        if (anObject instanceof IForecastIf)
+        {
+            m_briefingForecasts.add((IForecastIf) anObject);
+
+        } else
+        if (anObject instanceof IEnvironmentIf)
+        {
+            m_briefingEnvironments.add((IEnvironmentIf) anObject);
+
+        } else
+        if (anObject instanceof ISubjectIf)
+        {
+            m_briefingSubjects.add((ISubjectIf) anObject);
+        }
+    }
+
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        if (anObject instanceof IForecastIf)
+        {
+            m_briefingForecasts.removeReference((IForecastIf) anObject);
+        } else
+        if (anObject instanceof IEquipmentIf)
+        {
+            m_briefingEnvironments.removeReference((IEnvironmentIf) anObject);
+        } else
+        if (anObject instanceof ISubjectIf)
+        {
+            m_briefingSubjects.removeReference((ISubjectIf) anObject);
+        }
     }
 
     public static BriefingImpl implementationOf(IBriefingIf anInterface) throws MsoCastException

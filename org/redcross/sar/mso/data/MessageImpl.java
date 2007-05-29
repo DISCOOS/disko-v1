@@ -3,8 +3,6 @@ package org.redcross.sar.mso.data;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.MsoCastException;
-import org.redcross.sar.util.except.MsoException;
-import org.redcross.sar.util.except.DuplicateIdException;
 import org.redcross.sar.util.except.MsoRuntimeException;
 
 import java.util.Calendar;
@@ -15,14 +13,16 @@ import java.util.Collection;
  */
 public class MessageImpl extends AbstractTimeItem implements IMessageIf
 {
+    private final static String CONFIRMED_RECEIVERS_NAME = "ConfirmedReceivers";
+    private final static String UNCONFIRMED_RECEIVERS_NAME = "UnconfirmedReceivers";
     private final AttributeImpl.MsoBoolean m_broadcast = new AttributeImpl.MsoBoolean(this, "Broadcast");
     private final AttributeImpl.MsoCalendar m_created = new AttributeImpl.MsoCalendar(this, "Created");
     private final AttributeImpl.MsoInteger m_number = new AttributeImpl.MsoInteger(this, "Number");
     private final AttributeImpl.MsoEnum<MessageStatus> m_status = new AttributeImpl.MsoEnum<MessageStatus>(this, "Status", MessageStatus.UNCONFIRMED);
 
-    private final MsoListImpl<ICommunicatorIf> m_confirmedReceivers = new MsoListImpl<ICommunicatorIf>(this, "ConfirmedReceivers", false);
+    private final MsoListImpl<ICommunicatorIf> m_confirmedReceivers = new MsoListImpl<ICommunicatorIf>(this, CONFIRMED_RECEIVERS_NAME, false);
     private final TaskListImpl m_messageTasks = new TaskListImpl(this, "MessageTasks", false);
-    private final MsoListImpl<ICommunicatorIf> m_unconfirmedReceivers = new MsoListImpl<ICommunicatorIf>(this, "UnconfirmedReceivers", false);
+    private final MsoListImpl<ICommunicatorIf> m_unconfirmedReceivers = new MsoListImpl<ICommunicatorIf>(this, UNCONFIRMED_RECEIVERS_NAME, false);
 
     private final MsoReferenceImpl<ICmdPostIf> m_sender = new MsoReferenceImpl<ICmdPostIf>(this, "Sender", true);
 
@@ -60,6 +60,40 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
     {
         super.defineReferences();
         addReference(m_sender);
+    }
+
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        if (anObject instanceof ITaskIf)
+        {
+            m_messageTasks.add((ITaskIf) anObject);
+        } else if (anObject instanceof ICommunicatorIf)
+        {
+            if (CONFIRMED_RECEIVERS_NAME.equals(aReferenceName))
+            {
+                m_confirmedReceivers.add((ICommunicatorIf) anObject);
+            } else if (UNCONFIRMED_RECEIVERS_NAME.equals(aReferenceName))
+            {
+                m_unconfirmedReceivers.add((ICommunicatorIf) anObject);
+            }
+        }
+    }
+
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        if (anObject instanceof ITaskIf)
+        {
+            m_messageTasks.removeReference((ITaskIf) anObject);
+        } else if (anObject instanceof ICommunicatorIf)
+        {
+            if (CONFIRMED_RECEIVERS_NAME.equals(aReferenceName))
+            {
+                m_confirmedReceivers.removeReference((ICommunicatorIf) anObject);
+            } else if (UNCONFIRMED_RECEIVERS_NAME.equals(aReferenceName))
+            {
+                m_unconfirmedReceivers.removeReference((ICommunicatorIf) anObject);
+            }
+        }
     }
 
     public static MessageImpl implementationOf(IMessageIf anInterface) throws MsoCastException

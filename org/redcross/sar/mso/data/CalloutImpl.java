@@ -3,7 +3,6 @@ package org.redcross.sar.mso.data;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.util.except.DuplicateIdException;
 import org.redcross.sar.util.except.MsoCastException;
-import org.redcross.sar.util.except.MsoException;
 import org.redcross.sar.util.except.MsoRuntimeException;
 
 public class CalloutImpl extends AbstractMsoObject implements ICalloutIf
@@ -26,6 +25,22 @@ public class CalloutImpl extends AbstractMsoObject implements ICalloutIf
 
     protected void defineReferences()
     {
+    }
+
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        if (anObject instanceof IPersonnelIf)
+        {
+            m_personnel.add((IPersonnelIf) anObject);
+        }
+    }
+
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        if (anObject instanceof IPersonnelIf)
+        {
+            m_personnel.removeReference((IPersonnelIf) anObject);
+        }
     }
 
     public static CalloutImpl implementationOf(ICalloutIf anInterface) throws MsoCastException

@@ -3,10 +3,9 @@ package org.redcross.sar.mso.data;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.MsoModelImpl;
-import org.redcross.sar.util.except.DuplicateIdException;
-import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.except.IllegalOperationException;
-import org.redcross.sar.util.mso.*;
+import org.redcross.sar.util.except.MsoCastException;
+import org.redcross.sar.util.mso.GeoCollection;
 
 import java.util.Collection;
 import java.util.List;
@@ -39,6 +38,24 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
     protected void defineReferences()
     {
     }
+
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        if (anObject instanceof IPOIIf)
+        {
+            m_areaPOIs.add((IPOIIf) anObject);
+
+        }
+    }
+
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        if (anObject instanceof IPOIIf)
+        {
+            m_areaPOIs.removeReference((IPOIIf) anObject);
+        }
+    }
+
 
     public static AreaImpl implementationOf(IAreaIf anInterface) throws MsoCastException
     {

@@ -2,12 +2,11 @@ package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.util.except.DuplicateIdException;
 import org.redcross.sar.util.except.MsoCastException;
 
-import java.util.List;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Command, control and communication center (command post)
@@ -120,6 +119,15 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     }
 
     protected void defineReferences()
+    {
+    }
+
+
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+    }
+
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
     }
 

@@ -3,7 +3,6 @@ package org.redcross.sar.mso.data;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.MsoCastException;
-import org.redcross.sar.util.except.DuplicateIdException;
 
 import java.util.Calendar;
 import java.util.Collection;
@@ -47,6 +46,23 @@ public class EventImpl extends AbstractTimeItem implements IEventIf
         super.defineReferences();
     }
 
+
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        if (anObject instanceof ITaskIf)
+        {
+            m_eventTasks.add((ITaskIf)anObject);
+        }
+    }
+
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        if (anObject instanceof ITaskIf)
+        {
+            m_eventTasks.removeReference((ITaskIf) anObject);
+        }
+    }
+    
     public static EventImpl implementationOf(IEventIf anInterface) throws MsoCastException
     {
         try

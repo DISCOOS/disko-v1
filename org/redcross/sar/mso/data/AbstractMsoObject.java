@@ -5,7 +5,6 @@ import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.mso.committer.ICommittableIf;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.MsoEvent;
-import org.redcross.sar.util.except.MsoException;
 import org.redcross.sar.util.except.IllegalDeleteException;
 import org.redcross.sar.util.except.MsoNullPointerException;
 import org.redcross.sar.util.except.UnknownAttributeException;
@@ -295,6 +294,10 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     {
         return m_referenceLists;
     }
+
+    public abstract void addObjectReference(IMsoObjectIf anObject, String aReferenceName);
+
+    public abstract void removeObjectReference(IMsoObjectIf anObject, String aReferenceName);
 
     public IAttributeIf.IMsoBooleanIf getBooleanAttribute(int anIndex) throws UnknownAttributeException
     {
