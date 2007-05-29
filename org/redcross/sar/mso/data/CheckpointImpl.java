@@ -33,6 +33,14 @@ public class CheckpointImpl extends AbstractMsoObject implements ICheckpointIf
         addReference(m_checkpointTask);
     }
 
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+    }
+
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+    }
+
     public static CheckpointImpl implementationOf(ICheckpointIf anInterface) throws MsoCastException
     {
         try

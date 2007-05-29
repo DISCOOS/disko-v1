@@ -48,6 +48,17 @@ public class EnvironmentImpl extends AbstractTimeItem implements IEnvironmentIf
         super.defineReferences();
     }
 
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        super.addObjectReference(anObject,aReferenceName);
+    }
+
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        super.removeObjectReference(anObject,aReferenceName);
+    }
+
+    
     public void setText(String aText)
     {
         m_someText.setValue(aText);

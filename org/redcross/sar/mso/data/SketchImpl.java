@@ -23,6 +23,14 @@ public class SketchImpl extends AbstractMsoObject implements ISketchIf
     {
     }
 
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+    }
+
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+    }
+
     public static SketchImpl implementationOf(ISketchIf anInterface) throws MsoCastException
     {
         try

@@ -55,6 +55,14 @@ public class IntelligenceImpl extends AbstractMsoObject implements IIntelligence
         addReference(m_intelligenceTrack);
     }
 
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+    }
+
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+    }
+
     public static IntelligenceImpl implementationOf(IIntelligenceIf anInterface) throws MsoCastException
     {
         try

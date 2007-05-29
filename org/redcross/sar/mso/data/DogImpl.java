@@ -25,6 +25,19 @@ public class DogImpl extends AbstractUnit implements IDogIf
         super.defineReferences();
     }
 
+
+    @Override
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        super.addObjectReference(anObject, aReferenceName);
+    }
+
+    @Override
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        super.removeObjectReference(anObject, aReferenceName);
+    }
+
     protected UnitType getTypeBySubclass()
     {
         return IUnitIf.UnitType.DOG;

@@ -35,6 +35,16 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
         addReference(m_createdEvent);
     }
 
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        super.addObjectReference(anObject,aReferenceName);
+    }
+
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        super.removeObjectReference(anObject,aReferenceName);
+    }
+
     public static TaskImpl implementationOf(ITaskIf anInterface) throws MsoCastException
     {
         try

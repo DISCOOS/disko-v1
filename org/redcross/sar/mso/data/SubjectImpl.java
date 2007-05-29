@@ -28,6 +28,17 @@ public class SubjectImpl extends AbstractPerson implements ISubjectIf
         super.defineReferences();
     }
 
+    @Override
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+    }
+
+    @Override
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+    }
+
+
     public static SubjectImpl implementationOf(ISubjectIf anInterface) throws MsoCastException
     {
         try

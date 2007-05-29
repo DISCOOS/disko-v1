@@ -46,6 +46,18 @@ public class BoatImpl extends AbstractTransportUnit implements IBoatIf
         super.defineReferences();
     }
 
+    @Override
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        super.addObjectReference(anObject, aReferenceName);
+    }
+
+    @Override
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        super.removeObjectReference(anObject, aReferenceName);
+    }
+
     protected UnitType getTypeBySubclass()
     {
         return IUnitIf.UnitType.BOAT;

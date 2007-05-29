@@ -1,11 +1,9 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoManagerIf;
-import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.util.mso.*;
-
-import java.util.Calendar;
+import org.redcross.sar.util.except.MsoCastException;
+import org.redcross.sar.util.mso.Polygon;
 
 public class SearchAreaImpl extends AbstractMsoObject implements ISearchAreaIf
 {
@@ -38,6 +36,14 @@ public class SearchAreaImpl extends AbstractMsoObject implements ISearchAreaIf
     protected void defineReferences()
     {
         addReference(m_searchAreaHypothesis);
+    }
+
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+    }
+
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
     }
 
     public static SearchAreaImpl implementationOf(ISearchAreaIf anInterface) throws MsoCastException

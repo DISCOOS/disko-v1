@@ -52,7 +52,10 @@ public class EventImpl extends AbstractTimeItem implements IEventIf
         if (anObject instanceof ITaskIf)
         {
             m_eventTasks.add((ITaskIf)anObject);
+            return;
         }
+        super.addObjectReference(anObject,aReferenceName);
+
     }
 
     public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
@@ -60,7 +63,9 @@ public class EventImpl extends AbstractTimeItem implements IEventIf
         if (anObject instanceof ITaskIf)
         {
             m_eventTasks.removeReference((ITaskIf) anObject);
+            return;
         }
+        super.removeObjectReference(anObject,aReferenceName);
     }
     
     public static EventImpl implementationOf(IEventIf anInterface) throws MsoCastException

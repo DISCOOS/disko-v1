@@ -25,6 +25,18 @@ public class PersonnelImpl extends AbstractPerson implements IPersonnelIf
         super.defineReferences();
     }
 
+    @Override
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        super.addObjectReference(anObject,aReferenceName);
+    }
+
+    @Override
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        super.removeObjectReference(anObject,aReferenceName);
+    }
+
     public static PersonnelImpl implementationOf(IPersonnelIf anInterface) throws MsoCastException
     {
         try

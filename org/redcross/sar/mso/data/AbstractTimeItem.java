@@ -1,8 +1,8 @@
 package org.redcross.sar.mso.data;
 
+import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.mso.DTG;
-import org.redcross.sar.mso.IMsoModelIf;
 
 import java.util.Calendar;
 
@@ -50,6 +50,14 @@ public abstract class AbstractTimeItem extends AbstractMsoObject implements ITim
     }
 
     protected void defineReferences()
+    {
+    }
+
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+    }
+
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
     }
 

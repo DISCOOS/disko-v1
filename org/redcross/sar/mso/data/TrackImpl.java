@@ -1,7 +1,7 @@
 package org.redcross.sar.mso.data;
 
-import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.IMsoManagerIf;
+import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.mso.Track;
 
@@ -16,7 +16,6 @@ public class TrackImpl extends AbstractMsoObject implements ITrackIf
     public TrackImpl(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         super(anObjectId);
-        ;
     }
 
     public TrackImpl(IMsoObjectIf.IObjectIdIf anObjectId, Track aTrack)
@@ -36,6 +35,14 @@ public class TrackImpl extends AbstractMsoObject implements ITrackIf
     }
 
     protected void defineReferences()
+    {
+    }
+
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+    }
+
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
     }
 

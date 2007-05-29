@@ -23,6 +23,14 @@ public class EquipmentImpl extends AbstractMsoObject implements IEquipmentIf
     {
     }
 
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+    }
+
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+    }
+
     public static EquipmentImpl implementationOf(IEquipmentIf anInterface) throws MsoCastException
     {
         try

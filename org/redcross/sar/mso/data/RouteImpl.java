@@ -1,7 +1,7 @@
 package org.redcross.sar.mso.data;
 
-import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.IMsoManagerIf;
+import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.mso.Route;
 
@@ -27,6 +27,14 @@ public class RouteImpl extends AbstractMsoObject implements IRouteIf
     }
 
     protected void defineReferences()
+    {
+    }
+
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+    }
+
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
     }
 

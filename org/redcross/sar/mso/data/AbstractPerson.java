@@ -25,6 +25,14 @@ public abstract class AbstractPerson extends AbstractMsoObject implements IPerso
     {
     }
 
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+    }
+
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+    }
+
     public int age()
     {
         Calendar now = Calendar.getInstance();

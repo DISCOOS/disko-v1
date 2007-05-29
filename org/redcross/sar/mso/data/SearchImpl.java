@@ -60,6 +60,18 @@ public class SearchImpl extends AssignmentImpl implements ISearchIf
     }
 
     @Override
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        super.addObjectReference(anObject, aReferenceName);
+    }
+
+    @Override
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        super.removeObjectReference(anObject, aReferenceName);
+    }
+
+    @Override
     protected AssignmentType getTypeBySubclass()
     {
         return AssignmentType.SEARCH;

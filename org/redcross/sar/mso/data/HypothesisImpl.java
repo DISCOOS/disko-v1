@@ -35,6 +35,14 @@ public class HypothesisImpl extends AbstractMsoObject implements IHypothesisIf
     {
     }
 
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+    }
+
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+    }
+    
     public static HypothesisImpl implementationOf(IHypothesisIf anInterface) throws MsoCastException
     {
         try
