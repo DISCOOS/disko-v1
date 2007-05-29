@@ -19,23 +19,20 @@ import java.util.EnumSet;
 /**
  *
  */
-public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDiskoWpLogistics
-{
+public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDiskoWpLogistics {
 
-    public DiskoWpLogisticsImpl(IDiskoRole role)
-    {
+    public DiskoWpLogisticsImpl(IDiskoRole role) {
         super(role);
         initialize();
     }
 
-    private void initialize()
-    {
+    private void initialize() {
         loadProperties("properties");
 
-        BuildTestData.createCmdPost(getMsoModel());
-        BuildTestData.createUnitsAndAssignments(getMsoModel());
+        //BuildTestData.createCmdPost(getMsoModel());
+        //BuildTestData.createUnitsAndAssignments(getMsoModel());
 
-        JPanel lPanel=new LogisticsPanel(this).getPanel();
+        JPanel lPanel = new LogisticsPanel(this).getPanel();
         lPanel.setBackground(Color.BLUE);
         layoutComponent(lPanel);
 //        DiskoMap map = getMap();
@@ -43,45 +40,41 @@ public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDisk
 //        layoutComponent(map);
     }
 
-    public DiskoMap getMap()
-    {
+    public DiskoMap getMap() {
         return null;
     }
 
     public void activated() {
-    	super.activated();
-		NavBar navBar = getApplication().getNavBar();
-		EnumSet<NavBar.ToolCommandType> myInterests =
-			EnumSet.of(NavBar.ToolCommandType.ZOOM_IN_TOOL);
-		myInterests.add(NavBar.ToolCommandType.ZOOM_OUT_TOOL);
-		myInterests.add(NavBar.ToolCommandType.PAN_TOOL);
-		myInterests.add(NavBar.ToolCommandType.ZOOM_FULL_EXTENT_COMMAND);
-		myInterests.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND);
-		myInterests.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND);
-		navBar.showButtons(myInterests);
+        super.activated();
+        NavBar navBar = getApplication().getNavBar();
+        EnumSet<NavBar.ToolCommandType> myInterests =
+                EnumSet.of(NavBar.ToolCommandType.ZOOM_IN_TOOL);
+        myInterests.add(NavBar.ToolCommandType.ZOOM_OUT_TOOL);
+        myInterests.add(NavBar.ToolCommandType.PAN_TOOL);
+        myInterests.add(NavBar.ToolCommandType.ZOOM_FULL_EXTENT_COMMAND);
+        myInterests.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND);
+        myInterests.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND);
+        navBar.showButtons(myInterests);
     }
 
     /* (non-Javadoc)
     * @see com.geodata.engine.disko.task.DiskoAp#getName()
     */
-    public String getName()
-    {
+    public String getName() {
         return "Logistikk";
     }
 
     /* (non-Javadoc)
      * @see com.geodata.engine.disko.task.DiskoAp#cancel()
      */
-    public void cancel()
-    {
+    public void cancel() {
         // TODO Auto-generated method stub
     }
 
     /* (non-Javadoc)
      * @see com.geodata.engine.disko.task.DiskoAp#finish()
      */
-    public void finish()
-    {
+    public void finish() {
         // TODO Auto-generated method stub
     }
 

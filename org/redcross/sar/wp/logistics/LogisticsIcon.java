@@ -12,8 +12,7 @@ import java.util.Properties;
 /**
  *
  */
-public class LogisticsIcon implements Icon
-{
+public class LogisticsIcon implements Icon {
     // Fixed design parameters
     private final static int arcDiam = 8;
     private final static int innerTop = 5;
@@ -40,8 +39,7 @@ public class LogisticsIcon implements Icon
     protected static Properties m_iconProperties;
 
 
-    public LogisticsIcon(Image anIconImage, boolean isLocatedLeft, String anIconText, int aWidth, int aHeight, float aResizeFactor, boolean isMultiple, boolean hasBorder, boolean isSelected)
-    {
+    public LogisticsIcon(Image anIconImage, boolean isLocatedLeft, String anIconText, int aWidth, int aHeight, float aResizeFactor, boolean isMultiple, boolean hasBorder, boolean isSelected) {
         m_iconImage = anIconImage;
         m_isLocatedLeft = isLocatedLeft;
         m_iconText = anIconText;
@@ -53,71 +51,58 @@ public class LogisticsIcon implements Icon
         m_isSelected = isSelected;
     }
 
-    public void setIconImage(Image anIconImage)
-    {
+    public void setIconImage(Image anIconImage) {
         m_iconImage = anIconImage;
     }
 
 
-    public void setIconText(String anIconText)
-    {
+    public void setIconText(String anIconText) {
         m_iconText = anIconText;
     }
 
-    public void setSelected(boolean isSelected)
-    {
+    public void setSelected(boolean isSelected) {
         m_isSelected = isSelected;
     }
 
-    public void setMultiple(boolean isMultiple)
-    {
+    public void setMultiple(boolean isMultiple) {
         m_isMultiple = isMultiple;
     }
 
-    public void setLocatedLeft(boolean isLocatedLeft)
-    {
+    public void setLocatedLeft(boolean isLocatedLeft) {
         m_isLocatedLeft = isLocatedLeft;
     }
 
-    public void setWidth(int aWidth)
-    {
+    public void setWidth(int aWidth) {
         m_width = aWidth;
     }
 
-    public void setHeight(int aHeight)
-    {
+    public void setHeight(int aHeight) {
         m_height = aHeight;
     }
 
-    public void setIconResizeFactor(float aResizeFactor)
-    {
+    public void setIconResizeFactor(float aResizeFactor) {
         m_iconResizeFactor = aResizeFactor;
     }
 
-    public void setHasBorder(boolean hasBorder)
-    {
+    public void setHasBorder(boolean hasBorder) {
         m_hasBorder = hasBorder;
     }
 
-    public int getIconWidth()
-    {
+    public int getIconWidth() {
         return m_width;
     }
 
-    public int getIconHeight()
-    {
+    public int getIconHeight() {
         return m_height;
     }
 
-    public void paintIcon(Component c, Graphics g, int x, int y)
-    {
+    public void paintIcon(Component c, Graphics g, int x, int y) {
         int dx1, dy1, dx2, dy2;
         int sx1, sy1, sx2, sy2;
         int tx, ty;
         int sw, sh;
 
-        if (m_iconImage == null)
-        {
+        if (m_iconImage == null) {
             sw = 0;
             sh = 0;
             dx1 = 0;
@@ -126,8 +111,7 @@ public class LogisticsIcon implements Icon
             sy1 = 0;
             tx = m_width / 2 - (int) (5 * m_iconResizeFactor);
             ty = m_height / 2 + (int) (10 * m_iconResizeFactor);
-        } else if (m_isLocatedLeft)
-        {
+        } else if (m_isLocatedLeft) {
             sw = 25;
             sh = 25;
             dx1 = innerLeft + 1;
@@ -136,8 +120,7 @@ public class LogisticsIcon implements Icon
             sy1 = 10;
             tx = dx1 + (int) (20 * m_iconResizeFactor);
             ty = dy1 + (int) (20 * m_iconResizeFactor);
-        } else
-        {
+        } else {
             sw = 25;
             sh = 30;
             dx1 = m_width - sw - 6;
@@ -158,36 +141,29 @@ public class LogisticsIcon implements Icon
         g2.setStroke(new BasicStroke(2));
 
         Color bgColor;
-        if (m_isSelected)
-        {
+        if (m_isSelected) {
             bgColor = selectedColor;
-        } else
-        {
+        } else {
             bgColor = Color.white;
         }
 
         g.setColor(bgColor);
-        if (m_hasBorder)
-        {
+        if (m_hasBorder) {
             g.fillRoundRect(0, 0, m_width, m_height, arcDiam, arcDiam);
-        } else
-        {
+        } else {
             g.fillRect(0, 0, m_width, m_height);
         }
 
         g.setColor(c.getForeground());
-        if (m_hasBorder)
-        {
+        if (m_hasBorder) {
             g2.drawRoundRect(1, 1, m_width - 2, m_height - 2, arcDiam, arcDiam);
         }
 
-        if (m_iconImage != null)
-        {
+        if (m_iconImage != null) {
             g.drawImage(m_iconImage, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, bgColor, null);
         }
 
-        if (m_hasBorder && m_isMultiple)
-        {
+        if (m_hasBorder && m_isMultiple) {
             g2.drawRoundRect(innerLeft, innerTop, m_width - 1 - innerLeft, m_height - 1 - innerTop, arcDiam, arcDiam);
         }
 
@@ -202,36 +178,29 @@ public class LogisticsIcon implements Icon
         g.translate(-x, -y);   //Restore graphics object
     }
 
-    protected static Properties getProperties()
-    {
-        if (m_iconProperties == null)
-        {
-            try
-            {
+    protected static Properties getProperties() {
+        if (m_iconProperties == null) {
+            try {
                 m_iconProperties = Utils.getProperties();
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
         }
         return m_iconProperties;
     }
 
-    public boolean isSelectable()
-    {
+    public boolean isSelectable() {
         return false;
     }
 
-    public static class UnitIcon extends LogisticsIcon
-    {
+    public static class UnitIcon extends LogisticsIcon {
         static final Dimension m_iconSize = new Dimension(50, 50);
 
         static final HashMap<IUnitIf.UnitType, Image> m_images = new HashMap<IUnitIf.UnitType, Image>();
         IUnitIf m_unit;
 
-        private void initImageMap()
-        {
+        private void initImageMap() {
             String[] unitIconNames = new String[]{
                     "ManUnit.icon", // todo Use correct icon
                     "ManUnit.icon",
@@ -259,21 +228,16 @@ public class LogisticsIcon implements Icon
 
             EnumSet<IBoatIf.BoatSubType> allBoatSubTypes = EnumSet.allOf(IBoatIf.BoatSubType.class);
 
-            for (IUnitIf.UnitType unitType : EnumSet.allOf(IUnitIf.UnitType.class))
-            {
+            for (IUnitIf.UnitType unitType : EnumSet.allOf(IUnitIf.UnitType.class)) {
                 String unitTypeName = unitType.name();
-                if (unitType == IUnitIf.UnitType.AIRCRAFT)
-                {
-                    for (IAircraftIf.AircraftSubType aircraftSubType : EnumSet.allOf(IAircraftIf.AircraftSubType.class))
-                    {
+                if (unitType == IUnitIf.UnitType.AIRCRAFT) {
+                    for (IAircraftIf.AircraftSubType aircraftSubType : EnumSet.allOf(IAircraftIf.AircraftSubType.class)) {
                         String subTypeName = unitTypeName + "_" + aircraftSubType.name();
                         String iconName = subTypeName.toLowerCase() + ".icon";
                         System.out.println(subTypeName + " " + iconName);
                     }
-                } else if (unitType == IUnitIf.UnitType.BOAT)
-                {
-                    for (IBoatIf.BoatSubType BoatSubType : EnumSet.allOf(IBoatIf.BoatSubType.class))
-                    {
+                } else if (unitType == IUnitIf.UnitType.BOAT) {
+                    for (IBoatIf.BoatSubType BoatSubType : EnumSet.allOf(IBoatIf.BoatSubType.class)) {
                         String subTypeName = unitTypeName + "_" + BoatSubType.name();
                         String iconName = subTypeName.toLowerCase() + ".icon";
                         System.out.println(subTypeName + " " + iconName);
@@ -281,58 +245,48 @@ public class LogisticsIcon implements Icon
                 }
             }
 
-            for (int i = 0; i < unitIconNames.length; i++)
-            {
-                try
-                {
+            for (int i = 0; i < unitIconNames.length; i++) {
+                try {
                     String iconName = unitIconNames[i];
                     Image image = Utils.createImageIcon(getProperties().getProperty(iconName), iconName).getImage();
                     m_images.put(unitTypes[i], image);
                 }
-                catch (Exception e)
-                {
+                catch (Exception e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
             }
         }
 
-        public UnitIcon(IUnitIf aUnit, boolean isSelected)
-        {
+        public UnitIcon(IUnitIf aUnit, boolean isSelected) {
             super(null, true, null, m_iconSize.width, m_iconSize.height, 1.25F, false, false, isSelected);
-            if (m_images.size() == 0)
-            {
+            if (m_images.size() == 0) {
                 initImageMap();
             }
             setUnit(aUnit);
         }
 
-        public static Dimension getIconSize()
-        {
+        public static Dimension getIconSize() {
             return m_iconSize;
         }
 
-        public void setUnit(IUnitIf aUnit)
-        {
+        public void setUnit(IUnitIf aUnit) {
             m_unit = aUnit;
             Image iconImage = m_images.get(aUnit.getType());
             setIconImage(iconImage);
             setIconText(Integer.toString(aUnit.getNumber()));
         }
 
-        public IUnitIf getUnit()
-        {
+        public IUnitIf getUnit() {
             return m_unit;
         }
 
         @Override
-        public boolean isSelectable()
-        {
+        public boolean isSelectable() {
             return true;
         }
     }
 
-    public static class AssignmentIcon extends LogisticsIcon
-    {
+    public static class AssignmentIcon extends LogisticsIcon {
         static final Dimension m_iconSize = new Dimension(50, 50);
 
         IAssignmentIf m_assignment;
@@ -342,8 +296,7 @@ public class LogisticsIcon implements Icon
         static final HashMap<ISearchIf.SearchSubType, Image> m_searchImages = new HashMap<ISearchIf.SearchSubType, Image>();
         static final EnumSet<ISearchIf.SearchSubType> m_leftIcons = EnumSet.noneOf(ISearchIf.SearchSubType.class);
 
-        private void initImageMap()
-        {
+        private void initImageMap() {
             String[] searchIconNames = new String[]{
                     "PathSearch.icon",
                     "ManUnit.icon",
@@ -363,17 +316,16 @@ public class LogisticsIcon implements Icon
                     ISearchIf.SearchSubType.DOG
             };
 
-            for (int i = 0; i < searchIconNames.length; i++)
-            {
-                try
-                {
-                    String iconName = searchIconNames[i];
+            for (int i = 0; i < searchIconNames.length; i++) {
+                String iconName = searchIconNames[i];
+                try {
+
                     Image image = Utils.createImageIcon(getProperties().getProperty(iconName), iconName).getImage();
                     m_searchImages.put(assignmentTypes[i], image);
                 }
-                catch (Exception e)
-                {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                catch (Exception e) {
+                    System.out.println("Icon not found " + getProperties().getProperty(iconName) + " :" + iconName);
+                    //e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
             }
 
@@ -382,47 +334,38 @@ public class LogisticsIcon implements Icon
             m_leftIcons.add(ISearchIf.SearchSubType.URBAN);
         }
 
-        public AssignmentIcon(IAssignmentIf anAssignment, boolean isSelected)
-        {
+        public AssignmentIcon(IAssignmentIf anAssignment, boolean isSelected) {
             super(null, false, null, m_iconSize.width, m_iconSize.height, 1.0F, false, true, isSelected);
             initImageMap();
             m_singleAssigmentIcon = true;
             setAssignment(anAssignment);
         }
 
-        public AssignmentIcon(java.util.List<IAssignmentIf> theAssignments, boolean isSelected)
-        {
+        public AssignmentIcon(java.util.List<IAssignmentIf> theAssignments, boolean isSelected) {
             super(null, false, null, m_iconSize.width, m_iconSize.height, 1.0F, false, true, isSelected);
             initImageMap();
             m_singleAssigmentIcon = false;
             setAssignments(theAssignments);
         }
 
-        public static Dimension getIconSize()
-        {
+        public static Dimension getIconSize() {
             return m_iconSize;
         }
 
-        private void setAssignmentIcon(IAssignmentIf anAssignment, boolean isMultiple)
-        {
-            if (anAssignment != null)
-            {
-                if (anAssignment instanceof ISearchIf)
-                {
+        private void setAssignmentIcon(IAssignmentIf anAssignment, boolean isMultiple) {
+            if (anAssignment != null) {
+                if (anAssignment instanceof ISearchIf) {
                     setIconImage(m_searchImages.get(((ISearchIf) anAssignment).getSubType()));
-                } else
-                {
+                } else {
                     setIconImage(m_searchImages.get(ISearchIf.SearchSubType.LINE));
                 }
-            } else
-            {
+            } else {
                 setIconImage(null);
             }
             setMultiple(isMultiple);
         }
 
-        public void setAssignment(IAssignmentIf anAssignment)
-        {
+        public void setAssignment(IAssignmentIf anAssignment) {
             // todo test on m_singleAssigmentIcon
             m_assignment = anAssignment;
             setIconText(Integer.toString(anAssignment.getNumber()));
@@ -430,75 +373,60 @@ public class LogisticsIcon implements Icon
 //            m_buttonListener.setAssignment(anAssignment);
         }
 
-        public void setAssignments(java.util.List<IAssignmentIf> theAssignments)
-        {
+        public void setAssignments(java.util.List<IAssignmentIf> theAssignments) {
             // todo test on m_singleAssigmentIcon
             m_assignments = theAssignments;
-            if (m_assignments.size() == 0)
-            {
+            if (m_assignments.size() == 0) {
                 setIconText("");
                 setIconImage(null);
-            } else
-            {
+            } else {
                 setIconText(Integer.toString(m_assignments.get(0).getNumber()));
                 setAssignmentIcon(m_assignments.get(0), m_assignments.size() > 1);
 //            m_buttonListListener.setAssignmentList(theAssignments);
             }
         }
 
-        public java.util.List<IAssignmentIf> getAssignmentList()
-        {
+        public java.util.List<IAssignmentIf> getAssignmentList() {
             return m_assignments;
         }
 
-        public boolean isSelectable()
-        {
+        public boolean isSelectable() {
             return m_iconImage != null;
         }
 
-        public IAssignmentIf getAssignment()
-        {
-            if (m_singleAssigmentIcon)
-            {
+        public IAssignmentIf getAssignment() {
+            if (m_singleAssigmentIcon) {
                 return m_assignment;
             }
-            if (m_assignments != null && m_assignments.size() > 0)
-            {
+            if (m_assignments != null && m_assignments.size() > 0) {
                 return m_assignments.get(0);
             }
             return null;
         }
     }
 
-    public static class InfoIcon extends LogisticsIcon
-    {
+    public static class InfoIcon extends LogisticsIcon {
         static final Dimension m_iconSize = new Dimension(30, 50);
 
-        public InfoIcon(String anIconText, boolean isSelected)
-        {
+        public InfoIcon(String anIconText, boolean isSelected) {
             super(null, true, null, m_iconSize.width, m_iconSize.height, 1.0F, false, true, isSelected);
             setInfo(anIconText);
         }
 
-        public static Dimension getIconSize()
-        {
+        public static Dimension getIconSize() {
             return m_iconSize;
         }
 
-        public void setInfo(String anIconText)
-        {
-            if (anIconText.length() > 0)
-            {
+        public void setInfo(String anIconText) {
+            if (anIconText.length() > 0) {
                 setIconText("!");
-            } else
-            {
+            } else {
                 setIconText("");
             }
         }
 
         @Override
-        public boolean isSelectable()
-        {
+        public boolean isSelectable() {
             return false;
         }
     }

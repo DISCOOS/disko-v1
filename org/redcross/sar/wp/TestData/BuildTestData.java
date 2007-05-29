@@ -15,17 +15,13 @@ import org.redcross.sar.util.except.MsoException;
 /**
  *
  */
-public class BuildTestData
-{
-    public static void createCmdPost(IMsoModelIf aMsoModel)
-    {
-        aMsoModel.setRemoteUpdateMode();
+public class BuildTestData {
+    public static void createCmdPost(IMsoModelIf aMsoModel) {
+        aMsoModel.setLocalUpdateMode();
         IMsoManagerIf msoManager = aMsoModel.getMsoManager();
         IOperationIf testOperation = msoManager.getOperation();
-        if (testOperation == null)
-        {
-            try
-            {
+        if (testOperation == null) {
+            try {
                 testOperation = msoManager.createOperation("2007-TEST", "0001");
             }
             catch (DuplicateIdException e) // shall not happen
@@ -34,10 +30,8 @@ public class BuildTestData
             }
         }
         ICmdPostIf cmdPost = msoManager.getCmdPost();
-        if (cmdPost == null)
-        {
-            try
-            {
+        if (cmdPost == null) {
+            try {
                 cmdPost = msoManager.createCmdPost();
             }
             catch (DuplicateIdException e) // shall not happen
@@ -45,21 +39,20 @@ public class BuildTestData
                 e.printStackTrace();
             }
         }
-        if (cmdPost != null)
-        {
+        if (cmdPost != null) {
             cmdPost.setStatus(ICmdPostIf.CmdPostStatus.OPERATING);
         }
-        aMsoModel.restoreUpdateMode();
+        //aMsoModel.restoreUpdateMode();
+        aMsoModel.commit();
     }
 
-    public static void createUnitsAndAssignments(IMsoModelIf aMsoModel)
-    {
+    public static void createUnitsAndAssignments(IMsoModelIf aMsoModel) {
         ICmdPostIf cmdPost = aMsoModel.getMsoManager().getCmdPost();
-        aMsoModel.setRemoteUpdateMode();
+        aMsoModel.setLocalUpdateMode();
         IUnitListIf unitList = cmdPost.getUnitList();
         IUnitIf unit;
 
-        unit= unitList.createVehicle("St 39911");
+        unit = unitList.createVehicle("St 39911");
         unit.setRemarks("This is a red car");
         unit.setStatus(IUnitIf.UnitStatus.READY);
 
@@ -76,38 +69,33 @@ public class BuildTestData
         unit.setStatus(IUnitIf.UnitStatus.EMPTY);
 
         IAssignmentListIf asgList = cmdPost.getAssignmentList();
-        try
-        {
+        try {
             IAssignmentIf asg;
 
             unit = unitList.getUnit(1);
-            for (int i = 0; i < 10; i++)
-            {
+            for (int i = 0; i < 10; i++) {
                 asg = asgList.createSearch();
-                asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.DRAFT,null);
-                asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY,null);
-                ((ISearchIf)asg).setSubType(ISearchIf.SearchSubType.LINE);
-                unit.addUnitAssignment(asg,IAssignmentIf.AssignmentStatus.ALLOCATED);
+                asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.DRAFT, null);
+                asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY, null);
+                ((ISearchIf) asg).setSubType(ISearchIf.SearchSubType.LINE);
+                unit.addUnitAssignment(asg, IAssignmentIf.AssignmentStatus.ALLOCATED);
             }
 
             unit = unitList.getUnit(2);
-            for (int i = 0; i < 8; i++)
-            {
+            for (int i = 0; i < 8; i++) {
                 asg = asgList.createSearch();
-                asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.DRAFT,null);
-                asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY,null);
-                ((ISearchIf)asg).setSubType(ISearchIf.SearchSubType.DOG);
-                unit.addUnitAssignment(asg,IAssignmentIf.AssignmentStatus.ALLOCATED);
+                asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.DRAFT, null);
+                asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY, null);
+                ((ISearchIf) asg).setSubType(ISearchIf.SearchSubType.DOG);
+                unit.addUnitAssignment(asg, IAssignmentIf.AssignmentStatus.ALLOCATED);
             }
 
-            for (int i = 0; i < 20; i++)
-            {
+            for (int i = 0; i < 20; i++) {
                 asg = asgList.createSearch();
-                asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.DRAFT,null);
-                asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY,null);
-                ((ISearchIf)asg).setSubType(ISearchIf.SearchSubType.PATROL);
-                switch (i % 3)
-                {
+                asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.DRAFT, null);
+                asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY, null);
+                ((ISearchIf) asg).setSubType(ISearchIf.SearchSubType.PATROL);
+                switch (i % 3) {
                     case 0:
                         asg.setPriority(IAssignmentIf.AssignmentPriority.LOW);
                         break;
@@ -122,13 +110,12 @@ public class BuildTestData
             }
 
         }
-        catch (MsoException e)
-        {
+        catch (MsoException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
-
-        aMsoModel.restoreUpdateMode();
+        //aMsoModel.restoreUpdateMode();
+        aMsoModel.commit();
     }
 
 }
