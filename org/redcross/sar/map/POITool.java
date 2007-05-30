@@ -59,6 +59,11 @@ public class POITool extends AbstractCommandTool {
 	}
 	
 	public void addPOIAt(double x, double y) throws IOException, AutomationException {
+		if (editFeature != null) {
+			editFeature.setSelected(false);
+			refresh((Point)editFeature.getShape());
+		}
+		editFeature = (IMsoFeature)featureClass.createFeature();
 		Point p = new Point();
 		p.setX(x);
 		p.setY(y);
@@ -69,6 +74,7 @@ public class POITool extends AbstractCommandTool {
 		point.setSpatialReferenceByRef(map.getSpatialReference());
 		editFeature.setGeodata(MapUtil.getMsoPosistion(point));
 		editFeature.setSelected(true);
+		poiDialog.setMsoFeature(editFeature);
 		refresh(point);
 		
 		if (editFeedback != null) {
@@ -80,6 +86,10 @@ public class POITool extends AbstractCommandTool {
 			throws IOException, AutomationException {
 		Point p = transform(x, y);
 		addPOIAt(p);
+	}
+	
+	public IMsoFeature getCurrent() {
+		return editFeature;
 	}
 	
 	private void refresh(Point p) throws AutomationException, IOException {

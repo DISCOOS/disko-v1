@@ -53,6 +53,10 @@ public class AreaFeature extends AbstractMsoFeature {
 		area.setGeodata(clone);
 	}
 	
+	public void splitGeodata(IGeodataIf geodata) {
+		System.out.println("Splitting ...");
+	}
+	
 	private GeoCollection clone(GeoCollection oldColl) {
 		GeoCollection newColl = new GeoCollection(null);
 		if (oldColl != null) {

@@ -12,6 +12,7 @@ import org.redcross.sar.map.feature.IMsoFeatureClass;
 
 import com.esri.arcgis.display.IDisplayTransformation;
 import com.esri.arcgis.geodatabase.IFeature;
+import com.esri.arcgis.geodatabase.IFeatureClass;
 import com.esri.arcgis.geodatabase.IFeatureCursor;
 import com.esri.arcgis.geodatabase.ISpatialFilter;
 import com.esri.arcgis.geodatabase.SpatialFilter;
@@ -95,11 +96,11 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 		this.editFeedback = editFeedback;
 	}
 	
-	protected IFeature search(IPoint p) throws UnknownHostException, IOException {
+	protected IFeature search(IFeatureClass fc, IPoint p) throws UnknownHostException, IOException {
 		IEnvelope env = MapUtil.getEnvelope(p, map.getActiveView().getExtent().getWidth()/50);
 		ISpatialFilter filter = new SpatialFilter();
 		filter.setGeometryByRef(env);
-		IFeatureCursor cursor = featureClass.search(filter, false);
+		IFeatureCursor cursor = fc.search(filter, false);
 		IFeature feature = cursor.nextFeature();
 		// return last feature
 		/*while (feature != null) {

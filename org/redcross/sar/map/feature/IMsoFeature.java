@@ -23,6 +23,8 @@ public interface IMsoFeature extends IFeature {
 	
 	public void removeGeodata(IGeodataIf geodata);
 	
+	public void splitGeodata(IGeodataIf geodata);
+	
 	public void addGeodataToCollection(IGeodataIf geodata);
 	
 	public void removeGeodataFromCollectionAt(int index);

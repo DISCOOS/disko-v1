@@ -2,10 +2,21 @@ package org.redcross.sar.map;
 
 import java.awt.Toolkit;
 import java.io.IOException;
+
+import org.redcross.sar.map.feature.AreaFeature;
+import org.redcross.sar.map.feature.IMsoFeature;
+import org.redcross.sar.mso.data.IAreaIf;
+import org.redcross.sar.util.mso.GeoCollection;
+import org.redcross.sar.util.mso.Route;
+
 import com.esri.arcgis.carto.IElement;
 import com.esri.arcgis.carto.LineElement;
+import com.esri.arcgis.geodatabase.IFeature;
+import com.esri.arcgis.geometry.GeometryBag;
+import com.esri.arcgis.geometry.IGeometry;
 import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.geometry.Polyline;
+import com.esri.arcgis.geometry.esriGeometryType;
 import com.esri.arcgis.interop.AutomationException;
 
 /**
@@ -38,6 +49,22 @@ public class SplitTool extends AbstractCommandTool {
 		p.setX(x);
 		p.setY(y); 
 		transform(p);
+		
+		IFeature feature = search(featureClass, p);
+		if (feature != null && feature instanceof IMsoFeature) {
+			editFeature = (IMsoFeature)feature;
+			IGeometry geom = editFeature.getShape();
+			if (featureClass.getShapeType() == esriGeometryType.esriGeometryBag) {
+				GeometryBag geomBag = (GeometryBag)geom;
+				//editFeature.removeGeodataFromCollectionAt(getGeomIndex(geomBag, p));
+			}
+			else {
+				//editFeature.removeGeodata(null);
+				//editFeature.delete();
+			}
+			map.partialRefresh(null);
+		}
+		
 		/*IElement elem = map.searchGraphics(p);
 		if (elem != null && elem instanceof LineElement) {
 			Polyline pl = (Polyline)elem.getGeometry();

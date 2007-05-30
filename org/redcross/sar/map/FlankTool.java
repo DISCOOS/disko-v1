@@ -53,7 +53,7 @@ public class FlankTool extends AbstractCommandTool {
 		p.setY(y); 
 		transform(p);
 
-		IFeature feature = search(p);
+		IFeature feature = search(featureClass, p);
 		if (feature != null && feature instanceof AreaFeature) {
 			AreaFeature areaFeature = (AreaFeature)feature;
 			GeometryBag geomBag = (GeometryBag)areaFeature.getShape();

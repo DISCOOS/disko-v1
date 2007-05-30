@@ -20,6 +20,9 @@ public class POIFeature extends AbstractMsoFeature {
 		if (pos != null) {
 			geometry = MapUtil.getEsriPoint(pos, srs);
 		}
+		else {
+			geometry = null;
+		}
 	}
 	
 	public void setGeodata(IGeodataIf geodata) {

@@ -36,11 +36,11 @@ public class OperationAreaFeatureClass extends AbstractMsoFeatureClass {
 				System.out.println(classCode.name()+" .... created");
 				createFeature(opArea);
 			}
-			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue()) {
+			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && msoFeature != null) {
 				System.out.println(classCode.name()+" .... modified");
 				msoFeature.msoGeometryChanged();
 			}
-			else if (type == EventType.DELETED_OBJECT_EVENT.maskValue()) {
+			else if (type == EventType.DELETED_OBJECT_EVENT.maskValue() && msoFeature != null) {
 				System.out.println(classCode.name()+" .... deleted");
 				removeFeature(msoFeature);
 			}

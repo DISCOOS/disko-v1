@@ -28,10 +28,10 @@ public class FlankFeatureClass extends AbstractMsoFeatureClass {
 			if (type == EventType.ADDED_REFERENCE_EVENT.maskValue()) {
 				createFeature(area);
 			}
-			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue()) {
+			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && msoFeature != null) {
 				msoFeature.msoGeometryChanged();
 			}
-			else if (type == EventType.DELETED_OBJECT_EVENT.maskValue()) {
+			else if (type == EventType.DELETED_OBJECT_EVENT.maskValue() && msoFeature != null) {
 				removeFeature(msoFeature);
 			}
 		} catch (AutomationException e1) {
