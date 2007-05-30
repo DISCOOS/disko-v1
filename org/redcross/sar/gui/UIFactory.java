@@ -21,7 +21,6 @@ public class UIFactory {
 	private JPanel menuPanel = null;
 	private LoginDialog loginDialog = null;
 	private NumPadDialog numPadDialog = null;
-	private ErrorDialog errorDialog = null;
 	
 	private Dimension largeButtonSize = null;
 	private Dimension smallButtonSize = null;
@@ -177,12 +176,5 @@ public class UIFactory {
 			smallButtonSize =  new Dimension(width, height);
 		}
 		return smallButtonSize;
-	}
-
-	public ErrorDialog getErrorDialog() {
-		if (errorDialog == null) {
-			errorDialog = new ErrorDialog(app.getFrame());
-		}
-		return errorDialog;
 	}
 }
