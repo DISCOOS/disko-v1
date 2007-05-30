@@ -1,11 +1,12 @@
 package org.redcross.sar.map;
 
 import java.io.IOException;
+
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.POIDialog;
-import org.redcross.sar.map.layer.MsoFeature;
-import org.redcross.sar.mso.data.IPOIIf;
+import org.redcross.sar.map.feature.IMsoFeature;
+
 import com.esri.arcgis.geometry.Envelope;
 import com.esri.arcgis.geometry.IEnvelope;
 import com.esri.arcgis.geometry.Point;
@@ -43,6 +44,11 @@ public class POITool extends AbstractCommandTool {
 
 	public void onMouseDown(int button, int shift, int x, int y)
 			throws IOException, AutomationException {
+		if (editFeature != null) {
+			editFeature.setSelected(false);
+			refresh((Point)editFeature.getShape());
+		}
+		editFeature = (IMsoFeature)featureClass.createFeature();
 		if (editFeedback != null) {
 			editFeedback.editStarted(editFeature);
 		}
@@ -60,25 +66,13 @@ public class POITool extends AbstractCommandTool {
 	}
 	
 	public void addPOIAt(Point point) throws IOException, AutomationException {
-		if (editFeature != null) {
-			editFeature.setSelected(false);
-			refresh();
-		}
-		editFeature = (MsoFeature)featureClass.createFeature();
-		IPOIIf poi = (IPOIIf)editFeature.getMsoObject();
 		point.setSpatialReferenceByRef(map.getSpatialReference());
-		poi.setPosition(MapUtil.getMsoPosistion(point));
-		poi.setType(poiDialog.getSelectedType());
-		editFeature.setShapeByRef(point);
-		refresh();
+		editFeature.setGeodata(MapUtil.getMsoPosistion(point));
+		editFeature.setSelected(true);
 		
 		if (editFeedback != null) {
 			editFeedback.editFinished(editFeature);
 		}
-	}
-	
-	public MsoFeature getSelectedMsoFeature() {
-		return editFeature;
 	}
 
 	public void onMouseUp(int button, int shift, int x, int y)
@@ -87,8 +81,7 @@ public class POITool extends AbstractCommandTool {
 		addPOIAt(p);
 	}
 	
-	private void refresh() throws AutomationException, IOException {
-		Point p = (Point)editFeature.getShape();
+	private void refresh(Point p) throws AutomationException, IOException {
 		if (p != null) {
 			double size = map.getActiveView().getExtent().getWidth()/50;
 			double xmin = p.getX()-size/2;
