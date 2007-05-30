@@ -318,7 +318,6 @@ IDiskoWpTacktics, IEditFeedback {
 					}
 				}
 				currentAssignment.setPriority(dialog.getPriority());
-				currentAssignment.setStatus(dialog.getStatus());
 				currentAssignment.setRemarks(getTextAreaDialog().getText());
 			}
 		} catch (IllegalOperationException e) {
