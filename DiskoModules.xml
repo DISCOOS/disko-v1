@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <DiskoApplikasjon>
 	<DiskoRolle name="nl" title="Nestleder">
-		<DiskoModule classname="org.redcross.sar.wp.tacktics.DiskoWpTackticsImpl"/>
-		<DiskoModule classname="org.redcross.sar.wp.A008.DiskoWpLogisticsImpl"/>
+		<DiskoModule classname="org.redcross.sar.wp.tactics.DiskoWpTackticsImpl"/>
+		<DiskoModule classname="org.redcross.sar.wp.logistics.DiskoWpLogisticsImpl"/>
 		<DiskoModule classname="org.redcross.sar.wp.DiskoWpPlanImpl"/>
 		<DiskoModule classname="org.redcross.sar.wp.DiskoWpUnitImpl"/>
 	</DiskoRolle>
