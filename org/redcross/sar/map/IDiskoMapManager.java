@@ -2,7 +2,10 @@ package org.redcross.sar.map;
 
 import java.io.IOException;
 import java.util.List;
-import org.redcross.sar.map.layer.AbstractMsoLayer;
+
+import org.redcross.sar.map.layer.IMsoFeatureLayer;
+import org.redcross.sar.mso.IMsoManagerIf;
+
 import com.esri.arcgis.geometry.IEnvelope;
 import com.esri.arcgis.interop.AutomationException;
 
@@ -20,5 +23,5 @@ public interface IDiskoMapManager {
 	
 	public List getMsoLayers();
 	
-	public AbstractMsoLayer getMsoLayer(Enum classCode);
+	public IMsoFeatureLayer getMsoLayer(IMsoManagerIf.MsoClassCode classCode);
 }
