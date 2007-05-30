@@ -14,11 +14,11 @@ import org.redcross.sar.mso.data.IUnitIf;
 public class UnitTableCellRenderer extends JLabel implements TableCellRenderer {
 
 	private static final long serialVersionUID = 1L;
-	private Hashtable icons = null;
+	private Hashtable<Enum<?>, ImageIcon> icons = null;
 
 	public UnitTableCellRenderer() {
 		setOpaque(true); //MUST do this for background to show up.
-		icons = new Hashtable();
+		icons = new Hashtable<Enum<?>, ImageIcon>();
 	}
 
 	public Component getTableCellRendererComponent(JTable table, Object value,
