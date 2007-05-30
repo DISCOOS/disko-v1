@@ -24,9 +24,10 @@ import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
 public class AssignmentTable extends JTable {
 
 	private static final long serialVersionUID = 1L;
-	private TableRowSorter tableRowSorter = null;
-	private Hashtable rowFilters = null;
+	private TableRowSorter<AssignmentTableModel> tableRowSorter = null;
+	private Hashtable<AssignmentStatus, RowFilter<?, ?>> rowFilters = null;
 	
+	@SuppressWarnings("unchecked")
 	public AssignmentTable(IMsoModelIf msoModel) {
 		AssignmentTableModel model = new AssignmentTableModel(msoModel);
 		setModel(model);
@@ -74,9 +75,10 @@ public class AssignmentTable extends JTable {
 		editColumn.setCellEditor((TableCellEditor)editor);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void showOnly(Object obj) {
 		if (rowFilters == null) {
-			rowFilters = new Hashtable();
+			rowFilters = new Hashtable<AssignmentStatus, RowFilter<?, ?>>();
 			AssignmentStatus[] values = AssignmentStatus.values();
 			for (int i = 0; i < values.length; i++) {
 				rowFilters.put(values[i], RowFilter.regexFilter(".*"+Utils.translate(values[i])+".*"));

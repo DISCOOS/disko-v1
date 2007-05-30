@@ -1,12 +1,12 @@
 package org.redcross.sar.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.io.IOException;
 
 import javax.swing.BorderFactory;
-import javax.swing.Icon;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -14,7 +14,6 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
 
 import org.redcross.sar.app.IDiskoApplication;
-import org.redcross.sar.app.Utils;
 import org.redcross.sar.map.DrawTool;
 import org.redcross.sar.map.IDiskoMap;
 import org.redcross.sar.map.SnapLayerSelectionModel;
@@ -22,28 +21,19 @@ import org.redcross.sar.map.SnapLayerSelectionModel;
 import com.borland.jbcl.layout.VerticalFlowLayout;
 import com.esri.arcgis.carto.FeatureLayer;
 import com.esri.arcgis.interop.AutomationException;
-import java.awt.BorderLayout;
-import javax.swing.JButton;
-import java.awt.FlowLayout;
 
 public class DrawDialog extends DiskoDialog {
 	
 	private static final long serialVersionUID = 1L;
-	private IDiskoApplication app = null;
 	private DrawTool tool = null;
 	private SnapLayerSelectionModel snapLayerSelectionModel = null;  //  @jve:decl-index=0:
 	private JPanel mainPanel = null;
 	private JSlider snapToleranceSlider = null;
 	private JPanel layerSelectionPanel = null;
 	private JPanel centerPanel = null;
-	private JPanel southPanel = null;
-	private JButton cancelButton = null;
-	private JPanel northPanel = null;
-	private JButton finishButton = null;
 	
 	public DrawDialog(IDiskoApplication app, DrawTool tool) {
 		super(app.getFrame());
-		this.app = app;
 		this.tool = tool;
 		initialize();
 	}
@@ -195,89 +185,5 @@ public class DrawDialog extends DiskoDialog {
 			}
 		}
 		return centerPanel;
-	}
-
-	/**
-	 * This method initializes southPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
-	 */
-	private JPanel getSouthPanel() {
-		if (southPanel == null) {
-			try {
-				FlowLayout flowLayout = new FlowLayout();
-				flowLayout.setAlignment(FlowLayout.RIGHT);
-				flowLayout.setVgap(0);
-				flowLayout.setHgap(0);
-				southPanel = new JPanel();
-				southPanel.setLayout(flowLayout);
-				southPanel.add(getCancelButton(), null);
-			} catch (java.lang.Throwable e) {
-				// TODO: Something
-			}
-		}
-		return southPanel;
-	}
-
-	/**
-	 * This method initializes cancelButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getCancelButton() {
-		if (cancelButton == null) {
-			try {
-				cancelButton = new JButton();
-				cancelButton.setPreferredSize(app.getUIFactory().getSmallButtonSize());
-				String iconName = "cancel.icon";
-				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
-				cancelButton.setIcon(icon);
-			} catch (java.lang.Throwable e) {
-				// TODO: Something
-			}
-		}
-		return cancelButton;
-	}
-
-	/**
-	 * This method initializes northPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
-	 */
-	private JPanel getNorthPanel() {
-		if (northPanel == null) {
-			try {
-				FlowLayout flowLayout1 = new FlowLayout();
-				flowLayout1.setAlignment(FlowLayout.RIGHT);
-				flowLayout1.setVgap(0);
-				flowLayout1.setHgap(0);
-				northPanel = new JPanel();
-				northPanel.setLayout(flowLayout1);
-				northPanel.add(getFinishButton(), null);
-			} catch (java.lang.Throwable e) {
-				// TODO: Something
-			}
-		}
-		return northPanel;
-	}
-
-	/**
-	 * This method initializes finishButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getFinishButton() {
-		if (finishButton == null) {
-			try {
-				finishButton = new JButton();
-				finishButton.setPreferredSize(app.getUIFactory().getSmallButtonSize());
-				String iconName = "finish.icon";
-				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
-				finishButton.setIcon(icon);
-			} catch (java.lang.Throwable e) {
-				// TODO: Something
-			}
-		}
-		return finishButton;
 	}
 }

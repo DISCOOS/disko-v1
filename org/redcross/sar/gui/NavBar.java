@@ -63,8 +63,8 @@ public class NavBar extends JPanel {
 	private IDiskoApplication app = null;
 	private ButtonGroup bgroup  = null;
 	private JToggleButton dummyToggleButton = null;
-	private Hashtable commands  = null;
-	private Hashtable buttons  = null;
+	private Hashtable<Enum<?>, ICommand> commands  = null;
+	private Hashtable<Enum<?>, AbstractButton> buttons  = null;
 	private JToggleButton flankToggleButton = null;
 	private JToggleButton drawLineToggleButton = null;
 	private JToggleButton eraseToggleButton = null;
@@ -105,8 +105,8 @@ public class NavBar extends JPanel {
 	}
 	
 	private void initialize() {
-		commands = new Hashtable();
-		buttons = new Hashtable();
+		commands = new Hashtable<Enum<?>, ICommand>();
+		buttons = new Hashtable<Enum<?>, AbstractButton>();
 		bgroup = new ButtonGroup();
 			
 		FlowLayout flowLayout = new FlowLayout();

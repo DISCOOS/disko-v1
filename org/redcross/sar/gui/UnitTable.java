@@ -1,7 +1,6 @@
 package org.redcross.sar.gui;
 
 import java.awt.Dimension;
-import java.util.Properties;
 
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;

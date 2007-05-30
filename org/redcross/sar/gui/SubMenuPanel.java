@@ -1,27 +1,23 @@
 package org.redcross.sar.gui;
 
-import javax.swing.AbstractButton;
-import javax.swing.ButtonGroup;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JToggleButton;
-
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.util.Hashtable;
-import com.borland.jbcl.layout.VerticalFlowLayout;
 
-
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.app.Utils;
-import org.redcross.sar.event.DiskoWpEvent;
-import org.redcross.sar.event.IDiskoWpEventListener;
 import org.redcross.sar.wp.IDiskoWp;
+
+import com.borland.jbcl.layout.VerticalFlowLayout;
 
 public class SubMenuPanel extends JPanel {
 
@@ -170,12 +166,5 @@ public class SubMenuPanel extends JPanel {
 			}
 		}
 		return finishButton;
-	}
-	
-	private int showYesNoDialog(String msg) {
-		Object[] options = {"Ja","Nei"};
-		return JOptionPane.showOptionDialog(app.getFrame(), msg, "Nytt Oppdrag", 
-			JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE, 
-			null, options, options[1]);
 	}
 }  //  @jve:decl-index=0:visual-constraint="10,10"
