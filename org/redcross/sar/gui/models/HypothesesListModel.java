@@ -18,11 +18,11 @@ public class HypothesesListModel extends AbstractListModel implements
 
 	private static final long serialVersionUID = 1L;
 	private EnumSet<IMsoManagerIf.MsoClassCode> myInterests = null;
-	private ArrayList hypotheses = null;
+	private ArrayList<Object> hypotheses = null;
 
 	public HypothesesListModel(IMsoModelIf msoModel) {
 		myInterests = EnumSet.of(IMsoManagerIf.MsoClassCode.CLASSCODE_HYPOTHESIS);
-		hypotheses = new ArrayList();
+		hypotheses = new ArrayList<Object>();
 		
 		IMsoEventManagerIf msoEventManager = msoModel.getEventManager();
 		msoEventManager.addClientUpdateListener(this);

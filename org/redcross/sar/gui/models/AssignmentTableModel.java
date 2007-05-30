@@ -21,11 +21,11 @@ public class AssignmentTableModel extends AbstractTableModel implements
 
 	private static final long serialVersionUID = 1L;
 	private EnumSet<IMsoManagerIf.MsoClassCode> myInterests = null;
-	private ArrayList rows = null;
+	private ArrayList<Object[]> rows = null;
 
 	public AssignmentTableModel(IMsoModelIf msoModel) {
 		myInterests = EnumSet.of(IMsoManagerIf.MsoClassCode.CLASSCODE_ASSIGNMENT);
-		rows = new ArrayList();
+		rows = new ArrayList<Object[]>();
 		IMsoEventManagerIf msoEventManager = msoModel.getEventManager();
 		msoEventManager.addClientUpdateListener(this);
 		

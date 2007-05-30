@@ -19,7 +19,7 @@ public class UnitTableModel extends AbstractTableModel implements
 
 	private static final long serialVersionUID = 1L;
 	private EnumSet<IMsoManagerIf.MsoClassCode> myInterests = null;
-	private ArrayList rows = null;
+	private ArrayList<ArrayList<IUnitIf>> rows = null;
 	private int numColumns = 0;
 
 	public UnitTableModel(IMsoModelIf msoModel, int numColumns) {
@@ -27,8 +27,8 @@ public class UnitTableModel extends AbstractTableModel implements
 		myInterests = EnumSet.of(IMsoManagerIf.MsoClassCode.CLASSCODE_UNIT);
 		IMsoEventManagerIf msoEventManager = msoModel.getEventManager();
 		msoEventManager.addClientUpdateListener(this);
-		rows = new ArrayList(4);
-		rows.add(new ArrayList(numColumns));
+		rows = new ArrayList<ArrayList<IUnitIf>>(4);
+		rows.add(new ArrayList<IUnitIf>(numColumns));
 		
 		// populate from MSO
 		ICmdPostIf cmdPost = msoModel.getMsoManager().getCmdPost();
@@ -39,6 +39,7 @@ public class UnitTableModel extends AbstractTableModel implements
 		super.fireTableDataChanged();
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void add(IUnitIf unit) {
 		ArrayList row = (ArrayList)rows.get(rows.size()-1);
 		if (row.size() == numColumns) {
