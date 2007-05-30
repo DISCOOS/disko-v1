@@ -5,11 +5,16 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.redcross.sar.app.Utils;
 import org.redcross.sar.util.mso.GeoPos;
 import org.redcross.sar.util.mso.Position;
 import org.redcross.sar.util.mso.Route;
 
+import com.esri.arcgis.datasourcesGDB.FileGDBWorkspaceFactory;
+import com.esri.arcgis.geodatabase.IFeatureClass;
+import com.esri.arcgis.geodatabase.Workspace;
 import com.esri.arcgis.geometry.Envelope;
+import com.esri.arcgis.geometry.IEnvelope;
 import com.esri.arcgis.geometry.IGeographicCoordinateSystem;
 import com.esri.arcgis.geometry.IPoint;
 import com.esri.arcgis.geometry.ISpatialReference;
@@ -24,6 +29,21 @@ import com.esri.arcgis.interop.AutomationException;
 public class MapUtil {
 	
 	private static IGeographicCoordinateSystem  geographicCS = null;
+	private static Workspace workspace = null;
+	
+	public static Workspace getWorkspace() throws AutomationException, IOException {
+		if (workspace == null) {
+			String dbPath = Utils.getProperty("Database.path");
+			FileGDBWorkspaceFactory factory = new FileGDBWorkspaceFactory();
+			workspace = (Workspace) factory.openFromFile(dbPath, 0);
+		}
+		return workspace;
+	}
+
+	public static IFeatureClass getFeatureClass(String name) throws AutomationException,
+			IOException {
+		return getWorkspace().openFeatureClass(name);
+	}
 	
 	public static IGeographicCoordinateSystem getGeographicCS() 
 			throws IOException, AutomationException {
@@ -55,7 +75,6 @@ public class MapUtil {
 	public static Polygon getEsriPolygon(org.redcross.sar.util.mso.Polygon msoPolygon, 
 			ISpatialReference srs) throws IOException, AutomationException {
 		Polygon esriPolygon = new Polygon();
-		esriPolygon.setSpatialReferenceByRef(getGeographicCS());
 		Collection vertices = msoPolygon.getVertices();
 		Iterator iter = vertices.iterator();
 		while(iter.hasNext()) {
@@ -66,6 +85,7 @@ public class MapUtil {
 			p.setY(pnt2D.getY());
 			esriPolygon.addPoint(p, null, null);
 		}
+		esriPolygon.setSpatialReferenceByRef(getGeographicCS());
 		esriPolygon.project(srs);
 		return esriPolygon;
 	}
@@ -109,7 +129,6 @@ public class MapUtil {
 		prjPolyline.project(getGeographicCS());
 		int numPoints = prjPolyline.getPointCount();
 		Route route = new Route(null, null, numPoints);
-
 		for (int i = 0; i < numPoints; i++) {
 			IPoint pnt = prjPolyline.getPoint(i);
 			route.add(pnt.getX(), pnt.getY());
@@ -117,9 +136,9 @@ public class MapUtil {
 		return route;
 	}
 
-	public static Envelope getEnvelope(Point p, double size) 
-			throws IOException, AutomationException {
-		Envelope env = new Envelope();
+	public static IEnvelope getEnvelope(IPoint p, double size) 
+	throws IOException, AutomationException {
+		IEnvelope env = new Envelope();
 		double xmin = p.getX()-size/2;
 		double ymin = p.getY()-size/2;
 		double xmax = p.getX()+size/2;
