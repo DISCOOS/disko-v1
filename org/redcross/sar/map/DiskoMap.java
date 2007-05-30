@@ -9,9 +9,6 @@ import javax.swing.border.SoftBevelBorder;
 
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.event.IDiskoMapEventListener;
-import org.redcross.sar.map.feature.IMsoFeature;
-import org.redcross.sar.map.feature.IMsoFeatureClass;
-import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
@@ -130,7 +127,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	}
 	
 	public void handleMsoUpdateEvent(Update e) {
-		try {
+		/*try {
 			IMsoObjectIf msoObj = (IMsoObjectIf)e.getSource();
 			IMsoFeatureLayer msoLayer = mapManager.getMsoLayer(msoObj.getMsoClassCode());
 			IMsoFeatureClass fc = (IMsoFeatureClass)msoLayer.getFeatureClass();
@@ -146,7 +143,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}
+		}*/
 	}
 
 	public boolean hasInterestIn(IMsoObjectIf aMsoObject) {

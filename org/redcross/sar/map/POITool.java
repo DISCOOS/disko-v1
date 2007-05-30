@@ -69,6 +69,7 @@ public class POITool extends AbstractCommandTool {
 		point.setSpatialReferenceByRef(map.getSpatialReference());
 		editFeature.setGeodata(MapUtil.getMsoPosistion(point));
 		editFeature.setSelected(true);
+		refresh(point);
 		
 		if (editFeedback != null) {
 			editFeedback.editFinished(editFeature);

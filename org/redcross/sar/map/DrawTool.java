@@ -147,6 +147,7 @@ public class DrawTool extends AbstractCommandTool {
 			editFeature.addGeodataToCollection(MapUtil.getMsoRoute(pathGeometry));
 		}
 		reset();
+		map.partialRefresh(pathGeometry.getEnvelope());
 		if (editFeedback != null) {
 			editFeedback.editFinished(editFeature);
 		}
