@@ -310,7 +310,7 @@ public class SearchRequirementDialog extends DiskoDialog {
 						getPriorityTextField().setText(text);
 					}
 				});
-				Hashtable labels = new Hashtable();
+				Hashtable<Integer, JLabel> labels = new Hashtable<Integer, JLabel>();
 				labels.put(new Integer(1), new JLabel("LAV"));
 				labels.put(new Integer(2), new JLabel("NORMAL"));
 				labels.put(new Integer(3), new JLabel("HØY"));

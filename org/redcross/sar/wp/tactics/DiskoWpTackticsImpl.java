@@ -93,7 +93,7 @@ IDiskoWpTacktics, IEditFeedback {
 
 	private POIDialog poiDialog = null;
 
-	private ArrayList dialogs = null;
+	private ArrayList<DiskoDialog> dialogs = null;
 
 	private TextAreaDialog textAreaDialog = null;
 
@@ -133,7 +133,7 @@ IDiskoWpTacktics, IEditFeedback {
 	 */
 	public DiskoWpTackticsImpl(IDiskoRole rolle) {
 		super(rolle);
-		dialogs = new ArrayList();
+		dialogs = new ArrayList<DiskoDialog>();
 		elementListSelectionListener = new ElementListSelectionListener();
 		subMenu = getApplication().getUIFactory().getSubMenuPanel();
 		
@@ -227,19 +227,16 @@ IDiskoWpTacktics, IEditFeedback {
 		JList elementList = getElementDialog().getElementList();
 		elementList.removeListSelectionListener(elementListSelectionListener);
 		ICmdPostIf cmdPost = getMsoManager().getCmdPost();
-		Enum toSelect = null;
 		Object[] listData = null;
 		if (cmdPost.getOperationAreaListItems().size() == 0) {
 			listData = new Object[1];
 			listData[0] = IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA;
 			elementList.setListData(listData);
-			toSelect = (Enum) listData[0];
 		} else if (cmdPost.getSearchAreaListItems().size() == 0) {
 			listData = new Object[2];
 			listData[0] = IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA;
 			listData[1] = IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA;
 			elementList.setListData(listData);
-			toSelect = (Enum) listData[1];
 		} else {
 			ISearchIf.SearchSubType[] values = ISearchIf.SearchSubType.values();
 			listData = new Object[values.length + 2];
@@ -249,10 +246,8 @@ IDiskoWpTacktics, IEditFeedback {
 				listData[i + 2] = values[i];
 			}
 			elementList.setListData(listData);
-			toSelect = (Enum) listData[2];
 		}
 		elementList.addListSelectionListener(elementListSelectionListener);
-		//elementList.setSelectedValue(toSelect, false);
 	}
 
 	public void editStarted(IFeature editFeature) {
