@@ -831,6 +831,7 @@ IDiskoWpTactics, IEditFeedback {
 			// buttons
 			getElementDialog().setVisible(false);
 			getElementToggleButton().setSelected(false);
+			eraseTool.removeAll();
 			try {
 				JList list = (JList) e.getSource();
 				currentAction = (Enum) list.getSelectedValue();
@@ -856,12 +857,13 @@ IDiskoWpTactics, IEditFeedback {
 					.getFeatureClass();
 					flankTool.setFeatureClass(featureClass);
 				}
-				IMsoFeature editFeature = (IMsoFeature) featureClass
-				.createFeature();
+				IMsoFeature editFeature = (IMsoFeature) featureClass.createFeature();
+				
 				drawTool.setFeatureClass(featureClass);
-				eraseTool.setFeatureClass(featureClass);
-				poiTool.setFeatureClass((IMsoFeatureClass) poiLayer
-						.getFeatureClass());
+				IMsoFeatureClass poiFc = (IMsoFeatureClass) poiLayer.getFeatureClass();
+				poiTool.setFeatureClass(poiFc);
+				eraseTool.addFeatureClass(featureClass);
+				eraseTool.addFeatureClass(poiFc);
 				drawTool.setEditFeature(editFeature);
 				currentMsoObject = editFeature.getMsoObject();
 				setFrameText(Utils.translate(currentAction));
