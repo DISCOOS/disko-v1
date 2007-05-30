@@ -1,33 +1,22 @@
 package org.redcross.sar.map;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.gui.DiskoDialog;
-import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.gui.FlankDialog;
+import org.redcross.sar.map.feature.AreaFeature;
+import org.redcross.sar.mso.data.IAreaIf;
+import org.redcross.sar.util.mso.GeoCollection;
+import org.redcross.sar.util.mso.IGeodataIf;
+import org.redcross.sar.util.mso.Route;
 
-import com.esri.arcgis.carto.FeatureLayer;
-import com.esri.arcgis.carto.IElement;
-import com.esri.arcgis.carto.LineElement;
-import com.esri.arcgis.carto.PolygonElement;
-import com.esri.arcgis.display.LineFillSymbol;
-import com.esri.arcgis.display.RgbColor;
-import com.esri.arcgis.display.SimpleLineSymbol;
+import com.esri.arcgis.carto.IFeatureLayer;
 import com.esri.arcgis.geodatabase.IFeature;
-import com.esri.arcgis.geodatabase.IFeatureClass;
-import com.esri.arcgis.geodatabase.IFeatureCursor;
-import com.esri.arcgis.geodatabase.SpatialFilter;
-import com.esri.arcgis.geodatabase.esriSpatialRelEnum;
-import com.esri.arcgis.geometry.Envelope;
-import com.esri.arcgis.geometry.IEnvelope;
-import com.esri.arcgis.geometry.IGeometry;
-import com.esri.arcgis.geometry.IGeometryCollection;
-import com.esri.arcgis.geometry.Line;
+import com.esri.arcgis.geometry.GeometryBag;
 import com.esri.arcgis.geometry.Point;
-import com.esri.arcgis.geometry.Polygon;
-import com.esri.arcgis.geometry.Polyline;
 import com.esri.arcgis.interop.AutomationException;
 
 /**
@@ -38,50 +27,15 @@ import com.esri.arcgis.interop.AutomationException;
 public class FlankTool extends AbstractCommandTool {
 
 	private static final long serialVersionUID = 1L;
-	private IDiskoApplication app = null;
 	private Point p = null;
-	private IEnvelope refreshEnvelope = null;
-	private LineFillSymbol redFill  = null;
-	private LineFillSymbol blueFill = null;
-	
-	
-	private static final int LEFT_SIDE_FLANK  = 1;
-	private static final int RIGHT_SIDE_FLANK = 2;
-	
 	
 	/**
 	 * Constructs the DrawTool
 	 */
 	public FlankTool(IDiskoApplication app) throws IOException, AutomationException {
-		this.app = app;
-		p = new Point();
-		p.setX(0);
-		p.setY(0);
-		refreshEnvelope = new Envelope();
-		refreshEnvelope.putCoords(0, 0, 0, 0);
-		
-		// fill symbols
-		redFill = new LineFillSymbol();
-		RgbColor redColor = new RgbColor();
-		redColor.setRed(255);
-		redFill.setColor(redColor);
-		redFill.setAngle(45);
-		SimpleLineSymbol leftOutline = new SimpleLineSymbol();
-		leftOutline.setColor(redColor);
-		redFill.setOutline(leftOutline);
-	
-		blueFill = new LineFillSymbol();
-		RgbColor blueColor = new RgbColor();
-		blueColor.setBlue(255);
-		blueFill.setColor(blueColor);
-		blueFill.setAngle(45);
-		SimpleLineSymbol rightOutline = new SimpleLineSymbol();
-		rightOutline.setColor(blueColor);
-		blueFill.setOutline(rightOutline);
-		
-		// the dialog
 		dialog = new FlankDialog(app, this);
 		dialog.setIsToggable(false);
+		p = new Point();
 	}
 
 	public void onCreate(Object obj) throws IOException, AutomationException {
@@ -98,115 +52,66 @@ public class FlankTool extends AbstractCommandTool {
 		p.setX(x);
 		p.setY(y); 
 		transform(p);
-		/*IElement elem = map.searchGraphics(p);
-		if (elem != null && elem instanceof LineElement) {
-			Polyline pl = (Polyline)elem.getGeometry();
-			createFlankes(pl);
-		}*/
-	}
-	
-	private void createFlankes(Polyline pl)  throws IOException {
-		refreshEnvelope.putCoords(0, 0, 0, 0);
-		FlankDialog flankDialog = (FlankDialog)dialog;
-		// left side
-		if (flankDialog.getLeftCheckBox().isSelected()) {
-			double value = (double)((Integer)flankDialog.getLeftSpinner().getValue()).intValue();
-			try {
-				createFlanke(pl, value, LEFT_SIDE_FLANK);
-			} catch (AutomationException e) {
-				showError("Kan ikke lage venstre flanke. Ugyldig geometri. Tegn på nytt", e.getDescription());
-			}
-		}
-		// right side
-		if (flankDialog.getRightCheckBox().isSelected()) {
-			double value = (double)((Integer)flankDialog.getRightSpinner().getValue()).intValue();
-			try {
-				createFlanke(pl, value, RIGHT_SIDE_FLANK);
-			} catch (AutomationException e) {
-				showError("Kan ikke lage høyre flanke. Ugyldig geometri. Tegn på nytt", e.getDescription());
-			}
-		}
-		//map.partialRefreshGraphics(refreshEnvelope);
-	}
-	
-	private void showError(String msg, String description) {
-		ErrorDialog dialog = app.getUIFactory().getErrorDialog();
-		dialog.showError(msg, description);
-		dialog.setLocationRelativeTo(map);
-	}
-	
-	private void createFlanke(Polyline path, double dist, int side) 
-			throws IOException, AutomationException {
-		Line n1 = new Line();
-		Line n2 = new Line();
-		Polyline pl = new Polyline();
-		IGeometryCollection coll = null;
-		Polygon buffer = (Polygon) path.buffer(dist);
-		
-		path.queryNormal(3, 0, false, dist *  1, n1);
-		path.queryNormal(3, 0, false, dist * -1, n2);
-		pl.addPoint(n1.getToPoint(), null, null);
-		pl.addPoint(n2.getToPoint(), null, null);
-		coll = buffer.cut2(pl);
-			
-		double d = path.getLength();
-		path.queryNormal(12, d, false, dist *  1, n1);
-		path.queryNormal(12, d, false, dist * -1, n2);
-		pl.setFromPoint(n2.getToPoint());
-		pl.setToPoint(n1.getToPoint());
-		Polygon rest = (Polygon) coll.getGeometry(1);
-		coll = rest.cut2(pl);
-			
-		IGeometry[] leftGeom = new IGeometry[2];
-		IGeometry[] rightGeom = new IGeometry[2];
-		
-		((Polygon) coll.getGeometry(1)).cut(path,leftGeom,rightGeom);
 
-		if (side == LEFT_SIDE_FLANK) {
-			Polygon leftPoly = clip((Polygon) leftGeom[0]);
-			leftPoly.setSpatialReferenceByRef(map.getSpatialReference());
-			PolygonElement pe = new PolygonElement();
-			pe.setGeometry(leftPoly);
-			pe.setSymbol(redFill);
-			//pe.setName(getElementName());
-			pe.setCustomProperty(properties);
-			//map.addGraphics(pe);
-			refreshEnvelope.union(leftPoly.getEnvelope());
-		}
-		else if (side == RIGHT_SIDE_FLANK) {
-			Polygon rightPoly = clip((Polygon) rightGeom[0]);
-			rightPoly.setSpatialReferenceByRef(map.getSpatialReference());
-			PolygonElement pe = new PolygonElement();
-			pe.setGeometry(rightPoly);
-			pe.setSymbol(blueFill);
-			//pe.setName(getElementName());
-			pe.setCustomProperty(properties);
-			//map.addGraphics(pe);
-			refreshEnvelope.union(rightPoly.getEnvelope());
+		IFeature feature = search(p);
+		if (feature != null && feature instanceof AreaFeature) {
+			AreaFeature areaFeature = (AreaFeature)feature;
+			GeometryBag geomBag = (GeometryBag)areaFeature.getShape();
+			int index = getGeomIndex(geomBag, p);
+			if (index > -1) {
+				IAreaIf area = (IAreaIf)areaFeature.getMsoObject();
+				GeoCollection geoColl = area.getGeodata();
+				Route route = getRouteAt(geoColl, index);
+				if (route != null) {
+					route.setLayout(getLayout());
+					//HACK: To force firing events.
+					area.setGeodata(cloneGeoCollection(geoColl));
+					map.getActiveView().refresh();
+				}
+			}
 		}
 	}
 	
-	private Polygon clip(Polygon flank) throws IOException, AutomationException {
-		List clipLayers = ((FlankDialog)dialog).getClipModel().getSelected();
-		if (clipLayers == null || clipLayers.size() < 1) {
-			return flank;
+	private GeoCollection cloneGeoCollection(GeoCollection oldColl) {
+		GeoCollection newColl = new GeoCollection(null);
+		Iterator iter = oldColl.getPositions().iterator();
+		while (iter.hasNext()) {
+			newColl.add((IGeodataIf)iter.next());
 		}
-		Polygon result = flank;
-		for (int i = 0; i < clipLayers.size(); i++) {
-			FeatureLayer flayer = (FeatureLayer)clipLayers.get(i);
-			IFeatureClass fclass = flayer.getFeatureClass();
-			SpatialFilter spatialFilter = new SpatialFilter();
-			spatialFilter.setGeometryByRef(flank.getEnvelope());
-			spatialFilter.setGeometryField(fclass.getShapeFieldName());
-			spatialFilter.setSpatialRel(esriSpatialRelEnum.esriSpatialRelIntersects);
-			IFeatureCursor featureCursor = fclass.search(spatialFilter,false);
-			
-			IFeature feature = featureCursor.nextFeature();
-			while (feature != null) {
-				result = (Polygon)result.difference(feature.getShape());
-				feature = featureCursor.nextFeature();
+		return newColl;
+	}
+	
+	private Route getRouteAt(GeoCollection geoColl, int index) {
+		Iterator iter = geoColl.getPositions().iterator();
+		int i = 0;
+		while (iter.hasNext()) {
+			IGeodataIf geodata = (IGeodataIf) iter.next();
+			if (geodata instanceof Route && index == i) {
+				return (Route)geodata;
+			}
+			i++;
+		}
+		return null;
+	}
+	
+	private String getLayout() throws AutomationException, IOException {
+		FlankDialog flankDialog = (FlankDialog)dialog;
+		String layout = "";
+		if (flankDialog.getLeftCheckBox().isSelected()) {
+			layout += "LeftDist="+flankDialog.getLeftSpinner().getValue()+"&";
+		}
+		if (flankDialog.getRightCheckBox().isSelected()) {
+			layout += "RightDist="+flankDialog.getRightSpinner().getValue()+"&";
+		}
+		List clipLayers = ((FlankDialog)dialog).getClipModel().getSelected();
+		if (clipLayers.size() > 0) {
+			layout += "ClipFeatures=";
+			for (int i = 0; i < clipLayers.size(); i++) {
+				IFeatureLayer flayer = (IFeatureLayer)clipLayers.get(i);
+				layout += flayer.getFeatureClass().getAliasName()+",";
 			}
 		}
-		return result;
+		System.out.println(layout);
+		return layout;
 	}
 }
