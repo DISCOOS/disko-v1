@@ -3,8 +3,9 @@ package org.redcross.sar.map;
 import java.io.IOException;
 
 import org.redcross.sar.gui.DiskoDialog;
-import org.redcross.sar.map.layer.MsoFeature;
-import com.esri.arcgis.geodatabase.IFeatureClass;
+import org.redcross.sar.map.feature.IMsoFeature;
+import org.redcross.sar.map.feature.IMsoFeatureClass;
+
 import com.esri.arcgis.interop.AutomationException;
 
 public interface IDiskoTool {
@@ -17,13 +18,13 @@ public interface IDiskoTool {
 	
 	public IDiskoMap getMap();
 	
-	public IFeatureClass getFeatureClass();
-
-	public void setFeatureClass(IFeatureClass featureClass);
+	public void setFeatureClass(IMsoFeatureClass featureClass);
 	
-	public void setEditFeature(MsoFeature msoFeature);
+	public IMsoFeatureClass getFeatureClass();
 	
-	public MsoFeature getEditFeature();
+	public void setEditFeature(IMsoFeature editFeature);
+	
+	public IMsoFeature getEditFeature();
 	
 	public IEditFeedback getEditFeedback();
 
