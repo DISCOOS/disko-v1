@@ -137,8 +137,8 @@ IDiskoWpTacktics, IEditFeedback {
 		elementListSelectionListener = new ElementListSelectionListener();
 		subMenu = getApplication().getUIFactory().getSubMenuPanel();
 		
-		 BuildTestData.createCmdPost(getMsoModel());
-	     BuildTestData.createUnitsAndAssignments(getMsoModel());
+		 //BuildTestData.createCmdPost(getMsoModel());
+	     //BuildTestData.createUnitsAndAssignments(getMsoModel());
 	        
 		initialize();
 	}
