@@ -47,6 +47,7 @@ import org.redcross.sar.mso.data.IPOIIf.POIType;
 import org.redcross.sar.mso.data.ISearchIf.SearchSubType;
 import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
+import org.redcross.sar.wp.TestData.BuildTestData;
 
 import com.esri.arcgis.geodatabase.IFeature;
 import com.esri.arcgis.interop.AutomationException;
@@ -135,6 +136,10 @@ IDiskoWpTacktics, IEditFeedback {
 		dialogs = new ArrayList();
 		elementListSelectionListener = new ElementListSelectionListener();
 		subMenu = getApplication().getUIFactory().getSubMenuPanel();
+		
+		 BuildTestData.createCmdPost(getMsoModel());
+	     BuildTestData.createUnitsAndAssignments(getMsoModel());
+	        
 		initialize();
 	}
 
@@ -247,7 +252,7 @@ IDiskoWpTacktics, IEditFeedback {
 			toSelect = (Enum) listData[2];
 		}
 		elementList.addListSelectionListener(elementListSelectionListener);
-		elementList.setSelectedValue(toSelect, false);
+		//elementList.setSelectedValue(toSelect, false);
 	}
 
 	public void editStarted(IFeature editFeature) {
