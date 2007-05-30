@@ -1,14 +1,24 @@
 package org.redcross.sar.map;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.Properties;
+
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.event.IDiskoMapEventListener;
 import org.redcross.sar.gui.DiskoDialog;
-import org.redcross.sar.map.layer.MsoFeature;
+import org.redcross.sar.map.feature.IMsoFeature;
+import org.redcross.sar.map.feature.IMsoFeatureClass;
 
 import com.esri.arcgis.display.IDisplayTransformation;
-import com.esri.arcgis.geodatabase.IFeatureClass;
+import com.esri.arcgis.geodatabase.IFeature;
+import com.esri.arcgis.geodatabase.IFeatureCursor;
+import com.esri.arcgis.geodatabase.ISpatialFilter;
+import com.esri.arcgis.geodatabase.SpatialFilter;
+import com.esri.arcgis.geometry.GeometryBag;
+import com.esri.arcgis.geometry.IEnvelope;
+import com.esri.arcgis.geometry.IPoint;
+import com.esri.arcgis.geometry.IRelationalOperator;
 import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.systemUI.ICommand;
@@ -20,8 +30,8 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 	protected DiskoDialog dialog = null;
 	protected Properties properties = null;
 	protected IDisplayTransformation transform = null;
-	protected IFeatureClass featureClass = null;
-	protected MsoFeature editFeature = null;
+	protected IMsoFeatureClass featureClass = null;
+	protected IMsoFeature editFeature = null;
 	protected IEditFeedback editFeedback = null;
 	
 	protected IDisplayTransformation getTransform() 
@@ -61,20 +71,20 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 		return map;
 	}
 	
-	public IFeatureClass getFeatureClass() {
+	public IMsoFeature getEditFeature() {
+		return editFeature;
+	}
+
+	public IMsoFeatureClass getFeatureClass() {
 		return featureClass;
 	}
 
-	public void setFeatureClass(IFeatureClass featureClass) {
-		this.featureClass = featureClass;
-	}
-	
-	public void setEditFeature(MsoFeature editFeature) {
+	public void setEditFeature(IMsoFeature editFeature) {
 		this.editFeature = editFeature;
 	}
 
-	public MsoFeature getEditFeature() {
-		return editFeature;
+	public void setFeatureClass(IMsoFeatureClass featureClass) {
+		this.featureClass = featureClass;
 	}
 
 	public IEditFeedback getEditFeedback() {
@@ -83,6 +93,30 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 
 	public void setEditFeedback(IEditFeedback editFeedback) {
 		this.editFeedback = editFeedback;
+	}
+	
+	protected IFeature search(IPoint p) throws UnknownHostException, IOException {
+		IEnvelope env = MapUtil.getEnvelope(p, map.getActiveView().getExtent().getWidth()/50);
+		ISpatialFilter filter = new SpatialFilter();
+		filter.setGeometryByRef(env);
+		IFeatureCursor cursor = featureClass.search(filter, false);
+		IFeature feature = cursor.nextFeature();
+		// return last feature
+		/*while (feature != null) {
+			feature = cursor.nextFeature();
+		}*/
+		return feature;
+	}
+	
+	protected int getGeomIndex(GeometryBag geomBag, IPoint p) throws AutomationException, IOException {
+		IEnvelope env = MapUtil.getEnvelope(p, map.getActiveView().getExtent().getWidth()/50);
+		for (int i = 0; i < geomBag.getGeometryCount(); i++) {
+			IRelationalOperator relOp = (IRelationalOperator)geomBag.getGeometry(i);
+			if (!relOp.disjoint(env)) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	public int getBitmap() throws IOException, AutomationException {
