@@ -43,6 +43,7 @@ public class FlankFeatureClass extends AbstractMsoFeatureClass {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private FlankFeature createFeature(IMsoObjectIf obj) throws AutomationException, IOException {
 		FlankFeature feature = new FlankFeature();
 		feature.setSpatialReference(srs);

@@ -13,10 +13,10 @@ public class MsoFeatureCursor implements IFeatureCursor {
 
 	
 	private static final long serialVersionUID = 1L;
-	private ArrayList data = null;
+	private ArrayList<IFeature> data = null;
 	
 	public MsoFeatureCursor() {
-		data = new ArrayList();
+		data = new ArrayList<IFeature>();
 	}
 	
 	public void add(IFeature feature) {

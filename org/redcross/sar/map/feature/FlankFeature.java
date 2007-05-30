@@ -32,12 +32,12 @@ public class FlankFeature extends AbstractMsoFeature {
 	private static final long serialVersionUID = 1L;
 	private static final int LEFT_SIDE_FLANK  = 1;
 	private static final int RIGHT_SIDE_FLANK = 2;
-	private List leftFlanks  = null;
-	private List rightFlanks = null;
+	private List<Polygon> leftFlanks  = null;
+	private List<Polygon> rightFlanks = null;
 	
 	public FlankFeature() {
-		leftFlanks  = new ArrayList();
-		rightFlanks = new ArrayList();
+		leftFlanks  = new ArrayList<Polygon>();
+		rightFlanks = new ArrayList<Polygon>();
 	}
 	
 	public List getLeftFlanks() {
@@ -165,7 +165,7 @@ public class FlankFeature extends AbstractMsoFeature {
 	}
 	
 	private Hashtable getParams(String paramString) {
-		Hashtable params = new Hashtable();
+		Hashtable<String, String> params = new Hashtable<String, String>();
 		StringTokenizer st1 = new StringTokenizer(paramString, "&");
 		while(st1.hasMoreTokens()) {
 			StringTokenizer st2 = new StringTokenizer(st1.nextToken(), "=");
@@ -180,7 +180,7 @@ public class FlankFeature extends AbstractMsoFeature {
 		if (param == null) {
 			return null;
 		}
-		ArrayList result = new ArrayList();
+		ArrayList<IFeatureClass> result = new ArrayList<IFeatureClass>();
 		StringTokenizer st = new StringTokenizer(param, ",");
 		while(st.hasMoreTokens()) {
 			String featureName = st.nextToken();

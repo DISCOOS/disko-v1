@@ -59,6 +59,7 @@ public class SearchAreaFeatureClass extends AbstractMsoFeatureClass {
 		return createFeature(searchAreaList.createSearchArea());
 	}
 	
+	@SuppressWarnings("unchecked")
 	private SearchAreaFeature createFeature(IMsoObjectIf obj) throws AutomationException, IOException {
 		SearchAreaFeature feature = new SearchAreaFeature();
 		feature.setSpatialReference(srs);

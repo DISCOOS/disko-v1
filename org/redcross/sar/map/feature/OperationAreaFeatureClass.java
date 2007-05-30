@@ -53,6 +53,7 @@ public class OperationAreaFeatureClass extends AbstractMsoFeatureClass {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private OperationAreaFeature createFeature(IMsoObjectIf obj) throws AutomationException, IOException {
 		OperationAreaFeature feature = new OperationAreaFeature();
 		feature.setSpatialReference(srs);

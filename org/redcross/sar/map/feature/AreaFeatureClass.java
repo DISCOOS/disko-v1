@@ -60,6 +60,7 @@ public class AreaFeatureClass extends AbstractMsoFeatureClass {
 		return createFeature(areaList.createArea());
 	}
 	
+	@SuppressWarnings("unchecked")
 	private AreaFeature createFeature(IMsoObjectIf obj) throws AutomationException, IOException {
 		AreaFeature feature = new AreaFeature();
 		feature.setSpatialReference(srs);

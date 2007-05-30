@@ -59,6 +59,7 @@ public class POIFeatureClass extends AbstractMsoFeatureClass {
 		return createFeature(poiList.createPOI());
 	}
 	
+	@SuppressWarnings("unchecked")
 	private POIFeature createFeature(IMsoObjectIf obj) throws AutomationException, IOException {
 		POIFeature feature = new POIFeature();
 		feature.setSpatialReference(srs);
