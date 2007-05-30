@@ -25,7 +25,7 @@ import javax.swing.JComboBox;
 public class SearchRequirementDialog extends DiskoDialog {
 
 	private static final long serialVersionUID = 1L;
-	private DiskoWpTackticsImpl wp = null;
+	private DiskoWpTacticsImpl wp = null;
 	private JPanel contentPanel = null;
 	private JLabel accuracyLabel = null;
 	private JSlider accuracySlider = null;
@@ -44,7 +44,7 @@ public class SearchRequirementDialog extends DiskoDialog {
 	private JComboBox statusComboBox = null;
 	
 	
-	public SearchRequirementDialog(DiskoWpTackticsImpl wp) {
+	public SearchRequirementDialog(DiskoWpTacticsImpl wp) {
 		super(wp.getApplication().getFrame());
 		this.wp = wp;
 		initialize();

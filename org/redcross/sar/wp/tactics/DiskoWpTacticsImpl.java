@@ -58,8 +58,8 @@ import com.esri.arcgis.interop.AutomationException;
  * @author geira
  * 
  */
-public class DiskoWpTackticsImpl extends AbstractDiskoWpModule implements
-IDiskoWpTacktics, IEditFeedback {
+public class DiskoWpTacticsImpl extends AbstractDiskoWpModule implements
+IDiskoWpTactics, IEditFeedback {
 
 	private ElementDialog elementDialog = null;
 
@@ -131,7 +131,7 @@ IDiskoWpTacktics, IEditFeedback {
 	 * @param rolle
 	 *            A reference to the DiskoRolle
 	 */
-	public DiskoWpTackticsImpl(IDiskoRole rolle) {
+	public DiskoWpTacticsImpl(IDiskoRole rolle) {
 		super(rolle);
 		dialogs = new ArrayList<DiskoDialog>();
 		elementListSelectionListener = new ElementListSelectionListener();

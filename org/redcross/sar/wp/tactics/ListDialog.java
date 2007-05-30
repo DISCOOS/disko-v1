@@ -27,7 +27,7 @@ import java.awt.Color;
 public class ListDialog extends DiskoDialog {
 
 	private static final long serialVersionUID = 1L;
-	private DiskoWpTackticsImpl wp = null;
+	private DiskoWpTacticsImpl wp = null;
 	private JPanel contentPanel = null;
 	private JPanel buttonPanel = null;
 	private JButton printButton = null;
@@ -37,7 +37,7 @@ public class ListDialog extends DiskoDialog {
 	private JLabel statusLabel = null;
 	private JComboBox statusComboBox = null;
 	
-	public ListDialog(DiskoWpTackticsImpl wp) {
+	public ListDialog(DiskoWpTacticsImpl wp) {
 		super(wp.getApplication().getFrame());
 		this.wp = wp;
 		initialize();
