@@ -3,8 +3,11 @@ package org.redcross.sar.map.layer;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
+import org.redcross.sar.map.feature.IMsoFeature;
+import org.redcross.sar.map.feature.SearchAreaFeatureClass;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
+
 import com.esri.arcgis.display.IDisplay;
 import com.esri.arcgis.display.RgbColor;
 import com.esri.arcgis.display.SimpleFillSymbol;
@@ -13,7 +16,7 @@ import com.esri.arcgis.geometry.Polygon;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.system.ITrackCancel;
 
-public class SearchAreaLayer extends AbstractMsoLayer {
+public class SearchAreaLayer extends AbstractMsoFeatureLayer {
 
 	private static final long serialVersionUID = 1L;
  	private SimpleFillSymbol symbol = null;
@@ -21,7 +24,7 @@ public class SearchAreaLayer extends AbstractMsoLayer {
  	
  	public SearchAreaLayer(IMsoModelIf msoModel) {
  		classCode = IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA;
- 		featureClass = new MsoFeatureClass(IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA, msoModel);
+ 		featureClass = new SearchAreaFeatureClass(IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA, msoModel);
 		try {
 			createSymbols();
 		} catch (UnknownHostException e) {
@@ -40,14 +43,14 @@ public class SearchAreaLayer extends AbstractMsoLayer {
 				return;
 			}
 			for (int i = 0; i < featureClass.featureCount(null); i++) {
-				MsoFeature msoFeature = (MsoFeature)featureClass.getFeature(i);
-				if (msoFeature.isSelected()) {
+				IMsoFeature feature = (IMsoFeature)featureClass.getFeature(i);
+				if (feature.isSelected()) {
 					display.setSymbol(selectionSymbol);
 				}
 				else {
 					display.setSymbol(symbol);
 				}
-				Polygon polygon = (Polygon)msoFeature.getShape();
+				Polygon polygon = (Polygon)feature.getShape();
 				if (polygon != null) {
 					display.drawPolygon(polygon);
 				}

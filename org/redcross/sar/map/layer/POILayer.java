@@ -3,6 +3,8 @@ package org.redcross.sar.map.layer;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
+import org.redcross.sar.map.feature.IMsoFeature;
+import org.redcross.sar.map.feature.POIFeatureClass;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import com.esri.arcgis.display.IDisplay;
@@ -12,7 +14,7 @@ import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.system.ITrackCancel;
 
-public class POILayer extends AbstractMsoLayer {
+public class POILayer extends AbstractMsoFeatureLayer {
 
 	private static final long serialVersionUID = 1L;
  	private SimpleMarkerSymbol symbol = null;
@@ -20,7 +22,7 @@ public class POILayer extends AbstractMsoLayer {
  	
  	public POILayer(IMsoModelIf msoModel) {
  		classCode = IMsoManagerIf.MsoClassCode.CLASSCODE_POI;
-		featureClass = new MsoFeatureClass(IMsoManagerIf.MsoClassCode.CLASSCODE_POI, msoModel);
+		featureClass = new POIFeatureClass(IMsoManagerIf.MsoClassCode.CLASSCODE_POI, msoModel);
 		try {
 			createSymbols();
 		} catch (UnknownHostException e) {
@@ -39,7 +41,7 @@ public class POILayer extends AbstractMsoLayer {
 				return;
 			}
 			for (int i = 0; i < featureClass.featureCount(null); i++) {
-				MsoFeature feature = (MsoFeature)featureClass.getFeature(i);
+				IMsoFeature feature = (IMsoFeature)featureClass.getFeature(i);
 				if (feature.isSelected()) {
 					display.setSymbol(selectionSymbol);
 				}

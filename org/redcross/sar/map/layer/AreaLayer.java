@@ -2,8 +2,12 @@ package org.redcross.sar.map.layer;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+
+import org.redcross.sar.map.feature.AreaFeatureClass;
+import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
+
 import com.esri.arcgis.display.IDisplay;
 import com.esri.arcgis.display.RgbColor;
 import com.esri.arcgis.display.SimpleLineSymbol;
@@ -13,7 +17,7 @@ import com.esri.arcgis.geometry.IPolyline;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.system.ITrackCancel;
 
-public class AreaLayer extends AbstractMsoLayer {
+public class AreaLayer extends AbstractMsoFeatureLayer {
 
 	private static final long serialVersionUID = 1L;
  	private SimpleLineSymbol symbol = null;
@@ -21,7 +25,7 @@ public class AreaLayer extends AbstractMsoLayer {
  	
  	public AreaLayer(IMsoModelIf msoModel) {
  		classCode = IMsoManagerIf.MsoClassCode.CLASSCODE_AREA;
- 		featureClass = new MsoFeatureClass(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA, msoModel);
+ 		featureClass = new AreaFeatureClass(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA, msoModel);
 		try {
 			createSymbols();
 		} catch (UnknownHostException e) {
@@ -40,18 +44,20 @@ public class AreaLayer extends AbstractMsoLayer {
 				return;
 			}
 			for (int i = 0; i < featureClass.featureCount(null); i++) {
-				MsoFeature msoFeature = (MsoFeature)featureClass.getFeature(i);
-				if (msoFeature.isSelected()) {
+				IMsoFeature feature = (IMsoFeature)featureClass.getFeature(i);
+				if (feature.isSelected()) {
 					display.setSymbol(selectionSymbol);
 				}
 				else {
 					display.setSymbol(symbol);
 				}
-				GeometryBag geomBag = (GeometryBag)msoFeature.getShape();
-				for (int j = 0; j < geomBag.getGeometryCount(); j++) {
-					IGeometry geom = geomBag.getGeometry(j);
-					if (geom instanceof IPolyline) {
-						display.drawPolyline((IPolyline)geom);
+				GeometryBag geomBag = (GeometryBag)feature.getShape();
+				if (geomBag != null) {
+					for (int j = 0; j < geomBag.getGeometryCount(); j++) {
+						IGeometry geom = geomBag.getGeometry(j);
+						if (geom instanceof IPolyline) {
+							display.drawPolyline((IPolyline)geom);
+						}
 					}
 				}
 			}

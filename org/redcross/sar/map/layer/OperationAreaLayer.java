@@ -2,6 +2,9 @@ package org.redcross.sar.map.layer;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+
+import org.redcross.sar.map.feature.IMsoFeature;
+import org.redcross.sar.map.feature.OperationAreaFeatureClass;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import com.esri.arcgis.display.IDisplay;
@@ -12,7 +15,7 @@ import com.esri.arcgis.geometry.Polygon;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.system.ITrackCancel;
 
-public class OperationAreaLayer extends AbstractMsoLayer {
+public class OperationAreaLayer extends AbstractMsoFeatureLayer {
 
 	private static final long serialVersionUID = 1L;
  	private SimpleFillSymbol symbol = null;
@@ -20,7 +23,8 @@ public class OperationAreaLayer extends AbstractMsoLayer {
  	
  	public OperationAreaLayer(IMsoModelIf msoModel) {
  		classCode = IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA;
- 		featureClass = new MsoFeatureClass(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA, msoModel);
+ 		featureClass = new OperationAreaFeatureClass(
+ 				IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA, msoModel);
 		try {
 			createSymbols();
 		} catch (UnknownHostException e) {
@@ -39,14 +43,14 @@ public class OperationAreaLayer extends AbstractMsoLayer {
 				return;
 			}
 			for (int i = 0; i < featureClass.featureCount(null); i++) {
-				MsoFeature msoFeature = (MsoFeature)featureClass.getFeature(i);
-				if (msoFeature.isSelected()) {
+				IMsoFeature feature = (IMsoFeature)featureClass.getFeature(i);
+				if (feature.isSelected()) {
 					display.setSymbol(selectionSymbol);
 				}
 				else {
 					display.setSymbol(symbol);
 				}
-				Polygon polygon = (Polygon)msoFeature.getShape();
+				Polygon polygon = (Polygon)feature.getShape();
 				if (polygon != null) {
 					display.drawPolygon(polygon);
 				}

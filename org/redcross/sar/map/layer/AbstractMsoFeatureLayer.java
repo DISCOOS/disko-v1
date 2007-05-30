@@ -1,12 +1,17 @@
 package org.redcross.sar.map.layer;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.redcross.sar.app.Utils;
-import com.esri.arcgis.carto.IFeatureLayer;
+import org.redcross.sar.map.feature.IMsoFeature;
+import org.redcross.sar.map.feature.IMsoFeatureClass;
+import org.redcross.sar.mso.IMsoManagerIf;
 import com.esri.arcgis.carto.ILayerGeneralProperties;
 import com.esri.arcgis.carto.esriViewDrawPhase;
 import com.esri.arcgis.display.IDisplay;
+import com.esri.arcgis.geodatabase.IFeature;
 import com.esri.arcgis.geodatabase.IFeatureClass;
 import com.esri.arcgis.geodatabase.IFeatureCursor;
 import com.esri.arcgis.geodatabase.IGeoDataset;
@@ -20,11 +25,11 @@ import com.esri.arcgis.system.ITrackCancel;
 import com.esri.arcgis.system.IUID;
 import com.esri.arcgis.system.IVariantStream;
 
-public abstract class AbstractMsoLayer implements IFeatureLayer, IGeoDataset,
+public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoDataset,
 		IPersistVariant, ILayerGeneralProperties {
 	
 	protected String name = null;
-	protected Enum classCode = null;
+	protected IMsoManagerIf.MsoClassCode classCode = null;
 	protected IEnvelope extent = null;
 	protected ISpatialReference srs = null;
 	protected IFeatureClass featureClass = null;
@@ -34,10 +39,10 @@ public abstract class AbstractMsoLayer implements IFeatureLayer, IGeoDataset,
 	protected boolean showTips = false;
 	protected boolean isDirty = false;
 
-	public AbstractMsoLayer() {
+	public AbstractMsoFeatureLayer() {
 	}
 	
-	public MsoFeature searchData(Envelope env) throws IOException, AutomationException {
+	public IFeature searchData(Envelope env) throws IOException, AutomationException {
 		return null;
 	}
 	
@@ -49,13 +54,38 @@ public abstract class AbstractMsoLayer implements IFeatureLayer, IGeoDataset,
 		this.name = name;
 	}
 
-	public Enum getClassCode() {
+	public IMsoManagerIf.MsoClassCode getClassCode() {
 		return classCode;
 	}
 
-	public void setClassCode(Enum classCode) {
+	public void setClassCode(IMsoManagerIf.MsoClassCode classCode) {
 		this.classCode = classCode;
 		this.name = Utils.translate(classCode);
+	}
+	
+	public void clearSelected() throws AutomationException, IOException {
+		for (int i = 0; i < featureClass.featureCount(null); i++) {
+			IMsoFeature feature = (IMsoFeature)featureClass.getFeature(i);
+			feature.setSelected(false);
+		}
+	}
+	
+	public List getSelected() throws AutomationException, IOException {
+		ArrayList selection = new ArrayList();
+		for (int i = 0; i < featureClass.featureCount(null); i++) {
+			IMsoFeature feature = (IMsoFeature)featureClass.getFeature(i);
+			selection.add(feature);
+		}
+		return selection;
+	}
+	
+	public List getSelectedMsoObjects() throws AutomationException, IOException {
+		ArrayList selection = new ArrayList();
+		for (int i = 0; i < featureClass.featureCount(null); i++) {
+			IMsoFeature feature = (IMsoFeature)featureClass.getFeature(i);
+			selection.add(feature.getMsoObject());
+		}
+		return selection;
 	}
 
 	public boolean isValid() throws IOException, AutomationException {
@@ -106,7 +136,7 @@ public abstract class AbstractMsoLayer implements IFeatureLayer, IGeoDataset,
 			throws IOException, AutomationException {
 		this.srs = srs;
 		if (featureClass != null) {
-			((MsoFeatureClass)featureClass).setSpatialReference(srs);
+			((IMsoFeatureClass)featureClass).setSpatialReference(srs);
 		}
 	}
 
