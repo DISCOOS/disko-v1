@@ -2,17 +2,26 @@ package org.redcross.sar.map;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 import javax.swing.border.SoftBevelBorder;
 
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.event.IDiskoMapEventListener;
-import org.redcross.sar.map.layer.AbstractMsoLayer;
+import org.redcross.sar.map.feature.IMsoFeature;
+import org.redcross.sar.map.feature.IMsoFeatureClass;
+import org.redcross.sar.map.layer.IMsoFeatureLayer;
+import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.mso.data.IMsoObjectIf;
+import org.redcross.sar.mso.event.IMsoEventManagerIf;
+import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
+import org.redcross.sar.mso.event.MsoEvent.Update;
 
 import com.esri.arcgis.beans.map.MapBean;
 import com.esri.arcgis.carto.FeatureLayer;
+import com.esri.arcgis.carto.IFeatureLayer;
 import com.esri.arcgis.carto.IFeatureLayerSelectionEventsAdapter;
 import com.esri.arcgis.carto.IFeatureLayerSelectionEventsFeatureLayerSelectionChangedEvent;
 import com.esri.arcgis.carto.ILayer;
@@ -34,7 +43,7 @@ import com.esri.arcgis.systemUI.ITool;
  * @author geira
  *
  */
-public final class DiskoMap extends MapBean implements IDiskoMap {
+public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateListenerIf {
 	
 	private static final long serialVersionUID = 1L;
 	private String mxdDoc = null;
@@ -44,6 +53,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap {
 	private IDiskoTool currentTool = null;
 	private ArrayList<IDiskoMapEventListener> listeners = null;
 	private DiskoMapEvent diskoMapEvent = null;
+	protected EnumSet<IMsoManagerIf.MsoClassCode> myInterests = null;
 
 	/**
 	 * Default constructor
@@ -55,6 +65,12 @@ public final class DiskoMap extends MapBean implements IDiskoMap {
 		
 		listeners = new ArrayList<IDiskoMapEventListener>();
 		diskoMapEvent = new DiskoMapEvent(this);
+		
+		myInterests = EnumSet.of(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
+		myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA);
+		myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_POI);
+		IMsoEventManagerIf msoEventManager = msoModel.getEventManager();
+		msoEventManager.addClientUpdateListener(this);
 		initialize();
 	}
 	
@@ -88,10 +104,9 @@ public final class DiskoMap extends MapBean implements IDiskoMap {
 		// add custom layers
 		List customLayers = mapManager.getMsoLayers();
 		for (int i = 0; i < customLayers.size(); i++) {
-			AbstractMsoLayer customLayer = (AbstractMsoLayer)customLayers.get(i);
-			customLayer.setSpatialReferenceByRef(getSpatialReference());
-			customLayer.setExtent(getFullExtent());
-			getActiveView().getFocusMap().addLayer(customLayer);
+			IFeatureLayer layer = (IFeatureLayer)customLayers.get(i);
+			layer.setSpatialReferenceByRef(getSpatialReference());
+			getActiveView().getFocusMap().addLayer(layer);
 		}
 		
 		// set all featurelayers not selectabel
@@ -112,6 +127,30 @@ public final class DiskoMap extends MapBean implements IDiskoMap {
 				});
 			}
 		}	
+	}
+	
+	public void handleMsoUpdateEvent(Update e) {
+		try {
+			IMsoObjectIf msoObj = (IMsoObjectIf)e.getSource();
+			IMsoFeatureLayer msoLayer = mapManager.getMsoLayer(msoObj.getMsoClassCode());
+			IMsoFeatureClass fc = (IMsoFeatureClass)msoLayer.getFeatureClass();
+			IMsoFeature feature = fc.getFeature(msoObj.getObjectId());
+			if (feature != null && feature.getExtent() != null) {
+				IEnvelope extent = feature.getExtent();
+				partialRefresh(extent);
+			}
+			
+		} catch (AutomationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+
+	public boolean hasInterestIn(IMsoObjectIf aMsoObject) {
+		return myInterests.contains(aMsoObject.getMsoClassCode());
 	}
 	
 	
