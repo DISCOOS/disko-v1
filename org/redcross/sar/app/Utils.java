@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.util.Properties;
 import javax.swing.ImageIcon;
 
+import org.redcross.sar.gui.ErrorDialog;
+
 /**
  * Utility class containing access to methods for handling properties.
  * @author geira
@@ -13,6 +15,7 @@ import javax.swing.ImageIcon;
 public class Utils {
 	
 	private static Properties properties = null;
+	private static ErrorDialog errorDialog = null;
 	
 	/**
 	 * Load the properties in a file with the given name
@@ -43,6 +46,10 @@ public class Utils {
 			}
 		}
 		return properties;
+	}
+	
+	public static String getProperty(String key) {
+		return getProperties().getProperty(key);
 	}
 	
 	/**
@@ -92,5 +99,12 @@ public class Utils {
 			}
 		}
 		return null;
+	}
+	
+	public static ErrorDialog getErrorDialog() {
+		if (errorDialog == null) {
+			errorDialog = new ErrorDialog(null);
+		}
+		return errorDialog;
 	}
 }
