@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.redcross.sar.app.IDiskoApplication;
+import org.redcross.sar.map.layer.AbstractMsoFeatureLayer;
 import org.redcross.sar.map.layer.AreaLayer;
 import org.redcross.sar.map.layer.FlankLayer;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
@@ -19,14 +20,14 @@ import com.esri.arcgis.interop.AutomationException;
 public class DiskoMapManagerImpl implements IDiskoMapManager {
 
 	private IDiskoApplication app = null;
-	private ArrayList maps = null;
-	private List msoLayers = null;
+	private ArrayList<DiskoMap> maps = null;
+	private List<AbstractMsoFeatureLayer> msoLayers = null;
 
 	public DiskoMapManagerImpl(IDiskoApplication app) {
 		this.app = app;
-		maps = new ArrayList();
+		maps = new ArrayList<DiskoMap>();
 		
-		msoLayers = new ArrayList();
+		msoLayers = new ArrayList<AbstractMsoFeatureLayer>();
 		msoLayers.add(new POILayer(app.getMsoModel()));
 		msoLayers.add(new OperationAreaLayer(app.getMsoModel()));
 		msoLayers.add(new SearchAreaLayer(app.getMsoModel()));
