@@ -17,7 +17,7 @@ import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
 import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.POITool;
-import org.redcross.sar.map.layer.MsoFeature;
+import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.mso.data.IPOIIf;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
 import com.esri.arcgis.geometry.IEnvelope;
@@ -172,7 +172,7 @@ public class POIDialog extends DiskoDialog {
 		return yCoordTextField;
 	}
 	
-	public void setMsoFeature(MsoFeature msoFeature) {
+	public void setMsoFeature(IMsoFeature msoFeature) {
 		try {
 			IPOIIf poi = (IPOIIf)msoFeature.getMsoObject();
 			IPoint p = (IPoint)msoFeature.getShape();
@@ -267,11 +267,11 @@ public class POIDialog extends DiskoDialog {
 			typeComboBox.setMaximumRowCount(8);
 			typeComboBox.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					MsoFeature msoFeature = tool.getSelectedMsoFeature();
+					/*MsoFeature msoFeature = tool.getSelectedMsoFeature();
 					if (msoFeature != null) {
 						IPOIIf poi = (IPOIIf)msoFeature.getMsoObject();
 						poi.setType((POIType)getTypeComboBox().getSelectedItem());
-					}
+					}*/
 				}
 			});
 		}
@@ -289,14 +289,14 @@ public class POIDialog extends DiskoDialog {
 			txtArea = new JTextArea();
 			txtArea.addKeyListener(new java.awt.event.KeyAdapter() {
 				public void keyTyped(java.awt.event.KeyEvent e) {
-					MsoFeature msoFeature = tool.getSelectedMsoFeature();
+					/*MsoFeature msoFeature = tool.getSelectedMsoFeature();
 					if (msoFeature != null) {
 						IPOIIf poi = (IPOIIf)msoFeature.getMsoObject();
 						String remarks = poi.getRemarks();
 						char c = e.getKeyChar();
 						String text = remarks != null ? remarks+c : ""+c; 
 						poi.setRemarks(text);
-					}
+					}*/
 				}
 			});
 		}
