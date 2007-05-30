@@ -16,6 +16,7 @@ import com.esri.arcgis.display.SimpleLineSymbol;
 import com.esri.arcgis.display.esriScreenCache;
 import com.esri.arcgis.geometry.Envelope;
 import com.esri.arcgis.geometry.GeometryBag;
+import com.esri.arcgis.geometry.IEnvelope;
 import com.esri.arcgis.geometry.IGeometry;
 import com.esri.arcgis.geometry.IPoint;
 import com.esri.arcgis.geometry.ISegmentGraphCursor;
@@ -134,6 +135,7 @@ public class DrawTool extends AbstractCommandTool {
 
 	public void onDblClick() throws IOException, AutomationException {
 		pathGeometry.simplify();
+		IEnvelope env = pathGeometry.getEnvelope();
 		pathGeometry.setSpatialReferenceByRef(map.getSpatialReference());
 		
 		if (featureClass.getShapeType() == esriGeometryType.esriGeometryPolyline) {
@@ -147,7 +149,7 @@ public class DrawTool extends AbstractCommandTool {
 			editFeature.addGeodataToCollection(MapUtil.getMsoRoute(pathGeometry));
 		}
 		reset();
-		map.partialRefresh(pathGeometry.getEnvelope());
+		map.partialRefresh(env);
 		if (editFeedback != null) {
 			editFeedback.editFinished(editFeature);
 		}
