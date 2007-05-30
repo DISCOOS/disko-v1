@@ -9,11 +9,11 @@ import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.DrawDialog;
 import org.redcross.sar.map.index.IndexedGeometry;
 
+import com.esri.arcgis.carto.InvalidArea;
 import com.esri.arcgis.display.IScreenDisplay;
 import com.esri.arcgis.display.RgbColor;
 import com.esri.arcgis.display.SimpleLineSymbol;
 import com.esri.arcgis.display.esriScreenCache;
-import com.esri.arcgis.carto.InvalidArea;
 import com.esri.arcgis.geometry.Envelope;
 import com.esri.arcgis.geometry.GeometryBag;
 import com.esri.arcgis.geometry.IGeometry;
@@ -134,20 +134,18 @@ public class DrawTool extends AbstractCommandTool {
 
 	public void onDblClick() throws IOException, AutomationException {
 		pathGeometry.simplify();
-		if (featureClass.getShapeType() == esriGeometryType.esriGeometryPolygon) {
+		pathGeometry.setSpatialReferenceByRef(map.getSpatialReference());
+		
+		if (featureClass.getShapeType() == esriGeometryType.esriGeometryPolyline) {
+		}
+		else if (featureClass.getShapeType() == esriGeometryType.esriGeometryPolygon) {
 			Polygon polygon = getPolygon(pathGeometry);
 			polygon.setSpatialReferenceByRef(map.getSpatialReference());
-			editFeature.setShapeByRef(polygon);
-		}
-		else if (featureClass.getShapeType() == esriGeometryType.esriGeometryPolyline) {
-			
+			editFeature.setGeodata(MapUtil.getMsoPolygon(polygon));
 		}
 		else if (featureClass.getShapeType() == esriGeometryType.esriGeometryBag) {
-			pathGeometry.setSpatialReferenceByRef(map.getSpatialReference());
-			GeometryBag geomBag = (GeometryBag)editFeature.getShape();
-			geomBag.addGeometry(pathGeometry, null, null);
+			editFeature.addGeodataToCollection(MapUtil.getMsoRoute(pathGeometry));
 		}
-		map.partialRefresh(pathGeometry.getEnvelope());
 		reset();
 		if (editFeedback != null) {
 			editFeedback.editFinished(editFeature);
