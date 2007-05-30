@@ -230,7 +230,7 @@ public class POIDialog extends DiskoDialog {
 				IEnvelope env = map.getExtent();
 				if (x > env.getLowerLeft().getX() & x < env.getLowerRight().getX() &
 					y > env.getLowerLeft().getY() & y < env.getUpperLeft().getY()) {
-					//tool.addPOIAt(x, y);
+					tool.addPOIAt(x, y);
 				}
 			} catch (AutomationException e) {
 				// TODO Auto-generated catch block
@@ -267,11 +267,11 @@ public class POIDialog extends DiskoDialog {
 			typeComboBox.setMaximumRowCount(8);
 			typeComboBox.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					/*MsoFeature msoFeature = tool.getSelectedMsoFeature();
+					IMsoFeature msoFeature = tool.getCurrent();
 					if (msoFeature != null) {
 						IPOIIf poi = (IPOIIf)msoFeature.getMsoObject();
 						poi.setType((POIType)getTypeComboBox().getSelectedItem());
-					}*/
+					}
 				}
 			});
 		}
@@ -289,14 +289,14 @@ public class POIDialog extends DiskoDialog {
 			txtArea = new JTextArea();
 			txtArea.addKeyListener(new java.awt.event.KeyAdapter() {
 				public void keyTyped(java.awt.event.KeyEvent e) {
-					/*MsoFeature msoFeature = tool.getSelectedMsoFeature();
+					IMsoFeature msoFeature = tool.getCurrent();
 					if (msoFeature != null) {
 						IPOIIf poi = (IPOIIf)msoFeature.getMsoObject();
 						String remarks = poi.getRemarks();
 						char c = e.getKeyChar();
 						String text = remarks != null ? remarks+c : ""+c; 
 						poi.setRemarks(text);
-					}*/
+					}
 				}
 			});
 		}
