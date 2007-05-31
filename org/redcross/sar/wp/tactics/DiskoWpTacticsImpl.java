@@ -9,6 +9,7 @@ import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JToggleButton;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -25,8 +26,10 @@ import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.DrawTool;
 import org.redcross.sar.map.EraseTool;
 import org.redcross.sar.map.FlankTool;
+import org.redcross.sar.map.IDiskoMapManager;
 import org.redcross.sar.map.IEditFeedback;
 import org.redcross.sar.map.POITool;
+import org.redcross.sar.map.SplitTool;
 import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.IMsoFeatureClass;
 import org.redcross.sar.map.layer.AreaLayer;
@@ -90,6 +93,8 @@ IDiskoWpTactics, IEditFeedback {
 	private EraseTool eraseTool = null;
 
 	private FlankTool flankTool = null;
+	
+	private SplitTool splitTool = null;
 
 	private POIDialog poiDialog = null;
 
@@ -178,8 +183,7 @@ IDiskoWpTactics, IEditFeedback {
 	public void activated() {
 		super.activated();
 		NavBar navBar = getApplication().getNavBar();
-		EnumSet<NavBar.ToolCommandType> myInterests = EnumSet
-		.of(NavBar.ToolCommandType.FLANK_TOOL);
+		EnumSet<NavBar.ToolCommandType> myInterests = EnumSet.of(NavBar.ToolCommandType.FLANK_TOOL);
 		myInterests.add(NavBar.ToolCommandType.DRAW_TOOL);
 		myInterests.add(NavBar.ToolCommandType.ERASE_TOOL);
 		myInterests.add(NavBar.ToolCommandType.SPLIT_TOOL);
@@ -188,31 +192,26 @@ IDiskoWpTactics, IEditFeedback {
 		myInterests.add(NavBar.ToolCommandType.ZOOM_OUT_TOOL);
 		myInterests.add(NavBar.ToolCommandType.PAN_TOOL);
 		myInterests.add(NavBar.ToolCommandType.SELECT_FEATURES_TOOL);
-		myInterests
-		.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND);
-		myInterests
-		.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND);
-
-		opAreaLayer = (OperationAreaLayer) getMap()
-		.getMapManager()
-		.getMsoLayer(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA);
-		searchAreaLayer = (SearchAreaLayer) getMap().getMapManager()
-		.getMsoLayer(IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA);
-		poiLayer = (POILayer) getMap().getMapManager().getMsoLayer(
-				IMsoManagerIf.MsoClassCode.CLASSCODE_POI);
-		areaLayer = (AreaLayer) getMap().getMapManager().getMsoLayer(
-				IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
-
+		myInterests.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND);
+		myInterests.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND);
 		navBar.showButtons(myInterests);
-		drawTool = getApplication().getNavBar().getDrawTool();
+
+		IDiskoMapManager mapManager = getMap().getMapManager();
+		opAreaLayer = (OperationAreaLayer) mapManager.getMsoLayer(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA);
+		searchAreaLayer = (SearchAreaLayer) mapManager.getMsoLayer(IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA);
+		poiLayer = (POILayer) mapManager.getMsoLayer(IMsoManagerIf.MsoClassCode.CLASSCODE_POI);
+		areaLayer = (AreaLayer) mapManager.getMsoLayer(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
+
+		drawTool = navBar.getDrawTool();
 		drawTool.setEditFeedback(this);
-		poiTool = getApplication().getNavBar().getPOITool();
+		poiTool = navBar.getPOITool();
+		eraseTool = navBar.getEraseTool();
+		flankTool = navBar.getFlankTool();
+		splitTool = navBar.getSplitTool();
+		enableTools(false);
 		poiDialog = (POIDialog) poiTool.getDialog();
-		eraseTool = getApplication().getNavBar().getEraseTool();
-		flankTool = getApplication().getNavBar().getFlankTool();
 
 		if (!workInProgress) {
-			updateElements();
 			enableButtons(false);
 		}
 	}
@@ -221,33 +220,6 @@ IDiskoWpTactics, IEditFeedback {
 		super.deactivated();
 		hideDialogs(null);
 		getDummyToggleButton().doClick();
-	}
-
-	private void updateElements() {
-		JList elementList = getElementDialog().getElementList();
-		elementList.removeListSelectionListener(elementListSelectionListener);
-		ICmdPostIf cmdPost = getMsoManager().getCmdPost();
-		Object[] listData = null;
-		if (cmdPost.getOperationAreaListItems().size() == 0) {
-			listData = new Object[1];
-			listData[0] = IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA;
-			elementList.setListData(listData);
-		} else if (cmdPost.getSearchAreaListItems().size() == 0) {
-			listData = new Object[2];
-			listData[0] = IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA;
-			listData[1] = IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA;
-			elementList.setListData(listData);
-		} else {
-			ISearchIf.SearchSubType[] values = ISearchIf.SearchSubType.values();
-			listData = new Object[values.length + 2];
-			listData[0] = IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA;
-			listData[1] = IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA;
-			for (int i = 0; i < values.length; i++) {
-				listData[i + 2] = values[i];
-			}
-			elementList.setListData(listData);
-		}
-		elementList.addListSelectionListener(elementListSelectionListener);
 	}
 
 	public void editStarted(IFeature editFeature) {
@@ -268,6 +240,8 @@ IDiskoWpTactics, IEditFeedback {
 		getDummyToggleButton().doClick();
 		doRollback();
 		enableButtons(false);
+		enableTools(false);
+		getElementDialog().getElementList().clearSelection();
 	}
 
 	/*
@@ -336,7 +310,8 @@ IDiskoWpTactics, IEditFeedback {
 		try {
 			getMsoModel().commit();
 			getMap().partialRefresh(null);
-			updateElements();
+			enableTools(false);
+			getElementDialog().getElementList().clearSelection();
 		} catch (AutomationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -402,6 +377,17 @@ IDiskoWpTactics, IEditFeedback {
 		if (elementDialog == null) {
 			elementDialog = new ElementDialog(getApplication().getFrame(), null);
 			elementDialog.setIsToggable(false);
+			
+			JList elementList = getElementDialog().getElementList();
+			ISearchIf.SearchSubType[] values = ISearchIf.SearchSubType.values();
+			Object[] listData = new Object[values.length + 2];
+			listData[0] = IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA;
+			listData[1] = IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA;
+			for (int i = 0; i < values.length; i++) {
+				listData[i + 2] = values[i];
+			}
+			elementList.setListData(listData);
+			elementList.addListSelectionListener(elementListSelectionListener);
 			dialogs.add(elementDialog);
 		}
 		return elementDialog;
@@ -507,6 +493,28 @@ IDiskoWpTactics, IEditFeedback {
 		getDescriptionToggleButton().setEnabled(b);
 		getUnitToggleButton().setEnabled(b);
 		subMenu.getFinishButton().setEnabled(b);
+	}
+	
+	private void enableTools(boolean b) {
+		NavBar navBar = getApplication().getNavBar();
+		navBar.getDrawLineToggleButton().setEnabled(b);
+		navBar.getSplitToggleButton().setEnabled(b);
+		navBar.getEraseToggleButton().setEnabled(b);
+		navBar.getFlankToggleButton().setEnabled(b);
+		navBar.getPOIToggleButton().setEnabled(b);
+		
+		if (!b) {
+			try {
+				getMap().setCurrentToolByRef(null);
+				navBar.unselectAll();
+			} catch (AutomationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private JToggleButton getDummyToggleButton() {
@@ -784,8 +792,7 @@ IDiskoWpTactics, IEditFeedback {
 	JToggleButton getUnitToggleButton() {
 		if (unitToggleButton == null) {
 			try {
-				Dimension size = getApplication().getUIFactory()
-				.getLargeButtonSize();
+				Dimension size = getApplication().getUIFactory().getLargeButtonSize();
 				// String iconName = "MapZoomInTool.icon";
 				// Icon icon =
 				// Utils.createImageIcon(app.getProperty(iconName),iconName);
@@ -793,8 +800,7 @@ IDiskoWpTactics, IEditFeedback {
 				unitToggleButton.setText("ENHET");
 				// unitToggleButton.setIcon(icon);
 				unitToggleButton.setPreferredSize(size);
-				unitToggleButton
-				.addActionListener(new java.awt.event.ActionListener() {
+				unitToggleButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(
 							java.awt.event.ActionEvent e) {
 						UnitSelectionDialog dialog = getUnitSelectionDialog();
@@ -803,8 +809,7 @@ IDiskoWpTactics, IEditFeedback {
 								&& dialog.isVisible()) {
 							dialog.setVisible(false);
 						} else {
-							java.awt.Point p = unitToggleButton
-							.getLocationOnScreen();
+							java.awt.Point p = unitToggleButton.getLocationOnScreen();
 							p.setLocation(p.x - dialog.getWidth() - 2,
 									p.y);
 							dialog.setLocation(p);
@@ -835,30 +840,53 @@ IDiskoWpTactics, IEditFeedback {
 			try {
 				JList list = (JList) e.getSource();
 				currentAction = (Enum) list.getSelectedValue();
+				if (currentAction == null) {
+					return;
+				}
+				ICmdPostIf cmdPost = getMsoManager().getCmdPost();
 				IMsoFeatureClass featureClass = null;
 				if (currentAction == IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA) {
 					showOperationAreaButtons();
 					POIType[] poiTypes = { POIType.INTELLIGENCE };
 					poiDialog.setTypes(poiTypes);
-					featureClass = (IMsoFeatureClass) opAreaLayer
-					.getFeatureClass();
-				} else if (currentAction == IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA) {
+					featureClass = (IMsoFeatureClass) opAreaLayer.getFeatureClass();
+				} 
+				else if (currentAction == IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA) {
+					if (cmdPost.getOperationAreaListItems().size() == 0) {
+						JOptionPane.showMessageDialog(getApplication().getFrame(),
+							    "Må lage operasjonsområde først",
+							    Utils.translate(currentAction),
+							    JOptionPane.WARNING_MESSAGE);
+						return;
+					} 
 					showSearchAreaButtons();
 					POIType[] poiTypes = { POIType.INTELLIGENCE };
 					poiDialog.setTypes(poiTypes);
-					featureClass = (IMsoFeatureClass) searchAreaLayer
-					.getFeatureClass();
-				} else {
+					featureClass = (IMsoFeatureClass) searchAreaLayer.getFeatureClass();
+				} 
+				else {
+					if (cmdPost.getOperationAreaListItems().size() == 0) {
+						JOptionPane.showMessageDialog(getApplication().getFrame(),
+							    "Må lage operasjonsområde først",
+							    Utils.translate(currentAction),
+							    JOptionPane.WARNING_MESSAGE);
+						return;
+					} 
+					else if (cmdPost.getSearchAreaListItems().size() == 0) {
+						JOptionPane.showMessageDialog(getApplication().getFrame(),
+							    "Må lage søkeområde først",
+							    Utils.translate(currentAction),
+							    JOptionPane.WARNING_MESSAGE);
+						return;
+					} 
 					showSearchButtons();
-					POIType[] poiTypes = { POIType.START, POIType.VIA,
-							POIType.STOP };
+					POIType[] poiTypes = { POIType.START, POIType.VIA,POIType.STOP };
 					poiDialog.setTypes(poiTypes);
-					featureClass = (IMsoFeatureClass) areaLayer
-					.getFeatureClass();
+					featureClass = (IMsoFeatureClass) areaLayer.getFeatureClass();
 					flankTool.setFeatureClass(featureClass);
+					splitTool.setFeatureClass(featureClass);
 				}
 				IMsoFeature editFeature = (IMsoFeature) featureClass.createFeature();
-				
 				drawTool.setFeatureClass(featureClass);
 				IMsoFeatureClass poiFc = (IMsoFeatureClass) poiLayer.getFeatureClass();
 				poiTool.setFeatureClass(poiFc);
@@ -867,6 +895,7 @@ IDiskoWpTactics, IEditFeedback {
 				drawTool.setEditFeature(editFeature);
 				currentMsoObject = editFeature.getMsoObject();
 				setFrameText(Utils.translate(currentAction));
+				enableTools(true);
 			} catch (AutomationException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
