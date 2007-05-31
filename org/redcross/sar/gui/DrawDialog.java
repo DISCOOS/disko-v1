@@ -19,7 +19,7 @@ import org.redcross.sar.map.IDiskoMap;
 import org.redcross.sar.map.SnapLayerSelectionModel;
 
 import com.borland.jbcl.layout.VerticalFlowLayout;
-import com.esri.arcgis.carto.FeatureLayer;
+import com.esri.arcgis.carto.IFeatureLayer;
 import com.esri.arcgis.interop.AutomationException;
 
 public class DrawDialog extends DiskoDialog {
@@ -51,7 +51,7 @@ public class DrawDialog extends DiskoDialog {
 	private void initialize() {
 		try {
             this.setContentPane(getMainPanel());
-            this.setPreferredSize(new Dimension(175,450));
+            this.setPreferredSize(new Dimension(175,500));
             this.pack();
 				
 		}
@@ -141,7 +141,7 @@ public class DrawDialog extends DiskoDialog {
 			for (int i = 0; i < snapLayerSelectionModel.getLayerCount(); i++) {
 				final int index = i;
 				final JCheckBox cb = new JCheckBox();
-				FeatureLayer flayer = snapLayerSelectionModel.getFeatureLayer(i);
+				IFeatureLayer flayer = snapLayerSelectionModel.getFeatureLayer(i);
 				cb.setText(flayer.getName());
 				cb.setSelected(snapLayerSelectionModel.isSelected(i));
 				getSnapLayerPanel().add(cb);

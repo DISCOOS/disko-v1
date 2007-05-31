@@ -69,7 +69,7 @@ public class NavBar extends JPanel {
 	private JToggleButton drawLineToggleButton = null;
 	private JToggleButton eraseToggleButton = null;
 	private JToggleButton splitToggleButton = null;
-	private JToggleButton puiToggleButton = null;	
+	private JToggleButton poiToggleButton = null;	
 	private JToggleButton zoomInToggleButton = null;
 	private JToggleButton zoomOutToggleButton = null;
 	private JToggleButton panToggleButton = null;
@@ -119,7 +119,7 @@ public class NavBar extends JPanel {
 		// (visbible) JToggleButtons. This is a hack suggested by Java dev forum
 		bgroup.add(getDummyToggleButton());
 			
-		addCommand(getPUIToggleButton(), getPOITool(), 
+		addCommand(getPOIToggleButton(), getPOITool(), 
 				ToolCommandType.POI_TOOL);
 		addCommand(getFlankToggleButton(), getFlankTool(), 
 				ToolCommandType.FLANK_TOOL);
@@ -412,18 +412,18 @@ public class NavBar extends JPanel {
 		return eraseToggleButton;
 	}
 	
-	public JToggleButton getPUIToggleButton() {
-		if (puiToggleButton == null) {
+	public JToggleButton getPOIToggleButton() {
+		if (poiToggleButton == null) {
 			try {
 				Dimension size = app.getUIFactory().getSmallButtonSize();
-				puiToggleButton = new JToggleButton();
-				puiToggleButton.setPreferredSize(size);
+				poiToggleButton = new JToggleButton();
+				poiToggleButton.setPreferredSize(size);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		return puiToggleButton;
+		return poiToggleButton;
 	}
 	
 	public JToggleButton getZoomInToggleButton() {
@@ -554,7 +554,7 @@ public class NavBar extends JPanel {
 	}
 	
 	public void taskChanged() {
-		getDummyToggleButton().doClick(); // HACK: unselect all toggle buttons
+		unselectAll();
 		java.awt.EventQueue.invokeLater(
 			new Runnable() {
 				// wait for the map is loaded
@@ -566,8 +566,8 @@ public class NavBar extends JPanel {
 						while (commandIter.hasNext() && buttonIter.hasNext()) {
 							ICommand command = (ICommand)commandIter.next();
 							if (command != null) {
-								AbstractButton b = (AbstractButton)buttonIter.next();
-								if (map != null && b.isVisible() && b.isEnabled()) {
+								//AbstractButton b = (AbstractButton)buttonIter.next();
+								if (map != null) {
 									command.onCreate(map);
 								}
 								else {
@@ -584,6 +584,10 @@ public class NavBar extends JPanel {
 				}
 			}
 		);
+	}
+	
+	public void unselectAll() {
+		getDummyToggleButton().doClick(); // HACK: unselect all toggle buttons
 	}
 	
 	public AbstractButton getButton(Enum key) {

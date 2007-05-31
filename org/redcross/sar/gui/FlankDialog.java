@@ -23,7 +23,7 @@ import org.redcross.sar.map.FlankTool;
 import org.redcross.sar.map.IDiskoMap;
 
 import com.borland.jbcl.layout.VerticalFlowLayout;
-import com.esri.arcgis.carto.FeatureLayer;
+import com.esri.arcgis.carto.IFeatureLayer;
 import com.esri.arcgis.interop.AutomationException;
 
 public class FlankDialog extends DiskoDialog {
@@ -54,7 +54,7 @@ public class FlankDialog extends DiskoDialog {
 	private void initialize() {
 		try {
             this.setContentPane(getContentPanel());
-            this.setPreferredSize(new Dimension(175, 340));
+            this.setPreferredSize(new Dimension(175, 350));
             this.pack();
 		}
 		catch (java.lang.Throwable e) {
@@ -198,7 +198,7 @@ public class FlankDialog extends DiskoDialog {
 			for (int i = 0; i < clipLayerSelectionModel.getLayerCount(); i++) {
 				final int index = i;
 				final JCheckBox cb = new JCheckBox();
-				FeatureLayer flayer = clipLayerSelectionModel.getFeatureLayer(i);
+				IFeatureLayer flayer = clipLayerSelectionModel.getFeatureLayer(i);
 				cb.setText(flayer.getName());
 				cb.setSelected(clipLayerSelectionModel.isSelected(i));
 				getClipPanel().add(cb);
