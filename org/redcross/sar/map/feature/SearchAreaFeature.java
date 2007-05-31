@@ -36,4 +36,9 @@ public class SearchAreaFeature extends AbstractMsoFeature {
 		ISearchAreaIf searchArea = (ISearchAreaIf)msoObject;
 		searchArea.setGeodata(null);
 	}
+	
+	public int getGeodataCount() {
+		ISearchAreaIf searchArea = (ISearchAreaIf)msoObject;
+		return searchArea.getGeodata() != null ? 1: 0;
+	}
 }

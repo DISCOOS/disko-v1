@@ -23,7 +23,7 @@ public class SearchAreaLayer extends AbstractMsoFeatureLayer {
 	private SimpleFillSymbol selectionSymbol = null;
  	
  	public SearchAreaLayer(IMsoModelIf msoModel) {
- 		classCode = IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA;
+ 		setClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA);
  		featureClass = new SearchAreaFeatureClass(IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA, msoModel);
 		try {
 			createSymbols();

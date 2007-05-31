@@ -106,7 +106,7 @@ public class DrawTool extends AbstractCommandTool {
 		}
 	}
 	
-	public void setSnapableLayers(List snapLayers) throws IOException {
+	public void setSnapableLayers(List snapLayers) throws IOException, AutomationException {
 		if (snapLayers != this.snapLayers) {
 			isDirty = true;
 			this.snapLayers = snapLayers;
@@ -114,7 +114,7 @@ public class DrawTool extends AbstractCommandTool {
 		}
 	}
 	
-	public void setSnapTolerance(double tolerance) throws IOException {
+	public void setSnapTolerance(double tolerance) throws IOException, AutomationException {
 		searchEnvelope.setHeight(tolerance);
 		searchEnvelope.setWidth(tolerance);
 	}
@@ -146,7 +146,7 @@ public class DrawTool extends AbstractCommandTool {
 			editFeature.setGeodata(MapUtil.getMsoPolygon(polygon));
 		}
 		else if (featureClass.getShapeType() == esriGeometryType.esriGeometryBag) {
-			editFeature.addGeodataToCollection(MapUtil.getMsoRoute(pathGeometry));
+			editFeature.addGeodata(MapUtil.getMsoRoute(pathGeometry));
 		}
 		reset();
 		map.partialRefresh(env);
@@ -229,7 +229,7 @@ public class DrawTool extends AbstractCommandTool {
 		refreshForegroundPartial();
 	}
 	
-	private void updatePath() throws IOException {
+	private void updatePath() throws IOException, AutomationException {
 		if (p1.returnDistance(p2) == 0) {
 			return;
 		}
@@ -278,7 +278,7 @@ public class DrawTool extends AbstractCommandTool {
 		segmentGraphCursor = null;
 	}
 	
-	private void draw() throws IOException {
+	private void draw() throws IOException, AutomationException {
 		IScreenDisplay screenDisplay = map.getActiveView().getScreenDisplay();
 		screenDisplay.startDrawing(screenDisplay.getHDC(),(short) esriScreenCache.esriNoScreenCache);
 		
@@ -297,7 +297,7 @@ public class DrawTool extends AbstractCommandTool {
 		screenDisplay.finishDrawing();
 	}
 	
-	private void refreshForegroundPartial() throws IOException {
+	private void refreshForegroundPartial() throws IOException, AutomationException {
 		InvalidArea invalidArea = new InvalidArea();
 		if (pathGeometry != null && !isMoving) {
 			invalidArea.add(pathGeometry);
@@ -313,7 +313,8 @@ public class DrawTool extends AbstractCommandTool {
 		invalidArea.invalidate((short) esriScreenCache.esriNoScreenCache);
 	}
 	
-	private Point getNearestPoint(Polyline pline, Point point) throws IOException {
+	private Point getNearestPoint(Polyline pline, Point point) 
+			throws IOException, AutomationException {
 		double minDist = Double.MAX_VALUE;
 		Point nearestPoint = null;
 		for (int i = 0; i < pline.getPointCount(); i++) {
@@ -327,7 +328,7 @@ public class DrawTool extends AbstractCommandTool {
 		return nearestPoint;
 	}
 	
-	private void updateIndexedGeometry() throws IOException {
+	private void updateIndexedGeometry() throws IOException, AutomationException {
 		if (!isActive) {
 			isDirty = true;
 			return;
@@ -342,17 +343,17 @@ public class DrawTool extends AbstractCommandTool {
 	}
 
 	//***** DiskoMapEventListener implementations *****
-	public void onAfterScreenDraw(DiskoMapEvent e) throws IOException {
+	public void onAfterScreenDraw(DiskoMapEvent e) throws IOException, AutomationException {
 		refresh(0);
 	}
 
-	public void onExtentUpdated(DiskoMapEvent e) throws IOException {
+	public void onExtentUpdated(DiskoMapEvent e) throws IOException, AutomationException {
 		isDirty = true;
 		updateIndexedGeometry();
 		
 	}
 
-	public void onMapReplaced(DiskoMapEvent e) throws IOException{
+	public void onMapReplaced(DiskoMapEvent e) throws IOException, AutomationException {
 		isDirty = true;
 		updateIndexedGeometry();
 		setSnapTolerance(map.getActiveView().getExtent().getWidth()/50);

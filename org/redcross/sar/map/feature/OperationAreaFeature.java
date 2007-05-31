@@ -34,4 +34,9 @@ public class OperationAreaFeature extends AbstractMsoFeature {
 		IOperationAreaIf opArea = (IOperationAreaIf)msoObject;
 		opArea.setGeodata(null);
 	}
+	
+	public int getGeodataCount() {
+		IOperationAreaIf opArea = (IOperationAreaIf)msoObject;
+		return opArea.getGeodata() != null ? 1: 0;
+	}
 }

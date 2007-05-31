@@ -55,13 +55,17 @@ public abstract class AbstractMsoFeature implements IMsoFeature {
 	public void removeGeodata(IGeodataIf geodata) {
 	}
 	
-	public void addGeodataToCollection(IGeodataIf geodata) {
+	public void addGeodata(IGeodataIf geodata) {
 	}
 	
-	public void removeGeodataFromCollectionAt(int index) {
+	public void removeGeodataAt(int index) {
 	}
 	
-	public void splitGeodata(IGeodataIf geodata) {
+	public void setGeodataAt(int index, IGeodataIf geodata) {
+	}
+	
+	public int getGeodataCount() {
+		return 0;
 	}
 
 	public IEnvelope getExtent() throws IOException, AutomationException {

@@ -11,9 +11,9 @@ import com.esri.arcgis.interop.AutomationException;
 
 public class MsoFeatureCursor implements IFeatureCursor {
 
-	
 	private static final long serialVersionUID = 1L;
 	private ArrayList<IFeature> data = null;
+	private int index = 0;
 	
 	public MsoFeatureCursor() {
 		data = new ArrayList<IFeature>();
@@ -48,10 +48,11 @@ public class MsoFeatureCursor implements IFeatureCursor {
 	}
 
 	public IFeature nextFeature() throws IOException, AutomationException {
-		if (data.iterator().hasNext()) {
-			return (IFeature)data.iterator().next();
+		if (index >= data.size()) {
+			index = 0;
+			return null;
 		}
-		return null;
+		return (IFeature)data.get(index++);
 	}
 
 	public void updateFeature(IFeature arg0) throws IOException,
@@ -59,5 +60,4 @@ public class MsoFeatureCursor implements IFeatureCursor {
 		// TODO Auto-generated method stub
 
 	}
-
 }

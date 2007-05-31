@@ -24,9 +24,10 @@ public class FlankLayer extends AbstractMsoFeatureLayer {
 	private LineFillSymbol redFill  = null;
 	
 	public FlankLayer(IMsoModelIf msoModel) {
- 		classCode = IMsoManagerIf.MsoClassCode.CLASSCODE_AREA;
+		setClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
  		featureClass = new FlankFeatureClass(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA, msoModel);
 		try {
+			setName("FLANKE"); // TODO: 
 			createSymbols();
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block

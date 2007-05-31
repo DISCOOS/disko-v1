@@ -3,9 +3,7 @@ package org.redcross.sar.map;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.redcross.sar.gui.FeatureLayerSelectionModel;
-
-import com.esri.arcgis.carto.FeatureLayer;
+import com.esri.arcgis.carto.IFeatureLayer;
 import com.esri.arcgis.carto.ILayer;
 import com.esri.arcgis.carto.IMap;
 
@@ -17,12 +15,12 @@ public class ClipLayerSelectionModel extends FeatureLayerSelectionModel {
 	}
 	
 	private void initialize() throws IOException {
-		ArrayList<FeatureLayer> snapableLayers = new ArrayList<FeatureLayer>();
+		ArrayList<IFeatureLayer> snapableLayers = new ArrayList<IFeatureLayer>();
 		IMap focusMap = map.getActiveView().getFocusMap();
 		for (int i = 0; i < focusMap.getLayerCount(); i++) {
 			ILayer layer = focusMap.getLayer(i);
-			if (layer instanceof FeatureLayer) {
-				FeatureLayer flayer = (FeatureLayer) layer;
+			if (layer instanceof IFeatureLayer) {
+				IFeatureLayer flayer = (IFeatureLayer) layer;
 				int shapeType = flayer.getFeatureClass().getShapeType();
 				if (shapeType == com.esri.arcgis.geometry.
 						esriGeometryType.esriGeometryPolygon) {
@@ -30,7 +28,7 @@ public class ClipLayerSelectionModel extends FeatureLayerSelectionModel {
 				}
 			}
 		}
-		layers = new FeatureLayer[snapableLayers.size()];
+		layers = new IFeatureLayer[snapableLayers.size()];
 		selected = new boolean[snapableLayers.size()];
 		for (int i = 0; i < selected.length; i++) {
 			layers[i] = snapableLayers.get(i);

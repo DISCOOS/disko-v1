@@ -39,22 +39,31 @@ public class AreaFeature extends AbstractMsoFeature {
 		}
 	}
 	
-	public void addGeodataToCollection(IGeodataIf geodata) {
+	public void addGeodata(IGeodataIf geodata) {
 		IAreaIf area = (IAreaIf)msoObject;
 		GeoCollection clone = clone(area.getGeodata());
 		clone.add(geodata);
 		area.setGeodata(clone);
 	}
 	
-	public void removeGeodataFromCollectionAt(int index) {
+	public void removeGeodataAt(int index) {
 		IAreaIf area = (IAreaIf)msoObject;
 		GeoCollection clone = clone(area.getGeodata());
 		((Vector)clone.getPositions()).remove(index);
 		area.setGeodata(clone);
 	}
 	
-	public void splitGeodata(IGeodataIf geodata) {
-		System.out.println("Splitting ...");
+	public void setGeodataAt(int index, IGeodataIf geodata) {
+		IAreaIf area = (IAreaIf)msoObject;
+		GeoCollection clone = clone(area.getGeodata());
+		((Vector<IGeodataIf>)clone.getPositions()).set(index, geodata);
+		area.setGeodata(clone);
+	}
+	
+	public int getGeodataCount() {
+		IAreaIf area = (IAreaIf)msoObject;
+		GeoCollection geoColl = area.getGeodata();
+		return geoColl != null ? geoColl.getPositions().size() : 0;
 	}
 	
 	private GeoCollection clone(GeoCollection oldColl) {

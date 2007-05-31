@@ -23,11 +23,13 @@ public interface IMsoFeature extends IFeature {
 	
 	public void removeGeodata(IGeodataIf geodata);
 	
-	public void splitGeodata(IGeodataIf geodata);
+	public void addGeodata(IGeodataIf geodata);
 	
-	public void addGeodataToCollection(IGeodataIf geodata);
+	public void removeGeodataAt(int index);
 	
-	public void removeGeodataFromCollectionAt(int index);
+	public void setGeodataAt(int index, IGeodataIf geodata);
+	
+	public int getGeodataCount();
 	
 	public void setSpatialReference(ISpatialReference srs) throws IOException, AutomationException;
 

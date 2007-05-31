@@ -21,7 +21,7 @@ public class POILayer extends AbstractMsoFeatureLayer {
 	private SimpleMarkerSymbol selectionSymbol = null;
  	
  	public POILayer(IMsoModelIf msoModel) {
- 		classCode = IMsoManagerIf.MsoClassCode.CLASSCODE_POI;
+ 		setClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_POI);
 		featureClass = new POIFeatureClass(IMsoManagerIf.MsoClassCode.CLASSCODE_POI, msoModel);
 		try {
 			createSymbols();

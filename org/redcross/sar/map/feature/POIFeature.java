@@ -36,4 +36,9 @@ public class POIFeature extends AbstractMsoFeature {
 		IPOIIf poi = (IPOIIf)msoObject;
 		poi.setPosition(null);
 	}
+	
+	public int getGeodataCount() {
+		IPOIIf poi = (IPOIIf)msoObject;
+		return poi.getPosition() != null ? 1: 0;
+	}
 }

@@ -3,6 +3,8 @@ package org.redcross.sar.map.feature;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
+
+import org.redcross.sar.app.Utils;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
@@ -187,8 +189,7 @@ public abstract class AbstractMsoFeatureClass implements IMsoFeatureClass, IGeoD
 	}
 
 	public String getAliasName() throws IOException, AutomationException {
-		// TODO Auto-generated method stub
-		return null;
+		return Utils.translate(classCode);
 	}
 
 	public int getObjectClassID() throws IOException, AutomationException {

@@ -62,7 +62,7 @@ public class EraseTool extends AbstractCommandTool {
 				IGeometry geom = editFeature.getShape();
 				if (fc.getShapeType() == esriGeometryType.esriGeometryBag) {
 					GeometryBag geomBag = (GeometryBag)geom;
-					editFeature.removeGeodataFromCollectionAt(getGeomIndex(geomBag, p));
+					editFeature.removeGeodataAt(getGeomIndex(geomBag, p));
 				}
 				else {
 					editFeature.removeGeodata(null);

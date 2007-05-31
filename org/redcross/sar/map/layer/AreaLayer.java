@@ -24,7 +24,7 @@ public class AreaLayer extends AbstractMsoFeatureLayer {
 	private SimpleLineSymbol selectionSymbol = null;
  	
  	public AreaLayer(IMsoModelIf msoModel) {
- 		classCode = IMsoManagerIf.MsoClassCode.CLASSCODE_AREA;
+ 		setClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
  		featureClass = new AreaFeatureClass(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA, msoModel);
 		try {
 			createSymbols();

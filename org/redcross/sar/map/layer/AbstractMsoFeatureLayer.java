@@ -8,6 +8,8 @@ import org.redcross.sar.app.Utils;
 import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.IMsoFeatureClass;
 import org.redcross.sar.mso.IMsoManagerIf;
+import org.redcross.sar.mso.data.IMsoObjectIf;
+
 import com.esri.arcgis.carto.ILayerGeneralProperties;
 import com.esri.arcgis.carto.esriViewDrawPhase;
 import com.esri.arcgis.display.IDisplay;
@@ -71,7 +73,7 @@ public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoD
 	}
 	
 	public List getSelected() throws AutomationException, IOException {
-		ArrayList selection = new ArrayList();
+		ArrayList<IMsoFeature> selection = new ArrayList<IMsoFeature>();
 		for (int i = 0; i < featureClass.featureCount(null); i++) {
 			IMsoFeature feature = (IMsoFeature)featureClass.getFeature(i);
 			selection.add(feature);
@@ -80,7 +82,7 @@ public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoD
 	}
 	
 	public List getSelectedMsoObjects() throws AutomationException, IOException {
-		ArrayList selection = new ArrayList();
+		ArrayList<IMsoObjectIf> selection = new ArrayList<IMsoObjectIf>();
 		for (int i = 0; i < featureClass.featureCount(null); i++) {
 			IMsoFeature feature = (IMsoFeature)featureClass.getFeature(i);
 			selection.add(feature.getMsoObject());
@@ -221,9 +223,8 @@ public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoD
 		return false;
 	}
 
-	public IFeatureCursor search(IQueryFilter arg0, boolean arg1) throws IOException, AutomationException {
-		// TODO Auto-generated method stub
-		return null;
+	public IFeatureCursor search(IQueryFilter filter, boolean b) throws IOException, AutomationException {
+		return featureClass.search(filter, b);
 	}
 
 	public void setDataSourceType(String arg0) throws IOException, AutomationException {

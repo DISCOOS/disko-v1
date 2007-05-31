@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.esri.arcgis.carto.FeatureLayer;
+import com.esri.arcgis.carto.IFeatureLayer;
 import com.esri.arcgis.geodatabase.IFeature;
 import com.esri.arcgis.geodatabase.IFeatureCursor;
 import com.esri.arcgis.geodatabase.SpatialFilter;
 import com.esri.arcgis.geodatabase.esriSpatialRelEnum;
 import com.esri.arcgis.geometry.Envelope;
+import com.esri.arcgis.geometry.GeometryBag;
 import com.esri.arcgis.geometry.IGeometry;
 import com.esri.arcgis.geometry.IGeometryCollection;
 import com.esri.arcgis.geometry.IPointCollection;
@@ -18,6 +19,7 @@ import com.esri.arcgis.geometry.IRing;
 import com.esri.arcgis.geometry.Path;
 import com.esri.arcgis.geometry.Polygon;
 import com.esri.arcgis.geometry.Polyline;
+import com.esri.arcgis.interop.AutomationException;
 
 public class IndexedGeometry  {
 	
@@ -31,14 +33,13 @@ public class IndexedGeometry  {
 	private ArrayList<Tile> tiles = null;
 	private ArrayList<IGeometry> geometries = null;
 
-	public IndexedGeometry() throws IOException {
+	public IndexedGeometry() {
 		super();
-		
 		tiles = new ArrayList<Tile>(); // contains searched tiles
 		geometries = new ArrayList<IGeometry>();
 	}
 	
-	public void update(Envelope extent, List snapLayers) throws IOException {
+	public void update(Envelope extent, List snapLayers) throws IOException, AutomationException {
 		quadTree = null; // invalidate the quadtree
 		geometries.clear(); // remove all geometries
 		
@@ -52,7 +53,7 @@ public class IndexedGeometry  {
 		Polyline temp = new Polyline();
 		
 		for (int i = 0; i < snapLayers.size(); i++) {
-			FeatureLayer flayer = (FeatureLayer)snapLayers.get(i);
+			IFeatureLayer flayer = (IFeatureLayer)snapLayers.get(i);
 			SpatialFilter spatialFilter = new SpatialFilter();
 			spatialFilter.setGeometryByRef(extent);
 			spatialFilter.setGeometryField(flayer.getFeatureClass().getShapeFieldName());
@@ -76,6 +77,16 @@ public class IndexedGeometry  {
 						temp.addGeometry(path, null, null);
 					}
 				}
+				else if (geom instanceof GeometryBag) {
+					GeometryBag geomBag = (GeometryBag)geom;
+					// must convert polygons to paths
+					for (int j = 0; j < geomBag.getGeometryCount(); j++) {
+						IGeometry subGeom = geomBag.getGeometry(j);
+						if (subGeom instanceof Polyline) {
+							temp.addGeometryCollection((IGeometryCollection)subGeom);
+						}
+					}
+				}
 				feature = featureCursor.nextFeature();
 			}
 		}
@@ -90,7 +101,7 @@ public class IndexedGeometry  {
 		//System.out.println("Time used: "+(endTime-startTime));
 	}
 	
-	private void build(Envelope extent) throws IOException {
+	private void build(Envelope extent) throws IOException, AutomationException {
 		// estimate number of levels in cache quad tree
 		int numLevels = 1;
 		double size = 0;
@@ -107,7 +118,7 @@ public class IndexedGeometry  {
 		quadTree = new QuadTree(extent, numLevels);
 	}
 	
-	public IGeometry search(Envelope env) throws IOException {
+	public IGeometry search(Envelope env) throws IOException, AutomationException {
 		if (quadTree == null) {
 			return null;
 		}
@@ -132,7 +143,7 @@ public class IndexedGeometry  {
 		return null;
 	}
 	
-	public void fillTile(Tile tile) throws IOException {
+	public void fillTile(Tile tile) throws IOException, AutomationException {
 		for (int i = 0; i < geometries.size(); i++) {
 			IGeometry geom = geometries.get(i);
 			if (!tile.getExtent().disjoint(geom)) {

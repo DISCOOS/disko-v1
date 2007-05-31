@@ -3,14 +3,8 @@ package org.redcross.sar.map;
 import java.awt.Toolkit;
 import java.io.IOException;
 
-import org.redcross.sar.map.feature.AreaFeature;
 import org.redcross.sar.map.feature.IMsoFeature;
-import org.redcross.sar.mso.data.IAreaIf;
-import org.redcross.sar.util.mso.GeoCollection;
-import org.redcross.sar.util.mso.Route;
 
-import com.esri.arcgis.carto.IElement;
-import com.esri.arcgis.carto.LineElement;
 import com.esri.arcgis.geodatabase.IFeature;
 import com.esri.arcgis.geometry.GeometryBag;
 import com.esri.arcgis.geometry.IGeometry;
@@ -56,47 +50,41 @@ public class SplitTool extends AbstractCommandTool {
 			IGeometry geom = editFeature.getShape();
 			if (featureClass.getShapeType() == esriGeometryType.esriGeometryBag) {
 				GeometryBag geomBag = (GeometryBag)geom;
-				//editFeature.removeGeodataFromCollectionAt(getGeomIndex(geomBag, p));
+				int index = getGeomIndex(geomBag, p);
+				if (index > -1) {
+					IGeometry subGeom = geomBag.getGeometry(index);
+					if (subGeom instanceof Polyline) {
+						Polyline[] result = split((Polyline)subGeom, p); 
+						editFeature.setGeodataAt(index, MapUtil.getMsoRoute(result[0]));
+						editFeature.addGeodata(MapUtil.getMsoRoute(result[1]));
+						map.partialRefresh(subGeom.getEnvelope());
+					}
+				}
 			}
 			else {
-				//editFeature.removeGeodata(null);
-				//editFeature.delete();
+				//TODO:
 			}
-			map.partialRefresh(null);
 		}
-		
-		/*IElement elem = map.searchGraphics(p);
-		if (elem != null && elem instanceof LineElement) {
-			Polyline pl = (Polyline)elem.getGeometry();
-			// splitting and adding new elements
-			split(pl, p);
-			// delete the orginal element
-			map.deleteGraphics(elem);
-		}*/
 	}
 	
-	private void split(Polyline orginal, Point nearPoint) 
+	private Polyline[] split(Polyline orginal, Point nearPoint) 
 			throws IOException, AutomationException {
-		
+		Polyline[] result = new Polyline[2];
 		boolean[] splitHappened = new boolean[2];
 		int[] newPartIndex = new int[2];
 		int[] newSegmentIndex = new int[2];
 		orginal.splitAtPoint(nearPoint, true, true, splitHappened, 
 				newPartIndex, newSegmentIndex);
+		
 		// two new polylines
-		Polyline pline1 = new Polyline();
-		pline1.addGeometry(orginal.getGeometry(newPartIndex[0]), null, null);
-		Polyline pline2 = new Polyline();
-		pline2.addGeometry(orginal.getGeometry(newPartIndex[1]), null, null);
-		
-		LineElement le1 = new LineElement();
-		le1.setGeometry(pline1);
-		//map.addGraphics(le1);
-		
-		LineElement le2 = new LineElement();
-		le2.setGeometry(pline2);
-		//map.addGraphics(le2);
+		result[0] = new Polyline();
+		result[0].addGeometry(orginal.getGeometry(newPartIndex[0]), null, null);
+		result[0].setSpatialReferenceByRef(map.getSpatialReference());
+		result[1] = new Polyline();
+		result[1].addGeometry(orginal.getGeometry(newPartIndex[1]), null, null);
+		result[1].setSpatialReferenceByRef(map.getSpatialReference());
 		
 		Toolkit.getDefaultToolkit().beep();
+		return result;
 	}
 }

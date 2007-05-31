@@ -22,7 +22,7 @@ public class OperationAreaLayer extends AbstractMsoFeatureLayer {
 	private SimpleFillSymbol selectionSymbol = null;
  	
  	public OperationAreaLayer(IMsoModelIf msoModel) {
- 		classCode = IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA;
+ 		setClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA);
  		featureClass = new OperationAreaFeatureClass(
  				IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA, msoModel);
 		try {

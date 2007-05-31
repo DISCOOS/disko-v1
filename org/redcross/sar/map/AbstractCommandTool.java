@@ -241,31 +241,23 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 
 	}
 
-	public void onAfterScreenDraw(DiskoMapEvent e) throws IOException {
+	public void onAfterScreenDraw(DiskoMapEvent e) throws IOException, AutomationException {
 		// TODO Auto-generated method stub
 
 	}
 
-	public void onExtentUpdated(DiskoMapEvent e) throws IOException {
+	public void onExtentUpdated(DiskoMapEvent e) throws IOException, AutomationException {
 		// TODO Auto-generated method stub
 
 	}
 
-	public void onMapReplaced(DiskoMapEvent e) throws IOException {
+	public void onMapReplaced(DiskoMapEvent e) throws IOException, AutomationException {
 		// TODO Auto-generated method stub
 
 	}
 	
-	public void onSelectionChanged(DiskoMapEvent e) throws IOException {
+	public void onSelectionChanged(DiskoMapEvent e) throws IOException, AutomationException {
 		// TODO Auto-generated method stub
 		
-	}
-	
-	public void graphicsAdded(DiskoMapEvent e) {
-		// TODO Auto-generated method stub
-	}
-
-	public void graphicsDeleted(DiskoMapEvent e) {
-		// TODO Auto-generated method stub
 	}
 }
