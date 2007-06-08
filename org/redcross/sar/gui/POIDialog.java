@@ -1,14 +1,24 @@
 package org.redcross.sar.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Point;
+import java.io.IOException;
+
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
@@ -20,22 +30,9 @@ import org.redcross.sar.map.POITool;
 import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.mso.data.IPOIIf;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
-import com.esri.arcgis.geometry.IEnvelope;
+
 import com.esri.arcgis.geometry.IPoint;
 import com.esri.arcgis.interop.AutomationException;
-
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.io.IOException;
-
-import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
-import javax.swing.border.TitledBorder;
-import java.awt.Font;
-import java.awt.Color;
-
-
 
 public class POIDialog extends DiskoDialog {
 
@@ -81,6 +78,13 @@ public class POIDialog extends DiskoDialog {
 		catch (java.lang.Throwable e) {
 			//  Do Something
 		}
+	}
+	
+	public void reset() {
+		getTxtArea().setText(null);
+		getXCoordTextField().setText(null);
+		getYCoordTextField().setText(null);
+		getTypeComboBox().setSelectedIndex(0);
 	}
 	
 	/**
@@ -176,8 +180,8 @@ public class POIDialog extends DiskoDialog {
 		try {
 			IPOIIf poi = (IPOIIf)msoFeature.getMsoObject();
 			IPoint p = (IPoint)msoFeature.getShape();
-			setXCoordinateField(p.getX());
-			setYCoordinateField(p.getY());
+			setXCoordinateField(Math.round(p.getX()));
+			setYCoordinateField(Math.round(p.getY()));
 			getTxtArea().setText(poi.getRemarks());
 			POIType type = poi.getType();
 			if (type != null) {
@@ -227,11 +231,7 @@ public class POIDialog extends DiskoDialog {
 		DiskoMap map = tool.getMap();
 		if (map != null) {
 			try {
-				IEnvelope env = map.getExtent();
-				if (x > env.getLowerLeft().getX() & x < env.getLowerRight().getX() &
-					y > env.getLowerLeft().getY() & y < env.getUpperLeft().getY()) {
-					tool.addPOIAt(x, y);
-				}
+				tool.addPOIAt(x, y);
 			} catch (AutomationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -287,6 +287,7 @@ public class POIDialog extends DiskoDialog {
 	private JTextArea getTxtArea() {
 		if (txtArea == null) {
 			txtArea = new JTextArea();
+			txtArea.setLineWrap(true);
 			txtArea.addKeyListener(new java.awt.event.KeyAdapter() {
 				public void keyTyped(java.awt.event.KeyEvent e) {
 					IMsoFeature msoFeature = tool.getCurrent();

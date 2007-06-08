@@ -101,6 +101,7 @@ public class TextAreaDialog extends DiskoDialog {
 		if (inputTextArea == null) {
 			try {
 				inputTextArea = new JTextArea();
+				inputTextArea.setLineWrap(true);
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}

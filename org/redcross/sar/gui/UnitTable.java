@@ -16,7 +16,7 @@ public class UnitTable extends JTable {
 	public UnitTable(IMsoModelIf msoModel, int numColumns) {
 		UnitTableModel model = new UnitTableModel(msoModel, numColumns);
 		setModel(model);
-		Dimension size = new Dimension(50, 50);
+		Dimension size = new Dimension(60, 60);
 		UnitTableCellRenderer renderer = new UnitTableCellRenderer();
 		setDefaultRenderer(Object.class, renderer);
 		setTableHeader(null);
