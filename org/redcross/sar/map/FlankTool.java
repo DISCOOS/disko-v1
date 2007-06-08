@@ -56,17 +56,19 @@ public class FlankTool extends AbstractCommandTool {
 		IFeature feature = search(featureClass, p);
 		if (feature != null && feature instanceof AreaFeature) {
 			AreaFeature areaFeature = (AreaFeature)feature;
-			GeometryBag geomBag = (GeometryBag)areaFeature.getShape();
-			int index = getGeomIndex(geomBag, p);
-			if (index > -1) {
-				IAreaIf area = (IAreaIf)areaFeature.getMsoObject();
-				GeoCollection geoColl = area.getGeodata();
-				Route route = getRouteAt(geoColl, index);
-				if (route != null) {
-					route.setLayout(getLayout());
-					//HACK: To force firing events.
-					area.setGeodata(cloneGeoCollection(geoColl));
-					map.getActiveView().refresh();
+			if (areaFeature.isEditable()) {
+				GeometryBag geomBag = (GeometryBag)areaFeature.getShape();
+				int index = getGeomIndex(geomBag, p);
+				if (index > -1) {
+					IAreaIf area = (IAreaIf)areaFeature.getMsoObject();
+					GeoCollection geoColl = area.getGeodata();
+					Route route = getRouteAt(geoColl, index);
+					if (route != null) {
+						route.setLayout(getLayout());
+						//HACK: To force firing events.
+						area.setGeodata(cloneGeoCollection(geoColl));
+						map.getActiveView().refresh();
+					}
 				}
 			}
 		}

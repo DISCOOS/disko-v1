@@ -9,6 +9,7 @@ import javax.swing.border.SoftBevelBorder;
 
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.event.IDiskoMapEventListener;
+import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
@@ -19,15 +20,15 @@ import org.redcross.sar.mso.event.MsoEvent.Update;
 import com.esri.arcgis.beans.map.MapBean;
 import com.esri.arcgis.carto.FeatureLayer;
 import com.esri.arcgis.carto.IFeatureLayer;
-import com.esri.arcgis.carto.IFeatureLayerSelectionEventsAdapter;
-import com.esri.arcgis.carto.IFeatureLayerSelectionEventsFeatureLayerSelectionChangedEvent;
 import com.esri.arcgis.carto.ILayer;
+import com.esri.arcgis.carto.IMap;
 import com.esri.arcgis.controls.IMapControlEvents2Adapter;
 import com.esri.arcgis.controls.IMapControlEvents2OnAfterDrawEvent;
 import com.esri.arcgis.controls.IMapControlEvents2OnExtentUpdatedEvent;
 import com.esri.arcgis.controls.IMapControlEvents2OnMapReplacedEvent;
 import com.esri.arcgis.geodatabase.Feature;
 import com.esri.arcgis.geodatabase.IEnumIDs;
+import com.esri.arcgis.geodatabase.IFeature;
 import com.esri.arcgis.geodatabase.QueryFilter;
 import com.esri.arcgis.geometry.Envelope;
 import com.esri.arcgis.geometry.IEnvelope;
@@ -99,31 +100,24 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	
 	private void mapLoaded() throws java.io.IOException, AutomationException {
 		// add custom layers
+		IMap focusMap = getActiveView().getFocusMap();
 		List customLayers = mapManager.getMsoLayers();
 		for (int i = 0; i < customLayers.size(); i++) {
 			IFeatureLayer layer = (IFeatureLayer)customLayers.get(i);
 			layer.setSpatialReferenceByRef(getSpatialReference());
-			getActiveView().getFocusMap().addLayer(layer);
+			focusMap.addLayer(layer);
 		}
 		
 		// set all featurelayers not selectabel
-		for (int i = 0; i < getLayerCount(); i++) {
-			ILayer layer = getLayer(i);
-			if (layer instanceof FeatureLayer) {
-				FeatureLayer flayer = (FeatureLayer)layer;
-				// implementers of subclasses must explesit set layers selectable
-				flayer.setSelectable(false);
-				// add layer selection listener, forward to DiskoMapEvent
-				flayer.addIFeatureLayerSelectionEventsListener(new IFeatureLayerSelectionEventsAdapter() {
-					private static final long serialVersionUID = 1L;
-					public void featureLayerSelectionChanged(
-							IFeatureLayerSelectionEventsFeatureLayerSelectionChangedEvent theEvent)
-				    		throws java.io.IOException, AutomationException {
-						fireOnSelectionChanged();
-					}
-				});
+		for (int i = 0; i < focusMap.getLayerCount(); i++) {
+			ILayer layer = focusMap.getLayer(i);
+			if (layer instanceof IFeatureLayer) {
+				IFeatureLayer flayer = (IFeatureLayer)layer;
+				if (!(flayer instanceof IMsoFeatureLayer)) {
+					flayer.setSelectable(false);
+				}
 			}
-		}	
+		}
 	}
 	
 	public void handleMsoUpdateEvent(Update e) {
@@ -304,6 +298,10 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 		if (env != null) {
 			setExtent(env);
 		}
+	}
+	
+	public void zoomToFeature(IFeature feature) throws IOException, AutomationException {
+		setExtent(feature.getExtent());
 	}
 	
 	/* (non-Javadoc)

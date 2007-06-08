@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.redcross.sar.event.IDiskoMapEventListener;
 import com.esri.arcgis.carto.FeatureLayer;
 import com.esri.arcgis.geodatabase.Feature;
+import com.esri.arcgis.geodatabase.IFeature;
 import com.esri.arcgis.geometry.IEnvelope;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.systemUI.ITool;
@@ -67,6 +68,8 @@ public interface IDiskoMap {
 			throws IOException, AutomationException;
 	
 	public void zoomToSelected () throws IOException, AutomationException;
+	
+	public void zoomToFeature(IFeature feature) throws IOException, AutomationException;
 
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#getFeatureLayer(java.lang.String)

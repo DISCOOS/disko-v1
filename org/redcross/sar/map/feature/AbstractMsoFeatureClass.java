@@ -3,8 +3,11 @@ package org.redcross.sar.map.feature;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 import org.redcross.sar.app.Utils;
+import org.redcross.sar.event.DiskoMapEvent;
+import org.redcross.sar.event.IDiskoMapEventListener;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
@@ -44,6 +47,8 @@ public abstract class AbstractMsoFeatureClass implements IMsoFeatureClass, IGeoD
 	protected IMsoModelIf msoModel = null;
 	protected ISpatialReference srs = null;
 	protected ArrayList data = null;
+	protected ArrayList<IDiskoMapEventListener> listeners = null;
+	protected DiskoMapEvent diskoMapEvent = null;
 	protected EnumSet<IMsoManagerIf.MsoClassCode> myInterests = null;
 	
 	public AbstractMsoFeatureClass(IMsoManagerIf.MsoClassCode classCode, IMsoModelIf msoModel) {
@@ -53,6 +58,8 @@ public abstract class AbstractMsoFeatureClass implements IMsoFeatureClass, IGeoD
 		IMsoEventManagerIf msoEventManager = msoModel.getEventManager();
 		msoEventManager.addClientUpdateListener(this);
 		data = new ArrayList();
+		listeners = new ArrayList<IDiskoMapEventListener>();
+		diskoMapEvent = new DiskoMapEvent(this);
 	}
 	
 	public IMsoManagerIf.MsoClassCode getClassCode() {
@@ -86,6 +93,60 @@ public abstract class AbstractMsoFeatureClass implements IMsoFeatureClass, IGeoD
 			}
 		}
 		return null;
+	}
+	
+	public void setSelected(IMsoFeature msoFeature, boolean selected) {
+		msoFeature.setSelected(selected);
+		fireOnSelectionChanged();
+	}
+	
+	public void clearSelected() throws AutomationException, IOException {
+		for (int i = 0; i < featureCount(null); i++) {
+			IMsoFeature feature = (IMsoFeature)getFeature(i);
+			feature.setSelected(false);
+			fireOnSelectionChanged();
+		}
+	}
+	
+	public List getSelected() throws AutomationException, IOException {
+		ArrayList<IMsoFeature> selection = new ArrayList<IMsoFeature>();
+		for (int i = 0; i < featureCount(null); i++) {
+			IMsoFeature feature = (IMsoFeature)getFeature(i);
+			if (feature.isSelected()) {
+				selection.add(feature);
+			}
+		}
+		return selection;
+	}
+	
+	public List getSelectedMsoObjects() throws AutomationException, IOException {
+		ArrayList<IMsoObjectIf> selection = new ArrayList<IMsoObjectIf>();
+		for (int i = 0; i < featureCount(null); i++) {
+			IMsoFeature feature = (IMsoFeature)getFeature(i);
+			selection.add(feature.getMsoObject());
+		}
+		return selection;
+	}
+	
+	public void addDiskoMapEventListener(IDiskoMapEventListener listener) {
+		if (listeners.indexOf(listener) == -1) {
+			listeners.add(listener);
+		}
+	}
+	
+	public void removeDiskoMapEventListener(IDiskoMapEventListener listener) {
+		listeners.remove(listener);
+	}
+	
+	protected void fireOnSelectionChanged() {
+		for (int i = 0; i < listeners.size(); i++) {
+			try {
+				listeners.get(i).onSelectionChanged(diskoMapEvent);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public IFeatureCursor IFeatureClass_insert(boolean arg0)

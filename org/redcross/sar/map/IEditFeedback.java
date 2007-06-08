@@ -1,11 +1,11 @@
 package org.redcross.sar.map;
 
-import com.esri.arcgis.geodatabase.IFeature;
+import org.redcross.sar.map.feature.IMsoFeature;
 
 public interface IEditFeedback {
 	
-	public void editStarted(IFeature editFeature);
+	public void editStarted();
 	
-	public void editFinished(IFeature editFeature);
+	public void editFinished(IMsoFeature editFeature);
 
 }

@@ -72,20 +72,21 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 		return map;
 	}
 	
-	public IMsoFeature getEditFeature() {
-		return editFeature;
-	}
-
 	public IMsoFeatureClass getFeatureClass() {
 		return featureClass;
 	}
 
-	public void setEditFeature(IMsoFeature editFeature) {
-		this.editFeature = editFeature;
-	}
-
 	public void setFeatureClass(IMsoFeatureClass featureClass) {
+		editFeature = null;
 		this.featureClass = featureClass;
+	}
+	
+	public void setEditFeature(IMsoFeature msoFeature) {
+		editFeature = msoFeature;
+	}
+	
+	public IMsoFeature getEditFeature() {
+		return editFeature;
 	}
 
 	public IEditFeedback getEditFeedback() {

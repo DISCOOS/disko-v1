@@ -2,14 +2,33 @@ package org.redcross.sar.map;
 
 import java.io.IOException;
 
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
 import org.redcross.sar.app.IDiskoApplication;
+import org.redcross.sar.app.Utils;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.POIDialog;
+import org.redcross.sar.map.feature.AreaFeature;
+import org.redcross.sar.map.feature.AreaFeatureClass;
 import org.redcross.sar.map.feature.IMsoFeature;
+import org.redcross.sar.map.feature.OperationAreaFeatureClass;
+import org.redcross.sar.map.layer.OperationAreaLayer;
+import org.redcross.sar.mso.IMsoManagerIf;
+import org.redcross.sar.mso.data.IAreaIf;
+import org.redcross.sar.mso.data.IPOIIf;
+import org.redcross.sar.mso.data.IPOIIf.POIType;
 
+import com.esri.arcgis.geodatabase.IFeature;
+import com.esri.arcgis.geodatabase.IFeatureClass;
 import com.esri.arcgis.geometry.Envelope;
+import com.esri.arcgis.geometry.GeometryBag;
 import com.esri.arcgis.geometry.IEnvelope;
+import com.esri.arcgis.geometry.IGeometry;
+import com.esri.arcgis.geometry.IPolyline;
 import com.esri.arcgis.geometry.Point;
+import com.esri.arcgis.geometry.Polygon;
+import com.esri.arcgis.geometry.Polyline;
 import com.esri.arcgis.interop.AutomationException;
 
 /**
@@ -22,6 +41,9 @@ public class POITool extends AbstractCommandTool {
 	private static final long serialVersionUID = 1L;
 	
 	private POIDialog poiDialog = null;
+	private IAreaIf area = null;
+	private OperationAreaFeatureClass opAreaFC = null;
+	private AreaFeatureClass areaFC = null;
 	private IEnvelope env = null;
 		
 	/**
@@ -37,9 +59,22 @@ public class POITool extends AbstractCommandTool {
 		if (obj instanceof IDiskoMap) {
 			map = (DiskoMap)obj;
 			map.addDiskoMapEventListener(this);
+			IDiskoMapManager mapManager = getMap().getMapManager();
+			OperationAreaLayer opAreaLayer = (OperationAreaLayer) mapManager.
+				getMsoLayer(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA);
+			opAreaFC = (OperationAreaFeatureClass)opAreaLayer.getFeatureClass();
 			poiDialog = (POIDialog)dialog;
 			poiDialog.setLocationRelativeTo(map, DiskoDialog.POS_WEST, false);
 		}
+	}
+	
+	/**
+	 * Set an MSO Area to add POI's. POI's will also snap to geometries in Area.
+	 * @param area
+	 */
+	public void setArea(IAreaIf area, AreaFeatureClass areaFC) {
+		this.area   = area;
+		this.areaFC = areaFC;
 	}
 
 	public void onMouseDown(int button, int shift, int x, int y)
@@ -48,22 +83,16 @@ public class POITool extends AbstractCommandTool {
 			editFeature.setSelected(false);
 			refresh((Point)editFeature.getShape());
 		}
-		editFeature = (IMsoFeature)featureClass.createFeature();
 		if (editFeedback != null) {
-			editFeedback.editStarted(editFeature);
+			editFeedback.editStarted();
 		}
 	}	
 	
-	public void onMouseMove(int button, int shift, int x, int y)
-			throws IOException, AutomationException {
-	}
-	
 	public void addPOIAt(double x, double y) throws IOException, AutomationException {
 		if (editFeature != null) {
-			editFeature.setSelected(false);
+			featureClass.clearSelected();
 			refresh((Point)editFeature.getShape());
 		}
-		editFeature = (IMsoFeature)featureClass.createFeature();
 		Point p = new Point();
 		p.setX(x);
 		p.setY(y);
@@ -71,17 +100,54 @@ public class POITool extends AbstractCommandTool {
 	}
 	
 	public void addPOIAt(Point point) throws IOException, AutomationException {
+		// check if POI is inside Operation area
+		if (!isContaining(opAreaFC, point)) {
+			showWarning("PUI er utenfor operasjonsområdet");
+			return;
+		}
+		editFeature = (IMsoFeature)featureClass.createFeature();
+		if (area != null) {
+			// snapping
+			IFeature feature = search(areaFC, point);
+			if (feature != null && feature instanceof AreaFeature) {
+				AreaFeature areaFeature = (AreaFeature)feature;
+				GeometryBag geomBag = (GeometryBag)areaFeature.getShape();
+				int index = getGeomIndex(geomBag, point);
+				if (index > -1) {
+					IGeometry subGeom = geomBag.getGeometry(index);
+					if (subGeom instanceof IPolyline) {
+						Polyline pline = (Polyline)subGeom;
+						POIType poiType = poiDialog.getSelectedType();
+						if (poiType == POIType.START) {
+							pline.queryFromPoint(point);
+						}
+						else if (poiType == POIType.STOP) {
+							pline.queryToPoint(point);
+						}
+					}
+				}
+			}
+			IPOIIf poi = (IPOIIf)editFeature.getMsoObject();
+			area.addAreaPOI(poi);
+		}
 		point.setSpatialReferenceByRef(map.getSpatialReference());
 		editFeature.setGeodata(MapUtil.getMsoPosistion(point));
-		editFeature.setSelected(true);
+		featureClass.setSelected(editFeature, true);
 		poiDialog.setMsoFeature(editFeature);
-		refresh(point);
 		
+		//pan to POI if not in current extent
+		Envelope extent = (Envelope)map.getActiveView().getExtent();
+		if (!extent.contains(point)) {
+			extent.centerAt(point);
+			map.setExtent(extent);
+		} else {
+			refresh(point);
+		}
 		if (editFeedback != null) {
 			editFeedback.editFinished(editFeature);
 		}
 	}
-
+	
 	public void onMouseUp(int button, int shift, int x, int y)
 			throws IOException, AutomationException {
 		Point p = transform(x, y);
@@ -104,5 +170,28 @@ public class POITool extends AbstractCommandTool {
 				com.esri.arcgis.carto.esriViewDrawPhase.esriViewGeography,null, env);
 		}
 		
+	}
+	
+	private boolean isContaining(IFeatureClass fc, IGeometry geom) 
+			throws AutomationException, IOException {
+		boolean flag = false;
+		for (int i = 0; i < fc.featureCount(null); i++) {
+			Polygon polygon = (Polygon)fc.getFeature(i).getShape();
+		if (polygon.contains(geom)) {
+			flag = true;
+		}
+		}
+		return flag;
+	}
+	
+	private void showWarning(final String msg) {
+		Runnable r = new Runnable(){
+            public void run() {
+            	JOptionPane.showMessageDialog(map, 
+            		msg, Utils.translate(opAreaFC.getClassCode()),
+            		JOptionPane.WARNING_MESSAGE);
+            }
+        };
+        SwingUtilities.invokeLater(r);
 	}
 }

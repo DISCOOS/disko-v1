@@ -7,10 +7,7 @@ import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.IMsoFeatureClass;
 
 import com.esri.arcgis.geodatabase.IFeature;
-import com.esri.arcgis.geometry.GeometryBag;
-import com.esri.arcgis.geometry.IGeometry;
 import com.esri.arcgis.geometry.Point;
-import com.esri.arcgis.geometry.esriGeometryType;
 import com.esri.arcgis.interop.AutomationException;
 
 /**
@@ -18,7 +15,7 @@ import com.esri.arcgis.interop.AutomationException;
  * @author geira
  *
  */
-public class EraseTool extends AbstractCommandTool {
+public class SelectFeatureTool extends AbstractCommandTool {
 
 	private static final long serialVersionUID = 1L;
 	private Point p = null;
@@ -27,7 +24,7 @@ public class EraseTool extends AbstractCommandTool {
 	/**
 	 * Constructs the DrawTool
 	 */
-	public EraseTool() throws IOException {
+	public SelectFeatureTool() throws IOException {
 		p = new Point();
 		p.setX(0);
 		p.setY(0);
@@ -60,15 +57,8 @@ public class EraseTool extends AbstractCommandTool {
 			if (feature != null && feature instanceof IMsoFeature) {
 				editFeature = (IMsoFeature)feature;
 				if (editFeature.isEditable()) {
-					IGeometry geom = editFeature.getShape();
-					if (fc.getShapeType() == esriGeometryType.esriGeometryBag) {
-						GeometryBag geomBag = (GeometryBag)geom;
-						editFeature.removeGeodataAt(getGeomIndex(geomBag, p));
-					}
-					else {
-						//editFeature.removeGeodata(null);
-						editFeature.delete();
-					}
+					fc.clearSelected();
+					fc.setSelected(editFeature, true);
 					map.partialRefresh(null);
 					break;
 				}

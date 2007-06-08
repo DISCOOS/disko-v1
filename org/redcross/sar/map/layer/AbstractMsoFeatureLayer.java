@@ -1,14 +1,10 @@
 package org.redcross.sar.map.layer;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.redcross.sar.app.Utils;
-import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.IMsoFeatureClass;
 import org.redcross.sar.mso.IMsoManagerIf;
-import org.redcross.sar.mso.data.IMsoObjectIf;
 
 import com.esri.arcgis.carto.ILayerGeneralProperties;
 import com.esri.arcgis.carto.esriViewDrawPhase;
@@ -63,31 +59,6 @@ public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoD
 	public void setClassCode(IMsoManagerIf.MsoClassCode classCode) {
 		this.classCode = classCode;
 		this.name = Utils.translate(classCode);
-	}
-	
-	public void clearSelected() throws AutomationException, IOException {
-		for (int i = 0; i < featureClass.featureCount(null); i++) {
-			IMsoFeature feature = (IMsoFeature)featureClass.getFeature(i);
-			feature.setSelected(false);
-		}
-	}
-	
-	public List getSelected() throws AutomationException, IOException {
-		ArrayList<IMsoFeature> selection = new ArrayList<IMsoFeature>();
-		for (int i = 0; i < featureClass.featureCount(null); i++) {
-			IMsoFeature feature = (IMsoFeature)featureClass.getFeature(i);
-			selection.add(feature);
-		}
-		return selection;
-	}
-	
-	public List getSelectedMsoObjects() throws AutomationException, IOException {
-		ArrayList<IMsoObjectIf> selection = new ArrayList<IMsoObjectIf>();
-		for (int i = 0; i < featureClass.featureCount(null); i++) {
-			IMsoFeature feature = (IMsoFeature)featureClass.getFeature(i);
-			selection.add(feature.getMsoObject());
-		}
-		return selection;
 	}
 
 	public boolean isValid() throws IOException, AutomationException {

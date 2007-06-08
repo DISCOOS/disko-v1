@@ -7,6 +7,7 @@ import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.DrawDialog;
+import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.index.IndexedGeometry;
 
 import com.esri.arcgis.carto.InvalidArea;
@@ -16,7 +17,6 @@ import com.esri.arcgis.display.SimpleLineSymbol;
 import com.esri.arcgis.display.esriScreenCache;
 import com.esri.arcgis.geometry.Envelope;
 import com.esri.arcgis.geometry.GeometryBag;
-import com.esri.arcgis.geometry.IEnvelope;
 import com.esri.arcgis.geometry.IGeometry;
 import com.esri.arcgis.geometry.IPoint;
 import com.esri.arcgis.geometry.ISegmentGraphCursor;
@@ -101,7 +101,7 @@ public class DrawTool extends AbstractCommandTool {
 			drawDialog.onLoad(map);
 			drawDialog.setLocationRelativeTo(map, DiskoDialog.POS_WEST, false);
 			setSnapableLayers(drawDialog.getSnapModel().getSelected());
-			setSnapTolerance(map.getActiveView().getExtent().getWidth()/50);
+			setSnapTolerance(map.getActiveView().getExtent().getWidth()/100);
 			drawDialog.setSnapTolerance(getSnapTolerance());
 		}
 	}
@@ -134,8 +134,13 @@ public class DrawTool extends AbstractCommandTool {
 	}
 
 	public void onDblClick() throws IOException, AutomationException {
+		if (featureClass == null) {
+			return;
+		}
+		if (editFeature != null) {
+			featureClass.clearSelected();
+		}
 		pathGeometry.simplify();
-		IEnvelope env = pathGeometry.getEnvelope();
 		pathGeometry.setSpatialReferenceByRef(map.getSpatialReference());
 		
 		if (featureClass.getShapeType() == esriGeometryType.esriGeometryPolyline) {
@@ -143,13 +148,19 @@ public class DrawTool extends AbstractCommandTool {
 		else if (featureClass.getShapeType() == esriGeometryType.esriGeometryPolygon) {
 			Polygon polygon = getPolygon(pathGeometry);
 			polygon.setSpatialReferenceByRef(map.getSpatialReference());
+			editFeature = (IMsoFeature) featureClass.createFeature();
 			editFeature.setGeodata(MapUtil.getMsoPolygon(polygon));
+			featureClass.setSelected(editFeature, true);
 		}
 		else if (featureClass.getShapeType() == esriGeometryType.esriGeometryBag) {
+			if (editFeature == null) {
+				editFeature = (IMsoFeature) featureClass.createFeature();
+			}
 			editFeature.addGeodata(MapUtil.getMsoRoute(pathGeometry));
+			featureClass.setSelected(editFeature, true);
 		}
 		reset();
-		map.partialRefresh(env);
+		map.getActiveView().refresh();
 		if (editFeedback != null) {
 			editFeedback.editFinished(editFeature);
 		}
@@ -168,14 +179,18 @@ public class DrawTool extends AbstractCommandTool {
 
 	public void onMouseDown(int button, int shift, int x, int y)
 			throws IOException, AutomationException {
+		if (featureClass == null) {
+			return;
+		}
 		if (editFeedback != null) {
-			editFeedback.editStarted(editFeature);
+			editFeedback.editStarted();
 		}
 		p2 = transform(x,y);
 		//try snapping
 		searchEnvelope.centerAt(p2);
 		Polyline pline = (Polyline)indexedGeometry.search(searchEnvelope);
 		if (pline != null) {
+			pline.densify(getSnapTolerance(), -1);
 			p2 = getNearestPoint(pline, p2);
 		}
 		if (pathGeometry == null) {
@@ -194,6 +209,9 @@ public class DrawTool extends AbstractCommandTool {
 	
 	public void onMouseMove(int button, int shift, int x, int y)
 			throws IOException, AutomationException {
+		if (featureClass == null) {
+			return;
+		}
 		//Only create the trace every other time the mouse moves
 		moveCounter++;
 		if(moveCounter < 2) {
@@ -243,7 +261,7 @@ public class DrawTool extends AbstractCommandTool {
 		}
 		// densify rubberband, use vertices as input to segment graph
 		Polyline copy = (Polyline)rubberBand.esri_clone();
-		copy.densify(getSnapTolerance(), -1);
+		copy.densify(getSnapTolerance()/10, -1);
 		// greate a geometry bag to hold selected polylines
 		GeometryBag gb = new GeometryBag();
 		if (pline1 != null) {
@@ -279,6 +297,9 @@ public class DrawTool extends AbstractCommandTool {
 	}
 	
 	private void draw() throws IOException, AutomationException {
+		if (map == null) {
+			return;
+		}
 		IScreenDisplay screenDisplay = map.getActiveView().getScreenDisplay();
 		screenDisplay.startDrawing(screenDisplay.getHDC(),(short) esriScreenCache.esriNoScreenCache);
 		

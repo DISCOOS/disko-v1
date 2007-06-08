@@ -22,7 +22,7 @@ public interface IDiskoTool {
 	
 	public IMsoFeatureClass getFeatureClass();
 	
-	public void setEditFeature(IMsoFeature editFeature);
+	public void setEditFeature(IMsoFeature msoFeature);
 	
 	public IMsoFeature getEditFeature();
 	
