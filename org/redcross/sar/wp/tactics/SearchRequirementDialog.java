@@ -68,6 +68,12 @@ public class SearchRequirementDialog extends DiskoDialog {
 		}
 	}
 	
+	public void reset() {
+		getAccuracyTextField().setText(null);
+		getPriorityTextField().setText(null);
+		getCriticalQuestionsTextArea().setText(null);
+	}
+	
 	public int getAccuracy() {
 		return getAccuracySlider().getValue();
 	}
@@ -424,6 +430,7 @@ public class SearchRequirementDialog extends DiskoDialog {
 		if (criticalQuestionsTextArea == null) {
 			try {
 				criticalQuestionsTextArea = new JTextArea();
+				criticalQuestionsTextArea.setLineWrap(true);
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}

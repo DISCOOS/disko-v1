@@ -8,15 +8,18 @@ import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
 import org.redcross.sar.util.except.IllegalOperationException;
+import org.redcross.sar.wp.tactics.IDiskoWpTactics.TacticsTaskType;
+
 import java.awt.Dimension;
 import javax.swing.BorderFactory;
-import javax.swing.Icon;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -28,6 +31,7 @@ public class ListDialog extends DiskoDialog {
 
 	private static final long serialVersionUID = 1L;
 	private DiskoWpTacticsImpl wp = null;
+	private Dimension buttonSize = null;
 	private JPanel contentPanel = null;
 	private JPanel buttonPanel = null;
 	private JButton printButton = null;
@@ -40,6 +44,7 @@ public class ListDialog extends DiskoDialog {
 	public ListDialog(DiskoWpTacticsImpl wp) {
 		super(wp.getApplication().getFrame());
 		this.wp = wp;
+		buttonSize = wp.getApplication().getUIFactory().getSmallButtonSize();
 		initialize();
 	}
 
@@ -133,12 +138,15 @@ public class ListDialog extends DiskoDialog {
 	private JButton getMakeReadyButton() {
 		if (makeReadyButton == null) {
 			try {
-				Dimension size = wp.getApplication().getUIFactory().getSmallButtonSize();
-				String iconName = "ready.icon";
-				Icon icon = Utils.createImageIcon(wp.getProperty(iconName),iconName);
 				makeReadyButton = new JButton();
-				makeReadyButton.setIcon(icon);
-				makeReadyButton.setPreferredSize(size);
+				Enum key = TacticsTaskType.MAKE_READY_TASK;
+				ImageIcon icon = Utils.getIcon(key);
+				if (icon != null) {
+					makeReadyButton.setIcon(icon);
+				} else {
+					makeReadyButton.setText(key.name());
+				}
+				makeReadyButton.setPreferredSize(buttonSize);
 				makeReadyButton.setEnabled(false);
 				makeReadyButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -160,12 +168,15 @@ public class ListDialog extends DiskoDialog {
 	private JButton getPrintButton() {
 		if (printButton == null) {
 			try {
-				Dimension size = wp.getApplication().getUIFactory().getSmallButtonSize();
-				String iconName = "print.icon";
-				Icon icon = Utils.createImageIcon(wp.getProperty(iconName),iconName);
 				printButton = new JButton();
-				printButton.setIcon(icon);
-				printButton.setPreferredSize(size);
+				Enum key = TacticsTaskType.PRINT_TASK;
+				ImageIcon icon = Utils.getIcon(key);
+				if (icon != null) {
+					printButton.setIcon(icon);
+				} else {
+					printButton.setText(key.name());
+				}
+				printButton.setPreferredSize(buttonSize);
 				printButton.setEnabled(false);
 				printButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {

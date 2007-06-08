@@ -22,6 +22,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JList;
+import javax.swing.ListSelectionModel;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -70,6 +71,13 @@ public class HypothesesDialog extends DiskoDialog {
 		catch (java.lang.Throwable e) {
 			//  Do Something
 		}
+	}
+	
+	public void reset() {
+		getDescriptionTextArea().setText(null);
+		getPriorityComboBox().setSelectedIndex(0);
+		getStatusComboBox().setSelectedIndex(0);
+		selectedHypotheses = null;
 	}
 	
 	public IHypothesisIf getSelectedHypotheses() {
@@ -190,10 +198,17 @@ public class HypothesesDialog extends DiskoDialog {
 				HypothesesListModel listModel = new HypothesesListModel(msoModel);
 				hypothesesList = new JList(listModel);
 				hypothesesList.setCellRenderer(new HypothesesListCellRenderer());
+				hypothesesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 				hypothesesList.addListSelectionListener(new ListSelectionListener() {
 					public void valueChanged(ListSelectionEvent e) {
-						applyChanges();
+						if (e.getValueIsAdjusting()) {
+							return;
+						}
 						selectedHypotheses = (IHypothesisIf)hypothesesList.getSelectedValue();
+						if (selectedHypotheses == null) {
+							return;
+						}
+						applyChanges();
 						getDescriptionTextArea().setText(selectedHypotheses.getDescription());
 						if (selectedHypotheses.getPriority() > 0) {
 							getPriorityComboBox().setSelectedIndex(selectedHypotheses.getPriority()-1);
@@ -257,6 +272,7 @@ public class HypothesesDialog extends DiskoDialog {
 		if (descriptionTextArea == null) {
 			try {
 				descriptionTextArea = new JTextArea();
+				descriptionTextArea.setLineWrap(true);
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}

@@ -1,27 +1,33 @@
 package org.redcross.sar.wp.tactics;
 
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
-import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JToggleButton;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.event.DiskoMapEvent;
+import org.redcross.sar.event.IDiskoMapEventListener;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.NavBar;
 import org.redcross.sar.gui.POIDialog;
 import org.redcross.sar.gui.SubMenuPanel;
 import org.redcross.sar.gui.TextAreaDialog;
+import org.redcross.sar.gui.UIFactory;
 import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.DrawTool;
 import org.redcross.sar.map.EraseTool;
@@ -29,10 +35,14 @@ import org.redcross.sar.map.FlankTool;
 import org.redcross.sar.map.IDiskoMapManager;
 import org.redcross.sar.map.IEditFeedback;
 import org.redcross.sar.map.POITool;
+import org.redcross.sar.map.SelectFeatureTool;
 import org.redcross.sar.map.SplitTool;
+import org.redcross.sar.map.feature.AreaFeatureClass;
 import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.IMsoFeatureClass;
+import org.redcross.sar.map.feature.POIFeature;
 import org.redcross.sar.map.layer.AreaLayer;
+import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.map.layer.OperationAreaLayer;
 import org.redcross.sar.map.layer.POILayer;
 import org.redcross.sar.map.layer.SearchAreaLayer;
@@ -41,7 +51,7 @@ import org.redcross.sar.mso.data.IAreaIf;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IAssignmentListIf;
 import org.redcross.sar.mso.data.ICmdPostIf;
-import org.redcross.sar.mso.data.IMsoObjectIf;
+import org.redcross.sar.mso.data.IHypothesisIf;
 import org.redcross.sar.mso.data.IOperationAreaIf;
 import org.redcross.sar.mso.data.ISearchAreaIf;
 import org.redcross.sar.mso.data.ISearchIf;
@@ -52,7 +62,10 @@ import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
 import org.redcross.sar.wp.TestData.BuildTestData;
 
-import com.esri.arcgis.geodatabase.IFeature;
+import com.esri.arcgis.geodatabase.IFeatureClass;
+import com.esri.arcgis.geometry.GeometryBag;
+import com.esri.arcgis.geometry.IGeometry;
+import com.esri.arcgis.geometry.Polygon;
 import com.esri.arcgis.interop.AutomationException;
 
 /**
@@ -61,74 +74,43 @@ import com.esri.arcgis.interop.AutomationException;
  * @author geira
  * 
  */
-public class DiskoWpTacticsImpl extends AbstractDiskoWpModule implements
-IDiskoWpTactics, IEditFeedback {
+public class DiskoWpTacticsImpl extends AbstractDiskoWpModule 
+		implements IDiskoWpTactics, IDiskoMapEventListener, IEditFeedback {
 
 	private ElementDialog elementDialog = null;
-
-	private JToggleButton dummyToggleButton = null;
-
+	private Dimension buttonSize = null;
 	private JToggleButton elementToggleButton = null;
-
 	private JToggleButton listToggleButton = null;
-
 	private JToggleButton missionToggleButton = null;
-
 	private JToggleButton hypotheseToggleButton = null;
-
 	private JToggleButton priorityToggleButton = null;
-
 	private JToggleButton requirementToggleButton = null;
-
 	private JToggleButton descriptionToggleButton = null;
-
 	private JToggleButton unitToggleButton = null;
-
 	private Enum currentAction = null;
-
 	private POITool poiTool = null;
-
 	private DrawTool drawTool = null;
-
 	private EraseTool eraseTool = null;
-
 	private FlankTool flankTool = null;
-	
 	private SplitTool splitTool = null;
-
 	private POIDialog poiDialog = null;
-
+	private SelectFeatureTool selectFeatureTool = null;
 	private ArrayList<DiskoDialog> dialogs = null;
-
 	private TextAreaDialog textAreaDialog = null;
-
 	private HypothesesDialog hypothesesDialog = null;
-
 	private PriorityDialog priorityDialog = null;
-
 	private UnitSelectionDialog unitSelectionDialog = null;
-
 	private SearchRequirementDialog searchRequirementDialog = null;
-
 	private ListDialog listDialog = null;
-
 	private ListSelectionListener elementListSelectionListener = null;
-
 	private SubMenuPanel subMenu = null;
-
 	private OperationAreaLayer opAreaLayer = null;
-
 	private SearchAreaLayer searchAreaLayer = null;
-
 	private POILayer poiLayer = null;
-
 	private AreaLayer areaLayer = null;
-
-	private boolean workInProgress = false;
-
 	private IAssignmentIf currentAssignment = null;
-
-	private IMsoObjectIf currentMsoObject = null;
+	private IMsoFeature currentMsoFeature = null;
+	private boolean isInitializing = true;
 
 	/**
 	 * Constructs a DiskoApTaktikkImpl
@@ -142,15 +124,16 @@ IDiskoWpTactics, IEditFeedback {
 		elementListSelectionListener = new ElementListSelectionListener();
 		subMenu = getApplication().getUIFactory().getSubMenuPanel();
 		
-		 BuildTestData.createCmdPost(getMsoModel());
-	     BuildTestData.createUnitsAndAssignments(getMsoModel());
-	        
+		BuildTestData.createCmdPost(getMsoModel());
+	    BuildTestData.createUnitsAndAssignments(getMsoModel()); 
+	    buttonSize = getApplication().getUIFactory().getLargeButtonSize();
 		initialize();
 	}
 
 	private void initialize() {
 		loadProperties("properties");
 		DiskoMap map = (DiskoMap) getMap();
+		map.addDiskoMapEventListener(this);
 		layoutComponent(map);
 		layoutButton(getElementToggleButton(), true);
 		layoutButton(getListToggleButton(), true);
@@ -160,10 +143,6 @@ IDiskoWpTactics, IEditFeedback {
 		layoutButton(getRequirementToggleButton(), true);
 		layoutButton(getDescriptionToggleButton(), true);
 		layoutButton(getUnitToggleButton(), true);
-
-		// Add a not visible dummy JToggleButton, used to unselect all
-		// (visbible) JToggleButtons. This is a hack suggested by Java dev forum
-		layoutButton(getDummyToggleButton(), true);
 	}
 
 	/*
@@ -175,9 +154,27 @@ IDiskoWpTactics, IEditFeedback {
 		return "Taktikk";
 	}
 
-	public void onMapReplaced(DiskoMapEvent e) throws IOException {
-		DiskoMap map = (DiskoMap) getMap();
-		map.setName(getName() + "Map");
+	public void onMapReplaced(DiskoMapEvent e) 
+			throws IOException, AutomationException {
+		//must be done here after the map has been loaded
+		final JToggleButton button = getApplication().getNavBar().getDrawLineToggleButton();
+		Runnable r = new Runnable(){
+            public void run() {
+            	button.doClick();
+            	isInitializing = false;
+            }
+        };
+        SwingUtilities.invokeLater(r);
+	}
+	
+	public void onSelectionChanged(DiskoMapEvent e) 
+			throws IOException, AutomationException {
+		IMsoFeatureClass msoFC = (IMsoFeatureClass)e.getSource();
+		List selection = msoFC.getSelected();
+		if (selection != null && selection.size() > 0 &&
+				!(selection.get(0) instanceof POIFeature)) {
+			currentMsoFeature = (IMsoFeature)selection.get(0);
+		}
 	}
 
 	public void activated() {
@@ -191,7 +188,8 @@ IDiskoWpTactics, IEditFeedback {
 		myInterests.add(NavBar.ToolCommandType.ZOOM_IN_TOOL);
 		myInterests.add(NavBar.ToolCommandType.ZOOM_OUT_TOOL);
 		myInterests.add(NavBar.ToolCommandType.PAN_TOOL);
-		myInterests.add(NavBar.ToolCommandType.SELECT_FEATURES_TOOL);
+		myInterests.add(NavBar.ToolCommandType.SELECT_FEATURE_TOOL);
+		myInterests.add(NavBar.ToolCommandType.ZOOM_FULL_EXTENT_COMMAND);
 		myInterests.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND);
 		myInterests.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND);
 		navBar.showButtons(myInterests);
@@ -201,6 +199,20 @@ IDiskoWpTactics, IEditFeedback {
 		searchAreaLayer = (SearchAreaLayer) mapManager.getMsoLayer(IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA);
 		poiLayer = (POILayer) mapManager.getMsoLayer(IMsoManagerIf.MsoClassCode.CLASSCODE_POI);
 		areaLayer = (AreaLayer) mapManager.getMsoLayer(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
+		
+		try {
+			((IMsoFeatureClass)opAreaLayer.getFeatureClass()).addDiskoMapEventListener(this);
+			((IMsoFeatureClass)searchAreaLayer.getFeatureClass()).addDiskoMapEventListener(this);
+			((IMsoFeatureClass)areaLayer.getFeatureClass()).addDiskoMapEventListener(this);
+			((IMsoFeatureClass)poiLayer.getFeatureClass()).addDiskoMapEventListener(this);
+			
+		} catch (AutomationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		drawTool = navBar.getDrawTool();
 		drawTool.setEditFeedback(this);
@@ -208,40 +220,131 @@ IDiskoWpTactics, IEditFeedback {
 		eraseTool = navBar.getEraseTool();
 		flankTool = navBar.getFlankTool();
 		splitTool = navBar.getSplitTool();
-		enableTools(false);
+		selectFeatureTool = navBar.getSelectFeatureTool();
 		poiDialog = (POIDialog) poiTool.getDialog();
-
-		if (!workInProgress) {
-			enableButtons(false);
+		
+		//this will show the Nav bar
+		UIFactory uiFactory = getApplication().getUIFactory();
+		JToggleButton navToggle = uiFactory.getMainMenuPanel().getNavToggleButton();
+		if (!navToggle.isSelected()) {
+			navToggle.doClick();
+		}
+		selectElement();
+	}
+	
+	private void selectElement() {
+		NavBar navBar = getApplication().getNavBar();
+		navBar.getFlankToggleButton().setVisible(false);
+		navBar.getSplitToggleButton().setVisible(false);
+		
+		ICmdPostIf cmdPost = getMsoManager().getCmdPost();
+		JList list = getElementDialog().getElementList();
+		list.clearSelection();
+		if (cmdPost.getOperationAreaListItems().size() == 0) {
+			list.setSelectedValue(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA, false);
+		}
+		else if (cmdPost.getSearchAreaListItems().size() == 0) {
+			list.setSelectedValue(IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA, false);
+		}
+		else {
+			if (currentAssignment != null && currentAssignment instanceof ISearchIf) {
+				ISearchIf search = (ISearchIf)currentAssignment;
+				list.setSelectedValue(search.getSubType(), false);
+			} else {
+				list.setSelectedValue(ISearchIf.SearchSubType.LINE, false);
+			}
+			navBar.getFlankToggleButton().setVisible(true);
+			navBar.getSplitToggleButton().setVisible(true);
 		}
 	}
 
 	public void deactivated() {
 		super.deactivated();
 		hideDialogs(null);
-		getDummyToggleButton().doClick();
+		NavBar navBar = getApplication().getNavBar();
+		navBar.getFlankToggleButton().setVisible(true);
+		navBar.getSplitToggleButton().setVisible(true);
 	}
 
-	public void editStarted(IFeature editFeature) {
+	public void editStarted() {
+		NavBar navBar = getApplication().getNavBar();
+		navBar.getPOIToggleButton().setEnabled(true);
+		navBar.getFlankToggleButton().setEnabled(true);
+		navBar.getEraseToggleButton().setEnabled(true);
+		navBar.getSplitToggleButton().setEnabled(true);
+		navBar.getSelectFeatureToggleButton().setEnabled(true);
+		getElementToggleButton().setEnabled(false);
 	}
 
-	public void editFinished(IFeature editFeature) {
+	public void editFinished(IMsoFeature editFeature) {
+		if (editFeature instanceof IMsoFeature) {
+			try {
+				currentMsoFeature = editFeature;
+				if (currentAction == IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA) {
+				}
+				else if (currentAction == IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA) {
+					if (!isContaining(opAreaLayer.getFeatureClass(), editFeature.getShape())) {
+						showWarning("Søkeområde er ikke innenfor operasjonsområde. Tegn på nytt");
+				        editFeature.delete();
+					}
+				} 
+				else { // search
+					GeometryBag geomBag = (GeometryBag)editFeature.getShape();
+					for (int i = 0; i < geomBag.getGeometryCount(); i++) {
+						IGeometry geom = geomBag.getGeometry(i);
+						if (!isContaining(opAreaLayer.getFeatureClass(), geom)) {
+							showWarning("Oppdraget er ikke innenfor operasjonsområde. Tegn på nytt");
+					        editFeature.removeGeodataAt(i);
+					        break;
+						}
+					}
+					IAreaIf area = (IAreaIf) editFeature.getMsoObject();
+					AreaFeatureClass areaFC = (AreaFeatureClass) areaLayer.getFeatureClass();
+					poiTool.setArea(area, areaFC);
+				}
+				super.fireTaskStarted();
+			} catch (AutomationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		enableButtons(true);
 	}
-
+	
+	private boolean isContaining(IFeatureClass fc, IGeometry geom) 
+			throws AutomationException, IOException {
+		boolean flag = false;
+		for (int i = 0; i < fc.featureCount(null); i++) {
+			Polygon polygon = (Polygon)fc.getFeature(i).getShape();
+			if (polygon.contains(geom)) {
+				flag = true;
+			}
+		}
+		return flag;
+	}
+	
+	private void showWarning(final String msg) {
+		Runnable r = new Runnable(){
+            public void run() {
+            	JOptionPane.showMessageDialog(getApplication().getFrame(), 
+            		msg, Utils.translate(currentAction),
+            		JOptionPane.WARNING_MESSAGE);
+            }
+        };
+        SwingUtilities.invokeLater(r);
+	}
+	
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.geodata.engine.disko.task.DiskoAp#cancel()
 	 */
 	public void cancel() {
-		super.fireTaskCanceled();
-		hideDialogs(null);
-		getDummyToggleButton().doClick();
-		doRollback();
-		enableButtons(false);
-		enableTools(false);
-		getElementDialog().getElementList().clearSelection();
+		fireTaskCanceled();
+		getMsoModel().rollback();
+		reset();
 	}
 
 	/*
@@ -255,21 +358,27 @@ IDiskoWpTactics, IEditFeedback {
 			getTextAreaDialog().setText(null);
 
 			if (currentAction == IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA) {
-				IOperationAreaIf opArea = (IOperationAreaIf) currentMsoObject;
+				IOperationAreaIf opArea = (IOperationAreaIf) currentMsoFeature.getMsoObject();
 				opArea.setRemarks(getTextAreaDialog().getText());
-			} else if (currentAction == IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA) {
-				ISearchAreaIf searchArea = (ISearchAreaIf) currentMsoObject;
-				searchArea.setSearchAreaHypothesis(getHypothesesDialog()
-						.getSelectedHypotheses());
+			}
+			else if (currentAction == IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA) {
+				ISearchAreaIf searchArea = (ISearchAreaIf) currentMsoFeature.getMsoObject();
+				IHypothesisIf hypo = getHypothesesDialog().getSelectedHypotheses();
+				if (hypo == null) {
+					showWarning("Må tilordne en hypotese til søksområde");
+					getHypotheseToggleButton().doClick();
+					return;
+				}
+				searchArea.setSearchAreaHypothesis(hypo);
 				searchArea.setPriority(getPriorityDialog().getPriority());
-			} else { // search
+			} 
+			else { // search
 				ICmdPostIf cmdPost = getMsoManager().getCmdPost();
 				if (currentAssignment == null) { // must create new
-					IAssignmentListIf assignmentList = cmdPost
-					.getAssignmentList();
+					IAssignmentListIf assignmentList = cmdPost.getAssignmentList();
 					currentAssignment = assignmentList.createSearch();
 				}
-				IAreaIf area = (IAreaIf) currentMsoObject;
+				IAreaIf area = (IAreaIf) currentMsoFeature.getMsoObject();
 				currentAssignment.setPlannedArea(area);
 				SearchRequirementDialog dialog = getSearchRequirementDialog();
 				currentAssignment.setPriority(dialog.getPriority());
@@ -286,44 +395,47 @@ IDiskoWpTactics, IEditFeedback {
 					if (unit != null) {
 						unit.addUnitAssignment(search, dialog.getStatus()); // modified
 						// VW
-					} else {
-						currentAssignment.setStatus(dialog.getStatus()); // todo
+					} 
+					else {
+						//currentAssignment.setStatus(dialog.getStatus()); // todo
 						// Test????
 					}
 				}
 				currentAssignment.setPriority(dialog.getPriority());
 				currentAssignment.setRemarks(getTextAreaDialog().getText());
 			}
-		} catch (IllegalOperationException e) {
-			doRollback();
-			e.printStackTrace();
-		} finally {
-			// commit changes and clear graphics
-			currentAssignment = null;
-			workInProgress = false;
-			enableButtons(false);
-			doCommit();
-		}
-	}
-
-	private void doCommit() {
-		try {
-			getMsoModel().commit();
-			getMap().partialRefresh(null);
-			enableTools(false);
-			getElementDialog().getElementList().clearSelection();
-		} catch (AutomationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	private void doRollback() {
-		try {
+		} 
+		catch (IllegalOperationException e) {
 			getMsoModel().rollback();
+			fireTaskCanceled();
+			e.printStackTrace();
+		} 
+		finally {
+			getMsoModel().commit();
+			fireTaskFinished();
+			
+		}
+		reset();
+	}
+	
+	private void reset() {
+		try {
+			currentMsoFeature.setEditable(false);
+			currentMsoFeature.setSelected(false);
+			hideDialogs(null);
+			enableButtons(false);
+			getElementToggleButton().setEnabled(true);
+			// clear fields in dialogs
+			getTextAreaDialog().setText(null);
+			getHypothesesDialog().reset();
+			getSearchRequirementDialog().reset();
+			getPriorityDialog().reset();
+			poiDialog.reset();
+			eraseTool.removeAll();
+			selectFeatureTool.removeAll();
+			
+			//select next element
+			selectElement();
 			getMap().partialRefresh(null);
 		} catch (AutomationException e) {
 			// TODO Auto-generated catch block
@@ -335,32 +447,54 @@ IDiskoWpTactics, IEditFeedback {
 	}
 
 	public void startEdit(IAssignmentIf assignment, boolean makeCopy) {
-		if (makeCopy) {
-			// clone() is not implemented
-			// currentAssignment = assignment.clone();
-			currentAssignment = assignment;
-		} else {
-			currentAssignment = assignment;
-		}
-		SearchRequirementDialog reqDialog = getSearchRequirementDialog();
-		UnitSelectionDialog unitDialog = getUnitSelectionDialog();
-		JList elementList = getElementDialog().getElementList();
-		elementList.setSelectedValue(assignment.getType(), false);
-
-		unitDialog.selectedAssignedUnit(assignment);
-		getTextAreaDialog().setText(assignment.getRemarks());
-		reqDialog.setPriority(assignment.getPriority());
-		reqDialog.setStatus(assignment.getStatus());
-		reqDialog.setCriticalQuestions(assignment.getRemarks());
-
 		if (assignment instanceof ISearchIf) {
 			ISearchIf search = (ISearchIf) assignment;
+			if (makeCopy) {
+				// clone() is not implemented
+				// currentAssignment = assignment.clone();
+				currentAssignment = assignment;
+			} 
+			else {
+				currentAssignment = assignment;
+			}
+			SearchRequirementDialog reqDialog = getSearchRequirementDialog();
+			UnitSelectionDialog unitDialog = getUnitSelectionDialog();
+			JList elementList = getElementDialog().getElementList();
+			elementList.clearSelection();
+			elementList.setSelectedValue(search.getSubType(), false);
+
+			unitDialog.selectedAssignedUnit(search);
+			getTextAreaDialog().setText(search.getRemarks());
+			reqDialog.setPriority(search.getPriority());
+			reqDialog.setStatus(search.getStatus());
+			reqDialog.setCriticalQuestions(search.getRemarks());
+
 			reqDialog.setAccuracy(search.getPlannedAccuracy());
 			reqDialog.setPersonelNeed(search.getPlannedPersonnel());
 			reqDialog.setEstimatedProgress(search.getPlannedProgress());
-		}
-		IAreaIf area = assignment.getPlannedArea();
-		if (area != null) {
+			IAreaIf area = search.getPlannedArea();
+			if (area != null) {
+				try {
+					showSearchButtons();
+					enableButtons(true);
+			
+					IMsoFeatureLayer msoLayer = getMap().getMapManager().getMsoLayer(
+							IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
+					IMsoFeatureClass msoFC = (IMsoFeatureClass)msoLayer.getFeatureClass();
+					currentMsoFeature = msoFC.getFeature(area.getObjectId());
+					currentMsoFeature.setEditable(true);
+					getMap().zoomToFeature(currentMsoFeature);
+					drawTool.setEditFeature(currentMsoFeature);
+					
+					editStarted();
+				} catch (AutomationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -494,63 +628,29 @@ IDiskoWpTactics, IEditFeedback {
 		getUnitToggleButton().setEnabled(b);
 		subMenu.getFinishButton().setEnabled(b);
 	}
-	
-	private void enableTools(boolean b) {
-		NavBar navBar = getApplication().getNavBar();
-		navBar.getDrawLineToggleButton().setEnabled(b);
-		navBar.getSplitToggleButton().setEnabled(b);
-		navBar.getEraseToggleButton().setEnabled(b);
-		navBar.getFlankToggleButton().setEnabled(b);
-		navBar.getPOIToggleButton().setEnabled(b);
-		
-		if (!b) {
-			try {
-				getMap().setCurrentToolByRef(null);
-				navBar.unselectAll();
-			} catch (AutomationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
-
-	private JToggleButton getDummyToggleButton() {
-		if (dummyToggleButton == null) {
-			dummyToggleButton = new JToggleButton();
-			dummyToggleButton.setVisible(false);
-		}
-		return dummyToggleButton;
-	}
 
 	private JToggleButton getElementToggleButton() {
 		if (elementToggleButton == null) {
 			try {
-				Dimension size = getApplication().getUIFactory()
-				.getLargeButtonSize();
-				// String iconName = "MapZoomInTool.icon";
-				// Icon icon =
-				// Utils.createImageIcon(app.getProperty(iconName),iconName);
 				elementToggleButton = new JToggleButton();
-				elementToggleButton.setText("ELEMENT");
-				// elementToggleButton.setIcon(icon);
-				elementToggleButton.setPreferredSize(size);
-				elementToggleButton
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(
-							java.awt.event.ActionEvent e) {
+				Enum key = TacticsTaskType.ELEMENT_TASK;
+				ImageIcon icon = Utils.getIcon(key);
+				if (icon != null) {
+					elementToggleButton.setIcon(icon);
+				} else {
+					elementToggleButton.setText(key.name());
+				}
+				elementToggleButton.setPreferredSize(buttonSize);
+				elementToggleButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
 						ElementDialog dialog = getElementDialog();
 						hideDialogs(dialog);
-						if (elementToggleButton.isSelected()
-								&& dialog.isVisible()) {
+						if (elementToggleButton.isSelected() && dialog.isVisible()) {
 							dialog.setVisible(false);
-						} else {
-							java.awt.Point p = elementToggleButton
-							.getLocationOnScreen();
-							p.setLocation(p.x - dialog.getWidth() - 2,
-									p.y);
+						} 
+						else {
+							java.awt.Point p = elementToggleButton.getLocationOnScreen();
+							p.setLocation(p.x - dialog.getWidth() - 2, p.y);
 							dialog.setLocation(p);
 							dialog.setVisible(true);
 						}
@@ -567,28 +667,24 @@ IDiskoWpTactics, IEditFeedback {
 	private JToggleButton getDescriptionToggleButton() {
 		if (descriptionToggleButton == null) {
 			try {
-				Dimension size = getApplication().getUIFactory()
-				.getLargeButtonSize();
-				// String iconName = "MapZoomInTool.icon";
-				// Icon icon =
-				// Utils.createImageIcon(app.getProperty(iconName),iconName);
 				descriptionToggleButton = new JToggleButton();
-				descriptionToggleButton.setText("BESKRIVELSE");
-				// descriptionToggleButton.setIcon(icon);
-				descriptionToggleButton.setPreferredSize(size);
-				descriptionToggleButton
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(
-							java.awt.event.ActionEvent e) {
+				Enum key = TacticsTaskType.DESCRIPTION_TASK;
+				ImageIcon icon = Utils.getIcon(key);
+				if (icon != null) {
+					descriptionToggleButton.setIcon(icon);
+				} else {
+					descriptionToggleButton.setText(key.name());
+				}
+				descriptionToggleButton.setPreferredSize(buttonSize);
+				descriptionToggleButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
 						TextAreaDialog dialog = getTextAreaDialog();
 						dialog.setHeaderText("Beskrivelse av oppdrag:");
 						hideDialogs(dialog);
-						if (missionToggleButton.isSelected()
-								&& dialog.isVisible()) {
+						if (missionToggleButton.isSelected() && dialog.isVisible()) {
 							dialog.setVisible(false);
 						} else {
-							dialog.setLocationRelativeTo(
-									(JComponent) getMap(),
+							dialog.setLocationRelativeTo((JComponent) getMap(),
 									DiskoDialog.POS_SOUTH, true);
 							dialog.setVisible(true);
 						}
@@ -605,28 +701,26 @@ IDiskoWpTactics, IEditFeedback {
 	private JToggleButton getHypotheseToggleButton() {
 		if (hypotheseToggleButton == null) {
 			try {
-				Dimension size = getApplication().getUIFactory()
-				.getLargeButtonSize();
-				String iconName = "hypothese.icon";
-				Icon icon = Utils.createImageIcon(getApplication().getProperty(
-						iconName), iconName);
 				hypotheseToggleButton = new JToggleButton();
-				hypotheseToggleButton.setIcon(icon);
-				hypotheseToggleButton.setPreferredSize(size);
+				Enum key = TacticsTaskType.HYPOTHESIS_TASK;
+				ImageIcon icon = Utils.getIcon(key);
+				if (icon != null) {
+					hypotheseToggleButton.setIcon(icon);
+				} else {
+					hypotheseToggleButton.setText(key.name());
+				}
+				hypotheseToggleButton.setPreferredSize(buttonSize);
 				hypotheseToggleButton.setVisible(false);
-				hypotheseToggleButton
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(
-							java.awt.event.ActionEvent e) {
+				hypotheseToggleButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
 						HypothesesDialog dialog = getHypothesesDialog();
 						hideDialogs(dialog);
 						JComponent mapComp = (JComponent) getMap();
-						if (hypotheseToggleButton.isSelected()
-								& dialog.isVisible()) {
+						if (hypotheseToggleButton.isSelected() && dialog.isVisible()) {
 							dialog.setVisible(false);
-						} else {
-							dialog.setLocationRelativeTo(mapComp,
-									DiskoDialog.POS_SOUTH, true);
+						} 
+						else {
+							dialog.setLocationRelativeTo(mapComp,DiskoDialog.POS_SOUTH, true);
 							dialog.setVisible(true);
 						}
 					}
@@ -642,25 +736,24 @@ IDiskoWpTactics, IEditFeedback {
 	private JToggleButton getListToggleButton() {
 		if (listToggleButton == null) {
 			try {
-				Dimension size = getApplication().getUIFactory()
-				.getLargeButtonSize();
-				String iconName = "list.icon";
-				Icon icon = Utils.createImageIcon(getApplication().getProperty(
-						iconName), iconName);
 				listToggleButton = new JToggleButton();
-				listToggleButton.setIcon(icon);
-				listToggleButton.setPreferredSize(size);
-				listToggleButton
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(
-							java.awt.event.ActionEvent e) {
+				Enum key = TacticsTaskType.LIST_TASK;
+				ImageIcon icon = Utils.getIcon(key);
+				if (icon != null) {
+					listToggleButton.setIcon(icon);
+				} else {
+					listToggleButton.setText(key.name());
+				}
+				listToggleButton.setPreferredSize(buttonSize);
+				listToggleButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
 						ListDialog dialog = getListDialog();
 						hideDialogs(dialog);
 						JComponent mapComp = (JComponent) getMap();
-						if (listToggleButton.isSelected()
-								& dialog.isVisible()) {
+						if (listToggleButton.isSelected() && dialog.isVisible()) {
 							dialog.setVisible(false);
-						} else {
+						} 
+						else {
 							dialog.setLocationRelativeTo(mapComp);
 							dialog.setVisible(true);
 						}
@@ -677,28 +770,26 @@ IDiskoWpTactics, IEditFeedback {
 	private JToggleButton getMissionToggleButton() {
 		if (missionToggleButton == null) {
 			try {
-				Dimension size = getApplication().getUIFactory()
-				.getLargeButtonSize();
-				String iconName = "mission.icon";
-				Icon icon = Utils.createImageIcon(getApplication().getProperty(
-						iconName), iconName);
 				missionToggleButton = new JToggleButton();
-				missionToggleButton.setIcon(icon);
-				missionToggleButton.setPreferredSize(size);
+				Enum key = TacticsTaskType.MISSON_TASK;
+				ImageIcon icon = Utils.getIcon(key);
+				if (icon != null) {
+					missionToggleButton.setIcon(icon);
+				} else {
+					missionToggleButton.setText(key.name());
+				}
+				missionToggleButton.setPreferredSize(buttonSize);
 				missionToggleButton.setVisible(false);
-				missionToggleButton
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(
-							java.awt.event.ActionEvent e) {
+				missionToggleButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
 						TextAreaDialog dialog = getTextAreaDialog();
 						dialog.setHeaderText("Aksjonens oppdrag:");
 						hideDialogs(dialog);
-						if (missionToggleButton.isSelected()
-								&& dialog.isVisible()) {
+						if (missionToggleButton.isSelected() && dialog.isVisible()) {
 							dialog.setVisible(false);
-						} else {
-							dialog.setLocationRelativeTo(
-									(JComponent) getMap(),
+						} 
+						else {
+							dialog.setLocationRelativeTo((JComponent) getMap(), 
 									DiskoDialog.POS_SOUTH, true);
 							dialog.setVisible(true);
 						}
@@ -715,30 +806,26 @@ IDiskoWpTactics, IEditFeedback {
 	private JToggleButton getPriorityToggleButton() {
 		if (priorityToggleButton == null) {
 			try {
-				Dimension size = getApplication().getUIFactory()
-				.getLargeButtonSize();
-				// String iconName = "MapZoomInTool.icon";
-				// Icon icon =
-				// Utils.createImageIcon(app.getProperty(iconName),iconName);
 				priorityToggleButton = new JToggleButton();
-				priorityToggleButton.setText("PRIORITET");
-				// priorityToggleButton.setIcon(icon);
-				priorityToggleButton.setPreferredSize(size);
+				Enum key = TacticsTaskType.PRIORITY_TASK;
+				ImageIcon icon = Utils.getIcon(key);
+				if (icon != null) {
+					priorityToggleButton.setIcon(icon);
+				} else {
+					priorityToggleButton.setText(key.name());
+				}
+				priorityToggleButton.setPreferredSize(buttonSize);
 				priorityToggleButton.setVisible(false);
-				priorityToggleButton
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(
-							java.awt.event.ActionEvent e) {
+				priorityToggleButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
 						PriorityDialog dialog = getPriorityDialog();
 						hideDialogs(dialog);
-						if (priorityToggleButton.isSelected()
-								&& dialog.isVisible()) {
+						if (priorityToggleButton.isSelected() && dialog.isVisible()) {
 							dialog.setVisible(false);
-						} else {
-							java.awt.Point p = priorityToggleButton
-							.getLocationOnScreen();
-							p.setLocation(p.x - dialog.getWidth() - 2,
-									p.y);
+						} 
+						else {
+							java.awt.Point p = priorityToggleButton.getLocationOnScreen();
+							p.setLocation(p.x - dialog.getWidth() - 2, p.y);
 							dialog.setLocation(p);
 							dialog.setVisible(true);
 						}
@@ -755,27 +842,24 @@ IDiskoWpTactics, IEditFeedback {
 	private JToggleButton getRequirementToggleButton() {
 		if (requirementToggleButton == null) {
 			try {
-				Dimension size = getApplication().getUIFactory()
-				.getLargeButtonSize();
-				// String iconName = "MapZoomInTool.icon";
-				// Icon icon =
-				// Utils.createImageIcon(app.getProperty(iconName),iconName);
 				requirementToggleButton = new JToggleButton();
-				requirementToggleButton.setText("KRAV");
-				// requirementToggleButton.setIcon(icon);
-				requirementToggleButton.setPreferredSize(size);
-				requirementToggleButton
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(
-							java.awt.event.ActionEvent e) {
+				Enum key = TacticsTaskType.REQUIREMENT_TASK;
+				ImageIcon icon = Utils.getIcon(key);
+				if (icon != null) {
+					requirementToggleButton.setIcon(icon);
+				} else {
+					requirementToggleButton.setText(key.name());
+				}
+				requirementToggleButton.setPreferredSize(buttonSize);
+				requirementToggleButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
 						SearchRequirementDialog dialog = getSearchRequirementDialog();
 						hideDialogs(dialog);
-						if (requirementToggleButton.isSelected()
-								&& dialog.isVisible()) {
+						if (requirementToggleButton.isSelected() && dialog.isVisible()) {
 							dialog.setVisible(false);
-						} else {
-							dialog.setLocationRelativeTo(
-									(JComponent) getMap(),
+						} 
+						else {
+							dialog.setLocationRelativeTo((JComponent) getMap(), 
 									DiskoDialog.POS_SOUTH, true);
 							dialog.setVisible(true);
 						}
@@ -792,26 +876,25 @@ IDiskoWpTactics, IEditFeedback {
 	JToggleButton getUnitToggleButton() {
 		if (unitToggleButton == null) {
 			try {
-				Dimension size = getApplication().getUIFactory().getLargeButtonSize();
-				// String iconName = "MapZoomInTool.icon";
-				// Icon icon =
-				// Utils.createImageIcon(app.getProperty(iconName),iconName);
 				unitToggleButton = new JToggleButton();
-				unitToggleButton.setText("ENHET");
-				// unitToggleButton.setIcon(icon);
-				unitToggleButton.setPreferredSize(size);
-				unitToggleButton.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(
-							java.awt.event.ActionEvent e) {
+				Enum key = TacticsTaskType.UNIT_TASK;
+				ImageIcon icon = Utils.getIcon(key);
+				if (icon != null) {
+					unitToggleButton.setIcon(icon);
+				} else {
+					unitToggleButton.setText(key.name());
+				}
+				unitToggleButton.setPreferredSize(buttonSize);
+				unitToggleButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
 						UnitSelectionDialog dialog = getUnitSelectionDialog();
 						hideDialogs(dialog);
-						if (unitToggleButton.isSelected()
-								&& dialog.isVisible()) {
+						if (unitToggleButton.isSelected() && dialog.isVisible()) {
 							dialog.setVisible(false);
-						} else {
+						} 
+						else {
 							java.awt.Point p = unitToggleButton.getLocationOnScreen();
-							p.setLocation(p.x - dialog.getWidth() - 2,
-									p.y);
+							p.setLocation(p.x - dialog.getWidth() - 2, p.y);
 							dialog.setLocation(p);
 							dialog.setVisible(true);
 						}
@@ -832,10 +915,6 @@ IDiskoWpTactics, IEditFeedback {
 				return;
 			}
 			hideDialogs(null);
-			getDummyToggleButton().doClick(); // HACK: unselect all toggle
-			// buttons
-			getElementDialog().setVisible(false);
-			getElementToggleButton().setSelected(false);
 			eraseTool.removeAll();
 			try {
 				JList list = (JList) e.getSource();
@@ -853,10 +932,8 @@ IDiskoWpTactics, IEditFeedback {
 				} 
 				else if (currentAction == IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA) {
 					if (cmdPost.getOperationAreaListItems().size() == 0) {
-						JOptionPane.showMessageDialog(getApplication().getFrame(),
-							    "Må lage operasjonsområde først",
-							    Utils.translate(currentAction),
-							    JOptionPane.WARNING_MESSAGE);
+						showWarning("Må lage operasjonsområde først");
+						list.setSelectedValue(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA, false);
 						return;
 					} 
 					showSearchAreaButtons();
@@ -866,17 +943,13 @@ IDiskoWpTactics, IEditFeedback {
 				} 
 				else {
 					if (cmdPost.getOperationAreaListItems().size() == 0) {
-						JOptionPane.showMessageDialog(getApplication().getFrame(),
-							    "Må lage operasjonsområde først",
-							    Utils.translate(currentAction),
-							    JOptionPane.WARNING_MESSAGE);
+						showWarning("Må lage operasjonsområde først");
+						list.setSelectedValue(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA, false);
 						return;
 					} 
 					else if (cmdPost.getSearchAreaListItems().size() == 0) {
-						JOptionPane.showMessageDialog(getApplication().getFrame(),
-							    "Må lage søkeområde først",
-							    Utils.translate(currentAction),
-							    JOptionPane.WARNING_MESSAGE);
+						showWarning("Må lage søkeområde først");
+						list.setSelectedValue(IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA, false);
 						return;
 					} 
 					showSearchButtons();
@@ -886,16 +959,25 @@ IDiskoWpTactics, IEditFeedback {
 					flankTool.setFeatureClass(featureClass);
 					splitTool.setFeatureClass(featureClass);
 				}
-				IMsoFeature editFeature = (IMsoFeature) featureClass.createFeature();
 				drawTool.setFeatureClass(featureClass);
 				IMsoFeatureClass poiFc = (IMsoFeatureClass) poiLayer.getFeatureClass();
 				poiTool.setFeatureClass(poiFc);
-				eraseTool.addFeatureClass(featureClass);
 				eraseTool.addFeatureClass(poiFc);
-				drawTool.setEditFeature(editFeature);
-				currentMsoObject = editFeature.getMsoObject();
+				eraseTool.addFeatureClass(featureClass);
+				selectFeatureTool.addFeatureClass(featureClass);
+				
 				setFrameText(Utils.translate(currentAction));
-				enableTools(true);
+				NavBar navBar = getApplication().getNavBar();
+				navBar.getPOIToggleButton().setEnabled(false);
+				navBar.getFlankToggleButton().setEnabled(false);
+				navBar.getEraseToggleButton().setEnabled(false);
+				navBar.getSplitToggleButton().setEnabled(false);
+				navBar.getSelectFeatureToggleButton().setEnabled(false);
+				
+				JToggleButton drawButton = navBar.getDrawLineToggleButton();
+				if (!isInitializing && !drawButton.isSelected()) {
+					drawButton.doClick();
+				}
 			} catch (AutomationException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

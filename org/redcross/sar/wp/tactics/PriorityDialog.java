@@ -42,6 +42,10 @@ public class PriorityDialog extends DiskoDialog {
 		}
 	}
 	
+	public void reset() {
+		getPriorityList().clearSelection();
+	}
+	
 	public int getPriority() {
 		return getPriorityList().getSelectedIndex()+1;
 	}

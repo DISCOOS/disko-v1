@@ -37,7 +37,7 @@ public class UnitSelectionDialog extends DiskoDialog {
 	 */
 	private void initialize() {
 		try {
-            this.setPreferredSize(new Dimension(175, 248));
+            this.setPreferredSize(new Dimension(210, 225));
             this.setContentPane(getContentPanel());
 			this.pack();
 		}
