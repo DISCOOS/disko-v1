@@ -4,33 +4,26 @@ BasicLine.featureClass.Name=basislinje
 BufferPath.featureClass.Name=soek
 PUI.featureClass.Name=pui
 
-LargeButton.width=60
-LargeButton.height=60
-SmallButton.width=60
-SmallButton.height=60
+LargeButton.width=64
+LargeButton.height=64
+SmallButton.width=64
+SmallButton.height=64
 
-Taktikk.icon=icons/taktikk.gif
-Logistikk.icon=icons/logistics.gif
-Kart.icon=icons/map.gif
+Taktikk.icon=icons/60x60/tactic.gif
+Logistikk.icon=icons/60x60/logistics.gif
+Kart.icon=icons/60x60/map.gif
 
-NAV.icon=icons/navigation.gif
-SYS.icon=icons/system.gif
-SwitchRole.icon=icons/switchrole.gif
-finish.icon=icons/finish.gif
-cancel.icon=icons/cancel.gif
-quit.icon=icons/quit.gif
-hypothese.icon=icons/hypothese.gif
-list.icon=icons/list.gif
-mission.icon=icons/mission.gif
-print.icon=icons/printout.gif
-sort.icon=icons/sort.gif
-ready.icon=icons/ready.gif
-CarUnit.icon=icons/car.gif
-DogUnit.icon=icons/dog.gif
-ManUnit.icon=icons/man.gif
+NAV.icon=icons/60x60/navigation.gif
+SYS.icon=icons/60x60/system.gif
+SwitchRole.icon=icons/60x60/switchrole.gif
+finish.icon=icons/60x60/finish.gif
+cancel.icon=icons/60x60/abort.gif
+CarUnit.icon=icons/60x60/car.gif
+DogUnit.icon=icons/60x60/dog.gif
+ManUnit.icon=icons/60x60/man.gif
 
-OnionSearch.icon=icons/onion.gif
-PointSearch.icon=icons/point.gif
+OnionSearch.icon=icons/60x60/onion.gif
+PointSearch.icon=icons/60x60/point.gif
 PathSearch.icon=icons/path.gif
 
 ApplyButton.text=Utfør
@@ -39,25 +32,25 @@ CancelButton.text=Avbryt
 
 ToolCommandType.POI_TOOL.icon=icons/pui.gif
 ToolCommandType.FLANK_TOOL.icon=icons/edge.gif
-ToolCommandType.DRAW_TOOL.icon=icons/draw.gif
-ToolCommandType.ERASE_TOOL.icon=icons/erase.gif
-ToolCommandType.SPLIT_TOOL.icon=icons/split.gif
-ToolCommandType.SELECT_FEATURES_TOOL.icon=icons/selection.gif
-ToolCommandType.ZOOM_IN_TOOL.icon=icons/zoomin.gif
-ToolCommandType.ZOOM_OUT_TOOL.icon=icons/zoomout.gif
-ToolCommandType.PAN_TOOL.icon=icons/pan.gif
-ToolCommandType.ZOOM_IN_FIXED_COMMAND.icon=icons/zoomin.gif
-ToolCommandType.ZOOM_OUT_FIXED_COMMAND.icon=icons/zoomout.gif
-ToolCommandType.ZOOM_FULL_EXTENT_COMMAND.icon=icons/fullextent.gif
-ToolCommandType.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND.icon=icons/forward.gif
-ToolCommandType.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND.icon=icons/back.gif
+ToolCommandType.DRAW_TOOL.icon=icons/60x60/drawing.gif
+ToolCommandType.ERASE_TOOL.icon=icons/60x60/eraser.gif
+ToolCommandType.SPLIT_TOOL.icon=icons/60x60/split.gif
+ToolCommandType.SELECT_FEATURE_TOOL.icon=icons/60x60/choose.gif
+ToolCommandType.ZOOM_IN_TOOL.icon=icons/60x60/zoomin.gif
+ToolCommandType.ZOOM_OUT_TOOL.icon=icons/60x60/zoomout.gif
+ToolCommandType.PAN_TOOL.icon=icons/60x60/pan.gif
+ToolCommandType.ZOOM_IN_FIXED_COMMAND.icon=icons/60x60/zoomin.gif
+ToolCommandType.ZOOM_OUT_FIXED_COMMAND.icon=icons/60x60/zoomout.gif
+ToolCommandType.ZOOM_FULL_EXTENT_COMMAND.icon=icons/60x60/fullextent.gif
+ToolCommandType.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND.icon=icons/60x60/next.gif
+ToolCommandType.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND.icon=icons/60x60/back.gif
 
-UnitType.COMMAND_POST.icon=icons/people.gif
-UnitType.TEAM.icon=icons/people.gif
-UnitType.DOG.icon=icons/dog.gif
-UnitType.AIRCRAFT.icon=icons/people.gif
-UnitType.BOAT.icon=icons/people.gif
-UnitType.VEHICLE.icon=icons/car.gif
+UnitType.COMMAND_POST.icon=icons/60x60/people.gif
+UnitType.TEAM.icon=icons/60x60/people.gif
+UnitType.DOG.icon=icons/60x60/dog.gif
+UnitType.AIRCRAFT.icon=icons/60x60/people.gif
+UnitType.BOAT.icon=icons/60x60/people.gif
+UnitType.VEHICLE.icon=icons/60x60/car.gif
 
 UnitStatus.EMPTY.text=Tom
 UnitStatus.READY.text=Klar
@@ -134,7 +127,6 @@ MsoClassCode.CLASSCODE_FORECAST.text=Værmelding
 MsoClassCode.CLASSCODE_ENVIRONMENT.text=Miljø
 MsoClassCode.CLASSCODE_DATASOURCE.text=Datakilde
 
-
 PRIMARY_SEARCH_AREA.text=Primær søketeig
 SECONDARY_SEARCH_AREA.text=Sekundær søketeig
 PRIORITY3_SEARCH_AREA.text=3. Prioritet
@@ -142,6 +134,17 @@ PRIORITY4_SEARCH_AREA.text=4. Prioritet
 PRIORITY5_SEARCH_AREA.text=4. Prioritet
 
 SHOW_ALL.text=Vis alle
+
+TacticsTaskType.ELEMENT_TASK.icon=icons/60x60/element.gif
+TacticsTaskType.LIST_TASK.icon=icons/60x60/list.gif
+TacticsTaskType.MISSON_TASK.icon=icons/60x60/assinment.gif
+TacticsTaskType.HYPOTHESIS_TASK.icon=icons/60x60/hypothesis.gif
+TacticsTaskType.PRIORITY_TASK.icon=
+TacticsTaskType.REQUIREMENT_TASK.icon=icons/60x60/requirement.gif
+TacticsTaskType.DESCRIPTION_TASK.icon=icons/60x60/description.gif
+TacticsTaskType.UNIT_TASK.icon=icons/60x60/unit.gif
+TacticsTaskType.MAKE_READY_TASK.icon=icons/60x60/ready.gif
+TacticsTaskType.PRINT_TASK.icon=icons/60x60/printer.gif
 
 
 
