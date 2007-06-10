@@ -21,7 +21,6 @@ public abstract class AbstractMsoFeature implements IMsoFeature {
 	protected IGeometry geometry = null;
 	protected ISpatialReference srs = null;
 	protected boolean isSelected = false;
-	protected boolean isEditable = true;
 	
 	public AbstractMsoFeature() {}
 	
@@ -48,14 +47,6 @@ public abstract class AbstractMsoFeature implements IMsoFeature {
 	
 	public boolean isSelected() {
 		return isSelected;
-	}
-	
-	public boolean isEditable() {
-		return isEditable;
-	}
-	
-	public void setEditable(boolean b) {
-		isEditable = b;
 	}
 	
 	public void setGeodata(IGeodataIf geodata) {

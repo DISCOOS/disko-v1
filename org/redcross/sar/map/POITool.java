@@ -83,9 +83,6 @@ public class POITool extends AbstractCommandTool {
 			editFeature.setSelected(false);
 			refresh((Point)editFeature.getShape());
 		}
-		if (editFeedback != null) {
-			editFeedback.editStarted();
-		}
 	}	
 	
 	public void addPOIAt(double x, double y) throws IOException, AutomationException {
@@ -142,9 +139,6 @@ public class POITool extends AbstractCommandTool {
 			map.setExtent(extent);
 		} else {
 			refresh(point);
-		}
-		if (editFeedback != null) {
-			editFeedback.editFinished(editFeature);
 		}
 	}
 	

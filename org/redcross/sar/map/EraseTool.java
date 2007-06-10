@@ -59,19 +59,17 @@ public class EraseTool extends AbstractCommandTool {
 			IFeature feature = search(fc, p);
 			if (feature != null && feature instanceof IMsoFeature) {
 				editFeature = (IMsoFeature)feature;
-				if (editFeature.isEditable()) {
-					IGeometry geom = editFeature.getShape();
-					if (fc.getShapeType() == esriGeometryType.esriGeometryBag) {
-						GeometryBag geomBag = (GeometryBag)geom;
-						editFeature.removeGeodataAt(getGeomIndex(geomBag, p));
-					}
-					else {
-						//editFeature.removeGeodata(null);
-						editFeature.delete();
-					}
-					map.partialRefresh(null);
-					break;
+				IGeometry geom = editFeature.getShape();
+				if (fc.getShapeType() == esriGeometryType.esriGeometryBag) {
+					GeometryBag geomBag = (GeometryBag)geom;
+					editFeature.removeGeodataAt(getGeomIndex(geomBag, p));
 				}
+				else {
+					//editFeature.removeGeodata(null);
+					editFeature.delete();
+				}
+				map.partialRefresh(null);
+				break;
 			}
 		}
 	}

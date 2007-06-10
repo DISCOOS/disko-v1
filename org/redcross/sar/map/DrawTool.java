@@ -137,9 +137,7 @@ public class DrawTool extends AbstractCommandTool {
 		if (featureClass == null) {
 			return;
 		}
-		if (editFeature != null) {
-			featureClass.clearSelected();
-		}
+		featureClass.clearSelected();
 		pathGeometry.simplify();
 		pathGeometry.setSpatialReferenceByRef(map.getSpatialReference());
 		
@@ -161,9 +159,6 @@ public class DrawTool extends AbstractCommandTool {
 		}
 		reset();
 		map.getActiveView().refresh();
-		if (editFeedback != null) {
-			editFeedback.editFinished(editFeature);
-		}
 	}
 	
 	private Polygon getPolygon(Polyline pline) throws IOException, AutomationException {
@@ -181,9 +176,6 @@ public class DrawTool extends AbstractCommandTool {
 			throws IOException, AutomationException {
 		if (featureClass == null) {
 			return;
-		}
-		if (editFeedback != null) {
-			editFeedback.editStarted();
 		}
 		p2 = transform(x,y);
 		//try snapping

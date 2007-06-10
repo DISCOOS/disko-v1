@@ -25,8 +25,4 @@ public interface IDiskoTool {
 	public void setEditFeature(IMsoFeature msoFeature);
 	
 	public IMsoFeature getEditFeature();
-	
-	public IEditFeedback getEditFeedback();
-
-	public void setEditFeedback(IEditFeedback editFeedback);
 }

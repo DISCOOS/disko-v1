@@ -33,7 +33,6 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 	protected IDisplayTransformation transform = null;
 	protected IMsoFeatureClass featureClass = null;
 	protected IMsoFeature editFeature = null;
-	protected IEditFeedback editFeedback = null;
 	
 	protected IDisplayTransformation getTransform() 
 			throws IOException, AutomationException {
@@ -87,14 +86,6 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 	
 	public IMsoFeature getEditFeature() {
 		return editFeature;
-	}
-
-	public IEditFeedback getEditFeedback() {
-		return editFeedback;
-	}
-
-	public void setEditFeedback(IEditFeedback editFeedback) {
-		this.editFeedback = editFeedback;
 	}
 	
 	protected IFeature search(IFeatureClass fc, IPoint p) throws UnknownHostException, IOException {

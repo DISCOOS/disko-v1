@@ -39,32 +39,30 @@ public class SplitTool extends AbstractCommandTool {
 	}
 
 	public void onMouseDown(int button, int shift, int x, int y)
-			throws IOException, AutomationException {
+	throws IOException, AutomationException {
 		p.setX(x);
 		p.setY(y); 
 		transform(p);
-		
+
 		IFeature feature = search(featureClass, p);
 		if (feature != null && feature instanceof IMsoFeature) {
 			editFeature = (IMsoFeature)feature;
-			if (editFeature.isEditable()) {
-				IGeometry geom = editFeature.getShape();
-				if (featureClass.getShapeType() == esriGeometryType.esriGeometryBag) {
-					GeometryBag geomBag = (GeometryBag)geom;
-					int index = getGeomIndex(geomBag, p);
-					if (index > -1) {
-						IGeometry subGeom = geomBag.getGeometry(index);
-						if (subGeom instanceof Polyline) {
-							Polyline[] result = split((Polyline)subGeom, p); 
-							editFeature.setGeodataAt(index, MapUtil.getMsoRoute(result[0]));
-							editFeature.addGeodata(MapUtil.getMsoRoute(result[1]));
-							map.partialRefresh(subGeom.getEnvelope());
-						}
+			IGeometry geom = editFeature.getShape();
+			if (featureClass.getShapeType() == esriGeometryType.esriGeometryBag) {
+				GeometryBag geomBag = (GeometryBag)geom;
+				int index = getGeomIndex(geomBag, p);
+				if (index > -1) {
+					IGeometry subGeom = geomBag.getGeometry(index);
+					if (subGeom instanceof Polyline) {
+						Polyline[] result = split((Polyline)subGeom, p); 
+						editFeature.setGeodataAt(index, MapUtil.getMsoRoute(result[0]));
+						editFeature.addGeodata(MapUtil.getMsoRoute(result[1]));
+						map.partialRefresh(subGeom.getEnvelope());
 					}
 				}
-				else {
-					//TODO:
-				}
+			}
+			else {
+				//TODO:
 			}
 		}
 	}

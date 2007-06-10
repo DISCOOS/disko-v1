@@ -50,19 +50,20 @@ public class SelectFeatureTool extends AbstractCommandTool {
 		p.setX(x);
 		p.setY(y); 
 		transform(p);
-
+		
+		for (int i = 0; i < featureClasses.size(); i++) {
+			IMsoFeatureClass fc = (IMsoFeatureClass)featureClasses.get(i);
+			fc.clearSelected();
+		}
 		for (int i = 0; i < featureClasses.size(); i++) {
 			IMsoFeatureClass fc = (IMsoFeatureClass)featureClasses.get(i);
 			IFeature feature = search(fc, p);
 			if (feature != null && feature instanceof IMsoFeature) {
 				editFeature = (IMsoFeature)feature;
-				if (editFeature.isEditable()) {
-					fc.clearSelected();
-					fc.setSelected(editFeature, true);
-					map.partialRefresh(null);
-					break;
-				}
+				fc.setSelected(editFeature, true);
+				break;
 			}
 		}
+		map.partialRefresh(null);
 	}
 }

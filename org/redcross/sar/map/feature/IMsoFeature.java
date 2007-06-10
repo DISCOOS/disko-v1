@@ -38,8 +38,4 @@ public interface IMsoFeature extends IFeature {
 	public void setSelected(boolean selected);
 	
 	public boolean isSelected();
-	
-	public boolean isEditable();
-	
-	public void setEditable(boolean b);
 }
