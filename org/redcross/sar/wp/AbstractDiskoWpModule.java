@@ -42,7 +42,7 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMap
     public AbstractDiskoWpModule(IDiskoRole role)
     {
         this.role = role;
-        listeners = new ArrayList();
+        listeners = new ArrayList<IDiskoWpEventListener>();
         diskoWpEvent = new DiskoWpEvent(this);
     }
 
