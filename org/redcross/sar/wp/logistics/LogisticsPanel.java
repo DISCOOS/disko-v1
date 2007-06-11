@@ -1,5 +1,6 @@
 package org.redcross.sar.wp.logistics;
 
+import org.redcross.sar.gui.FontFactory;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.*;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
@@ -14,6 +15,7 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Calendar;
 import java.util.EnumSet;
 /**
  * Created by IntelliJ IDEA.
@@ -43,9 +45,6 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
     private JScrollPane m_AssignmentSubPaneLeft;
     private JScrollPane m_AssignmentSubPaneRight;
     private JButton MoveButton;
-    private JPanel m_unitInfoPanel;
-    private JPanel m_assignmentInfoPanel;
-    private JPanel m_unitAssignmentsPanel;
     private AbstractDiskoWpModule m_wpModule;
     private IUnitListIf m_unitList;
     private IAssignmentListIf m_assignmentList;
@@ -53,6 +52,11 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
     private AssignmentScrollPanel m_selectableAssignmentsPanel;
     private AssignmentScrollPanel m_priAssignmentsPanel;
     private AssignmentLabelTransferHandler m_assignmentLabelTransferHandler;
+
+    private InfoPanelHandler m_infoPanelHandler;
+
+    private AssignmentLabel.AssignmentLabelClickHandler m_h1;
+    private AssignmentLabel.AssignmentLabelClickHandler m_h2;
 
     public LogisticsPanel(AbstractDiskoWpModule aWp)
     {
@@ -65,12 +69,12 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
             return;
         }
 
+        defineSubpanelMouseListeners();
 
         setSplitters();
         setPanelSizes();
         initUnitTable();
         initInfoPanels();
-
         initAssignmentPanels();
 
 //        JTableButtonMouseListener theListener = new JTableButtonMouseListener(m_unit1Table);
@@ -109,6 +113,25 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         return true;
     }
 
+    private void defineSubpanelMouseListeners()
+    {
+        m_h1 = new AssignmentLabel.AssignmentLabelClickHandler()
+        {
+            public void handleClick(IAssignmentIf anAssignment)
+            {
+                getInfoPanelHandler().setAssignment(anAssignment, false);
+            }
+        };
+
+        m_h2 = new AssignmentLabel.AssignmentLabelClickHandler()
+        {
+            public void handleClick(IAssignmentIf anAssignment)
+            {
+                getInfoPanelHandler().setAssignment(anAssignment, true);
+            }
+        };
+    }
+
     private void initAssignmentPanels()
     {
         m_AssignmentSubPaneLeft.setPreferredSize(new Dimension(150, 0));
@@ -120,11 +143,22 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         m_AssignmentSubPaneRight.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         m_AssignmentSubPaneRight.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 
-        m_selectableAssignmentsPanel = new AssignmentScrollPanel(m_AssignmentSubPaneLeft, new FlowLayout(FlowLayout.LEFT, 5, 5));
+        m_selectableAssignmentsPanel = new AssignmentScrollPanel(m_AssignmentSubPaneLeft, new FlowLayout(FlowLayout.LEFT, 5, 5), m_h1, true);
         m_selectableAssignmentsPanel.setTransferHandler(m_assignmentLabelTransferHandler);
 
-        m_priAssignmentsPanel = new AssignmentScrollPanel(m_AssignmentSubPaneRight, new FlowLayout(FlowLayout.LEFT, 5, 5));
+        JLabel hl;
+        hl = m_selectableAssignmentsPanel.getHeaderLabel();
+        hl.setFont(FontFactory.headerFontBold());
+        hl.setHorizontalAlignment(SwingConstants.CENTER);
+        hl.setPreferredSize(new Dimension(40, 40));
+
+//        m_priAssignmentsPanel = new AssignmentScrollPanel(m_AssignmentSubPaneRight, new FlowLayout(FlowLayout.LEFT, 5, 5));
+        m_priAssignmentsPanel = new AssignmentScrollPanel(m_AssignmentSubPaneRight, new GridLayout(0, 1, 5, 5), m_h1, true);
         m_priAssignmentsPanel.setTransferHandler(m_assignmentLabelTransferHandler);
+        hl = m_priAssignmentsPanel.getHeaderLabel();
+        hl.setFont(FontFactory.headerFontBold());
+        hl.setHorizontalAlignment(SwingConstants.CENTER);
+        hl.setPreferredSize(new Dimension(40, 40));
 
         AssignmentDisplayModel adm = new AssignmentDisplayModel(m_selectableAssignmentsPanel, m_priAssignmentsPanel, m_wpModule.getMmsoEventManager(), m_assignmentList);
     }
@@ -137,29 +171,23 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         m_unitTable.setDefaultRenderer(LogisticsIcon.UnitIcon.class, new LogisticsIconRenderer());
         m_unitTable.setDefaultRenderer(LogisticsIcon.AssignmentIcon.class, new LogisticsIconRenderer());
         m_unitTable.setDefaultRenderer(LogisticsIcon.InfoIcon.class, new LogisticsIconRenderer.InfoIconRenderer());
-        m_unitTable.setShowGrid(true);
-        m_unitTable.setRowMargin(5);
+        m_unitTable.setShowHorizontalLines(false);
+        m_unitTable.setShowVerticalLines(true);
+        m_unitTable.setRowMargin(2);
         JTableHeader tableHeader = m_unitTable.getTableHeader();
         tableHeader.setResizingAllowed(false);
         tableHeader.setReorderingAllowed(false);
         m_unitTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         m_unitTable.setCellSelectionEnabled(true);
-//        m_unitTable.setDragEnabled(true);
+        JTableHeader th = m_unitTable.getTableHeader();
+        th.setFont(FontFactory.headerFont());
+        th.setPreferredSize(new Dimension(40, 40));
     }
 
     private void initInfoPanels()
     {
-        m_unitInfoPanel = new LogisticsInfoPanel();
-        m_infoPanel.add(m_unitInfoPanel, "Unit");
-        m_assignmentInfoPanel = new LogisticsInfoPanel();
-        m_infoPanel.add(m_assignmentInfoPanel, "Assignment");
-        // Build up a scrollpane with room for assignment labels.
-        JScrollPane scrollpane = new JScrollPane();
-        scrollpane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        m_unitAssignmentsPanel = new AssignmentScrollPanel(scrollpane, new FlowLayout(FlowLayout.CENTER, 5, 5));
-        m_infoPanel.add(scrollpane, "AssignmentList");
-        CardLayout cl = (CardLayout) m_infoPanel.getLayout();
-        cl.show(m_infoPanel, "Assignment");
+        m_infoPanelHandler = new InfoPanelHandler(m_infoPanel, m_wpModule.getMmsoEventManager(), m_h2);
+        m_infoPanelHandler.setSelectionTransferHandler(m_assignmentLabelTransferHandler);
     }
 
     private void addToListeners()
@@ -251,30 +279,55 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         return unit.getExecutingAssigment().size() > 0 || unit.getAssignedAssignments().size() > 0 || unit.getAllocatedAssignments().size() > 0;
     }
 
+    private static final String[] options = {"Ja", "Nei"};
+
+    private boolean confirmTransfer(IAssignmentIf anAssignment, IAssignmentIf.AssignmentStatus aStatus)
+    {
+        int n = JOptionPane.showOptionDialog(WorkspacePanel,
+                "Overføre oppdag " + anAssignment.getNumber() + " til status " + aStatus.toString(),
+                "Bekreft overføring",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null, options, options[0]);
+        System.out.println(n);
+        return n == 0;
+    }
 
     private void moveAssigment(int aUnitNr)     // todo remove
     {
         IUnitIf unit = m_unitList.getUnit(aUnitNr);
         java.util.List<IAssignmentIf> assigments;
 
+
         try
         {
             assigments = unit.getExecutingAssigment();
             if (assigments.size() > 0)
             {
-                assigments.get(0).setStatusAndOwner(IAssignmentIf.AssignmentStatus.FINISHED, unit);
+                if (confirmTransfer(assigments.get(0), IAssignmentIf.AssignmentStatus.FINISHED))
+                {
+                    assigments.get(0).setStatusAndOwner(IAssignmentIf.AssignmentStatus.FINISHED, unit);
+                }
             } else
             {
                 assigments = unit.getAssignedAssignments();
                 if (assigments.size() > 0)
                 {
-                    assigments.get(0).setStatusAndOwner(IAssignmentIf.AssignmentStatus.EXECUTING, unit);
+                    if (confirmTransfer(assigments.get(0), IAssignmentIf.AssignmentStatus.EXECUTING))
+                    {
+                        assigments.get(0).setStatusAndOwner(IAssignmentIf.AssignmentStatus.EXECUTING, unit);
+                        assigments.get(0).setTimeStarted(Calendar.getInstance());
+                    }
                 } else
                 {
                     assigments = unit.getAllocatedAssignments();
                     if (assigments.size() > 0)
                     {
-                        assigments.get(0).setStatusAndOwner(IAssignmentIf.AssignmentStatus.ASSIGNED, unit);
+                        if (confirmTransfer(assigments.get(0), IAssignmentIf.AssignmentStatus.ASSIGNED))
+                        {
+                            assigments.get(0).setStatusAndOwner(IAssignmentIf.AssignmentStatus.ASSIGNED, unit);
+                            assigments.get(0).setTimeAssigned(Calendar.getInstance());
+                        }
                     }
                 }
             }
@@ -300,9 +353,9 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         return m_mapPanel;
     }
 
-    public JPanel getInfoPanel()
+    public InfoPanelHandler getInfoPanelHandler()
     {
-        return m_infoPanel;
+        return m_infoPanelHandler;
     }
 
     public JTable getUnitTable()

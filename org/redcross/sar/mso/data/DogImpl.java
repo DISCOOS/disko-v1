@@ -10,21 +10,23 @@ public class DogImpl extends AbstractUnit implements IDogIf
         super(anObjectId, aNumber);
     }
 
+    @Override
     protected void defineAttributes()
     {
         super.defineAttributes();
     }
 
+    @Override
     protected void defineLists()
     {
         super.defineLists();
     }
 
+    @Override
     protected void defineReferences()
     {
         super.defineReferences();
     }
-
 
     @Override
     public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
@@ -41,6 +43,11 @@ public class DogImpl extends AbstractUnit implements IDogIf
     protected UnitType getTypeBySubclass()
     {
         return IUnitIf.UnitType.DOG;
+    }
+
+    protected char getUnitNumberPrefix()
+    {
+        return 'H';
     }
 
     public String getSubTypeName()

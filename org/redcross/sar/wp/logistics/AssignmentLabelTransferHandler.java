@@ -19,6 +19,7 @@ public class AssignmentLabelTransferHandler extends TransferHandler
 {
     DataFlavor m_labelFlavor;
     DTAssignmentLabel m_sourceLabel;
+    DTAssignmentLabel m_targetLabel;
     Component m_targetComponent;
 
     boolean m_shouldRemove;
@@ -29,6 +30,21 @@ public class AssignmentLabelTransferHandler extends TransferHandler
         m_labelFlavor = aFlavor;
         m_wpModule = aWpModule;
     }
+
+    private static final String[] options = {"Ja", "Nei"};
+
+    private boolean confirmTransfer(IAssignmentIf anAssignment, IAssignmentIf.AssignmentStatus aStatus)
+    {
+        int n = JOptionPane.showOptionDialog(null,
+                "Overføre oppdag " + anAssignment.getNumber() + " til status " + aStatus.toString(),
+                "Bekreft overføring",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null, options, options[0]);
+        System.out.println(n);
+        return n == 0;
+    }
+
 
     @Override
     public boolean importData(TransferSupport trs)
@@ -47,15 +63,26 @@ public class AssignmentLabelTransferHandler extends TransferHandler
             {
                 AssignmentScrollPanel panel = (AssignmentScrollPanel) m_targetComponent;
                 IAssignmentIf transferredAssignment = getTransferredAssignment(trs);
-                try
+
+                if (confirmTransfer(transferredAssignment, panel.getSelectedStatus()))
                 {
-                    transferredAssignment.setStatusAndOwner(panel.getSelectedStatus(), null);
-                    m_wpModule.getMsoModel().commit();
-                    return true;
-                }
-                catch (IllegalOperationException e)
-                {
-                    e.printStackTrace();
+                    try
+                    {
+                        if (m_targetLabel != null && panel.getSelectedStatus() == IAssignmentIf.AssignmentStatus.ALLOCATED)
+                        {
+                            panel.getSelectedUnit().addAllocatedAssignment(transferredAssignment, m_targetLabel.getAssignment());
+                        } else
+                        {
+                            transferredAssignment.setStatusAndOwner(panel.getSelectedStatus(), panel.getSelectedUnit());
+                        }
+//                        m_wpModule.getMsoManager(). // todo add MessageLog update
+                        m_wpModule.getMsoModel().commit();
+                        return true;
+                    }
+                    catch (IllegalOperationException e)
+                    {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -96,6 +123,7 @@ public class AssignmentLabelTransferHandler extends TransferHandler
     public boolean canImport(TransferSupport trs)
     {
         m_targetComponent = trs.getComponent();
+        m_targetLabel = null;
         DataFlavor[] flavors = trs.getDataFlavors();
         boolean flavorOk = false;
 
@@ -135,6 +163,7 @@ public class AssignmentLabelTransferHandler extends TransferHandler
             Component parent = label.getParent();
             if (parent instanceof AssignmentScrollPanel)
             {
+                m_targetLabel = label;
                 m_targetComponent = parent;
             }
         }
@@ -142,8 +171,7 @@ public class AssignmentLabelTransferHandler extends TransferHandler
         if (m_targetComponent instanceof AssignmentScrollPanel)
         {
             AssignmentScrollPanel panel = (AssignmentScrollPanel) m_targetComponent;
-            IAssignmentIf.AssignmentStatus panelStatus = panel.getSelectedStatus();
-            return transferredAssignment.canChangeToStatus(panelStatus, null);
+            return transferredAssignment.canChangeToStatus(panel.getSelectedStatus(), panel.getSelectedUnit());
         }
         return false;
     }
@@ -177,6 +205,10 @@ public class AssignmentLabelTransferHandler extends TransferHandler
         AssignmentTransferable(DTAssignmentLabel label)
         {
             m_assignment = label.getAssignment();
+            if (m_assignment == null) // todo remove when verified OK
+            {
+                System.out.println("Assignement is null");
+            }
         }
 
         public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException

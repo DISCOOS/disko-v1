@@ -12,32 +12,37 @@ public class SubjectImpl extends AbstractPerson implements ISubjectIf
         super(anObjectId);
     }
 
+    @Override
     protected void defineAttributes()
     {
         super.defineAttributes();
         addAttribute(m_description);
     }
 
+    @Override
     protected void defineLists()
     {
         super.defineLists();
     }
 
+    @Override
     protected void defineReferences()
     {
         super.defineReferences();
     }
 
+
     @Override
     public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
+        super.addObjectReference(anObject, aReferenceName);
     }
 
     @Override
     public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
+        super.removeObjectReference(anObject, aReferenceName);
     }
-
 
     public static SubjectImpl implementationOf(ISubjectIf anInterface) throws MsoCastException
     {

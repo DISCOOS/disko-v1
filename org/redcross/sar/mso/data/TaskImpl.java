@@ -19,27 +19,32 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
         super(anObjectId, aCalendar);
     }
 
+    @Override
     protected void defineAttributes()
     {
         super.defineAttributes();
     }
 
+    @Override
     protected void defineLists()
     {
         super.defineLists();
     }
 
+    @Override
     protected void defineReferences()
     {
         super.defineReferences();
         addReference(m_createdEvent);
     }
 
+    @Override
     public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
         super.addObjectReference(anObject,aReferenceName);
     }
 
+    @Override
     public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
         super.removeObjectReference(anObject,aReferenceName);

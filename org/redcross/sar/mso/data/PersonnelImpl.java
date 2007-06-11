@@ -10,16 +10,19 @@ public class PersonnelImpl extends AbstractPerson implements IPersonnelIf
         super(anObjectId);
     }
 
+    @Override
     protected void defineAttributes()
     {
         super.defineAttributes();
     }
 
+    @Override
     protected void defineLists()
     {
         super.defineLists();
     }
 
+    @Override
     protected void defineReferences()
     {
         super.defineReferences();

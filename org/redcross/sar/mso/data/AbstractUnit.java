@@ -95,7 +95,14 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
         }
     }
 
+    public String getUnitNumber()
+    {
+        return getUnitNumberPrefix() + Integer.toString(getNumber());
+    }
+
     protected abstract UnitType getTypeBySubclass();
+
+    protected abstract char getUnitNumberPrefix();
 
     /**
      * Local implementation of {@link AbstractMsoObject#registerModifiedData()}
@@ -351,11 +358,13 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
     public void addUnitReference(IAssignmentIf anIAssignmentIf)
     {
         m_unitAssignments.add(anIAssignmentIf);
+        rearrangeAsgPrioritiesAfterReferenceChange(anIAssignmentIf);
     }
 
     public void removeUnitReference(IAssignmentIf anIAssignmentIf)
     {
         m_unitAssignments.removeReference(anIAssignmentIf);
+        rearrangeAsgPrioritiesAfterReferenceChange(anIAssignmentIf);
     }
 
     public IAssignmentListIf getUnitAssignments()
@@ -501,6 +510,36 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
         return retVal;
     }
 
+
+    public void rearrangeAsgPrioritiesAfterStatusChange(IAssignmentIf anAssignment, IAssignmentIf.AssignmentStatus oldStatus)
+    {
+        if (anAssignment.getStatus() == IAssignmentIf.AssignmentStatus.ALLOCATED || oldStatus == IAssignmentIf.AssignmentStatus.ALLOCATED)
+        {
+            rearrangeAsgPriorities();
+        }
+    }
+
+    public void rearrangeAsgPrioritiesAfterReferenceChange(IAssignmentIf anAssignment)
+    {
+        if (anAssignment.getStatus() == IAssignmentIf.AssignmentStatus.ALLOCATED)
+        {
+            rearrangeAsgPriorities();
+        }
+    }
+
+    private void rearrangeAsgPriorities()
+    {
+        int actPriSe = 0;
+        for (IAssignmentIf asg : getAllocatedAssignments())
+        {
+            if (asg.getPrioritySequence() != actPriSe)
+            {
+                asg.setPrioritySequence(actPriSe);
+            }
+            actPriSe++;
+        }
+    }
+
     public String toString()
     {
         return "AbstractUnit" + " " + getObjectId();
@@ -525,5 +564,67 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
     {
         return m_unitAssignments.selectItems(IAssignmentIf.FINISHED_SELECTOR, null);
     }
+
+    public IAssignmentIf getActiveAssignment()
+    {
+        List<IAssignmentIf> asgList = getAssignedAssignments();
+        if (asgList.size() > 0)
+        {
+            return asgList.get(0);
+        }
+        asgList = getExecutingAssigment();
+        if (asgList.size() > 0)
+        {
+            return asgList.get(0);
+        }
+        return null;
+    }
+
+    public boolean addAllocatedAssignment(IAssignmentIf newAssignment, IAssignmentIf beforeAssignment)
+    {
+        if (newAssignment == beforeAssignment)
+        {
+            return true;
+        }
+
+        try
+        {
+            newAssignment.setStatusAndOwner(IAssignmentIf.AssignmentStatus.ALLOCATED, this); // Will be added with latest prioritySequence
+        }
+        catch (IllegalOperationException e)
+        {
+            return false;
+        }
+        int newPrioritySequence = beforeAssignment != null &&
+                beforeAssignment.getStatus() == IAssignmentIf.AssignmentStatus.ALLOCATED &&
+                beforeAssignment.getOwningUnit() == this ? beforeAssignment.getPrioritySequence() : Integer.MAX_VALUE;
+
+        // move forwards in list if not last
+        if (newPrioritySequence != Integer.MAX_VALUE)
+        {
+            boolean insertionPointFound = false;
+            int lastPri = -1;
+            for (IAssignmentIf asg : getAllocatedAssignments())
+            {
+                if (asg == newAssignment)
+                {
+                    continue;
+                }
+                lastPri = asg.getPrioritySequence();
+                if (lastPri == newPrioritySequence)
+                {
+                    insertionPointFound = true;
+                    newAssignment.setPrioritySequence(newPrioritySequence);
+                }
+                if (insertionPointFound)
+                {
+                    asg.setPrioritySequence(lastPri + 1);
+                }
+            }
+        }
+
+        return true;
+    }
 }
+
 

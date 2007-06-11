@@ -1,5 +1,7 @@
 package org.redcross.sar.wp.logistics;
 
+import org.redcross.sar.gui.FontFactory;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -19,7 +21,7 @@ public class LogisticsInfoPanel extends JPanel
     private JButton[] m_lowPanelButtons;
 
 
-    public LogisticsInfoPanel()
+    public LogisticsInfoPanel(int topPanelPartCount, int centerPanelPartCount, int buttonCount)
     {
         super(new BorderLayout(0, 0));
 //        setBackground(Color.WHITE);
@@ -27,38 +29,40 @@ public class LogisticsInfoPanel extends JPanel
 
         m_topInfoPanel = new JPanel();
         add(m_topInfoPanel, BorderLayout.NORTH);
-        initTopPanel();
+        initTopPanel(topPanelPartCount);
 
         m_centerScrollPanel = new ScrollInfoPanel();
-        JScrollPane scrollpane = new JScrollPane(m_centerScrollPanel,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane scrollpane = new JScrollPane(m_centerScrollPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         add(scrollpane, BorderLayout.CENTER);
-        initCenterPanel();
+        initCenterPanel(centerPanelPartCount);
 
         m_lowButtonPanel = new JPanel();
         add(m_lowButtonPanel, BorderLayout.SOUTH);
-        initLowPanel();
+        initLowPanel(buttonCount);
     }
 
-    private void initTopPanel()
+    private void initTopPanel(int topPanelPartCount)
     {
         GridBagLayout gridbag = new GridBagLayout();
         GridBagConstraints c = new GridBagConstraints();
         m_topInfoPanel.setLayout(gridbag);
-        m_topInfoPanel.setBackground(Color.WHITE);
+//        m_topInfoPanel.setBackground(Color.WHITE);
 
         c.fill = GridBagConstraints.BOTH;
         c.weightx = 1.0;
 
-        m_topPanelElements = new InternalInfoPanel[5];
+        boolean hasHeader = topPanelPartCount % 2 == 1; // Odd number of items
+        m_topPanelElements = new InternalInfoPanel[topPanelPartCount];
 
-        c.gridwidth = 2;
+        c.gridwidth = hasHeader ? 2 : 1;
         c.gridx = 0;
         c.gridy = 0;
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < topPanelPartCount; i++)
         {
-            InternalInfoPanel ip = new InternalInfoPanel("P" + i, i != 0);
+            boolean headerPanel = hasHeader && i == 0;
+            InternalInfoPanel ip = new InternalInfoPanel("P" + i, !headerPanel);
             ip.setText("T" + i);
-            if (i == 0)
+            if (headerPanel)
             {
                 JLabel h = ip.getHeaderLabel();
                 h.setHorizontalAlignment(SwingConstants.CENTER);
@@ -66,7 +70,7 @@ public class LogisticsInfoPanel extends JPanel
             m_topInfoPanel.add(ip, c);
             m_topPanelElements[i] = ip;
             c.gridwidth = 1;
-            if (i % 2 == 0)
+            if (i % 2 == (hasHeader ? 0 : 1))
             {
                 c.gridx = 0;
                 c.gridy++;
@@ -77,55 +81,114 @@ public class LogisticsInfoPanel extends JPanel
         }
     }
 
-    private void initCenterPanel()
+    private void initCenterPanel(int centerPanelPartCount)
     {
         GridBagLayout gridbag = new GridBagLayout();
         GridBagConstraints c = new GridBagConstraints();
         m_centerScrollPanel.setLayout(gridbag);
-        m_centerScrollPanel.setBackground(Color.WHITE);
+//        m_centerScrollPanel.setBackground(Color.WHITE);
 
         c.fill = GridBagConstraints.BOTH;
         c.weightx = 1.0;
 
-        m_centerPanelElements = new InternalInfoPanel[2];
+        m_centerPanelElements = new InternalInfoPanel[centerPanelPartCount];
 
         c.gridwidth = GridBagConstraints.REMAINDER;
         c.gridx = 0;
         c.gridy = 0;
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < centerPanelPartCount; i++)
         {
             InternalInfoPanel ip = new InternalInfoPanel("P" + i, true);
             ip.setText("T" + i);
             m_centerScrollPanel.add(ip, c);
             m_centerPanelElements[i] = ip;
             c.gridy++;
-       }
-        m_centerPanelElements[1].setHeader("Field 2");
-        m_centerPanelElements[1].setText(new String[]{"dsf lkjlsd jasdkjash kjadaksh dkjsa dkas hdkasda hsdkhask hdkahdkahdfl","ssdgsdgfsgg","sgsdgsdg","sgsdgsg","sgsdgg","sgsgdgsg",
-                "The last line shows that, indeed, the field that is accessed does not depend on the run-time class of the referenced object; even if s holds a reference to an object of class T, the expression s.x refers to the x field of class S, because the type of the expression s is S. Objects of class T contain two fields named x, one for class T and one for its superclass S."});
+        }
     }
 
-    private void initLowPanel()
+    private void initLowPanel(int buttonCount)
     {
         m_lowButtonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        m_lowButtonPanel.setBackground(Color.WHITE);
-        m_lowPanelButtons = new JButton[4];
-        for (int i = 0; i < 4; i++)
+//        m_lowButtonPanel.setBackground(Color.WHITE);
+        m_lowPanelButtons = new JButton[buttonCount];
+        for (int i = 0; i < buttonCount; i++)
         {
             JButton b = new JButton("B" + i);
             b.setMinimumSize(m_buttonDimension);
             b.setPreferredSize(m_buttonDimension);
             m_lowButtonPanel.add(b);
-            b.setVisible(true);
+            m_lowPanelButtons[i] = b;
+            b.setVisible(false);
         }
     }
 
-    void configureButtonActions(ActionListener aListener, String[] theActionCommands)
+    void setHeaders(String[] theHeaders)
+    {
+        int i = 0;
+        // set headers in top panel
+        for (InternalInfoPanel p : m_topPanelElements)
+        {
+            if (i < theHeaders.length)
+            {
+                p.setHeader(theHeaders[i]);
+            }
+            i++;
+        }
+        // set headers in center panel
+        for (InternalInfoPanel p : m_centerPanelElements)
+        {
+            if (i < theHeaders.length)
+            {
+                p.setHeader(theHeaders[i]);
+            }
+            i++;
+        }
+    }
+
+    void setTopText(int aFieldIndex, String aText)
+    {
+        if (aFieldIndex >= 0 && aFieldIndex < m_topPanelElements.length)
+        {
+            m_topPanelElements[aFieldIndex].setText(aText);
+        }
+    }
+
+    void setCenterText(int aFieldIndex, String[] theTexts)
+    {
+        if (aFieldIndex >= 0 && aFieldIndex < m_centerPanelElements.length)
+        {
+            m_centerPanelElements[aFieldIndex].setText(theTexts);
+        }
+    }
+
+    void setButtonVisible(int aButtonIndex, boolean aFlag)
+    {
+        if (aButtonIndex>= 0 && aButtonIndex < m_lowPanelButtons.length)
+        {
+            m_lowPanelButtons[aButtonIndex].setVisible(aFlag);
+        }
+    }
+
+    void setButtonEnabled(int aButtonIndex, boolean aFlag)
+    {
+        if (aButtonIndex>= 0 && aButtonIndex < m_lowPanelButtons.length)
+        {
+            m_lowPanelButtons[aButtonIndex].setEnabled(aFlag);
+        }
+    }
+
+    void setButtons(String[] theButtonTexts, String[] theActionCommands, ActionListener aListener)
     {
         int i = 0;
         for (JButton b : m_lowPanelButtons)
         {
-            // remove existing listeners
+            if (i < theButtonTexts.length)
+            {
+                b.setText(theButtonTexts[i]);
+                b.setVisible(true);
+                b.setEnabled(true);
+            }
+            // remove existing action listeners
             ActionListener[] listeners = b.getActionListeners();
             for (ActionListener l : listeners)
             {
@@ -144,8 +207,6 @@ public class LogisticsInfoPanel extends JPanel
     public static class InternalInfoPanel extends JPanel
     {
         final static String lineSeparator = System.getProperty("line.separator");
-        final static Font headerFont = new Font("Sans", Font.BOLD, 16);
-        final static Font textFont = new Font("Sans", Font.PLAIN, 14);
 
         private JLabel m_headerLabel;
         private String m_headerText = "";
@@ -161,14 +222,14 @@ public class LogisticsInfoPanel extends JPanel
         public InternalInfoPanel(String aHeader, boolean hasTextField)
         {
             super(new BorderLayout(0, 0));
-            setBackground(Color.WHITE);
+//            setBackground(Color.WHITE);
             setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 
             m_hasTextField = hasTextField;
 
             m_headerLabel = new JLabel();
             add(m_headerLabel, BorderLayout.NORTH);
-            m_headerLabel.setFont(headerFont);
+            m_headerLabel.setFont(FontFactory.headerFontBold());
             m_headerLabel.setOpaque(false); // get the same bacground as parent
             setHeader(aHeader);
 
@@ -177,8 +238,10 @@ public class LogisticsInfoPanel extends JPanel
             add(m_textArea, BorderLayout.CENTER);
             m_textArea.setLineWrap(true);
             m_textArea.setWrapStyleWord(true);
-            m_textArea.setFont(textFont);
+            m_textArea.setFont(FontFactory.textFontMedium());
 //            m_textArea.setBackground(Color.WHITE);
+            m_textArea.setOpaque(false);
+
             setText("");
         }
 
@@ -248,15 +311,16 @@ public class LogisticsInfoPanel extends JPanel
 
         public void setText(String aText)
         {
+            m_textArea.setVisible(true);
             m_displayText = aText;
             if (m_hasTextField)
             {
                 m_textArea.setText(m_displayText);
-                m_textArea.setVisible(m_displayText.length() > 0);
+//                m_textArea.setVisible(m_displayText.length() > 0);
             } else
             {
                 m_headerLabel.setText(m_headerText + " " + m_displayText);
-                m_textArea.setVisible(false);
+//                m_textArea.setVisible(false);
             }
         }
     }

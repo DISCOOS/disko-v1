@@ -24,6 +24,7 @@ public class AircraftImpl extends AbstractTransportUnit implements IAircraftIf
         super(anObjectId, aNumber, anIdentifier);
     }
 
+    @Override
     protected void defineAttributes()
     {
         super.defineAttributes();
@@ -40,11 +41,13 @@ public class AircraftImpl extends AbstractTransportUnit implements IAircraftIf
         addAttribute(m_subType);
     }
 
+    @Override
     protected void defineLists()
     {
         super.defineLists();
     }
 
+    @Override
     protected void defineReferences()
     {
         super.defineReferences();
@@ -66,6 +69,11 @@ public class AircraftImpl extends AbstractTransportUnit implements IAircraftIf
     protected UnitType getTypeBySubclass()
     {
         return IUnitIf.UnitType.AIRCRAFT;
+    }
+
+    protected char getUnitNumberPrefix()
+    {
+        return 'F';
     }
 
     /*-------------------------------------------------------------------------------------------

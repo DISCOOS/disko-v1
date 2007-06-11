@@ -12,16 +12,19 @@ public class AssistanceImpl extends AssignmentImpl implements IAssistanceIf
         super(anObjectId, aNumber);
     }
 
+    @Override
     protected void defineAttributes()
     {
         super.defineAttributes();
     }
 
+    @Override
     protected void defineLists()
     {
         super.defineLists();
     }
 
+    @Override
     protected void defineReferences()
     {
         super.defineReferences();
@@ -33,6 +36,17 @@ public class AssistanceImpl extends AssignmentImpl implements IAssistanceIf
         return AssignmentType.ASSISTANCE;
     }
 
+    @Override
+    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        super.addObjectReference(anObject, aReferenceName);
+    }
+
+    @Override
+    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    {
+        super.removeObjectReference(anObject, aReferenceName);
+    }
 
     /*-------------------------------------------------------------------------------------------
     * Other specified methods

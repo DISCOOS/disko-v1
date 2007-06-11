@@ -4,10 +4,8 @@ import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.gui.NavBar;
 import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
-import org.redcross.sar.wp.TestData.BuildTestData;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.EnumSet;
 /**
  * Created by IntelliJ IDEA.
@@ -33,7 +31,6 @@ public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDisk
         //BuildTestData.createUnitsAndAssignments(getMsoModel());
 
         JPanel lPanel = new LogisticsPanel(this).getPanel();
-        lPanel.setBackground(Color.BLUE);
         layoutComponent(lPanel);
 //        DiskoMap map = getMap();
 //        map.setIsEditable(true);

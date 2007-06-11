@@ -1,7 +1,5 @@
 package org.redcross.sar.mso.data;
 
-import org.redcross.sar.util.except.DuplicateIdException;
-
 public class UnitListImpl extends MsoListImpl<IUnitIf> implements IUnitListIf
 {
     public UnitListImpl(IMsoObjectIf anOwner, String theName, boolean isMain)
@@ -14,10 +12,23 @@ public class UnitListImpl extends MsoListImpl<IUnitIf> implements IUnitListIf
         super(anOwner, theName, isMain, aSize);
     }
 
+    private int makeUnitSerialNumber(Class aClass)
+    {
+        int retVal = 0;
+        for (IUnitIf item : getItems())
+        {
+            if (item.getClass() == aClass && item.getNumber() > retVal)
+            {
+                retVal = item.getNumber();
+            }
+        }
+        return retVal + 1;
+    }
+
     public IVehicleIf createVehicle(String anIdentifier)
     {
         checkCreateOp();
-        return (VehicleImpl) createdUniqueItem(new VehicleImpl(makeUniqueId(), makeSerialNumber(), anIdentifier));
+        return (VehicleImpl) createdUniqueItem(new VehicleImpl(makeUniqueId(), makeUnitSerialNumber(VehicleImpl.class), anIdentifier));
     }
 
     public IVehicleIf createVehicle(IMsoObjectIf.IObjectIdIf anObjectId)
@@ -25,6 +36,19 @@ public class UnitListImpl extends MsoListImpl<IUnitIf> implements IUnitListIf
         checkCreateOp();
         IVehicleIf retVal = (IVehicleIf) getItem(anObjectId);
         return retVal != null ? retVal : (IVehicleIf) createdItem(new VehicleImpl(anObjectId, -1));
+    }
+
+    public IBoatIf createBoat(String anIdentifier)
+    {
+        checkCreateOp();
+        return (BoatImpl) createdUniqueItem(new BoatImpl(makeUniqueId(), makeUnitSerialNumber(BoatImpl.class), anIdentifier));
+    }
+
+    public IBoatIf createBoat(IMsoObjectIf.IObjectIdIf anObjectId)
+    {
+        checkCreateOp();
+        IBoatIf retVal = (IBoatIf) getItem(anObjectId);
+        return retVal != null ? retVal : (IBoatIf) createdItem(new BoatImpl(anObjectId, -1));
     }
 
     public IUnitIf getUnit(int aUnitNr)

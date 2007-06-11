@@ -18,11 +18,19 @@ public class BoatImpl extends AbstractTransportUnit implements IBoatIf
     private final AttributeImpl.MsoInteger m_maxSpeed = new AttributeImpl.MsoInteger(this, "MaxSpeed");
     private final AttributeImpl.MsoEnum<BoatSubType> m_subType = new AttributeImpl.MsoEnum<BoatSubType>(this, "SubType", BoatSubType.SEARCH_AND_RESCUE);
 
+
+    public BoatImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
+    {
+        super(anObjectId, aNumber);
+    }
+
+
     public BoatImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber, String anIdentifier)
     {
         super(anObjectId, aNumber, anIdentifier);
     }
 
+    @Override
     protected void defineAttributes()
     {
         super.defineAttributes();
@@ -36,11 +44,13 @@ public class BoatImpl extends AbstractTransportUnit implements IBoatIf
         addAttribute(m_subType);
     }
 
+    @Override
     protected void defineLists()
     {
         super.defineLists();
     }
 
+    @Override
     protected void defineReferences()
     {
         super.defineReferences();
@@ -61,6 +71,11 @@ public class BoatImpl extends AbstractTransportUnit implements IBoatIf
     protected UnitType getTypeBySubclass()
     {
         return IUnitIf.UnitType.BOAT;
+    }
+
+    protected char getUnitNumberPrefix()
+    {
+        return 'B';
     }
 
     public static BoatImpl implementationOf(IBoatIf anInterface) throws MsoCastException

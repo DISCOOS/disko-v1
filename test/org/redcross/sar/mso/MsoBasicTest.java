@@ -127,6 +127,8 @@ public class MsoBasicTest
         assertNotNull(vUnit2);
         assertTrue(vUnit2.setSuperiorUnit(koUnit));
 
+        IUnitIf bUnit1 = unitList.createBoat("B1");
+
         List<IUnitIf> units = unitList.selectItems(new Selector<IUnitIf>()
         {
             public boolean select(IUnitIf anObject)

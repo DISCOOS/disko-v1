@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Properties;
 
 /**
@@ -144,7 +145,7 @@ public class LogisticsIcon implements Icon {
         if (m_isSelected) {
             bgColor = selectedColor;
         } else {
-            bgColor = Color.white;
+            bgColor = Color.WHITE;
         }
 
         g.setColor(bgColor);
@@ -197,7 +198,7 @@ public class LogisticsIcon implements Icon {
     public static class UnitIcon extends LogisticsIcon {
         static final Dimension m_iconSize = new Dimension(50, 50);
 
-        static final HashMap<IUnitIf.UnitType, Image> m_images = new HashMap<IUnitIf.UnitType, Image>();
+        static final HashMap<IUnitIf.UnitType, Image> m_images = new LinkedHashMap<IUnitIf.UnitType, Image>();
         IUnitIf m_unit;
 
         private void initImageMap() {
@@ -291,9 +292,12 @@ public class LogisticsIcon implements Icon {
 
         IAssignmentIf m_assignment;
         java.util.List<IAssignmentIf> m_assignments;
+        IUnitIf m_actUnit;
+        int m_selectorIndex;
+
         private final boolean m_singleAssigmentIcon;
 
-        static final HashMap<ISearchIf.SearchSubType, Image> m_searchImages = new HashMap<ISearchIf.SearchSubType, Image>();
+        static final HashMap<ISearchIf.SearchSubType, Image> m_searchImages = new LinkedHashMap<ISearchIf.SearchSubType, Image>();
         static final EnumSet<ISearchIf.SearchSubType> m_leftIcons = EnumSet.noneOf(ISearchIf.SearchSubType.class);
 
         private void initImageMap() {
@@ -341,11 +345,11 @@ public class LogisticsIcon implements Icon {
             setAssignment(anAssignment);
         }
 
-        public AssignmentIcon(java.util.List<IAssignmentIf> theAssignments, boolean isSelected) {
+        public AssignmentIcon(IUnitIf aUnit, int aSelectorIndex, boolean isSelected) {
             super(null, false, null, m_iconSize.width, m_iconSize.height, 1.0F, false, true, isSelected);
             initImageMap();
             m_singleAssigmentIcon = false;
-            setAssignments(theAssignments);
+            setAssignments(aUnit, aSelectorIndex);
         }
 
         public static Dimension getIconSize() {
@@ -373,15 +377,21 @@ public class LogisticsIcon implements Icon {
 //            m_buttonListener.setAssignment(anAssignment);
         }
 
-        public void setAssignments(java.util.List<IAssignmentIf> theAssignments) {
+        public void setAssignments(IUnitIf aUnit, int aSelectorIndex)
+        {
+            m_actUnit = aUnit;
+            m_selectorIndex = aSelectorIndex;
             // todo test on m_singleAssigmentIcon
-            m_assignments = theAssignments;
-            if (m_assignments.size() == 0) {
+            m_assignments = UnitTableModel.getSelectedAssignments(m_actUnit,m_selectorIndex);
+            if (m_assignments.size() == 0)
+            {
                 setIconText("");
                 setIconImage(null);
+                setHasBorder(false);
             } else {
                 setIconText(Integer.toString(m_assignments.get(0).getNumber()));
                 setAssignmentIcon(m_assignments.get(0), m_assignments.size() > 1);
+                setHasBorder(true);
 //            m_buttonListListener.setAssignmentList(theAssignments);
             }
         }
@@ -409,7 +419,7 @@ public class LogisticsIcon implements Icon {
         static final Dimension m_iconSize = new Dimension(30, 50);
 
         public InfoIcon(String anIconText, boolean isSelected) {
-            super(null, true, null, m_iconSize.width, m_iconSize.height, 1.0F, false, true, isSelected);
+            super(null, true, null, m_iconSize.width, m_iconSize.height, 1.0F, false, false, isSelected);
             setInfo(anIconText);
         }
 

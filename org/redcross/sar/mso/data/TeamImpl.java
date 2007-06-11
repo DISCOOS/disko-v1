@@ -9,16 +9,19 @@ public class TeamImpl extends AbstractUnit implements ITeamIf
         super(anObjectId, aNumber);
     }
 
+    @Override
     protected void defineAttributes()
     {
         super.defineAttributes();
         addAttribute(m_speed);
     }
 
+    @Override
     protected void defineLists()
     {
     }
 
+    @Override
     protected void defineReferences()
     {
     }
@@ -35,11 +38,14 @@ public class TeamImpl extends AbstractUnit implements ITeamIf
         super.removeObjectReference(anObject, aReferenceName);
     }
 
-
-
     protected UnitType getTypeBySubclass()
     {
         return IUnitIf.UnitType.TEAM;
+    }
+
+    protected char getUnitNumberPrefix()
+    {
+        return 'L';
     }
 
     public String getSubTypeName()

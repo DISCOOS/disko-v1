@@ -29,24 +29,28 @@ public class EventImpl extends AbstractTimeItem implements IEventIf
         setNumber(aNumber);
     }
 
+    @Override
     protected void defineAttributes()
     {
         super.defineAttributes();
         addAttribute(m_number);
     }
 
+    @Override
     protected void defineLists()
     {
         super.defineLists();
         addList(m_eventTasks);
     }
 
+    @Override
     protected void defineReferences()
     {
         super.defineReferences();
     }
 
 
+    @Override
     public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
         if (anObject instanceof ITaskIf)
@@ -58,6 +62,7 @@ public class EventImpl extends AbstractTimeItem implements IEventIf
 
     }
 
+    @Override
     public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
         if (anObject instanceof ITaskIf)

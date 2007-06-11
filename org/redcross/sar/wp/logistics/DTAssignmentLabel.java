@@ -4,19 +4,32 @@ package org.redcross.sar.wp.logistics;
  */
 
 
+import org.redcross.sar.mso.data.IAssignmentIf;
+
 import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 
 
-//A subclass of Picture that supports Data Transfer.
+//A subclass of Label that supports Data Transfer.
 public class DTAssignmentLabel extends AssignmentLabel implements MouseMotionListener
 {
     private MouseEvent firstMouseEvent = null;
 
-    public DTAssignmentLabel(LogisticsIcon.AssignmentIcon anIcon,TransferHandler aTransferHandler)
+    public DTAssignmentLabel(LogisticsIcon.AssignmentIcon anIcon, AssignmentLabelClickHandler aClickHandler, TransferHandler aTransferHandler)
     {
-        super(anIcon);
+        super(anIcon, aClickHandler);
+        initLabel(aTransferHandler);
+    }
+
+    public DTAssignmentLabel(IAssignmentIf anAssignment,AssignmentLabelClickHandler aClickHandler, TransferHandler aTransferHandler)
+    {
+        super(anAssignment,aClickHandler);
+        initLabel(aTransferHandler);
+    }
+
+    private void initLabel(TransferHandler aTransferHandler)
+    {
         setEnabled(true);
         addMouseMotionListener(this);
         setTransferHandler(aTransferHandler);
@@ -33,11 +46,12 @@ public class DTAssignmentLabel extends AssignmentLabel implements MouseMotionLis
 //                TransferHandler.getPasteAction());
     }
 
+
     @Override
     public void mousePressed(MouseEvent e)
     {
         //Don't bother to drag if there is no icon.
-        if (getIcon() == null)
+        if (getAssignment() == null)
         {
             return;
         }
@@ -49,7 +63,7 @@ public class DTAssignmentLabel extends AssignmentLabel implements MouseMotionLis
     public void mouseDragged(MouseEvent e)
     {
         //Don't bother to drag if the component displays no icon.
-        if (getIcon() == null)
+        if (getAssignment() == null)
         {
             return;
         }

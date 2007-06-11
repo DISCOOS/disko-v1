@@ -32,9 +32,14 @@ public class DiskoScrollPanel extends JPanel implements Scrollable
 
         if (m_layoutManager instanceof FlowLayout)
         {
-            m_hgap = ((FlowLayout) aLayoutManager).getHgap();
-            m_vgap = ((FlowLayout) aLayoutManager).getVgap();
+            m_hgap = ((FlowLayout) m_layoutManager).getHgap();
+            m_vgap = ((FlowLayout) m_layoutManager).getVgap();
+        } else if (m_layoutManager instanceof GridLayout)
+        {
+            m_hgap = ((GridLayout) m_layoutManager).getHgap();
+            m_vgap = ((GridLayout) m_layoutManager).getVgap();
         }
+
         m_surroundingScrollPane.setViewportView(this);
 
         m_header = new JLabel();
@@ -42,7 +47,7 @@ public class DiskoScrollPanel extends JPanel implements Scrollable
 
         m_corner = new DiskoScrollPanel.Corner(m_header.getBackground());
         m_surroundingScrollPane.setCorner(JScrollPane.UPPER_TRAILING_CORNER, m_corner);
-        setBackground(Color.white);
+//        setBackground(Color.white);
         m_surroundingScrollPane.setViewportBorder(BorderFactory.createLineBorder(Color.black));
 
         ComponentAdapter resizeHandler = new ComponentAdapter()
@@ -69,19 +74,29 @@ public class DiskoScrollPanel extends JPanel implements Scrollable
             int height = m_defaultDimension.height;
             for (Component c : m_childrenComponents)
             {
-                m_childSizeSet = c.getWidth() > 0;
-                width = Math.max(width, c.getWidth());
-                height = Math.max(height, c.getHeight());
+                m_childSizeSet = c.getHeight() > 0;
+                width = Math.max(width, c.getPreferredSize().width);
+                height = Math.max(height, c.getPreferredSize().height);
             }
             m_childDimension.width = width;
             m_childDimension.height = height;
         }
 
         Dimension myDimension = getSize();
-        int cols = Math.max(myDimension.width / (m_childDimension.width + m_hgap), 1);
-        int rows = (m_childrenComponents.size() / cols) + 1;
+        LayoutManager lm = getLayout();
+        int cols;
+        if (lm instanceof GridLayout)
+        {
+            cols = ((GridLayout) lm).getColumns();
+        } else
+        {
+            cols = myDimension.width / (m_childDimension.width + m_hgap);
+        }
+        cols = Math.max(cols, 1);
+        int rows = ((m_childrenComponents.size() - 1) / cols) + 1;
+
         int newHeight = rows * (m_childDimension.height + m_vgap);
-        newHeight = Math.max(newHeight, getParent().getHeight());
+//        newHeight = Math.max(newHeight, getParent().getHeight());
         if (newHeight != myDimension.height)
         {
             myDimension.height = newHeight;
@@ -148,11 +163,20 @@ public class DiskoScrollPanel extends JPanel implements Scrollable
     public int getMaxNonscrollItems(Dimension aDimension)
     {
         Dimension availableDim = getParent().getSize();
-        int cols = availableDim.width / (aDimension.width + m_hgap);
+
+        int cols;
+        LayoutManager lm = getLayout();
+        if (lm instanceof GridLayout)
+        {
+            cols = ((GridLayout) lm).getColumns();
+        } else
+        {
+            cols = availableDim.width / (aDimension.width + m_hgap);
+        }
         cols = Math.max(cols, 1);
         int rows = availableDim.height / (aDimension.height + m_vgap);
         rows = Math.max(rows, 1);
-        return cols * rows - 1;
+        return cols * rows;
     }
 
     public void removeAll()

@@ -39,6 +39,7 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
         setCreated(Calendar.getInstance());
     }
 
+    @Override
     protected void defineAttributes()
     {
         super.defineAttributes();
@@ -48,6 +49,7 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
         addAttribute(m_status);
     }
 
+    @Override
     protected void defineLists()
     {
         super.defineLists();
@@ -56,6 +58,7 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
         addList(m_unconfirmedReceivers);
     }
 
+    @Override
     protected void defineReferences()
     {
         super.defineReferences();
@@ -106,7 +109,6 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
             }
         }
         super.addObjectReference(anObject, aReferenceName);
-
     }
 
     public static MessageImpl implementationOf(IMessageIf anInterface) throws MsoCastException

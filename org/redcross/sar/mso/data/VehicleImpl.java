@@ -12,16 +12,19 @@ public class VehicleImpl extends AbstractTransportUnit implements IVehicleIf
         super(anObjectId, aNumber, anIdentifier);
     }
 
+    @Override
     protected void defineAttributes()
     {
         super.defineAttributes();
     }
 
+    @Override
     protected void defineLists()
     {
         super.defineLists();
     }
 
+    @Override
     protected void defineReferences()
     {
         super.defineReferences();
@@ -44,6 +47,10 @@ public class VehicleImpl extends AbstractTransportUnit implements IVehicleIf
         return IUnitIf.UnitType.VEHICLE;
     }
 
+    protected char getUnitNumberPrefix()
+    {
+        return 'K';
+    }
 
     public String getSubTypeName()
     {

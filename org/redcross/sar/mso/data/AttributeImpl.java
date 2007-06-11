@@ -4,7 +4,6 @@ import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.mso.*;
-import org.redcross.sar.util.except.MsoException;
 
 import java.awt.geom.Point2D;
 import java.util.Calendar;
@@ -82,6 +81,11 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
         setAttrValue(aValue, false);
     }
 
+    protected boolean equal(T v1, T v2)
+    {
+        return v1 == v2 || (v1 != null && v1.equals(v2));
+    }
+
     protected void setAttrValue(T aValue, boolean isCreating)
     {
         IMsoModelIf.UpdateMode updateMode = MsoModelImpl.getInstance().getUpdateMode();
@@ -92,7 +96,7 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
             case LOOPBACK_UPDATE_MODE:
             {
                 newState = IMsoModelIf.ModificationState.STATE_SERVER_ORIGINAL;
-                if (m_serverValue != aValue)
+                if (!equal(m_serverValue, aValue))
                 {
                     m_serverValue = aValue;
                     valueChanged = true;
@@ -102,7 +106,7 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
             case REMOTE_UPDATE_MODE:
             {
                 newState = m_state == IMsoModelIf.ModificationState.STATE_LOCAL ? IMsoModelIf.ModificationState.STATE_CONFLICTING : IMsoModelIf.ModificationState.STATE_SERVER_MODIFIED;
-                if (m_serverValue != aValue)
+                if (!equal(m_serverValue, aValue))
                 {
                     m_serverValue = aValue;
                     valueChanged = true;
@@ -111,11 +115,18 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
             }
             default:
             {
-                newState = IMsoModelIf.ModificationState.STATE_LOCAL;
-                if (m_localValue != aValue)
+                if (equal(m_serverValue, aValue))
                 {
-                    m_localValue = aValue;
+                    newState = IMsoModelIf.ModificationState.STATE_SERVER_ORIGINAL;
                     valueChanged = true;
+                } else
+                {
+                    newState = IMsoModelIf.ModificationState.STATE_LOCAL;
+                    if (!equal(m_localValue, aValue))
+                    {
+                        m_localValue = aValue;
+                        valueChanged = true;
+                    }
                 }
             }
         }
@@ -267,7 +278,6 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
         {
             return getAttrValue();
         }
-
     }
 
     public static class MsoInteger extends AttributeImpl<Integer> implements IMsoIntegerIf
@@ -314,55 +324,55 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
         }
     }
 
-/*    public static class MsoLong extends AttributeImpl<Long> implements IMsoLongIf
-    {
-        public MsoLong(AbstractMsoObject theOwner, String theName)
-        {
-            super(Long.class, theOwner, theName, Integer.MAX_VALUE, (long) 0);
-        }
+    /*    public static class MsoLong extends AttributeImpl<Long> implements IMsoLongIf
+      {
+          public MsoLong(AbstractMsoObject theOwner, String theName)
+          {
+              super(Long.class, theOwner, theName, Integer.MAX_VALUE, (long) 0);
+          }
 
-        public MsoLong(AbstractMsoObject theOwner, String theName, int theIndexNo)
-        {
-            super(Long.class, theOwner, theName, theIndexNo, (long) 0);
-        }
+          public MsoLong(AbstractMsoObject theOwner, String theName, int theIndexNo)
+          {
+              super(Long.class, theOwner, theName, theIndexNo, (long) 0);
+          }
 
-        public MsoLong(AbstractMsoObject theOwner, String theName, int theIndexNo, Long aLong)
-        {
-            super(Long.class, theOwner, theName, theIndexNo, aLong);
-        }
+          public MsoLong(AbstractMsoObject theOwner, String theName, int theIndexNo, Long aLong)
+          {
+              super(Long.class, theOwner, theName, theIndexNo, aLong);
+          }
 
-        @Override
-        public void set(Long aValue)
-        {
-            super.set(aValue);
-        }
+          @Override
+          public void set(Long aValue)
+          {
+              super.set(aValue);
+          }
 
-        public void setValue(long aValue)
-        {
-            setAttrValue(aValue);
-        }
+          public void setValue(long aValue)
+          {
+              setAttrValue(aValue);
+          }
 
-        public void setValue(Integer aValue)
-        {
-            setAttrValue(aValue.longValue());
-        }
+          public void setValue(Integer aValue)
+          {
+              setAttrValue(aValue.longValue());
+          }
 
-        public void setValue(Long aValue)
-        {
-            setAttrValue(aValue);
-        }
+          public void setValue(Long aValue)
+          {
+              setAttrValue(aValue);
+          }
 
-        public int intValue()
-        {
-            return getAttrValue().intValue();
-        }
+          public int intValue()
+          {
+              return getAttrValue().intValue();
+          }
 
-        public long longValue()
-        {
-            return getAttrValue();
-        }
-    }
-  */
+          public long longValue()
+          {
+              return getAttrValue();
+          }
+      }
+    */
     public static class MsoDouble extends AttributeImpl<Double> implements IMsoDoubleIf
     {
         public MsoDouble(AbstractMsoObject theOwner, String theName)
@@ -816,38 +826,66 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
         }
     }
 
-   public boolean equals(Object o)
-   {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
 
-      AttributeImpl attribute = (AttributeImpl) o;
+        AttributeImpl attribute = (AttributeImpl) o;
 
-      if (m_indexNo != attribute.m_indexNo) return false;
-      if (m_required != attribute.m_required) return false;
-      if (m_class != null ? !m_class.equals(attribute.m_class) : attribute.m_class != null) return false;
-      if (m_localValue != null ? !m_localValue.equals(attribute.m_localValue) : attribute.m_localValue != null)
-         return false;
-      if (m_name != null ? !m_name.equals(attribute.m_name) : attribute.m_name != null) return false;
-      if (m_owner != null ? !m_owner.equals(attribute.m_owner) : attribute.m_owner != null) return false;
-      if (m_serverValue != null ? !m_serverValue.equals(attribute.m_serverValue) : attribute.m_serverValue != null)
-         return false;
-      if (m_state != attribute.m_state) return false;
+        if (m_indexNo != attribute.m_indexNo)
+        {
+            return false;
+        }
+        if (m_required != attribute.m_required)
+        {
+            return false;
+        }
+        if (m_class != null ? !m_class.equals(attribute.m_class) : attribute.m_class != null)
+        {
+            return false;
+        }
+        if (m_localValue != null ? !m_localValue.equals(attribute.m_localValue) : attribute.m_localValue != null)
+        {
+            return false;
+        }
+        if (m_name != null ? !m_name.equals(attribute.m_name) : attribute.m_name != null)
+        {
+            return false;
+        }
+        if (m_owner != null ? !m_owner.equals(attribute.m_owner) : attribute.m_owner != null)
+        {
+            return false;
+        }
+        if (m_serverValue != null ? !m_serverValue.equals(attribute.m_serverValue) : attribute.m_serverValue != null)
+        {
+            return false;
+        }
+        if (m_state != attribute.m_state)
+        {
+            return false;
+        }
 
-      return true;
-   }
+        return true;
+    }
 
-   public int hashCode()
-   {
-      int result;
-      result = (m_class != null ? m_class.hashCode() : 0);
-      result = 31 * result + (m_owner != null ? m_owner.hashCode() : 0);
-      result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
-      result = 31 * result + m_indexNo;
-      result = 31 * result + (m_required ? 1 : 0);
-      result = 31 * result + (m_localValue != null ? m_localValue.hashCode() : 0);
-      result = 31 * result + (m_serverValue != null ? m_serverValue.hashCode() : 0);
-      result = 31 * result + (m_state != null ? m_state.hashCode() : 0);
-      return result;
-   }
+    public int hashCode()
+    {
+        int result;
+        result = (m_class != null ? m_class.hashCode() : 0);
+        result = 31 * result + (m_owner != null ? m_owner.hashCode() : 0);
+        result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
+        result = 31 * result + m_indexNo;
+        result = 31 * result + (m_required ? 1 : 0);
+        result = 31 * result + (m_localValue != null ? m_localValue.hashCode() : 0);
+        result = 31 * result + (m_serverValue != null ? m_serverValue.hashCode() : 0);
+        result = 31 * result + (m_state != null ? m_state.hashCode() : 0);
+        return result;
+    }
 }

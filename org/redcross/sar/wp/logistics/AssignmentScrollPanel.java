@@ -1,6 +1,7 @@
 package org.redcross.sar.wp.logistics;
 
 import org.redcross.sar.mso.data.IAssignmentIf;
+import org.redcross.sar.mso.data.IUnitIf;
 
 import javax.swing.*;
 import java.awt.*;
@@ -50,13 +51,24 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
     /**
      * Common mouse adapter.
      */
-//    private MouseInputAdapter m_mouseAdapter;
 
+    /**
+     * Status of assignments listed.
+     */
     private IAssignmentIf.AssignmentStatus m_selectedStatus;
 
-    public AssignmentScrollPanel(JScrollPane aScrollPane, LayoutManager aLayoutManager)
+    private IUnitIf m_selectedUnit;
+
+    private final boolean m_showIcons;
+
+    private final AssignmentLabel.AssignmentLabelClickHandler m_clickHandler;
+
+    public AssignmentScrollPanel(JScrollPane aScrollPane, LayoutManager aLayoutManager, AssignmentLabel.AssignmentLabelClickHandler aClickHandler, boolean showIcons)
     {
         super(aScrollPane, aLayoutManager);
+        m_showIcons = showIcons;
+        m_clickHandler = aClickHandler;
+
         setFocusable(true);
         setEnabled(true);
         System.out.println(this + " " + isFocusable());
@@ -184,6 +196,17 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
         m_selectedStatus = aSelectedStatus;
     }
 
+
+    public IUnitIf getSelectedUnit()
+    {
+        return m_selectedUnit;
+    }
+
+    public void setSelectedUnit(IUnitIf aSelectedUnit)
+    {
+        m_selectedUnit = aSelectedUnit;
+    }
+
     public void clearSelected()
     {
         m_selected.clear();
@@ -231,30 +254,41 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
         for (int i = firstIndex; i <= lastIndex; i++)
         {
             IAssignmentIf asg = m_assignmentList.get(i);
-            if (m_icons.size() == iv)
+
+            if (m_showIcons)
             {
-                icon = new LogisticsIcon.AssignmentIcon(asg, m_selected.contains(asg));
-                m_icons.ensureCapacity(lastIndex - firstIndex + 1);
-                m_icons.add(icon);
+                if (m_icons.size() == iv)
+                {
+                    icon = new LogisticsIcon.AssignmentIcon(asg, m_selected.contains(asg));
+                    m_icons.ensureCapacity(lastIndex - firstIndex + 1);
+                    m_icons.add(icon);
+                } else
+                {
+                    icon = m_icons.get(iv);
+                    icon.setAssignment(asg);
+                    icon.setSelected(m_selected.contains(asg));
+                }
+                if (m_labels.size() == iv)
+                {
+                    m_labels.ensureCapacity(lastIndex - firstIndex + 1);
+                    m_labels.add(new DTAssignmentLabel(icon, m_clickHandler,getTransferHandler())); // Inherit transfer handler from panel
+                } else
+                {
+                    m_labels.get(iv).setAssignmentIcon(icon);
+                }
             } else
             {
-                icon = m_icons.get(iv);
-                icon.setAssignment(asg);
-                icon.setSelected(m_selected.contains(asg));
-            }
-            if (m_labels.size() == iv)
-            {
-                m_labels.ensureCapacity(lastIndex - firstIndex + 1);
-                m_labels.add(new DTAssignmentLabel(icon,getTransferHandler())); // Inherit transfer handler from panel
-            } else
-            {
-                m_labels.get(iv).setAssignmentIcon(icon);
+                if (m_labels.size() == iv)
+                {
+                    m_labels.ensureCapacity(lastIndex - firstIndex + 1);
+                    m_labels.add(new DTAssignmentLabel(asg, m_clickHandler,getTransferHandler())); // Inherit transfer handler from panel
+                } else
+                {
+                    m_labels.get(iv).setAssignment(asg);
+                }
             }
             JLabel label = m_labels.get(iv);
             add(label);
-//            label.addMouseListener(m_mouseAdapter);
-//            label.addMouseMotionListener(m_mouseAdapter);
-//            label.setTransferHandler(getTransferHandler()); // Inherit transfer handler from panel.
             iv++;
         }
         resizePanel(true);

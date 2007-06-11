@@ -55,9 +55,15 @@ public class BuildTestData {
         unit = unitList.createVehicle("St 39911");
         unit.setRemarks("This is a red car");
         unit.setStatus(IUnitIf.UnitStatus.READY);
+        unit.setCallSign("88888");
 
         unit = unitList.createVehicle("St 39912");
         unit.setStatus(IUnitIf.UnitStatus.READY);
+        unit.setCallSign("21345");
+
+//        unit = unitList.createBoat("Jupiter");
+//        unit.setStatus(IUnitIf.UnitStatus.READY);
+//        unit.setCallSign("99999");
 
         unit = unitList.createVehicle("St 39913");
         unit.setStatus(IUnitIf.UnitStatus.EMPTY);
@@ -71,6 +77,8 @@ public class BuildTestData {
         IAssignmentListIf asgList = cmdPost.getAssignmentList();
         try {
             IAssignmentIf asg;
+            IAssignmentIf prevAsg = null;
+            boolean insertionToggle = false;
 
             unit = unitList.getUnit(1);
             for (int i = 0; i < 10; i++) {
@@ -78,7 +86,9 @@ public class BuildTestData {
                 asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.DRAFT, null);
                 asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY, null);
                 ((ISearchIf) asg).setSubType(ISearchIf.SearchSubType.LINE);
-                unit.addUnitAssignment(asg, IAssignmentIf.AssignmentStatus.ALLOCATED);
+                unit.addAllocatedAssignment(asg, prevAsg);
+                prevAsg = insertionToggle ? asg : null;
+                insertionToggle = !insertionToggle;
             }
 
             unit = unitList.getUnit(2);
@@ -87,7 +97,9 @@ public class BuildTestData {
                 asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.DRAFT, null);
                 asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY, null);
                 ((ISearchIf) asg).setSubType(ISearchIf.SearchSubType.DOG);
-                unit.addUnitAssignment(asg, IAssignmentIf.AssignmentStatus.ALLOCATED);
+                unit.addAllocatedAssignment(asg, prevAsg);
+                prevAsg = insertionToggle ? asg : null;
+                insertionToggle = !insertionToggle;
             }
 
             for (int i = 0; i < 20; i++) {

@@ -58,6 +58,8 @@ public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf, ISerialNu
     * Methods for attributes
     *-------------------------------------------------------------------------------------------*/
 
+    public String getUnitNumber();
+
     public void setAverageSpeed(int anAverageSpeed);
 
     public int getAverageSpeed();
@@ -169,5 +171,15 @@ public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf, ISerialNu
 
     public List<IAssignmentIf> getFinishedAssigment();
 
+    public IAssignmentIf getActiveAssignment();
 
+    public void rearrangeAsgPrioritiesAfterStatusChange(IAssignmentIf anAssignment, IAssignmentIf.AssignmentStatus oldStatus);
+
+    /**
+     * Add an allocated assignment to the unit at a given place in the list
+     * @param newAssignment The assignment to add
+     * @param beforeAssignment Place the new assignment before this, if null, place to the end.  
+     * @return <code>false</code> if an error ({@link org.redcross.sar.util.except.IllegalOperationException}) occured, <code>true</code> otherwise.
+     */
+    public boolean addAllocatedAssignment(IAssignmentIf newAssignment, IAssignmentIf beforeAssignment);
 }

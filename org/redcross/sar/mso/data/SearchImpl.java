@@ -30,7 +30,7 @@ public class SearchImpl extends AssignmentImpl implements ISearchIf
         super(anObjectId, aNumber);
     }
 
-
+    @Override
     protected void defineAttributes()
     {
         super.defineAttributes();
@@ -49,11 +49,13 @@ public class SearchImpl extends AssignmentImpl implements ISearchIf
         addAttribute(m_subType);
     }
 
+    @Override
     protected void defineLists()
     {
         super.defineLists();
     }
 
+    @Override
     protected void defineReferences()
     {
         super.defineReferences();

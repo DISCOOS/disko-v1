@@ -1,5 +1,6 @@
 package org.redcross.sar.wp.logistics;
 
+import org.redcross.sar.gui.FontFactory;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.AssignmentImpl;
 import org.redcross.sar.mso.data.IAssignmentIf;
@@ -25,7 +26,6 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
 {
     private AssignmentScrollPanel m_selectableAssignments;
     private AssignmentScrollPanel m_priAssignments;
-    private IMsoEventManagerIf m_eventManager;
     private IAssignmentListIf m_AssignmentList;
 
     /**
@@ -80,8 +80,7 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
         m_priAssignments.getHeaderLabel().setText("Pri");
         m_priAssignments.setSelectedStatus(IAssignmentIf.AssignmentStatus.READY);
 
-        m_eventManager = anEventManager;
-        m_eventManager.addClientUpdateListener(this);
+        anEventManager.addClientUpdateListener(this);
 
         m_AssignmentList = anAssignmentList;
 
@@ -269,7 +268,7 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
     }
 
     /**
-     * Handler of popup events, after the are detected by a {@link org.redcross.sar.wp.logistikk.PopupListener}
+     * Handler of popup events, after the are detected by a {@link PopupListener}
      */
     public static class SelectionPopupHandler extends AbstractPopupHandler
     {
@@ -296,6 +295,7 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
          */
         private void addButton(SelectButton aButton)
         {
+            aButton.setFont(FontFactory.popupFont());
             m_menu.add(aButton);
             m_buttons.add(aButton);
             m_buttonGroup.add(aButton);
