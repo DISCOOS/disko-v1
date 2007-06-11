@@ -35,7 +35,7 @@ public class AssignmentLabelTransferHandler extends TransferHandler
 
     private boolean confirmTransfer(IAssignmentIf anAssignment, IAssignmentIf.AssignmentStatus aStatus)
     {
-        int n = JOptionPane.showOptionDialog(null,
+        int n = JOptionPane.showOptionDialog(m_wpModule.getApplication().getFrame(),
                 "Overføre oppdag " + anAssignment.getNumber() + " til status " + aStatus.toString(),
                 "Bekreft overføring",
                 JOptionPane.YES_NO_OPTION,
