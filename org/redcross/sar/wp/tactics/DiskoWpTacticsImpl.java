@@ -458,7 +458,6 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 					IMsoFeatureClass msoFC = (IMsoFeatureClass)msoLayer.getFeatureClass();
 					IMsoFeature msoFeature = msoFC.getFeature(area.getObjectId());
 					msoFC.setSelected(msoFeature, true);
-					getMap().zoomToSelected();
 					getMap().zoomToFeature(msoFeature);
 				} catch (AutomationException e) {
 					// TODO Auto-generated catch block
