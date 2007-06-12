@@ -1,6 +1,7 @@
 package org.redcross.sar.wp.logistics;
 
 import org.redcross.sar.gui.FontFactory;
+import org.redcross.sar.map.IDiskoMap;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.*;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
@@ -31,7 +32,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
 {
 
     private JPanel WorkspacePanel;
-    private JPanel m_mapPanel;
+    private JComponent m_map;
     private JPanel m_assignmentPanel;
     private JPanel m_unitPanel;
     private JPanel m_infoPanel;
@@ -61,8 +62,10 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
     public LogisticsPanel(AbstractDiskoWpModule aWp)
     {
         m_wpModule = aWp;
+        m_map = (JComponent)m_wpModule.getMap();
         m_unitList = m_wpModule.getMsoManager().getCmdPost().getUnitList();
         m_assignmentList = m_wpModule.getMsoManager().getCmdPost().getAssignmentList();
+        
 
         if (!defineTransferHandler())
         {
@@ -70,12 +73,13 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         }
 
         defineSubpanelMouseListeners();
-
+        m_splitter3.setLeftComponent(m_map);
         setSplitters();
         setPanelSizes();
         initUnitTable();
         initInfoPanels();
         initAssignmentPanels();
+       
 
 //        JTableButtonMouseListener theListener = new JTableButtonMouseListener(m_unit1Table);
 //        m_unit1Table.addMouseListener(theListener);
@@ -89,13 +93,13 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
 
 
         addToListeners();
-        MoveButton.addActionListener(new ActionListener()
+        /*MoveButton.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
                 moveAssigment(1);
             }
-        });
+        });*/
 
     }
 
@@ -183,7 +187,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         th.setFont(FontFactory.headerFont());
         th.setPreferredSize(new Dimension(40, 40));
     }
-
+    
     private void initInfoPanels()
     {
         m_infoPanelHandler = new InfoPanelHandler(m_infoPanel, m_wpModule.getMmsoEventManager(), m_h2);
@@ -202,8 +206,8 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         m_unitPanel.setPreferredSize(new Dimension(320, 600));
         m_assignmentPanel.setMinimumSize(new Dimension(250, 600));
         m_assignmentPanel.setPreferredSize(new Dimension(300, 600));
-        m_mapPanel.setMinimumSize(new Dimension(325, 300));
-        m_mapPanel.setPreferredSize(new Dimension(325, 300));
+        //m_mapPanel.setMinimumSize(new Dimension(325, 300));
+        //m_mapPanel.setPreferredSize(new Dimension(325, 300));
         m_infoPanel.setMinimumSize(new Dimension(325, 300));
         m_infoPanel.setPreferredSize(new Dimension(325, 300));
     }
@@ -348,9 +352,9 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         return WorkspacePanel;
     }
 
-    public JPanel getMapPanel()
+    public JComponent getMapPanel()
     {
-        return m_mapPanel;
+        return m_map;
     }
 
     public InfoPanelHandler getInfoPanelHandler()
@@ -800,12 +804,13 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         m_infoPanel = new JPanel();
         m_infoPanel.setLayout(new CardLayout(0, 0));
         m_splitter3.setRightComponent(m_infoPanel);
-        m_mapPanel = new JPanel();
-        m_mapPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-        m_splitter3.setLeftComponent(m_mapPanel);
-        MoveButton = new JButton();
+        //m_map = new JPanel();
+        //m_map.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        //m_splitter3.setLeftComponent(m_map);
+        
+        /*MoveButton = new JButton();
         MoveButton.setText("Move 1");
-        m_mapPanel.add(MoveButton);
+        m_mapPanel.add(MoveButton);*/
     }
 
     /**

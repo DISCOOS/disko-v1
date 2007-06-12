@@ -29,16 +29,17 @@ public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDisk
 
         //BuildTestData.createCmdPost(getMsoModel());
         //BuildTestData.createUnitsAndAssignments(getMsoModel());
+        
+        System.out.println("Map: "+super.getMap());
 
-        JPanel lPanel = new LogisticsPanel(this).getPanel();
+        LogisticsPanel lp = new LogisticsPanel(this);
+        JPanel lPanel = lp.getPanel();
         layoutComponent(lPanel);
+        //lp.getMapPanel().add((JComponent)super.getMap());
+        
 //        DiskoMap map = getMap();
 //        map.setIsEditable(true);
 //        layoutComponent(map);
-    }
-
-    public DiskoMap getMap() {
-        return null;
     }
 
     public void activated() {
