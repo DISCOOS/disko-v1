@@ -51,7 +51,7 @@ public class DrawDialog extends DiskoDialog {
 	private void initialize() {
 		try {
             this.setContentPane(getMainPanel());
-            this.setPreferredSize(new Dimension(175,500));
+            this.setPreferredSize(new Dimension(195,500));
             this.pack();
 				
 		}
@@ -142,7 +142,7 @@ public class DrawDialog extends DiskoDialog {
 				final int index = i;
 				final JCheckBox cb = new JCheckBox();
 				IFeatureLayer flayer = snapLayerSelectionModel.getFeatureLayer(i);
-				cb.setText(flayer.getName());
+				cb.setText(flayer.getName().toLowerCase());
 				cb.setSelected(snapLayerSelectionModel.isSelected(i));
 				getSnapLayerPanel().add(cb);
 				cb.addActionListener(new java.awt.event.ActionListener() {

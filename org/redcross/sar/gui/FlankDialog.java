@@ -54,7 +54,7 @@ public class FlankDialog extends DiskoDialog {
 	private void initialize() {
 		try {
             this.setContentPane(getContentPanel());
-            this.setPreferredSize(new Dimension(175, 350));
+            this.setPreferredSize(new Dimension(190, 400));
             this.pack();
 		}
 		catch (java.lang.Throwable e) {
@@ -199,7 +199,7 @@ public class FlankDialog extends DiskoDialog {
 				final int index = i;
 				final JCheckBox cb = new JCheckBox();
 				IFeatureLayer flayer = clipLayerSelectionModel.getFeatureLayer(i);
-				cb.setText(flayer.getName());
+				cb.setText(flayer.getName().toLowerCase());
 				cb.setSelected(clipLayerSelectionModel.isSelected(i));
 				getClipPanel().add(cb);
 				cb.addActionListener(new java.awt.event.ActionListener() {

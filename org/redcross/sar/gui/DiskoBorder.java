@@ -1,11 +1,16 @@
 package org.redcross.sar.gui;
 
-import javax.swing.border.Border;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.WindowListener;
-import java.awt.event.WindowEvent;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Insets;
 import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.border.Border;
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,19 +29,18 @@ public class DiskoBorder implements Border
       this.radius = radius;
    }
 
-   @Override
    public Insets getBorderInsets(Component c)
    {
       return new Insets(this.radius + 1, this.radius + 1, this.radius + 2, this.radius);
    }
 
-   @Override
+
    public boolean isBorderOpaque()
    {
       return true;
    }
 
-   @Override
+
    public void paintBorder(Component c, Graphics g, int x, int y, int width, int height)
    {
       g.drawRoundRect(x + 1, y, width - 2, height - 1, radius, radius);

@@ -64,7 +64,7 @@ public class AssignmentTable extends JTable {
 					column.setPreferredWidth(175);
 					break;
 				case 3: 
-					column.setPreferredWidth(175);
+					column.setPreferredWidth(225);
 					break;
 			}
 		}

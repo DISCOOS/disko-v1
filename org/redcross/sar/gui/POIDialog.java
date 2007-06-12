@@ -69,7 +69,7 @@ public class POIDialog extends DiskoDialog {
 	 */
 	private void initialize() {
 		try {
-            this.setPreferredSize(new Dimension(185, 270));
+            this.setPreferredSize(new Dimension(252, 300));
             //this.setSize(new Dimension(175, 350));
             this.setSize(new Dimension(200, 247));
             this.setContentPane(getContentPanel());

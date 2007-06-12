@@ -2,6 +2,7 @@ package org.redcross.sar.gui;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
+import javax.swing.JLabel;
 import java.awt.*;
 
 public class TextAreaDialog extends DiskoDialog {
@@ -54,7 +55,6 @@ public class TextAreaDialog extends DiskoDialog {
 		if (contentPanel == null) {
 			try {
 				headerLabel = new JLabel();
-//				headerLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
 				contentPanel = new JPanel();
 				contentPanel.setLayout(new BorderLayout());
 				contentPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
