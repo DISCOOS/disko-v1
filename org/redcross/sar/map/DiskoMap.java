@@ -14,7 +14,6 @@ import org.redcross.sar.map.feature.IMsoFeatureClass;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.mso.data.IAreaIf;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
@@ -314,11 +313,30 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 			IAssignmentIf assignment = (IAssignmentIf)msoObject;
 			msoObject = assignment.getPlannedArea();
 		}
-		IMsoFeatureLayer msoLayer = getMapManager().getMsoLayer(msoObject.getMsoClassCode());
-		if (msoLayer != null)  {
-			IMsoFeatureClass msoFC = (IMsoFeatureClass)msoLayer.getFeatureClass();
-			IMsoFeature msoFeature = msoFC.getFeature(msoObject.getObjectId());
-			zoomToFeature(msoFeature);
+		if (msoObject != null) {
+			IMsoFeatureLayer msoLayer = getMapManager().getMsoLayer(msoObject.getMsoClassCode());
+			if (msoLayer != null)  {
+				IMsoFeatureClass msoFC = (IMsoFeatureClass)msoLayer.getFeatureClass();
+				IMsoFeature msoFeature = msoFC.getFeature(msoObject.getObjectId());
+				zoomToFeature(msoFeature);
+			}
+		}
+	}
+	
+	public void setSelected(IMsoObjectIf msoObject, boolean selected) 
+			throws IOException, AutomationException {
+		if (msoObject instanceof IAssignmentIf) {
+			IAssignmentIf assignment = (IAssignmentIf)msoObject;
+			msoObject = assignment.getPlannedArea();
+		}
+		if (msoObject != null) {
+			IMsoFeatureLayer msoLayer = getMapManager().getMsoLayer(msoObject.getMsoClassCode());
+			if (msoLayer != null)  {
+				IMsoFeatureClass msoFC = (IMsoFeatureClass)msoLayer.getFeatureClass();
+				msoFC.clearSelected();
+				IMsoFeature msoFeature = msoFC.getFeature(msoObject.getObjectId());
+				msoFC.setSelected(msoFeature, selected);
+			}
 		}
 	}
 	

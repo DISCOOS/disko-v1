@@ -74,6 +74,8 @@ public interface IDiskoMap {
 	public void zoomToFeature(IFeature feature) throws IOException, AutomationException;
 	
 	public void zoomToMsoObject(IMsoObjectIf msoObject) throws IOException, AutomationException;
+	
+	public void setSelected(IMsoObjectIf msoObject, boolean selected) throws IOException, AutomationException;
 
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#getFeatureLayer(java.lang.String)

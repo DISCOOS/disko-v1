@@ -99,7 +99,7 @@ public class DrawTool extends AbstractCommandTool {
 			map.addDiskoMapEventListener(this);
 			DrawDialog drawDialog = (DrawDialog)dialog;
 			drawDialog.onLoad(map);
-			drawDialog.setLocationRelativeTo(map, DiskoDialog.POS_WEST, false);
+			drawDialog.setLocationRelativeTo(map, DiskoDialog.POS_WEST, true);
 			setSnapableLayers(drawDialog.getSnapModel().getSelected());
 			setSnapTolerance(map.getActiveView().getExtent().getWidth()/100);
 			drawDialog.setSnapTolerance(getSnapTolerance());
