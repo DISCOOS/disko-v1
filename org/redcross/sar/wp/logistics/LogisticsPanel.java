@@ -212,7 +212,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
 
     private void initInfoPanels()
     {
-        m_infoPanelHandler = new InfoPanelHandler(m_infoPanel, m_wpModule.getMmsoEventManager(), m_h2);
+        m_infoPanelHandler = new InfoPanelHandler(m_infoPanel, m_wpModule, m_h2);
         m_infoPanelHandler.setSelectionTransferHandler(m_assignmentLabelTransferHandler);
     }
 

@@ -4,9 +4,9 @@ import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.IUnitIf;
-import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent;
+import org.redcross.sar.wp.AbstractDiskoWpModule;
 
 import javax.swing.*;
 import java.awt.*;
@@ -46,7 +46,7 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
 
     private final AssignmentLabel.AssignmentLabelClickHandler m_assignmentLabelMouseListener;
 
-    public InfoPanelHandler(JPanel anInfoPanel, IMsoEventManagerIf anEventManager, AssignmentLabel.AssignmentLabelClickHandler aClickHandler)
+    public InfoPanelHandler(JPanel anInfoPanel, AbstractDiskoWpModule aWpModule, AssignmentLabel.AssignmentLabelClickHandler aClickHandler)
     {
         m_infoPanel = anInfoPanel;
         m_assignmentLabelMouseListener = aClickHandler;
@@ -57,7 +57,7 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
         initAssignmentInfoPanel();
         initAssignmentListPanel();
 
-        anEventManager.addClientUpdateListener(this);
+        aWpModule.getMmsoEventManager().addClientUpdateListener(this);
         showPanel(EMPTY_PANEL_NAME);
     }
 
