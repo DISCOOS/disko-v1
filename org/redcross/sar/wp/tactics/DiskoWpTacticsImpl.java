@@ -450,14 +450,28 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 			reqDialog.setAccuracy(search.getPlannedAccuracy());
 			reqDialog.setPersonelNeed(search.getPlannedPersonnel());
 			reqDialog.setEstimatedProgress(search.getPlannedProgress());
-			IAreaIf area = search.getPlannedArea();
+			try {
+				getMap().setSelected(search, true);
+				getMap().zoomToMsoObject(search);
+			} catch (AutomationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			/*IAreaIf area = search.getPlannedArea();
 			if (area != null) {
 				try {
+					
 					IMsoFeatureLayer msoLayer = getMap().getMapManager().getMsoLayer(
 							IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
 					IMsoFeatureClass msoFC = (IMsoFeatureClass)msoLayer.getFeatureClass();
 					IMsoFeature msoFeature = msoFC.getFeature(area.getObjectId());
 					msoFC.setSelected(msoFeature, true);
+					
+					getMap().setSelected(msoObject, true);
 					getMap().zoomToFeature(msoFeature);
 				} catch (AutomationException e) {
 					// TODO Auto-generated catch block
@@ -466,7 +480,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			}
+			}*/
 		}
 	}
 

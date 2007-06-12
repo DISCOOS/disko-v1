@@ -318,7 +318,7 @@ public class HypothesesDialog extends DiskoDialog {
 				priorityLabel.setText("Prioritet:");
 				propertiesPanel = new JPanel();
 				propertiesPanel.setLayout(new GridBagLayout());
-				propertiesPanel.setPreferredSize(new Dimension(130, 150));
+				propertiesPanel.setPreferredSize(new Dimension(175, 150));
 				propertiesPanel.add(priorityLabel, gridBagConstraints2);
 				propertiesPanel.add(statusLabel, gridBagConstraints);
 				propertiesPanel.add(getPriorityComboBox(), gridBagConstraints1);

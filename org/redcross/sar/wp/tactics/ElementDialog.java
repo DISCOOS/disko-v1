@@ -33,7 +33,7 @@ public class ElementDialog extends DiskoDialog {
 	private void initialize() {
 		try {
             this.setContentPane(getContentPanel());
-            this.setPreferredSize(new Dimension(150, 220));
+            this.setPreferredSize(new Dimension(200, 275));
             this.pack();
 		}
 		catch (java.lang.Throwable e) {
