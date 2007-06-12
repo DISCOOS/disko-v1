@@ -2,6 +2,7 @@ package org.redcross.sar.app;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,8 @@ import org.redcross.sar.gui.MainPanel;
 import org.redcross.sar.gui.NavBar;
 import org.redcross.sar.gui.SubMenuPanel;
 import org.redcross.sar.wp.IDiskoWpModule;
+
+import com.esri.arcgis.interop.AutomationException;
 
 
 /**
@@ -118,6 +121,15 @@ public class DiskoRoleImpl implements IDiskoRole, IDiskoWpEventListener {
 		if (index < modules.size()) {
 			if (currentModule != null) {
 				// deactiat previous module
+				try {
+					currentModule.getMap().setCurrentToolByRef(null);
+				} catch (AutomationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				currentModule.deactivated();
 			}
 			IDiskoWpModule module = modules.get(index);
