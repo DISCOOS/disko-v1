@@ -8,10 +8,13 @@ import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
 
+import com.esri.arcgis.interop.AutomationException;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.EnumSet;
 
@@ -31,6 +34,7 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
     private static final String UNIT_PRINT = "UnitPrint";
     private static final String UNIT_CHANGE = "UnitChange";
 
+    private AbstractDiskoWpModule aWpModule;
     private JPanel m_infoPanel;
     private LogisticsInfoPanel m_unitInfoPanel;
     private LogisticsInfoPanel m_assignmentInfoPanel;
@@ -50,6 +54,7 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
     {
         m_infoPanel = anInfoPanel;
         m_assignmentLabelMouseListener = aClickHandler;
+        this.aWpModule = aWpModule;
 
         m_infoPanel.add(new JPanel(),EMPTY_PANEL_NAME);
 
@@ -233,6 +238,16 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
         } else if (command.equalsIgnoreCase(ASG_CHANGE))
         {
             System.out.println("Trykk 6: " + command + m_displayedAsssignment.getNumber());
+            try {
+            	aWpModule.getApplication().getCurrentRole().selectDiskoWpModule(0);
+				aWpModule.getMap().setSelected(m_displayedAsssignment, true);
+			} catch (AutomationException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
         }
     }
 }

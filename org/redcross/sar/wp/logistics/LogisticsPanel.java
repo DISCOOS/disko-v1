@@ -69,7 +69,6 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         {
             return;
         }
-
         defineSubpanelMouseListeners();
         m_splitter3.setLeftComponent((JComponent) m_map);
         setSplitters();
