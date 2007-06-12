@@ -1,6 +1,5 @@
 package org.redcross.sar.wp.logistics;
 
-import org.redcross.sar.gui.FontFactory;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
@@ -597,7 +596,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
 
         private void addButton(JRadioButtonMenuItem aButton, int aColumn)
         {
-            aButton.setFont(FontFactory.popupFont());
+            //aButton.setFont(FontFactory.popupFont());
             m_menus[aColumn].add(aButton);
             m_buttons[aColumn].add(aButton);
             m_buttonGroups[aColumn].add(aButton);
@@ -641,7 +640,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
             JMenuItem c = makeCheckBox ? new JCheckBoxMenuItem(aText) : new JMenuItem(aText);
             c.setActionCommand(aCommand);
             c.addActionListener(this);
-            c.setFont(FontFactory.popupFont());
+            //c.setFont(FontFactory.popupFont());
             return c;
         }
 

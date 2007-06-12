@@ -1,6 +1,5 @@
 package org.redcross.sar.wp.logistics;
 
-import org.redcross.sar.gui.FontFactory;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.AssignmentImpl;
 import org.redcross.sar.mso.data.IAssignmentIf;
@@ -295,7 +294,6 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
          */
         private void addButton(SelectButton aButton)
         {
-            aButton.setFont(FontFactory.popupFont());
             m_menu.add(aButton);
             m_buttons.add(aButton);
             m_buttonGroup.add(aButton);

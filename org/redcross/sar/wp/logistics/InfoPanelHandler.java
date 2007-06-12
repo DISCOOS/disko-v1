@@ -1,6 +1,5 @@
 package org.redcross.sar.wp.logistics;
 
-import org.redcross.sar.gui.FontFactory;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
@@ -107,7 +106,6 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
         JScrollPane scrollpane = new JScrollPane();
         m_unitAssignmentsPanel = new AssignmentScrollPanel(scrollpane, new GridLayout(0,1,5,5), m_assignmentLabelMouseListener,false);
         JLabel hl = m_unitAssignmentsPanel.getHeaderLabel();
-        hl.setFont(FontFactory.headerFontBold());
         hl.setHorizontalAlignment(SwingConstants.CENTER);
         hl.setPreferredSize(new Dimension(40,40));
         m_infoPanel.add(scrollpane, ASSIGNMENT_LIST_PANEL_NAME);

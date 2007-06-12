@@ -1,6 +1,5 @@
 package org.redcross.sar.wp.logistics;
 
-import org.redcross.sar.gui.FontFactory;
 import org.redcross.sar.mso.data.IAssignmentIf;
 
 import javax.swing.*;
@@ -53,7 +52,6 @@ public class AssignmentLabel extends JLabel implements MouseListener
             setBackground(Color.WHITE);
             setOpaque(true);
             setBorder(LabelBorder);
-            setFont(FontFactory.labelFont());
             setPreferredSize(LabelDimension);
             setHorizontalAlignment(SwingConstants.CENTER);
         }

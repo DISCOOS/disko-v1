@@ -1,7 +1,5 @@
 package org.redcross.sar.wp.logistics;
 
-import org.redcross.sar.gui.FontFactory;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -229,7 +227,6 @@ public class LogisticsInfoPanel extends JPanel
 
             m_headerLabel = new JLabel();
             add(m_headerLabel, BorderLayout.NORTH);
-            m_headerLabel.setFont(FontFactory.headerFontBold());
             m_headerLabel.setOpaque(false); // get the same bacground as parent
             setHeader(aHeader);
 
@@ -238,8 +235,6 @@ public class LogisticsInfoPanel extends JPanel
             add(m_textArea, BorderLayout.CENTER);
             m_textArea.setLineWrap(true);
             m_textArea.setWrapStyleWord(true);
-            m_textArea.setFont(FontFactory.textFontMedium());
-//            m_textArea.setBackground(Color.WHITE);
             m_textArea.setOpaque(false);
 
             setText("");

@@ -1,6 +1,6 @@
 package org.redcross.sar.wp.logistics;
 
-import org.redcross.sar.gui.FontFactory;
+import com.esri.arcgis.interop.AutomationException;
 import org.redcross.sar.map.IDiskoMap;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.*;
@@ -10,14 +10,10 @@ import org.redcross.sar.util.except.DuplicateIdException;
 import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
 
-import com.esri.arcgis.interop.AutomationException;
-
 import javax.swing.*;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.EnumSet;
@@ -67,7 +63,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         m_map = m_wpModule.getMap();
         m_unitList = m_wpModule.getMsoManager().getCmdPost().getUnitList();
         m_assignmentList = m_wpModule.getMsoManager().getCmdPost().getAssignmentList();
-        
+
 
         if (!defineTransferHandler())
         {
@@ -75,13 +71,12 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         }
 
         defineSubpanelMouseListeners();
-        m_splitter3.setLeftComponent((JComponent)m_map);
+        m_splitter3.setLeftComponent((JComponent) m_map);
         setSplitters();
         setPanelSizes();
         initUnitTable();
         initInfoPanels();
         initAssignmentPanels();
-       
 
 //        JTableButtonMouseListener theListener = new JTableButtonMouseListener(m_unit1Table);
 //        m_unit1Table.addMouseListener(theListener);
@@ -126,15 +121,20 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
             public void handleClick(IAssignmentIf anAssignment)
             {
                 getInfoPanelHandler().setAssignment(anAssignment, false);
-                try {
-					m_map.zoomToMsoObject(anAssignment);
-				} catch (AutomationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+                try
+                {
+                    m_map.zoomToMsoObject(anAssignment);
+                }
+                catch (AutomationException e)
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                catch (IOException e)
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
         };
 
@@ -143,15 +143,20 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
             public void handleClick(IAssignmentIf anAssignment)
             {
                 getInfoPanelHandler().setAssignment(anAssignment, true);
-                try {
-					m_map.zoomToMsoObject(anAssignment);
-				} catch (AutomationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+                try
+                {
+                    m_map.zoomToMsoObject(anAssignment);
+                }
+                catch (AutomationException e)
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                catch (IOException e)
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
         };
     }
@@ -172,7 +177,6 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
 
         JLabel hl;
         hl = m_selectableAssignmentsPanel.getHeaderLabel();
-        hl.setFont(FontFactory.headerFontBold());
         hl.setHorizontalAlignment(SwingConstants.CENTER);
         hl.setPreferredSize(new Dimension(40, 40));
 
@@ -180,7 +184,6 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         m_priAssignmentsPanel = new AssignmentScrollPanel(m_AssignmentSubPaneRight, new GridLayout(0, 1, 5, 5), m_h1, true);
         m_priAssignmentsPanel.setTransferHandler(m_assignmentLabelTransferHandler);
         hl = m_priAssignmentsPanel.getHeaderLabel();
-        hl.setFont(FontFactory.headerFontBold());
         hl.setHorizontalAlignment(SwingConstants.CENTER);
         hl.setPreferredSize(new Dimension(40, 40));
 
@@ -204,10 +207,9 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         m_unitTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         m_unitTable.setCellSelectionEnabled(true);
         JTableHeader th = m_unitTable.getTableHeader();
-        th.setFont(FontFactory.headerFont());
         th.setPreferredSize(new Dimension(40, 40));
     }
-    
+
     private void initInfoPanels()
     {
         m_infoPanelHandler = new InfoPanelHandler(m_infoPanel, m_wpModule.getMmsoEventManager(), m_h2);
@@ -824,13 +826,6 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         m_infoPanel = new JPanel();
         m_infoPanel.setLayout(new CardLayout(0, 0));
         m_splitter3.setRightComponent(m_infoPanel);
-        //m_map = new JPanel();
-        //m_map.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-        //m_splitter3.setLeftComponent(m_map);
-        
-        /*MoveButton = new JButton();
-        MoveButton.setText("Move 1");
-        m_mapPanel.add(MoveButton);*/
     }
 
     /**

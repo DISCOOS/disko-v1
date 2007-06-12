@@ -1,16 +1,8 @@
 package org.redcross.sar.gui;
 
-import java.awt.Frame;
-import javax.swing.JPanel;
-import java.awt.Dimension;
-import java.awt.BorderLayout;
-
-import javax.swing.BorderFactory;
-import javax.swing.JTextArea;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import javax.swing.border.BevelBorder;
-import javax.swing.JLabel;
-import java.awt.Font;
+import java.awt.*;
 
 public class TextAreaDialog extends DiskoDialog {
 
@@ -62,7 +54,7 @@ public class TextAreaDialog extends DiskoDialog {
 		if (contentPanel == null) {
 			try {
 				headerLabel = new JLabel();
-				headerLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
+//				headerLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
 				contentPanel = new JPanel();
 				contentPanel.setLayout(new BorderLayout());
 				contentPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));

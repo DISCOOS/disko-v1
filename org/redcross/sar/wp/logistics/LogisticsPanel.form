@@ -91,21 +91,6 @@
                 <border type="none"/>
                 <children/>
               </grid>
-              <grid id="c251a" binding="m_mapPanel" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="0">
-                <constraints>
-                  <splitpane position="left"/>
-                </constraints>
-                <properties/>
-                <border type="none"/>
-                <children>
-                  <component id="c7dd" class="javax.swing.JButton" binding="MoveButton">
-                    <constraints/>
-                    <properties>
-                      <text value="Move 1"/>
-                    </properties>
-                  </component>
-                </children>
-              </grid>
             </children>
           </splitpane>
         </children>
