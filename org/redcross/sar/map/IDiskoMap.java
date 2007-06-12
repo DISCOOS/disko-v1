@@ -3,6 +3,8 @@ package org.redcross.sar.map;
 import java.io.IOException;
 
 import org.redcross.sar.event.IDiskoMapEventListener;
+import org.redcross.sar.mso.data.IMsoObjectIf;
+
 import com.esri.arcgis.carto.FeatureLayer;
 import com.esri.arcgis.geodatabase.Feature;
 import com.esri.arcgis.geodatabase.IFeature;
@@ -70,6 +72,8 @@ public interface IDiskoMap {
 	public void zoomToSelected () throws IOException, AutomationException;
 	
 	public void zoomToFeature(IFeature feature) throws IOException, AutomationException;
+	
+	public void zoomToMsoObject(IMsoObjectIf msoObject) throws IOException, AutomationException;
 
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#getFeatureLayer(java.lang.String)

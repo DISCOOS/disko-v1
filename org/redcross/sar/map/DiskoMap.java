@@ -9,9 +9,13 @@ import javax.swing.border.SoftBevelBorder;
 
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.event.IDiskoMapEventListener;
+import org.redcross.sar.map.feature.IMsoFeature;
+import org.redcross.sar.map.feature.IMsoFeatureClass;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.mso.data.IAreaIf;
+import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
@@ -302,6 +306,20 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	
 	public void zoomToFeature(IFeature feature) throws IOException, AutomationException {
 		setExtent(feature.getExtent());
+	}
+	
+	
+	public void zoomToMsoObject(IMsoObjectIf msoObject) throws IOException, AutomationException {
+		if (msoObject instanceof IAssignmentIf) {
+			IAssignmentIf assignment = (IAssignmentIf)msoObject;
+			msoObject = assignment.getPlannedArea();
+		}
+		IMsoFeatureLayer msoLayer = getMapManager().getMsoLayer(msoObject.getMsoClassCode());
+		if (msoLayer != null)  {
+			IMsoFeatureClass msoFC = (IMsoFeatureClass)msoLayer.getFeatureClass();
+			IMsoFeature msoFeature = msoFC.getFeature(msoObject.getObjectId());
+			zoomToFeature(msoFeature);
+		}
 	}
 	
 	/* (non-Javadoc)
