@@ -10,12 +10,15 @@ import org.redcross.sar.util.except.DuplicateIdException;
 import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
 
+import com.esri.arcgis.interop.AutomationException;
+
 import javax.swing.*;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.EnumSet;
 /**
@@ -32,7 +35,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
 {
 
     private JPanel WorkspacePanel;
-    private JComponent m_map;
+    private IDiskoMap m_map;
     private JPanel m_assignmentPanel;
     private JPanel m_unitPanel;
     private JPanel m_infoPanel;
@@ -45,7 +48,6 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
     private JScrollPane m_scrollPane1;
     private JScrollPane m_AssignmentSubPaneLeft;
     private JScrollPane m_AssignmentSubPaneRight;
-    private JButton MoveButton;
     private AbstractDiskoWpModule m_wpModule;
     private IUnitListIf m_unitList;
     private IAssignmentListIf m_assignmentList;
@@ -62,7 +64,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
     public LogisticsPanel(AbstractDiskoWpModule aWp)
     {
         m_wpModule = aWp;
-        m_map = (JComponent)m_wpModule.getMap();
+        m_map = m_wpModule.getMap();
         m_unitList = m_wpModule.getMsoManager().getCmdPost().getUnitList();
         m_assignmentList = m_wpModule.getMsoManager().getCmdPost().getAssignmentList();
         
@@ -73,7 +75,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         }
 
         defineSubpanelMouseListeners();
-        m_splitter3.setLeftComponent(m_map);
+        m_splitter3.setLeftComponent((JComponent)m_map);
         setSplitters();
         setPanelSizes();
         initUnitTable();
@@ -124,6 +126,15 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
             public void handleClick(IAssignmentIf anAssignment)
             {
                 getInfoPanelHandler().setAssignment(anAssignment, false);
+                try {
+					m_map.zoomToMsoObject(anAssignment);
+				} catch (AutomationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
         };
 
@@ -132,6 +143,15 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
             public void handleClick(IAssignmentIf anAssignment)
             {
                 getInfoPanelHandler().setAssignment(anAssignment, true);
+                try {
+					m_map.zoomToMsoObject(anAssignment);
+				} catch (AutomationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
         };
     }
@@ -352,7 +372,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         return WorkspacePanel;
     }
 
-    public JComponent getMapPanel()
+    public IDiskoMap getMap()
     {
         return m_map;
     }
