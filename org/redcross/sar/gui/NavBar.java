@@ -27,6 +27,7 @@ import org.redcross.sar.map.IDiskoTool;
 import org.redcross.sar.map.POITool;
 import org.redcross.sar.map.SelectFeatureTool;
 import org.redcross.sar.map.SplitTool;
+import org.redcross.sar.map.MapToggleCommand;
 
 import com.esri.arcgis.controls.ControlsMapFullExtentCommand;
 import com.esri.arcgis.controls.ControlsMapPanTool;
@@ -58,7 +59,8 @@ public class NavBar extends JPanel {
 		ZOOM_OUT_FIXED_COMMAND,
 		ZOOM_FULL_EXTENT_COMMAND,
 		ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND,
-		ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND
+		ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND,
+		MAP_TOGGLE_COMMAND
     }
 	
 	public enum ButtonPlacement {
@@ -86,7 +88,8 @@ public class NavBar extends JPanel {
 	private JButton zoomOutFixedButton = null;
 	private JButton fullExtentButton = null;
 	private JButton zoomToLastExtentForwardButton = null;
-	private JButton zoomToLastExtentBackwardButton = null;
+	private JButton zoomToLastExtentBackwardButton = null;	
+	private JButton mapToggleButton = null;
 	
 	private DrawTool drawTool = null;
 	private FlankTool flankTool = null;
@@ -102,6 +105,7 @@ public class NavBar extends JPanel {
 	private ControlsMapFullExtentCommand fullExtentCommand = null;
 	private ControlsMapZoomToLastExtentForwardCommand zoomToLastExtentForwardCommand = null;
 	private ControlsMapZoomToLastExtentBackCommand zoomToLastExtentBackCommand = null;
+	private MapToggleCommand mapToggle = null;
 	
 	public NavBar() {
 		this(null);
@@ -153,6 +157,8 @@ public class NavBar extends JPanel {
 				ToolCommandType.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND, ButtonPlacement.RIGHT);
 		addCommand(getZoomToLastExtentBackwardButton(), getZoomToLastExtentBackCommand(), 
 				ToolCommandType.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND, ButtonPlacement.RIGHT);	
+		addCommand(getMapToggleButton(), getMapToggleCommand(), 
+				ToolCommandType.MAP_TOGGLE_COMMAND);
 	}
 	
 	private JPanel getLeftPanel() {
@@ -388,6 +394,20 @@ public class NavBar extends JPanel {
 		return zoomToLastExtentBackCommand;
 	}
 	
+	
+	private MapToggleCommand getMapToggleCommand() {		
+		if (mapToggle == null) {
+			try {
+				mapToggle = new MapToggleCommand();			
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return mapToggle;
+	}
+	
+	
 	private JToggleButton getDummyToggleButton() {
 		if (dummyToggleButton == null) {
 			dummyToggleButton = new JToggleButton();
@@ -522,6 +542,20 @@ public class NavBar extends JPanel {
 		return panToggleButton;
 	}
 	
+	public JButton getMapToggleButton(){
+		if (mapToggleButton == null) {
+			try {
+				Dimension size = app.getUIFactory().getSmallButtonSize();
+				mapToggleButton = new JButton();
+				mapToggleButton.setPreferredSize(size);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}			
+		}
+		return mapToggleButton;
+	}
+	
 	public JButton getZoomInFixedButton() {
 		if (zoomInFixedButton == null) {
 			try {
@@ -592,7 +626,7 @@ public class NavBar extends JPanel {
 		}
 		return zoomToLastExtentBackwardButton;
 	}
-	
+		
 	public void taskChanged() {
 		//unselectAll();
 		java.awt.EventQueue.invokeLater(
@@ -688,6 +722,19 @@ public class NavBar extends JPanel {
 		}
 	}
 	
+	public void switchIcon(String command, boolean first){
+		if(command.equalsIgnoreCase("maptoggle")){
+			System.out.println("spennende...");
+			AbstractButton ab = this.getButton(ToolCommandType.MAP_TOGGLE_COMMAND);
+			ImageIcon icon;
+			if(first)
+				icon = new ImageIcon(app.getProperty("ToolCommandType.MAP_TOGGLE_COMMAND.icon"));
+			else 
+				icon = new ImageIcon(app.getProperty("ToolCommandType.MAP_TOGGLE_COMMAND_2.icon"));
+			ab.setIcon(icon);			
+		}
+	}
+	
 	class NavActionListener implements ActionListener {
 		
 		private ICommand command = null;
@@ -710,8 +757,13 @@ public class NavBar extends JPanel {
 				if (command instanceof ITool && map != null) {
 					map.setCurrentToolByRef((ITool)command);
 				}
+				else if (command instanceof MapToggleCommand){					
+					mapToggle = (MapToggleCommand) command;
+					mapToggle.onClick(app);
+				}
 				else {
 					command.onClick();
+					
 				}
 			} catch (AutomationException e1) {
 				// TODO Auto-generated catch block
@@ -722,4 +774,5 @@ public class NavBar extends JPanel {
 			}
 		}
 	}
+	
 }
