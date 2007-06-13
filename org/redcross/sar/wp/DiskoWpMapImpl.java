@@ -38,6 +38,7 @@ public class DiskoWpMapImpl extends AbstractDiskoWpModule implements IDiskoWpMap
 		myInterests.add(NavBar.ToolCommandType.ZOOM_FULL_EXTENT_COMMAND);
 		myInterests.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND);
 		myInterests.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND);
+		myInterests.add(NavBar.ToolCommandType.MAP_TOGGLE_COMMAND);
 		navBar.showButtons(myInterests);
 	}
 	
