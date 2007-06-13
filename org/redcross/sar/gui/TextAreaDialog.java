@@ -1,16 +1,34 @@
 package org.redcross.sar.gui;
 
-import javax.swing.*;
-import javax.swing.border.BevelBorder;
-import javax.swing.JLabel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.io.IOException;
+import java.util.List;
 
-public class TextAreaDialog extends DiskoDialog {
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.border.BevelBorder;
+import org.redcross.sar.event.DiskoMapEvent;
+import org.redcross.sar.event.IDiskoMapEventListener;
+import org.redcross.sar.map.feature.IMsoFeature;
+import org.redcross.sar.map.feature.IMsoFeatureClass;
+import org.redcross.sar.mso.data.IAreaIf;
+import org.redcross.sar.mso.data.IAssignmentIf;
+import org.redcross.sar.mso.data.IMsoObjectIf;
+import org.redcross.sar.mso.data.IOperationAreaIf;
+
+import com.esri.arcgis.interop.AutomationException;
+
+public class TextAreaDialog extends DiskoDialog implements IDiskoMapEventListener {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPanel = null;
 	private JScrollPane textAreaScrollPane = null;
-	private JTextArea inputTextArea = null;
+	private JTextArea textArea = null;
 	private JLabel headerLabel = null;
 	
 	public TextAreaDialog(Frame owner) {
@@ -35,11 +53,12 @@ public class TextAreaDialog extends DiskoDialog {
 	}
 	
 	public String getText() {
-		return getInputTextArea().getText();
+		System.out.println(textArea.getText());
+		return getTextArea().getText();
 	}
 	
 	public void setText(String text) {
-		getInputTextArea().setText(text);
+		getTextArea().setText(text);
 	}
 	
 	public void setHeaderText(String text) {
@@ -76,7 +95,7 @@ public class TextAreaDialog extends DiskoDialog {
 		if (textAreaScrollPane == null) {
 			try {
 				textAreaScrollPane = new JScrollPane();
-				textAreaScrollPane.setViewportView(getInputTextArea());
+				textAreaScrollPane.setViewportView(getTextArea());
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
@@ -89,16 +108,55 @@ public class TextAreaDialog extends DiskoDialog {
 	 * 	
 	 * @return javax.swing.JTextArea	
 	 */
-	private JTextArea getInputTextArea() {
-		if (inputTextArea == null) {
+	private JTextArea getTextArea() {
+		if (textArea == null) {
 			try {
-				inputTextArea = new JTextArea();
-				inputTextArea.setLineWrap(true);
+				textArea = new JTextArea();
+				textArea.setLineWrap(true);
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
 		}
-		return inputTextArea;
+		return textArea;
 	}
 
+	public void editLayerChanged(DiskoMapEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onAfterScreenDraw(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+	}
+
+	public void onExtentUpdated(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+	}
+
+	public void onMapReplaced(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+	}
+
+	public void onSelectionChanged(DiskoMapEvent e) throws IOException, AutomationException {
+		IMsoFeatureClass msoFC = (IMsoFeatureClass)e.getSource();
+		List selection = msoFC.getSelected();
+		if (selection != null && selection.size() > 0) {
+			IMsoFeature msoFeature = (IMsoFeature)selection.get(0);
+			IMsoObjectIf msoObject = msoFeature.getMsoObject();
+			if (msoObject instanceof IAreaIf) {
+				IAreaIf area = (IAreaIf)msoObject;
+				IAssignmentIf assignment = area.getOwningAssignment();
+				if (assignment != null) {
+					setText(assignment.getRemarks());
+					return;
+				}
+			}
+			else if (msoObject instanceof IOperationAreaIf) {
+				IOperationAreaIf opArea = (IOperationAreaIf)msoObject;
+				setText(opArea.getRemarks());
+				return;
+			}
+		}
+		setText(null);
+	}
 }

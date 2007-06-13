@@ -284,7 +284,7 @@ public class POIDialog extends DiskoDialog {
 	 * 	
 	 * @return javax.swing.JTextArea	
 	 */
-	private JTextArea getTxtArea() {
+	public JTextArea getTxtArea() {
 		if (txtArea == null) {
 			txtArea = new JTextArea();
 			txtArea.setLineWrap(true);
