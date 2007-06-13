@@ -24,4 +24,6 @@ public interface IDiskoMapManager {
 	public List getMsoLayers();
 	
 	public IMsoFeatureLayer getMsoLayer(IMsoManagerIf.MsoClassCode classCode);
+	
+	public String getCurrentMxd();
 }
