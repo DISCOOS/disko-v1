@@ -137,7 +137,7 @@ public class MapUtil {
 	}
 
 	public static IEnvelope getEnvelope(IPoint p, double size) 
-	throws IOException, AutomationException {
+			throws IOException, AutomationException {
 		IEnvelope env = new Envelope();
 		double xmin = p.getX()-size/2;
 		double ymin = p.getY()-size/2;
