@@ -1,6 +1,7 @@
 package org.redcross.sar.wp;
 
 import org.redcross.sar.app.IDiskoApplication;
+import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.event.IDiskoWpEventListener;
 import org.redcross.sar.map.IDiskoMap;
 
@@ -28,11 +29,19 @@ public interface IDiskoWpModule {
 	 */
 	public IDiskoMap getMap();
 	
+	public IDiskoRole getDiskoRole();
+	
 	/**
 	 * Get a reference to the DiskoApplication.
 	 * @return
 	 */
 	public IDiskoApplication getApplication();
+	
+	public void setCallingWp(String name);
+	
+	public boolean isEditing();
+	
+	public String getCallingWp();
 	
 	/**
 	 * @return true if DiskoMap is different from null, false otherwise
@@ -57,4 +66,6 @@ public interface IDiskoWpModule {
 	public void addDiskoWpEventListener(IDiskoWpEventListener listener);
 
     public void removeDiskoWpEventListener(IDiskoWpEventListener listener);
+    
+    public void showWarning(String msg);
 }
