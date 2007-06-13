@@ -10,6 +10,8 @@ import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
 import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.wp.tactics.IDiskoWpTactics.TacticsTaskType;
 
+import com.esri.arcgis.interop.AutomationException;
+
 import java.awt.Dimension;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -26,6 +28,7 @@ import javax.swing.JTable;
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
 import java.awt.Color;
+import java.io.IOException;
 
 public class ListDialog extends DiskoDialog {
 
@@ -226,10 +229,19 @@ public class ListDialog extends DiskoDialog {
 						if (rows != null && rows.length == 1) {
 							IAssignmentIf assignment = (IAssignmentIf)assignmentTable.getValueAt(rows[0],1);
 							if (action.equals("EDIT")) {
-								wp.startEdit(assignment, false);
+								try {
+									wp.getMap().setSelected(assignment, true);
+									wp.getMap().zoomToMsoObject(assignment);
+								} catch (AutomationException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								} catch (IOException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
 							}
 							else if (action.equals("COPY")) {
-								wp.startEdit(assignment, true);
+								// copy not yest implemented
 							}
 							setVisible(false);
 						}

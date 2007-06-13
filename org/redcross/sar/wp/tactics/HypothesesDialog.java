@@ -1,6 +1,8 @@
 package org.redcross.sar.wp.tactics;
 
 import org.redcross.sar.app.IDiskoApplication;
+import org.redcross.sar.event.DiskoMapEvent;
+import org.redcross.sar.event.IDiskoMapEventListener;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.models.HypothesesListModel;
 import org.redcross.sar.gui.renderers.HypothesesListCellRenderer;
@@ -9,6 +11,8 @@ import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IHypothesisIf;
 import org.redcross.sar.mso.data.IHypothesisIf.HypothesisStatus;
+
+import com.esri.arcgis.interop.AutomationException;
 
 import javax.swing.JPanel;
 import java.awt.Dimension;
@@ -29,9 +33,11 @@ import javax.swing.event.ListSelectionListener;
 
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
+import java.io.IOException;
+
 import javax.swing.JTextArea;
 
-public class HypothesesDialog extends DiskoDialog {
+public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListener {
 
 	private static final long serialVersionUID = 1L;
 	private IMsoModelIf msoModel = null;
@@ -370,6 +376,31 @@ public class HypothesesDialog extends DiskoDialog {
 			}
 		}
 		return statusComboBox;
+	}
+
+	public void editLayerChanged(DiskoMapEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onAfterScreenDraw(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onExtentUpdated(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onMapReplaced(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onSelectionChanged(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }  //  @jve:decl-index=0:visual-constraint="10,10"

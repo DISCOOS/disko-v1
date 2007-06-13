@@ -1,28 +1,39 @@
 package org.redcross.sar.wp.tactics;
 
-import org.redcross.sar.gui.DiskoDialog;
-import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
-import org.redcross.sar.mso.data.IAssignmentIf;
-import org.redcross.sar.mso.data.IAssignmentIf.AssignmentPriority;
-
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.io.IOException;
+import java.util.Hashtable;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import javax.swing.BorderFactory;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
-import javax.swing.JTextField;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.BevelBorder;
-import java.awt.Insets;
-import java.util.Hashtable;
-import javax.swing.JComboBox;
 
-public class SearchRequirementDialog extends DiskoDialog {
+import org.redcross.sar.event.DiskoMapEvent;
+import org.redcross.sar.event.IDiskoMapEventListener;
+import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
+import org.redcross.sar.map.feature.IMsoFeature;
+import org.redcross.sar.map.feature.IMsoFeatureClass;
+import org.redcross.sar.mso.data.IAreaIf;
+import org.redcross.sar.mso.data.IAssignmentIf;
+import org.redcross.sar.mso.data.ISearchIf;
+import org.redcross.sar.mso.data.IAssignmentIf.AssignmentPriority;
+
+import com.esri.arcgis.interop.AutomationException;
+
+public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEventListener {
 
 	private static final long serialVersionUID = 1L;
 	private DiskoWpTacticsImpl wp = null;
@@ -470,6 +481,42 @@ public class SearchRequirementDialog extends DiskoDialog {
 			}
 		}
 		return statusComboBox;
+	}
+
+	public void editLayerChanged(DiskoMapEvent e) {
+		// TODO Auto-generated method stub
+	}
+
+	public void onAfterScreenDraw(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+	}
+
+	public void onExtentUpdated(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+	}
+
+	public void onMapReplaced(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+	}
+
+	public void onSelectionChanged(DiskoMapEvent e) throws IOException, AutomationException {
+		IMsoFeatureClass msoFC = (IMsoFeatureClass)e.getSource();
+		List selection = msoFC.getSelected();
+		if (selection != null && selection.size() > 0) {
+			IMsoFeature msoFeature = (IMsoFeature)selection.get(0);
+			IAreaIf area = (IAreaIf)msoFeature.getMsoObject();
+			IAssignmentIf assignment = area.getOwningAssignment();
+			if (assignment instanceof ISearchIf) {
+				ISearchIf search = (ISearchIf)assignment;
+				setPriority(search.getPriority());
+				setStatus(search.getStatus());
+				setAccuracy(search.getPlannedAccuracy());
+				setPersonelNeed(search.getPlannedPersonnel());
+				setEstimatedProgress(search.getPlannedProgress());
+				return;
+			}
+		}
+		reset();
 	}
 
 }  //  @jve:decl-index=0:visual-constraint="10,10"

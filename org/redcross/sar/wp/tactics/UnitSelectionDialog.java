@@ -1,11 +1,16 @@
 package org.redcross.sar.wp.tactics;
 
 import org.redcross.sar.app.IDiskoApplication;
+import org.redcross.sar.event.DiskoMapEvent;
+import org.redcross.sar.event.IDiskoMapEventListener;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.UnitTable;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IUnitIf;
+
+import com.esri.arcgis.interop.AutomationException;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import javax.swing.BorderFactory;
@@ -14,9 +19,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.BevelBorder;
 import java.awt.BorderLayout;
+import java.io.IOException;
 import java.util.List;
 
-public class UnitSelectionDialog extends DiskoDialog {
+public class UnitSelectionDialog extends DiskoDialog implements IDiskoMapEventListener {
 
 	private static final long serialVersionUID = 1L;
 	private IMsoModelIf msoModel = null;
@@ -131,6 +137,31 @@ public class UnitSelectionDialog extends DiskoDialog {
 			}
 		}
 		return unitTable;
+	}
+
+	public void editLayerChanged(DiskoMapEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onAfterScreenDraw(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onExtentUpdated(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onMapReplaced(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onSelectionChanged(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }  //  @jve:decl-index=0:visual-constraint="10,2"

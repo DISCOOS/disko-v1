@@ -4,8 +4,13 @@ import java.awt.Dimension;
 import java.awt.Frame;
 
 import org.redcross.sar.app.Utils;
+import org.redcross.sar.event.DiskoMapEvent;
+import org.redcross.sar.event.IDiskoMapEventListener;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.renderers.CheckableListCellRenderer;
+
+import com.esri.arcgis.interop.AutomationException;
+
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
@@ -14,8 +19,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.JList;
 import java.awt.BorderLayout;
+import java.io.IOException;
 
-public class PriorityDialog extends DiskoDialog {
+public class PriorityDialog extends DiskoDialog implements IDiskoMapEventListener{
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPanel = null;
@@ -104,6 +110,31 @@ public class PriorityDialog extends DiskoDialog {
 			}
 		}
 		return priorityList;
+	}
+
+	public void editLayerChanged(DiskoMapEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onAfterScreenDraw(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onExtentUpdated(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onMapReplaced(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onSelectionChanged(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }  //  @jve:decl-index=0:visual-constraint="10,10"

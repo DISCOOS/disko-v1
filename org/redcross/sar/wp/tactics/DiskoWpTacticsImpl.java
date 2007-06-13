@@ -12,7 +12,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
@@ -41,7 +40,6 @@ import org.redcross.sar.map.feature.OperationAreaFeatureClass;
 import org.redcross.sar.map.feature.POIFeatureClass;
 import org.redcross.sar.map.feature.SearchAreaFeatureClass;
 import org.redcross.sar.map.layer.AreaLayer;
-import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.map.layer.OperationAreaLayer;
 import org.redcross.sar.map.layer.POILayer;
 import org.redcross.sar.map.layer.SearchAreaLayer;
@@ -217,6 +215,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 				}
 				currentMsoFeature = msoFeature;
 				super.fireTaskStarted();
+				isEditing = true;
 			}
 		} catch (RuntimeException e1) {
 			// TODO Auto-generated catch block
@@ -263,6 +262,15 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		}
 		selectElement();
 		enableSelection(true);
+		try {
+			getMap().partialRefresh(null);
+		} catch (AutomationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private void selectElement() {	
@@ -308,17 +316,6 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 			}
 		}
 		return flag;
-	}
-	
-	private void showWarning(final String msg) {
-		Runnable r = new Runnable(){
-            public void run() {
-            	JOptionPane.showMessageDialog(getApplication().getFrame(), 
-            		msg, Utils.translate(currentElement),
-            		JOptionPane.WARNING_MESSAGE);
-            }
-        };
-        SwingUtilities.invokeLater(r);
 	}
 	
 	/*
@@ -415,7 +412,14 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 			getPriorityDialog().reset();
 			poiDialog.reset();
 			eraseTool.removeAll();
+			isEditing = false;
 			
+			if (callingWp != null) {
+				String id = getDiskoRole().getName()+callingWp;
+				getDiskoRole().selectDiskoWpModule(id);
+				callingWp = null;
+				return;
+			}
 			//select next element
 			selectElement();
 			getMap().partialRefresh(null);
@@ -425,62 +429,6 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-	}
-
-	public void startEdit(IAssignmentIf assignment, boolean makeCopy) {
-		if (assignment instanceof ISearchIf) {
-			ISearchIf search = (ISearchIf) assignment;
-			if (makeCopy) {
-				// clone() is not implemented
-				// assignment = assignment.clone();
-			} 
-			SearchRequirementDialog reqDialog = getSearchRequirementDialog();
-			UnitSelectionDialog unitDialog = getUnitSelectionDialog();
-			JList elementList = getElementDialog().getElementList();
-			elementList.clearSelection();
-			elementList.setSelectedValue(search.getSubType(), false);
-
-			unitDialog.selectedAssignedUnit(search);
-			getTextAreaDialog().setText(search.getRemarks());
-			reqDialog.setPriority(search.getPriority());
-			reqDialog.setStatus(search.getStatus());
-			reqDialog.setCriticalQuestions(search.getRemarks());
-
-			reqDialog.setAccuracy(search.getPlannedAccuracy());
-			reqDialog.setPersonelNeed(search.getPlannedPersonnel());
-			reqDialog.setEstimatedProgress(search.getPlannedProgress());
-			try {
-				getMap().setSelected(search, true);
-				getMap().zoomToMsoObject(search);
-			} catch (AutomationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			/*IAreaIf area = search.getPlannedArea();
-			if (area != null) {
-				try {
-					
-					IMsoFeatureLayer msoLayer = getMap().getMapManager().getMsoLayer(
-							IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
-					IMsoFeatureClass msoFC = (IMsoFeatureClass)msoLayer.getFeatureClass();
-					IMsoFeature msoFeature = msoFC.getFeature(area.getObjectId());
-					msoFC.setSelected(msoFeature, true);
-					
-					getMap().setSelected(msoObject, true);
-					getMap().zoomToFeature(msoFeature);
-				} catch (AutomationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}*/
 		}
 	}
 
@@ -630,6 +578,13 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 				searchAreaFC.addDiskoMapEventListener(this);
 				areaFC.addDiskoMapEventListener(this);
 				poiFC.addDiskoMapEventListener(this);
+				
+				opAreaFC.addDiskoMapEventListener(getTextAreaDialog());
+				searchAreaFC.addDiskoMapEventListener(getHypothesesDialog());
+				searchAreaFC.addDiskoMapEventListener(getPriorityDialog());
+				areaFC.addDiskoMapEventListener(getSearchRequirementDialog());
+				areaFC.addDiskoMapEventListener(getTextAreaDialog());
+				areaFC.addDiskoMapEventListener(getUnitSelectionDialog());
 
 				selectFeatureTool.addFeatureClass(poiFC);
 				selectFeatureTool.addFeatureClass(areaFC);
@@ -642,6 +597,14 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 				searchAreaFC.removeDiskoMapEventListener(this);
 				areaFC.removeDiskoMapEventListener(this);
 				poiFC.removeDiskoMapEventListener(this);
+				
+				opAreaFC.removeDiskoMapEventListener(getTextAreaDialog());
+				searchAreaFC.removeDiskoMapEventListener(getHypothesesDialog());
+				searchAreaFC.removeDiskoMapEventListener(getPriorityDialog());
+				areaFC.removeDiskoMapEventListener(getSearchRequirementDialog());
+				areaFC.removeDiskoMapEventListener(getTextAreaDialog());
+				areaFC.removeDiskoMapEventListener(getUnitSelectionDialog());
+				
 				selectFeatureTool.removeAll();
 				navBar.getSelectFeatureToggleButton().setEnabled(false);
 			}
@@ -706,7 +669,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 						TextAreaDialog dialog = getTextAreaDialog();
 						dialog.setHeaderText("Beskrivelse av oppdrag:");
 						hideDialogs(dialog);
-						if (missionToggleButton.isSelected() && dialog.isVisible()) {
+						if (descriptionToggleButton.isSelected() && dialog.isVisible()) {
 							dialog.setVisible(false);
 						} else {
 							dialog.setLocationRelativeTo((JComponent) getMap(),
