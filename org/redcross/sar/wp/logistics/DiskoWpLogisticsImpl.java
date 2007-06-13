@@ -5,7 +5,11 @@ import org.redcross.sar.gui.NavBar;
 import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
 
+import com.esri.arcgis.interop.AutomationException;
+
 import javax.swing.*;
+
+import java.io.IOException;
 import java.util.EnumSet;
 /**
  * Created by IntelliJ IDEA.
@@ -26,20 +30,8 @@ public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDisk
 
     private void initialize() {
         loadProperties("properties");
-
-        //BuildTestData.createCmdPost(getMsoModel());
-        //BuildTestData.createUnitsAndAssignments(getMsoModel());
-        
-        System.out.println("Map: "+super.getMap());
-
-        LogisticsPanel lp = new LogisticsPanel(this);
-        JPanel lPanel = lp.getPanel();
+        JPanel lPanel = new LogisticsPanel(this).getPanel();
         layoutComponent(lPanel);
-        //lp.getMapPanel().add((JComponent)super.getMap());
-        
-//        DiskoMap map = getMap();
-//        map.setIsEditable(true);
-//        layoutComponent(map);
     }
 
     public void activated() {
@@ -53,6 +45,15 @@ public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDisk
         myInterests.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND);
         myInterests.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND);
         navBar.showButtons(myInterests);
+        try {
+			getMap().partialRefresh(null);
+		} catch (AutomationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     /* (non-Javadoc)

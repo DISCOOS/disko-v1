@@ -1,5 +1,6 @@
 package org.redcross.sar.wp.logistics;
 
+import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
@@ -7,6 +8,7 @@ import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
+import org.redcross.sar.wp.IDiskoWpModule;
 
 import com.esri.arcgis.interop.AutomationException;
 
@@ -237,10 +239,18 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
             System.out.println("Trykk 5: " + command + m_displayedAsssignment.getNumber());
         } else if (command.equalsIgnoreCase(ASG_CHANGE))
         {
-            System.out.println("Trykk 6: " + command + m_displayedAsssignment.getNumber());
             try {
-            	aWpModule.getApplication().getCurrentRole().selectDiskoWpModule(0);
-				aWpModule.getMap().setSelected(m_displayedAsssignment, true);
+            	IDiskoRole role = aWpModule.getDiskoRole();
+            	String id = role.getName()+"Taktikk";
+            	IDiskoWpModule calledModule = role.getDiskoWpModule(id);
+            	if (calledModule != null && !calledModule.isEditing()) {
+            		role.selectDiskoWpModule(calledModule);
+            		calledModule.setCallingWp(aWpModule.getName());
+            		aWpModule.getMap().setSelected(m_displayedAsssignment, true);
+            	}
+            	else {
+            		aWpModule.showWarning("Kan ikke redigere oppdrag");
+            	}
 			} catch (AutomationException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
