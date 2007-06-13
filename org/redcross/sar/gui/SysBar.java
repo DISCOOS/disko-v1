@@ -19,6 +19,7 @@ public class SysBar extends JPanel {
 	private IDiskoApplication app = null;
 	private ButtonGroup bgroup = null;
 	private JButton changeRolleButton = null;
+	private JButton mapOptionButton = null;
 
 	/**
 	 * This is the default constructor
@@ -46,6 +47,7 @@ public class SysBar extends JPanel {
 		flowLayout.setAlignment(FlowLayout.RIGHT);
 		this.setLayout(flowLayout);
 		addButton(getChangeRolleButton());
+		addButton(getMapOptionButton());
 	}
 	
 	private JButton getChangeRolleButton() {
@@ -69,6 +71,30 @@ public class SysBar extends JPanel {
 			}
 		}
 		return changeRolleButton;
+	}
+	
+	private JButton getMapOptionButton() {
+		
+		if (mapOptionButton == null) {
+			try {
+				mapOptionButton = new JButton();
+				String iconName = "Kart.icon";
+				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
+				mapOptionButton.setIcon(icon);
+				Dimension size = app.getUIFactory().getSmallButtonSize();
+				mapOptionButton.setPreferredSize(size);
+				mapOptionButton.setIcon(icon);
+				mapOptionButton.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent e) {
+						MapOptionDialog mapOptionDialog = app.getUIFactory().getMapOptionDialog();
+						mapOptionDialog.setVisible(true);
+					}
+				});
+			} catch (java.lang.Throwable e) {
+				// TODO: Something
+			}
+		}
+		return mapOptionButton;
 	}
 	
 	public void addButton(AbstractButton button) {
