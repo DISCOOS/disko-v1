@@ -95,30 +95,46 @@ public class DiskoRoleImpl implements IDiskoRole, IDiskoWpEventListener {
 		}
 	}
 	
-	private int searchModule(String id) {
+	public IDiskoWpModule getDiskoWpModule(String id) {
 		for (int i = 0; i < modules.size(); i++) {
 			if ((getName()+modules.get(i).getName()).equals(id)) {
-				return i;
+				return modules.get(i);
 			}
 		}
-		return -1;
+		return null;
+	}
+	
+	public IDiskoWpModule getDiskoWpModule(int index)  {
+		if (index >= 0 && index < modules.size()) {
+			return modules.get(index);
+		}
+		return null;
+	}
+	
+	public int getDiskoWpModuleCount() {
+		return modules.size();
+	}
+	
+	public IDiskoWpModule selectDiskoWpModule(int index) {
+		return selectDiskoWpModule(getDiskoWpModule(index));
 	}
 	
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.app.IDiskoRole#selectDiskoWpModule(java.lang.String)
 	 */
-	public void selectDiskoWpModule(String id)  {
-		int index = searchModule(id);
-		if (index > -1) {
-			selectDiskoWpModule(index);
+	public IDiskoWpModule selectDiskoWpModule(String id)  {
+		IDiskoWpModule module = getDiskoWpModule(id);
+		if (module != null) {
+			return selectDiskoWpModule(module);
 		}
+		return null;
 	}
 	
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.app.IDiskoRole#selectDiskoWpModule(int)
 	 */
-	public void selectDiskoWpModule(int index) {
-		if (index < modules.size()) {
+	public IDiskoWpModule selectDiskoWpModule(IDiskoWpModule module) {
+		if (module != null) {
 			if (currentModule != null) {
 				// deactiat previous module
 				try {
@@ -132,7 +148,6 @@ public class DiskoRoleImpl implements IDiskoRole, IDiskoWpEventListener {
 				}
 				currentModule.deactivated();
 			}
-			IDiskoWpModule module = modules.get(index);
 			String id = getName()+module.getName();
 			MainMenuPanel mainMenu = app.getUIFactory().getMainMenuPanel();
 			SubMenuPanel subMenu   = app.getUIFactory().getSubMenuPanel();
@@ -153,11 +168,13 @@ public class DiskoRoleImpl implements IDiskoRole, IDiskoWpEventListener {
 			module.activated();
 			navBar.taskChanged();
 			// set the button selected in the main menu
+			int index =  modules.indexOf(module);
 			AbstractButton button = mainMenu.getButton(getName(), index);
 			if (button != null) {
 				button.setSelected(true);
 			}
 		}
+		return currentModule;
 	}
 	
 	/* (non-Javadoc)
@@ -220,8 +237,9 @@ public class DiskoRoleImpl implements IDiskoRole, IDiskoWpEventListener {
 	private void setBorder(Border border) {
 		MainMenuPanel mainMenu = app.getUIFactory().getMainMenuPanel();
 		String id = getName()+currentModule.getName();
-		int index = searchModule(id);
-		if (index > -1) {
+		IDiskoWpModule module = getDiskoWpModule(id);
+		if (module != null) {
+			int index = modules.indexOf(module);
 			AbstractButton button = mainMenu.getButton(getName() ,index);
 			button.setBorder(border);
 		}

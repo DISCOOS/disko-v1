@@ -24,13 +24,21 @@ public interface IDiskoRole {
 	 * usually the name of the work process
 	 * @param id An id that identifies a work process module
 	 */
-	public void selectDiskoWpModule(String id);
+	public IDiskoWpModule selectDiskoWpModule(String id);
+	
+	public IDiskoWpModule selectDiskoWpModule(int index);
 	
 	/**
 	 * Activate an works process module at the given index.
 	 * @param index And index that identifies a work process module
 	 */
-	public void selectDiskoWpModule(int index);
+	public IDiskoWpModule selectDiskoWpModule(IDiskoWpModule module);
+	
+	public IDiskoWpModule getDiskoWpModule(int index);
+	
+	public IDiskoWpModule getDiskoWpModule(String id);
+	
+	public int getDiskoWpModuleCount();
 
 	/**
 	 * Get the name of this DiskoRole.
