@@ -16,6 +16,7 @@ import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,6 +36,8 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMap
     private Properties properties = null;
     private ArrayList<IDiskoWpEventListener> listeners = null;
     private DiskoWpEvent diskoWpEvent = null;
+    protected String callingWp = null;
+    protected boolean isEditing = false;
 
     /**
      * @param role
@@ -85,6 +88,14 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMap
     {
         return null;
     }
+    
+    public void setCallingWp(String name) {
+    	callingWp = name;
+    }
+	
+	public String getCallingWp() {
+		return callingWp;
+	}
 
     /* (non-Javadoc)
       * @see org.redcross.sar.wp.IDiskoWpModule#hasMap()
@@ -173,13 +184,16 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMap
     public void activated() {
     	setFrameText(null);
 	}
-    
-    
+      
     /* (non-Javadoc)
      * @see org.redcross.sar.wp.IDiskoWpModule#deactivated()
      */
     public void deactivated() {
     	getApplication().getFrame().setTitle(null);
+    }
+    
+    public boolean isEditing() {
+    	return isEditing;
     }
     
     public void setFrameText(String text) {
@@ -189,6 +203,16 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMap
     	}
     	getApplication().getFrame().setTitle(s);
     }
+    
+    public void showWarning(final String msg) {
+		Runnable r = new Runnable(){
+            public void run() {
+            	JOptionPane.showMessageDialog(getApplication().getFrame(), 
+            		msg, null, JOptionPane.WARNING_MESSAGE);
+            }
+        };
+        SwingUtilities.invokeLater(r);
+	}
 
     protected void layoutComponent(JComponent comp)
     {
