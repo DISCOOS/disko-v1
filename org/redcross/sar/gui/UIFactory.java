@@ -21,6 +21,7 @@ public class UIFactory {
 	private JPanel menuPanel = null;
 	private LoginDialog loginDialog = null;
 	private NumPadDialog numPadDialog = null;
+	private MapOptionDialog mapOptionDialog = null;
 	
 	private Dimension largeButtonSize = null;
 	private Dimension smallButtonSize = null;
@@ -78,6 +79,15 @@ public class UIFactory {
 			cbox.addItem(rolleNames[i]);
 		}
 		return loginDialog;
+	}
+	
+	public MapOptionDialog getMapOptionDialog(){
+		if (mapOptionDialog == null) {
+			mapOptionDialog = new MapOptionDialog(app);
+		}
+		
+		mapOptionDialog.setLocation(200, 200);
+		return mapOptionDialog;
 	}
 	
 	/**
