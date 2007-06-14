@@ -70,9 +70,9 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
     private final static int MediumSize = 14;
     private final static int LargeSize = 16;
     private final static Font DEFAULT_PLAIN_MEDIUM_FONT = new Font(DefaultFont,Font.PLAIN,MediumSize);
-    private final static Font DEFAULT_BOLD_MEDIUM_FONT = new Font(DefaultFont,Font.BOLD,MediumSize);
+    //private final static Font DEFAULT_BOLD_MEDIUM_FONT = new Font(DefaultFont,Font.BOLD,MediumSize);
     private final static Font DEFAULT_PLAIN_LARGE_FONT = new Font(DefaultFont,Font.PLAIN,LargeSize);
-    private final static Font DEFAULT_BOLD_LARGE = new Font(DefaultFont,Font.BOLD,LargeSize);
+    //private final static Font DEFAULT_BOLD_LARGE = new Font(DefaultFont,Font.BOLD,LargeSize);
 
     private final static Font DIALOG_PLAIN_MEDIUM_FONT = new Font(DialogFont,Font.PLAIN,MediumSize);
 
@@ -92,7 +92,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
             UIManager.put("FileChooser.listFont",DEFAULT_PLAIN_MEDIUM_FONT);
             UIManager.put("FormattedTextField.font",DEFAULT_PLAIN_MEDIUM_FONT);
 //            UIManager.put("InternalFrame.titleFont",font Trebuchet MS,bold,13);
-            UIManager.put("Label.font",DEFAULT_BOLD_MEDIUM_FONT);
+            UIManager.put("Label.font",DEFAULT_PLAIN_MEDIUM_FONT);
             UIManager.put("List.font",DEFAULT_PLAIN_MEDIUM_FONT);
             UIManager.put("Menu.acceleratorFont",DIALOG_PLAIN_MEDIUM_FONT);
             UIManager.put("Menu.font",DEFAULT_PLAIN_MEDIUM_FONT);
@@ -114,7 +114,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
             UIManager.put("Spinner.font",DEFAULT_PLAIN_MEDIUM_FONT);
             UIManager.put("TabbedPane.font",DEFAULT_PLAIN_MEDIUM_FONT);
             UIManager.put("Table.font",DEFAULT_PLAIN_MEDIUM_FONT);
-            UIManager.put("TableHeader.font",DEFAULT_BOLD_MEDIUM_FONT);
+            UIManager.put("TableHeader.font",DEFAULT_PLAIN_MEDIUM_FONT);
   //          UIManager.put("TextArea.font",font Monospaced,plain,13);
             UIManager.put("TextField.font",DEFAULT_PLAIN_MEDIUM_FONT);
             UIManager.put("TextPane.font",DEFAULT_PLAIN_MEDIUM_FONT);
