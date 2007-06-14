@@ -1,55 +1,38 @@
 package org.redcross.sar.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FileDialog;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
+import javax.swing.border.BevelBorder;
+
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.map.CustomMapData;
-import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.DiskoMapManagerImpl;
-import org.redcross.sar.map.IDiskoMap;
-import org.redcross.sar.gui.models.MapSourceTableModel;
-import org.redcross.sar.map.MapSourceTable;
 import org.redcross.sar.map.MapSourceInfo;
 
 import com.borland.jbcl.layout.VerticalFlowLayout;
-
-import javax.swing.JFrame;
-
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JPanel;
-import javax.swing.JButton;
-import javax.swing.ButtonGroup;
-import javax.swing.JComponent;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.TitledBorder;
-import javax.swing.ImageIcon;
-import javax.swing.JTable;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.JFileChooser;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.JCheckBox;
-
-import java.util.ArrayList;
-import java.io.IOException;
-import java.io.File;
-import java.io.FilenameFilter;
-
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Frame;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.event.KeyEvent;
-import java.awt.FileDialog;
-import java.awt.Insets;
 
 
 public class MapOptionDialog extends DiskoDialog {
@@ -66,16 +49,9 @@ public class MapOptionDialog extends DiskoDialog {
 	
 	private JScrollPane tableScrollPane = null;
 	
-	private JPanel mapSourceTable = null;
-	
 	private JButton cancelButton = null;
 	private JButton finishButton = null;
 	private JButton buttonBrowse = null;
-	private JButton buttonOK = null;
-
-	private JButton cancelButton2 = null;
-	private JButton finishButton2 = null;
-	
 	private JLabel labelCurrentMxd = null;
 	private JLabel labelCurrentMxdShow = null;
 	
@@ -85,7 +61,6 @@ public class MapOptionDialog extends DiskoDialog {
 	private String currentMxd = null;
 	private File file = null;
 	
-	private ArrayList maps;
 	private JLabel labelHeadPrimar = null;
 	private JLabel labelHeadSecond = null;
 	private JLabel labelHeadMxd = null;
@@ -101,12 +76,11 @@ public class MapOptionDialog extends DiskoDialog {
 	
 	private void initalize(){
 		try {
-            this.setPreferredSize(new Dimension(450, 300));
+            this.setPreferredSize(new Dimension(475, 300));
             //this.setLocationRelativeTo(null, POS_CENTER, false);
             //this.setSize(new Dimension(175, 350));
             this.setSize(new Dimension(400, 447));
 			this.setTitle("DISKO kartoppsett");
-            this.setUndecorated(false);
             this.setContentPane(getContentPanel());
             this.pack();
 		}
@@ -123,6 +97,7 @@ public class MapOptionDialog extends DiskoDialog {
 	private JPanel getContentPanel() {		
 		contentPanel = new JPanel();
 		contentPanel.setLayout(new BorderLayout());
+		contentPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 		
 		//contentPanel.setBorder(BorderFactory.createTitledBorder(null, "Kartoppsett", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Tahoma", Font.PLAIN, 11), new Color(0, 70, 213)));
 		contentPanel.add(getCenterPanel(), BorderLayout.CENTER);
@@ -142,8 +117,6 @@ public class MapOptionDialog extends DiskoDialog {
 		if (jTabbedMapPane == null) {
 			jTabbedMapPane = new JTabbedPane();
 			//jTabbedMapPane.setSize(new Dimension(312, 219));
-			jTabbedMapPane.setPreferredSize(new Dimension(300, 200));
-			
 			jTabbedMapPane.addTab("Kartoppsett", null, getPanelMapSources(), null);
 			jTabbedMapPane.addTab("Legg til data", null, getAddDataPanel(), null);
 						
@@ -525,35 +498,6 @@ public class MapOptionDialog extends DiskoDialog {
 	}
 
 	/**
-	 * This method initializes buttonOK	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getButtonOK() {
-		if (buttonOK == null) {
-			buttonOK = new JButton();
-			buttonOK.setPreferredSize(new Dimension(80, 20));
-			buttonOK.setText("OK");
-			buttonOK.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {	
-					if(file != null){
-						CustomMapData addData = new CustomMapData();					
-						addData.AddCustomData(app, file);
-						textFieldBrowse.setText("");
-						file = null;//nullstiller
-						setVisible(false);				
-											
-					}
-					else{
-						//vis melding
-					}
-				}
-			});
-		}
-		return buttonOK;
-	}
-		
-	/**
 	 * 
 	 *
 	 */
@@ -610,12 +554,6 @@ public class MapOptionDialog extends DiskoDialog {
 		file = new File(sFileChosen);
 		return file;		 
 		 
-	}
-	
-	private boolean addData(File f){
-		boolean ok = false;
-		return ok;
-		
 	}
 	
 }

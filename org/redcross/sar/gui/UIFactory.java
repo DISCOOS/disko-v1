@@ -58,6 +58,9 @@ public class UIFactory {
 					app.login(rolleName, user, password);
 					loginDialog.setVisible(false);
 				}
+				public void dialogStateChanged(DialogEvent e) {
+					// TODO Auto-generated method stub
+				}
 			});
 		}
 		String[] rolleNames = null;

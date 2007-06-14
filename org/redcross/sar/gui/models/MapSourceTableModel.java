@@ -1,22 +1,19 @@
 package org.redcross.sar.gui.models;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.redcross.sar.gui.models.AssignmentTableModel.EditAction;
 import org.redcross.sar.map.MapSourceInfo;
-import org.redcross.sar.mso.data.IAssignmentIf;
 
 public class MapSourceTableModel extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
 
-	private ArrayList rows = null;
+	private ArrayList<Object[]> rows = null;
 	
 	public MapSourceTableModel(ArrayList<MapSourceInfo> list){		
-		rows = new ArrayList();
+		rows = new ArrayList<Object[]>();
 		for (int i = 0; i< list.size(); i++) {
 			System.out.println("nr: " +list.get(i).getPrimarMap());
 			add(list.get(i));

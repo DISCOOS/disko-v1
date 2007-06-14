@@ -7,6 +7,7 @@ import javax.swing.AbstractListModel;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.ICmdPostIf;
+import org.redcross.sar.mso.data.IHypothesisIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
@@ -38,14 +39,17 @@ public class HypothesesListModel extends AbstractListModel implements
 
 	public void handleMsoUpdateEvent(Update e) {
 		int type = e.getEventTypeMask();
-		if (type == EventType.ADDED_REFERENCE_EVENT.maskValue()) {
-			hypotheses.add(e.getSource());
-			int index = hypotheses.size()-1;
-			super.fireContentsChanged(this, index, index);
-		}
-		else if (type == EventType.REMOVED_REFERENCE_EVENT.maskValue()) {
-			hypotheses.remove(e.getSource());
-			super.fireContentsChanged(this, 0, hypotheses.size()-1);
+		IHypothesisIf hypo = (IHypothesisIf)e.getSource();
+		if (hypotheses.indexOf(hypo) == -1) {
+			if (type == EventType.ADDED_REFERENCE_EVENT.maskValue()) {
+				hypotheses.add(e.getSource());
+				int index = hypotheses.size()-1;
+				super.fireContentsChanged(this, index, index);
+			}
+			else if (type == EventType.REMOVED_REFERENCE_EVENT.maskValue()) {
+				hypotheses.remove(e.getSource());
+				super.fireContentsChanged(this, 0, hypotheses.size()-1);
+			}
 		}
 	}
 

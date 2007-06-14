@@ -158,7 +158,7 @@ public class NavBar extends JPanel {
 		addCommand(getZoomToLastExtentBackwardButton(), getZoomToLastExtentBackCommand(), 
 				ToolCommandType.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND, ButtonPlacement.RIGHT);	
 		addCommand(getMapToggleButton(), getMapToggleCommand(), 
-				ToolCommandType.MAP_TOGGLE_COMMAND);
+				ToolCommandType.MAP_TOGGLE_COMMAND, ButtonPlacement.RIGHT);
 	}
 	
 	private JPanel getLeftPanel() {

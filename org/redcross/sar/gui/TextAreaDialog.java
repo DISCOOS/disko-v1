@@ -20,6 +20,7 @@ import org.redcross.sar.mso.data.IAreaIf;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.IOperationAreaIf;
+import org.redcross.sar.mso.data.IPOIIf;
 
 import com.esri.arcgis.interop.AutomationException;
 
@@ -53,7 +54,6 @@ public class TextAreaDialog extends DiskoDialog implements IDiskoMapEventListene
 	}
 	
 	public String getText() {
-		System.out.println(textArea.getText());
 		return getTextArea().getText();
 	}
 	
@@ -62,6 +62,7 @@ public class TextAreaDialog extends DiskoDialog implements IDiskoMapEventListene
 	}
 	
 	public void setHeaderText(String text) {
+		System.out.println(headerLabel.getFont());
 		headerLabel.setText(text);
 	}
 
@@ -113,6 +114,11 @@ public class TextAreaDialog extends DiskoDialog implements IDiskoMapEventListene
 			try {
 				textArea = new JTextArea();
 				textArea.setLineWrap(true);
+				textArea.addKeyListener(new java.awt.event.KeyAdapter() {
+					public void keyTyped(java.awt.event.KeyEvent e) {
+						fireDialogStateChanged();
+					}
+				});
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}

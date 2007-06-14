@@ -74,6 +74,12 @@ public class DiskoDialog extends JDialog {
 		}
 	}
 	
+	protected void fireDialogStateChanged() {
+		for (int i = 0; i < listeners.size(); i++) {
+			listeners.get(i).dialogStateChanged(new DialogEvent(this));
+		}
+	}
+	
 	public void setVisible(boolean visible) {
 		super.setVisible(visible);
 		if (isToggable) {
