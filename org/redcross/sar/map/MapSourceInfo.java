@@ -6,7 +6,7 @@ public class MapSourceInfo {
 	private String mxdPath;
 	private String status;
 	private String type;
-	private final static int no_Attributes = 5;
+	private int no_Attributes = 5;
 	
 	public MapSourceInfo(boolean primar, boolean secondary, String mxdPath, String status, String type){
 		this.primarMap = primar;
@@ -22,7 +22,7 @@ public class MapSourceInfo {
 	}
 	
 	public int getNoAttribute(){
-		return this.no_Attributes;
+		return no_Attributes;
 	}
 	
 	public void setPrimarMap(boolean primar){

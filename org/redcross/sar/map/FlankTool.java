@@ -67,6 +67,7 @@ public class FlankTool extends AbstractCommandTool {
 					//HACK: To force firing events.
 					area.setGeodata(cloneGeoCollection(geoColl));
 					map.getActiveView().refresh();
+					map.fireEditLayerChanged();
 				}
 			}
 		}

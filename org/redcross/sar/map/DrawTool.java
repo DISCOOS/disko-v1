@@ -159,6 +159,7 @@ public class DrawTool extends AbstractCommandTool {
 		}
 		reset();
 		map.getActiveView().refresh();
+		map.fireEditLayerChanged();
 	}
 	
 	private Polygon getPolygon(Polyline pline) throws IOException, AutomationException {

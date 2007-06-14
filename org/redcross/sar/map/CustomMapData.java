@@ -1,19 +1,13 @@
 package org.redcross.sar.map;
 
-import org.redcross.sar.app.IDiskoApplication;
-
 import java.io.File;
 
-import com.esri.arcgis.datasourcesraster.RasterDataset;
-import com.esri.arcgis.datasourcesraster.RasterWorkspaceFactory;
-import com.esri.arcgis.datasourcesraster.RasterWorkspace;
+import org.redcross.sar.app.IDiskoApplication;
+
 import com.esri.arcgis.carto.RasterLayer;
-
-import java.io.IOException;
-
-
-import com.esri.arcgis.system.FileStream;
-import com.esri.arcgis.system.IStream;
+//import com.esri.arcgis.datasourcesraster.RasterDataset;
+//import com.esri.arcgis.datasourcesraster.RasterWorkspace;
+//import com.esri.arcgis.datasourcesraster.RasterWorkspaceFactory;
 
 public class CustomMapData {
 	
@@ -21,9 +15,6 @@ public class CustomMapData {
 	public void AddCustomData(IDiskoApplication app, File f){
 		String fname = f.getName();
 		String path = f.getAbsolutePath().substring(0,f.getAbsolutePath().length()-fname.length());
-		boolean ok = false;
-		
-		
 		DiskoMap map = (DiskoMap) app.getCurrentMap();		
 		//System.out.println(path + " :_: " + fname +" " + f.getAbsolutePath());
 		System.out.println("sjekker ext");
@@ -35,11 +26,11 @@ public class CustomMapData {
 		
 		if(ext.equalsIgnoreCase("tif") || ext.equalsIgnoreCase("tiff")){
 			System.out.println("raster");
-			ok = AddRasterFile(map, f.getAbsolutePath());			
+			AddRasterFile(map, f.getAbsolutePath());			
 		}
 		else if (ext.equalsIgnoreCase("shp")){
 			System.out.println("shp");
-			ok = AddShapeFile(map, fname, path);
+			addShapeFile(map, fname, path);
 		}
 						
 		//lagre kartet med de nye dataene
@@ -56,7 +47,7 @@ public class CustomMapData {
 		
 	}
 	
-	private boolean AddShapeFile(DiskoMap map, String fname, String path){
+	private boolean addShapeFile(DiskoMap map, String fname, String path){
 		try{
 			map.addShapeFile(path, fname);	
 			return true;
@@ -85,7 +76,7 @@ public class CustomMapData {
 		}
 	}
 	
-	private RasterDataset openRasterDataset(String directoryName, String fileName) {
+	/*private RasterDataset openRasterDataset(String directoryName, String fileName) {
 		RasterDataset rasterDataset = null;
 		try {
 			// Create a workspace factory which then opens a RasterWorkspace and
@@ -101,5 +92,5 @@ public class CustomMapData {
 		}
 
 		return rasterDataset;
-	}
+	}*/
 }

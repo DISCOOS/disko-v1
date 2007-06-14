@@ -140,6 +140,7 @@ public class POITool extends AbstractCommandTool {
 		} else {
 			refresh(point);
 		}
+		map.fireEditLayerChanged();
 	}
 	
 	public void onMouseUp(int button, int shift, int x, int y)
