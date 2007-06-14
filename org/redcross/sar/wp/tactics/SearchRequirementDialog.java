@@ -9,7 +9,6 @@ import java.util.Hashtable;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -23,7 +22,6 @@ import javax.swing.border.BevelBorder;
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.event.IDiskoMapEventListener;
 import org.redcross.sar.gui.DiskoDialog;
-import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
 import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.IMsoFeatureClass;
 import org.redcross.sar.mso.data.IAreaIf;
@@ -36,7 +34,6 @@ import com.esri.arcgis.interop.AutomationException;
 public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEventListener {
 
 	private static final long serialVersionUID = 1L;
-	private DiskoWpTacticsImpl wp = null;
 	private JPanel contentPanel = null;
 	private JLabel accuracyLabel = null;
 	private JSlider accuracySlider = null;
@@ -51,13 +48,10 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 	private JLabel criticalQuestionsLabel = null;
 	private JScrollPane criticalQuestionsScrollPane = null;
 	private JTextArea criticalQuestionsTextArea = null;
-	private JLabel statusLabel = null;
-	private JComboBox statusComboBox = null;
 	
 	
 	public SearchRequirementDialog(DiskoWpTacticsImpl wp) {
 		super(wp.getApplication().getFrame());
-		this.wp = wp;
 		initialize();
 		// TODO Auto-generated constructor stub
 	}
@@ -107,10 +101,6 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 		return ((Integer)getProgressSpinner().getValue()).intValue();
 	}
 	
-	public IAssignmentIf.AssignmentStatus getStatus() {
-		return (IAssignmentIf.AssignmentStatus)getStatusComboBox().getSelectedItem();
-	}
-	
 	public String getCriticalQuestions() {
 		return getCriticalQuestionsTextArea().getText();
 	}
@@ -139,10 +129,6 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 		getProgressSpinner().setValue(estimatedProgress);
 	}
 	
-	public void setStatus(IAssignmentIf.AssignmentStatus status) {
-		getStatusComboBox().setSelectedItem(status);
-	}
-	
 	public void setCriticalQuestions(String questions) {
 		getCriticalQuestionsTextArea().setText(questions);
 	}
@@ -167,8 +153,6 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 				gridBagConstraints12.anchor = GridBagConstraints.WEST;
 				gridBagConstraints12.insets = new Insets(0, 10, 0, 0);
 				gridBagConstraints12.gridy = 4;
-				statusLabel = new JLabel();
-				statusLabel.setText("Status:");
 				GridBagConstraints gridBagConstraints91 = new GridBagConstraints();
 				gridBagConstraints91.fill = GridBagConstraints.NONE;
 				gridBagConstraints91.gridx = 2;
@@ -266,8 +250,6 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 				contentPanel.add(getAccuracyTextField(), gridBagConstraints71);
 				contentPanel.add(getPrioritySlider(), gridBagConstraints81);
 				contentPanel.add(getPriorityTextField(), gridBagConstraints91);
-				contentPanel.add(statusLabel, gridBagConstraints12);
-				contentPanel.add(getStatusComboBox(), gridBagConstraints13);
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
@@ -293,6 +275,7 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 				accuracySlider.addChangeListener(new javax.swing.event.ChangeListener() {
 					public void stateChanged(javax.swing.event.ChangeEvent e) {
 						getAccuracyTextField().setText(accuracySlider.getValue()+"%");
+						fireDialogStateChanged();
 					}
 				});
 			} catch (java.lang.Throwable e) {
@@ -325,6 +308,7 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 						Integer key = Integer.valueOf(prioritySlider.getValue());
 						String text = ((JLabel)prioritySlider.getLabelTable().get(key)).getText();
 						getPriorityTextField().setText(text);
+						fireDialogStateChanged();
 					}
 				});
 				Hashtable<Integer, JLabel> labels = new Hashtable<Integer, JLabel>();
@@ -389,6 +373,11 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 				personelSpinner.setPreferredSize(new Dimension(125, 20));
 				SpinnerNumberModel model = new SpinnerNumberModel(5, 1, 50, 1); 
 				personelSpinner.setModel(model);
+				personelSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+					public void stateChanged(javax.swing.event.ChangeEvent e) {
+						fireDialogStateChanged();
+					}
+				});
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
@@ -408,6 +397,11 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 				progressSpinner.setPreferredSize(new Dimension(125, 20));
 				SpinnerNumberModel model = new SpinnerNumberModel(1, 1, 24, 1); 
 				progressSpinner.setModel(model);
+				progressSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+					public void stateChanged(javax.swing.event.ChangeEvent e) {
+						fireDialogStateChanged();
+					}
+				});
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
@@ -442,45 +436,16 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 			try {
 				criticalQuestionsTextArea = new JTextArea();
 				criticalQuestionsTextArea.setLineWrap(true);
+				criticalQuestionsTextArea.addKeyListener(new java.awt.event.KeyAdapter() {
+					public void keyTyped(java.awt.event.KeyEvent e) {
+						fireDialogStateChanged();
+					}
+				});
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
 		}
 		return criticalQuestionsTextArea;
-	}
-
-	/**
-	 * This method initializes statusComboBox	
-	 * 	
-	 * @return javax.swing.JComboBox	
-	 */
-	private JComboBox getStatusComboBox() {
-		if (statusComboBox == null) {
-			try {
-				statusComboBox = new JComboBox();
-				statusComboBox.setRenderer(new SimpleListCellRenderer());
-				statusComboBox.setPreferredSize(new Dimension(125, 20));
-				statusComboBox.addItem(IAssignmentIf.AssignmentStatus.READY);
-				statusComboBox.addItem(IAssignmentIf.AssignmentStatus.DRAFT);
-				statusComboBox.setSelectedIndex(0);
-				statusComboBox.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent e) {
-						IAssignmentIf.AssignmentStatus status = 
-							(IAssignmentIf.AssignmentStatus)statusComboBox.getSelectedItem();
-						if (status == IAssignmentIf.AssignmentStatus.READY) {
-							wp.getUnitToggleButton().setEnabled(true);
-						}
-						else {
-							wp.getUnitToggleButton().setEnabled(false);
-						}
-					}
-				});
-				
-			} catch (java.lang.Throwable e) {
-				// TODO: Something
-			}
-		}
-		return statusComboBox;
 	}
 
 	public void editLayerChanged(DiskoMapEvent e) {
@@ -509,7 +474,6 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 			if (assignment instanceof ISearchIf) {
 				ISearchIf search = (ISearchIf)assignment;
 				setPriority(search.getPriority());
-				setStatus(search.getStatus());
 				setAccuracy(search.getPlannedAccuracy());
 				setPersonelNeed(search.getPlannedPersonnel());
 				setEstimatedProgress(search.getPlannedProgress());

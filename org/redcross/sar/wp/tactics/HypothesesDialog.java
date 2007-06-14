@@ -7,9 +7,13 @@ import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.models.HypothesesListModel;
 import org.redcross.sar.gui.renderers.HypothesesListCellRenderer;
 import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
+import org.redcross.sar.map.feature.IMsoFeature;
+import org.redcross.sar.map.feature.IMsoFeatureClass;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IHypothesisIf;
+import org.redcross.sar.mso.data.IMsoObjectIf;
+import org.redcross.sar.mso.data.ISearchAreaIf;
 import org.redcross.sar.mso.data.IHypothesisIf.HypothesisStatus;
 
 import com.esri.arcgis.interop.AutomationException;
@@ -34,6 +38,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.JTextArea;
 
@@ -210,11 +215,12 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 						if (e.getValueIsAdjusting()) {
 							return;
 						}
+						getDescriptionTextArea().setEnabled(true);
+						applyChanges();
 						selectedHypotheses = (IHypothesisIf)hypothesesList.getSelectedValue();
 						if (selectedHypotheses == null) {
 							return;
 						}
-						applyChanges();
 						getDescriptionTextArea().setText(selectedHypotheses.getDescription());
 						if (selectedHypotheses.getPriority() > 0) {
 							getPriorityComboBox().setSelectedIndex(selectedHypotheses.getPriority()-1);
@@ -223,6 +229,7 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 							getPriorityComboBox().setSelectedIndex(0);
 						}
 						getStatusComboBox().setSelectedItem(selectedHypotheses.getStatus());
+						fireDialogStateChanged();
 					}
 				});
 			} catch (java.lang.Throwable e) {
@@ -279,6 +286,12 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 			try {
 				descriptionTextArea = new JTextArea();
 				descriptionTextArea.setLineWrap(true);
+				descriptionTextArea.setEnabled(false);
+				descriptionTextArea.addKeyListener(new java.awt.event.KeyAdapter() {
+					public void keyTyped(java.awt.event.KeyEvent e) {
+						fireDialogStateChanged();
+					}
+				});
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
@@ -349,6 +362,12 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 					priorityComboBox.addItem(new Integer(i));
 				}
 				priorityComboBox.setSelectedIndex(0);
+				priorityComboBox.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent e) {
+						fireDialogStateChanged();
+					}
+				});
+				
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
@@ -371,6 +390,11 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 					statusComboBox.addItem(values[i]);
 				}
 				statusComboBox.setSelectedIndex(0);
+				statusComboBox.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent e) {
+						fireDialogStateChanged();
+					}
+				});
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
@@ -385,22 +409,29 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 
 	public void onAfterScreenDraw(DiskoMapEvent e) throws IOException, AutomationException {
 		// TODO Auto-generated method stub
-		
 	}
 
 	public void onExtentUpdated(DiskoMapEvent e) throws IOException, AutomationException {
 		// TODO Auto-generated method stub
-		
 	}
 
 	public void onMapReplaced(DiskoMapEvent e) throws IOException, AutomationException {
 		// TODO Auto-generated method stub
-		
 	}
 
 	public void onSelectionChanged(DiskoMapEvent e) throws IOException, AutomationException {
-		// TODO Auto-generated method stub
-		
+		IMsoFeatureClass msoFC = (IMsoFeatureClass)e.getSource();
+		List selection = msoFC.getSelected();
+		if (selection != null && selection.size() > 0) {
+			IMsoFeature msoFeature = (IMsoFeature)selection.get(0);
+			IMsoObjectIf msoObject = msoFeature.getMsoObject();
+			if (msoObject instanceof ISearchAreaIf) {
+				ISearchAreaIf searchArea = (ISearchAreaIf)msoObject;
+				getHypothesesList().setSelectedValue(searchArea.getSearchAreaHypothesis(), false);
+				return;
+			}
+		}
+		getHypothesesList().setSelectedIndex(0);
 	}
 
 }  //  @jve:decl-index=0:visual-constraint="10,10"

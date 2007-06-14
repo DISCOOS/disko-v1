@@ -14,6 +14,7 @@ public interface IDiskoWpTactics extends IDiskoWp {
 		DESCRIPTION_TASK,
 		UNIT_TASK,
 		MAKE_READY_TASK,
+		MAKE_DRAFT_TASK,
 		PRINT_TASK
     }
 }

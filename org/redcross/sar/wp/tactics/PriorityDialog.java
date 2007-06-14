@@ -1,25 +1,30 @@
 package org.redcross.sar.wp.tactics;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.io.IOException;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.ListSelectionModel;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.event.IDiskoMapEventListener;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.renderers.CheckableListCellRenderer;
+import org.redcross.sar.map.feature.IMsoFeature;
+import org.redcross.sar.map.feature.IMsoFeatureClass;
+import org.redcross.sar.mso.data.IMsoObjectIf;
+import org.redcross.sar.mso.data.ISearchAreaIf;
 
 import com.esri.arcgis.interop.AutomationException;
-
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.ListSelectionModel;
-import javax.swing.border.BevelBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.JList;
-import java.awt.BorderLayout;
-import java.io.IOException;
 
 public class PriorityDialog extends DiskoDialog implements IDiskoMapEventListener{
 
@@ -103,6 +108,7 @@ public class PriorityDialog extends DiskoDialog implements IDiskoMapEventListene
 				priorityList.addListSelectionListener(new ListSelectionListener() {
 					public void valueChanged(ListSelectionEvent e) {
 						setVisible(false);
+						fireDialogStateChanged();
 					}
 				});
 			} catch (java.lang.Throwable e) {
@@ -133,8 +139,18 @@ public class PriorityDialog extends DiskoDialog implements IDiskoMapEventListene
 	}
 
 	public void onSelectionChanged(DiskoMapEvent e) throws IOException, AutomationException {
-		// TODO Auto-generated method stub
-		
+		IMsoFeatureClass msoFC = (IMsoFeatureClass)e.getSource();
+		List selection = msoFC.getSelected();
+		if (selection != null && selection.size() > 0) {
+			IMsoFeature msoFeature = (IMsoFeature)selection.get(0);
+			IMsoObjectIf msoObject = msoFeature.getMsoObject();
+			if (msoObject instanceof ISearchAreaIf) {
+				ISearchAreaIf searchArea = (ISearchAreaIf)msoObject;
+				setPriority(searchArea.getPriority());
+				return;
+			}
+		}
+		setPriority(1);
 	}
 
 }  //  @jve:decl-index=0:visual-constraint="10,10"
