@@ -282,14 +282,6 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMap
     {
         // TODO Auto-generated method stub
     }
-    
-    public void graphicsAdded(DiskoMapEvent e) {
-		// TODO Auto-generated method stub
-	}
-
-	public void graphicsDeleted(DiskoMapEvent e) {
-		// TODO Auto-generated method stub
-	}
 
     public IMsoModelIf getMsoModel()
     {
