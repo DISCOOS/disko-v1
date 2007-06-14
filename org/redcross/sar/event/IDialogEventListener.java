@@ -7,4 +7,6 @@ public interface IDialogEventListener extends EventListener {
 	public void dialogFinished(DialogEvent e);
 	
 	public void dialogCanceled(DialogEvent e);
+	
+	public void dialogStateChanged(DialogEvent e);
 }
