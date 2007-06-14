@@ -1,5 +1,7 @@
 Database.path=C:\\DISKO\\Database\\DISKO_fdb.gdb
 MxdDocument.path=C:\\DISKO\\Disko.mxd
+MxdDocument.secondary.path=C:\\DISKO\\Disko2.mxd
+MxdDocument.catalog.path=C:\\DISKO\\
 BasicLine.featureClass.Name=basislinje
 BufferPath.featureClass.Name=soek
 PUI.featureClass.Name=pui
@@ -30,8 +32,8 @@ ApplyButton.text=Utfør
 OkButton.text=OK
 CancelButton.text=Avbryt
 
-ToolCommandType.POI_TOOL.icon=icons/pui.gif
-ToolCommandType.FLANK_TOOL.icon=icons/edge.gif
+ToolCommandType.POI_TOOL.icon=icons/60x60/poi.gif
+ToolCommandType.FLANK_TOOL.icon=icons/60x60/edge.gif
 ToolCommandType.DRAW_TOOL.icon=icons/60x60/drawing.gif
 ToolCommandType.ERASE_TOOL.icon=icons/60x60/eraser.gif
 ToolCommandType.SPLIT_TOOL.icon=icons/60x60/split.gif
@@ -44,12 +46,14 @@ ToolCommandType.ZOOM_OUT_FIXED_COMMAND.icon=icons/60x60/zoomout.gif
 ToolCommandType.ZOOM_FULL_EXTENT_COMMAND.icon=icons/60x60/fullextent.gif
 ToolCommandType.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND.icon=icons/60x60/next.gif
 ToolCommandType.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND.icon=icons/60x60/back.gif
+ToolCommandType.MAP_TOGGLE_COMMAND.icon=icons/60x60/map_1.gif
+ToolCommandType.MAP_TOGGLE_COMMAND_2.icon=icons/60x60/map_2.gif
 
-UnitType.COMMAND_POST.icon=icons/60x60/people.gif
+UnitType.COMMAND_POST.icon=icons/60x60/command.gif
 UnitType.TEAM.icon=icons/60x60/people.gif
 UnitType.DOG.icon=icons/60x60/dog.gif
-UnitType.AIRCRAFT.icon=icons/60x60/people.gif
-UnitType.BOAT.icon=icons/60x60/people.gif
+UnitType.AIRCRAFT.icon=icons/60x60/airplane.gif
+UnitType.BOAT.icon=icons/60x60/boat.gif
 UnitType.VEHICLE.icon=icons/60x60/car.gif
 
 UnitStatus.EMPTY.text=Tom
@@ -139,11 +143,12 @@ TacticsTaskType.ELEMENT_TASK.icon=icons/60x60/element.gif
 TacticsTaskType.LIST_TASK.icon=icons/60x60/list.gif
 TacticsTaskType.MISSON_TASK.icon=icons/60x60/assinment.gif
 TacticsTaskType.HYPOTHESIS_TASK.icon=icons/60x60/hypothesis.gif
-TacticsTaskType.PRIORITY_TASK.icon=
+TacticsTaskType.PRIORITY_TASK.icon=icons/60x60/priority.gif
 TacticsTaskType.REQUIREMENT_TASK.icon=icons/60x60/requirement.gif
 TacticsTaskType.DESCRIPTION_TASK.icon=icons/60x60/description.gif
 TacticsTaskType.UNIT_TASK.icon=icons/60x60/unit.gif
 TacticsTaskType.MAKE_READY_TASK.icon=icons/60x60/ready.gif
+TacticsTaskType.MAKE_DRAFT_TASK.icon=
 TacticsTaskType.PRINT_TASK.icon=icons/60x60/printer.gif
 
 
