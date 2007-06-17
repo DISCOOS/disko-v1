@@ -1,6 +1,9 @@
 package org.redcross.sar.wp.states;
 
+import java.util.EnumSet;
+
 import org.redcross.sar.app.IDiskoRole;
+import org.redcross.sar.gui.NavBar;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
 
 /**
@@ -42,10 +45,14 @@ public class DiskoWpStatesImpl extends AbstractDiskoWpModule
 
 	public void activated() {
 		super.activated();
+		NavBar navBar = getApplication().getNavBar();
+		navBar.removeAll();
+		navBar.setEnabled(false);
 	}
 	
 	public void deactivated() {
 		super.deactivated();
+		getApplication().getNavBar().setEnabled(true);
 	}
 	
 	public void cancel() {
