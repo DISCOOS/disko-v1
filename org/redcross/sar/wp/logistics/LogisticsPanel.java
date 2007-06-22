@@ -188,7 +188,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         hl.setHorizontalAlignment(SwingConstants.CENTER);
         hl.setPreferredSize(new Dimension(40, 40));
 
-        m_priAssignmentsPanel = new AssignmentScrollPanel(m_AssignmentSubPaneRight, new GridLayout(0, 1, 5, 5), m_labelClickHandler, true);
+        m_priAssignmentsPanel = new AssignmentScrollPanel(m_AssignmentSubPaneRight, new FlowLayout(FlowLayout.LEFT, 5, 5), m_labelClickHandler, true);
         m_priAssignmentsPanel.setTransferHandler(m_assignmentLabelTransferHandler);
         hl = m_priAssignmentsPanel.getHeaderLabel();
         hl.setHorizontalAlignment(SwingConstants.CENTER);
@@ -322,7 +322,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
             assigments = unit.getExecutingAssigment();
             if (assigments.size() > 0)
             {
-                if (m_wpModule.confirmTransfer(assigments.get(0), IAssignmentIf.AssignmentStatus.FINISHED))
+                if (m_wpModule.confirmTransfer(assigments.get(0), IAssignmentIf.AssignmentStatus.FINISHED, null))
                 {
                     assigments.get(0).setStatusAndOwner(IAssignmentIf.AssignmentStatus.FINISHED, unit);
                 }
@@ -331,7 +331,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
                 assigments = unit.getAssignedAssignments();
                 if (assigments.size() > 0)
                 {
-                    if (m_wpModule.confirmTransfer(assigments.get(0), IAssignmentIf.AssignmentStatus.EXECUTING))
+                    if (m_wpModule.confirmTransfer(assigments.get(0), IAssignmentIf.AssignmentStatus.EXECUTING, null))
                     {
                         assigments.get(0).setStatusAndOwner(IAssignmentIf.AssignmentStatus.EXECUTING, unit);
                         assigments.get(0).setTimeStarted(Calendar.getInstance());
@@ -341,7 +341,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
                     assigments = unit.getAllocatedAssignments();
                     if (assigments.size() > 0)
                     {
-                        if (m_wpModule.confirmTransfer(assigments.get(0), IAssignmentIf.AssignmentStatus.ASSIGNED))
+                        if (m_wpModule.confirmTransfer(assigments.get(0), IAssignmentIf.AssignmentStatus.ASSIGNED, null))
                         {
                             assigments.get(0).setStatusAndOwner(IAssignmentIf.AssignmentStatus.ASSIGNED, unit);
                             assigments.get(0).setTimeAssigned(Calendar.getInstance());

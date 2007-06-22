@@ -602,7 +602,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
 
         if (newStatus == currentStatus && newUnit == currentUnit)
         {
-            return false;
+            return newStatus == AssignmentStatus.ALLOCATED;     // Can drop on the same in order to change priority
         }
 
         switch (currentStatus)

@@ -5,6 +5,7 @@ import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.gui.NavBar;
 import org.redcross.sar.mso.data.AssignmentImpl;
 import org.redcross.sar.mso.data.IAssignmentIf;
+import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
 
 import javax.swing.*;
@@ -49,7 +50,7 @@ public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDisk
         }
 
         m_logisticsPanel = new LogisticsPanel(this);
-        layoutComponent( m_logisticsPanel.getPanel());
+        layoutComponent(m_logisticsPanel.getPanel());
 
         //lp.getMapPanel().add((JComponent)super.getMap());
 
@@ -114,14 +115,38 @@ public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDisk
 
     private String[] options = null;
 
-    public boolean confirmTransfer(IAssignmentIf anAssignment, IAssignmentIf.AssignmentStatus aStatus)
+    public boolean confirmTransfer(IAssignmentIf anAssignment, IAssignmentIf.AssignmentStatus aTargetStatus, IUnitIf aTargetUnit)
     {
         if (options == null)
         {
             options = new String[]{getText("yes.text"), "Nei"};
         }
+        IUnitIf owningUnit = anAssignment.getOwningUnit();
+        IAssignmentIf.AssignmentStatus sourceStatus = anAssignment.getStatus();
+
+        String question;
+        if (owningUnit == aTargetUnit)
+        {
+            if (aTargetStatus == IAssignmentIf.AssignmentStatus.ALLOCATED && sourceStatus == aTargetStatus)
+            {
+                question = "confirm_assignmentTransfer_q4.text";
+            } else
+            {
+                question = "confirm_assignmentTransfer_q3.text";
+            }
+        } else if (aTargetUnit != null)
+        {
+            question = "confirm_assignmentTransfer_q2.text";
+        } else
+        {
+            question = "confirm_assignmentTransfer_q1.text";
+        }
+
+        String unitNumber = aTargetUnit != null ? aTargetUnit.getUnitNumber() : "";
+        question = getText(question);
+
         int n = JOptionPane.showOptionDialog(m_logisticsPanel.getPanel(),
-                MessageFormat.format(getText("confirm_assignmentTransfer.text"), anAssignment.getNumber(), AssignmentImpl.getEnumText(aStatus)),
+                MessageFormat.format(question, anAssignment.getNumber(), AssignmentImpl.getEnumText(aTargetStatus),unitNumber),
                 getText("confirm_assignmentTransfer_title.text"),
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE,

@@ -24,6 +24,6 @@ public class AssignmentTransferMessageCreator
         IMsoManagerIf manager = aWpModule.getMsoManager();
         IMessageIf message = manager.createMessage();
         message.setCreated(Calendar.getInstance());
-
+//System.out.println(MessageFormat.format("{0} transferred to status {1} and unit {2} at {3}.",anAssignment.getNumber(),anAssignment.getStatus(),aUnit,message.getCreated())) ;
     }
 }

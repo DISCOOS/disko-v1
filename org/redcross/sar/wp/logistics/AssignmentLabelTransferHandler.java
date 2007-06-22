@@ -43,44 +43,49 @@ public class AssignmentLabelTransferHandler extends TransferHandler
 
         if (canImport(trs))
         {
+
+            IAssignmentIf transferredAssignment = getTransferredAssignment(trs);
+            IUnitIf sourceUnit = transferredAssignment.getOwningUnit();
+            IAssignmentIf.AssignmentStatus sourceStatus = transferredAssignment.getStatus();
+
+            IUnitIf targetUnit = null;
+            IAssignmentIf.AssignmentStatus targetStatus = IAssignmentIf.AssignmentStatus.EMPTY;
+
             if (m_targetComponent instanceof AssignmentScrollPanel)
             {
                 AssignmentScrollPanel panel = (AssignmentScrollPanel) m_targetComponent;
-                IAssignmentIf transferredAssignment = getTransferredAssignment(trs);
+                targetUnit = panel.getSelectedUnit();
+                targetStatus = panel.getSelectedStatus();
+            }
 
-                if (m_wpModule.confirmTransfer(transferredAssignment, panel.getSelectedStatus()))
+            if (m_wpModule.confirmTransfer(transferredAssignment, targetStatus, targetUnit))
+            {
+                boolean transferOk = false;
+                if (m_targetLabel != null && targetStatus == IAssignmentIf.AssignmentStatus.ALLOCATED)
                 {
-                    boolean transferOk = false;
-                    IUnitIf transferUnit= null;
-                    if (m_targetLabel != null && panel.getSelectedStatus() == IAssignmentIf.AssignmentStatus.ALLOCATED)
+                    transferOk = targetUnit.addAllocatedAssignment(transferredAssignment, m_targetLabel.getAssignment());
+                } else
+                {
+                    try
                     {
-                        transferOk = panel.getSelectedUnit().addAllocatedAssignment(transferredAssignment, m_targetLabel.getAssignment());
-                        transferUnit = panel.getSelectedUnit();
-                    } else
-                    {
-                        try
-                        {
-                            transferredAssignment.setStatusAndOwner(panel.getSelectedStatus(), panel.getSelectedUnit());
-                            transferOk = true;
-                        }
-                        catch (IllegalOperationException e)
-                        {
-                        }
+                        transferredAssignment.setStatusAndOwner(targetStatus, targetUnit);
+                        transferOk = true;
                     }
-
-                    if (transferOk)
+                    catch (IllegalOperationException e)
                     {
-                        AssignmentTransferMessageCreator.createMessage(m_wpModule, transferUnit, transferredAssignment);
-//                        m_wpModule.getMsoManager(). // todo add MessageLog update
-                        m_wpModule.getMsoModel().commit();
-                        return true;
-                    }
-                    else
-                    {
-                        m_wpModule.showTransferWarning();
                     }
                 }
+                if (transferOk)
+                {
+                    AssignmentTransferMessageCreator.createMessage(m_wpModule, targetUnit, transferredAssignment);
+                    m_wpModule.getMsoModel().commit();
+                    return true;
+                } else
+                {
+                    m_wpModule.showTransferWarning();
+                }
             }
+
         }
         return false;
     }
@@ -152,8 +157,6 @@ public class AssignmentLabelTransferHandler extends TransferHandler
                 m_targetComponent = parent;
             }
         }
-
-        // todo legg inn logikk for å håndtere omprioriteringer
 
         if (m_targetComponent instanceof AssignmentScrollPanel)
         {

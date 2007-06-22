@@ -96,7 +96,7 @@ public class DiskoScrollPanel extends JPanel implements Scrollable
         int rows = ((m_childrenComponents.size() - 1) / cols) + 1;
 
         int newHeight = rows * (m_childDimension.height + m_vgap);
-//        newHeight = Math.max(newHeight, getParent().getHeight());
+        newHeight = Math.max(newHeight, getParent().getHeight());
         if (newHeight != myDimension.height)
         {
             myDimension.height = newHeight;

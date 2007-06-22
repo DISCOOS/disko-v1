@@ -33,18 +33,19 @@ public class DTAssignmentLabel extends AssignmentLabel implements MouseMotionLis
     {
         setEnabled(true);
         addMouseMotionListener(this);
-        setTransferHandler(aTransferHandler);
 
-//        //Add the cut/copy/paste actions to the action map.
-//        //This step is necessary because the menu's action listener
-//        //looks for these actions to fire.
-//        ActionMap map = this.getActionMap();
-//        map.put(TransferHandler.getCutAction().getValue(Action.NAME),
-//                TransferHandler.getCutAction());
-//        map.put(TransferHandler.getCopyAction().getValue(Action.NAME),
-//                TransferHandler.getCopyAction());
-//        map.put(TransferHandler.getPasteAction().getValue(Action.NAME),
-//                TransferHandler.getPasteAction());
+        //Add the cut/copy/paste actions to the action map.
+        //This step is necessary because the menu's action listener
+        //looks for these actions to fire.
+        ActionMap map = this.getActionMap();
+        map.put(TransferHandler.getCutAction().getValue(Action.NAME),
+                TransferHandler.getCutAction());
+        map.put(TransferHandler.getCopyAction().getValue(Action.NAME),
+                TransferHandler.getCopyAction());
+        map.put(TransferHandler.getPasteAction().getValue(Action.NAME),
+                TransferHandler.getPasteAction());
+
+        setTransferHandler(aTransferHandler);
     }
 
 
