@@ -1,16 +1,18 @@
 package org.redcross.sar.wp.logistics;
 
+
+import org.redcross.sar.app.Utils;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.util.AbstractList;
 
 /**
  *
  */
 public class LogisticsInfoPanel extends JPanel
 {
-    private final static Dimension m_buttonDimension = new Dimension(50, 50);
+    private final static Dimension m_buttonDimension = new Dimension(60, 60);
     private JPanel m_topInfoPanel;
     private ScrollInfoPanel m_centerScrollPanel;
     private JPanel m_lowButtonPanel;
@@ -84,7 +86,6 @@ public class LogisticsInfoPanel extends JPanel
         GridBagLayout gridbag = new GridBagLayout();
         GridBagConstraints c = new GridBagConstraints();
         m_centerScrollPanel.setLayout(gridbag);
-//        m_centerScrollPanel.setBackground(Color.WHITE);
 
         c.fill = GridBagConstraints.BOTH;
         c.weightx = 1.0;
@@ -97,7 +98,7 @@ public class LogisticsInfoPanel extends JPanel
         for (int i = 0; i < centerPanelPartCount; i++)
         {
             InternalInfoPanel ip = new InternalInfoPanel("P" + i, true);
-            ip.setText("T" + i);
+            ip.setText(" ");
             m_centerScrollPanel.add(ip, c);
             m_centerPanelElements[i] = ip;
             c.gridy++;
@@ -151,7 +152,15 @@ public class LogisticsInfoPanel extends JPanel
         }
     }
 
-    void setCenterText(int aFieldIndex, String[] theTexts)
+    void setCenterText(int aFieldIndex, String aTexts)
+    {
+        if (aFieldIndex >= 0 && aFieldIndex < m_centerPanelElements.length)
+        {
+            m_centerPanelElements[aFieldIndex].setText(aTexts);
+        }
+    }
+
+    void setCenterText(int aFieldIndex, Iterable<String> theTexts)
     {
         if (aFieldIndex >= 0 && aFieldIndex < m_centerPanelElements.length)
         {
@@ -161,7 +170,7 @@ public class LogisticsInfoPanel extends JPanel
 
     void setButtonVisible(int aButtonIndex, boolean aFlag)
     {
-        if (aButtonIndex>= 0 && aButtonIndex < m_lowPanelButtons.length)
+        if (aButtonIndex >= 0 && aButtonIndex < m_lowPanelButtons.length)
         {
             m_lowPanelButtons[aButtonIndex].setVisible(aFlag);
         }
@@ -169,7 +178,7 @@ public class LogisticsInfoPanel extends JPanel
 
     void setButtonEnabled(int aButtonIndex, boolean aFlag)
     {
-        if (aButtonIndex>= 0 && aButtonIndex < m_lowPanelButtons.length)
+        if (aButtonIndex >= 0 && aButtonIndex < m_lowPanelButtons.length)
         {
             m_lowPanelButtons[aButtonIndex].setEnabled(aFlag);
         }
@@ -182,7 +191,30 @@ public class LogisticsInfoPanel extends JPanel
         {
             if (i < theButtonTexts.length)
             {
-                b.setText(theButtonTexts[i]);
+                String buttonText = theButtonTexts[i].toLowerCase();
+                boolean iconSet = false;
+                if (buttonText.endsWith(".gif") || buttonText.endsWith(".png"))
+                {
+                    try
+                    {
+                        ImageIcon icon = Utils.createImageIcon(buttonText, null);
+                        if (icon != null)
+                        {
+                            b.setIcon(icon);
+                            b.setText(null);
+                            iconSet = true;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                    }
+
+                }
+                if (!iconSet)
+                {
+                    b.setText(buttonText);
+                    b.setIcon(null);
+                }
                 b.setVisible(true);
                 b.setEnabled(true);
             }
@@ -252,7 +284,7 @@ public class LogisticsInfoPanel extends JPanel
 
         public void setHeader(String aHeader)
         {
-            m_headerText = aHeader.toUpperCase();
+            m_headerText = aHeader;
             if (m_hasTextField)
             {
                 m_headerLabel.setText(m_headerText);
@@ -262,28 +294,7 @@ public class LogisticsInfoPanel extends JPanel
             }
         }
 
-        public void setText(AbstractList<String> theLines)
-        {
-            int charCount = 0;
-            for (String s : theLines)
-            {
-                charCount += s.length() + lineSeparator.length();
-            }
-            StringBuilder sb = new StringBuilder(charCount);
-            int i = 0;
-            for (String s : theLines)
-            {
-                sb.append(s);
-                i++;
-                if (i < s.length())
-                {
-                    sb.append(lineSeparator);
-                }
-            }
-            setText(sb.toString());
-        }
-
-        public void setText(String[] theLines)
+        public void setText(Iterable<String> theLines)
         {
             int charCount = 0;
             for (String s : theLines)

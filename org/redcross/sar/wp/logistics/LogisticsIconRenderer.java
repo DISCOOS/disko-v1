@@ -1,6 +1,10 @@
 package org.redcross.sar.wp.logistics;
 
+import org.redcross.sar.gui.DiskoBorder;
+import org.redcross.sar.gui.renderers.IconRenderer;
+
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
@@ -11,12 +15,15 @@ import java.awt.*;
 public class LogisticsIconRenderer extends JLabel implements TableCellRenderer
 {
 
+    private final static Border firstCellBorder = new DiskoBorder(2, 8, true, true, true, false);
+    private final static Border middleCellBorder = new DiskoBorder(2, 8, true, false, true, false);
+    private final static Border lastCellBorder = new DiskoBorder(2, 8, true, false, true, true);
 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
     {
-        if (value instanceof LogisticsIcon)
+        if (value instanceof IconRenderer)
         {
-            LogisticsIcon iconValue = (LogisticsIcon) value;
+            IconRenderer iconValue = (IconRenderer) value;
 //            Container p = table.getParent();
 //            if (p != null)
 //            {
@@ -48,13 +55,13 @@ public class LogisticsIconRenderer extends JLabel implements TableCellRenderer
         }
         if (column == 0)
         {
-            setBorder(BorderFactory.createMatteBorder(2, 2, 2, 0, Color.BLACK));
+            setBorder(firstCellBorder);
         } else if (column == table.getColumnCount() - 1)
         {
-            setBorder(BorderFactory.createMatteBorder(2, 0, 2, 2, Color.BLACK));
+            setBorder(lastCellBorder);
         } else
         {
-            setBorder(BorderFactory.createMatteBorder(2, 0, 2, 0, Color.BLACK));
+            setBorder(middleCellBorder);
         }
         setHorizontalAlignment(SwingConstants.CENTER);
         return this;

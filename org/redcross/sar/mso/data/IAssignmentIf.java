@@ -59,6 +59,8 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
 
     public IAttributeIf.IMsoEnumIf<AssignmentStatus> getStatusAttribute();
 
+    public String getStatusText();
+
     public void setPriority(AssignmentPriority aPriority);
 
     public void setPriority(String aPriority);
@@ -67,6 +69,8 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
 
     public IMsoModelIf.ModificationState getPriorityState();
 
+    public String getPriorityText();
+
     public IAttributeIf.IMsoEnumIf<AssignmentPriority> getPriorityAttribute();
 
     public AssignmentType getType();
@@ -74,6 +78,8 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
     public IMsoModelIf.ModificationState getTypeState();
 
     public IAttributeIf.IMsoEnumIf<AssignmentType> getTypeAttribute();
+
+    public String getTypeText();
 
     /*-------------------------------------------------------------------------------------------
     * Methods for attributes

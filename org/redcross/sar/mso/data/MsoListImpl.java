@@ -4,7 +4,6 @@ import org.redcross.sar.mso.CommitManager;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.mso.committer.CommittableImpl;
-import org.redcross.sar.util.except.MsoException;
 import org.redcross.sar.util.except.DuplicateIdException;
 import org.redcross.sar.util.mso.Selector;
 

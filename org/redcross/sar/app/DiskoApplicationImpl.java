@@ -18,7 +18,7 @@ import java.util.Hashtable;
 import java.util.Properties;
 
 /**
- * Implements the DiskoApplication interface. This class is responsible for connecting to the 
+ * Implements the DiskoApplication interface. This class is responsible for connecting to the
  * ArcGIS Engine API and the DiskoModule API.
  *
  */
@@ -48,9 +48,6 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
         com.esri.arcgis.system.EngineInitializer.initializeVisualBeans();
         initLookAndFeel();
 
-        UIDefaults uid = UIManager.getDefaults();
-        System.out.println(uid.toString());
-
         // TODO Auto-generated method stub
         SwingUtilities.invokeLater(new Runnable()
         {
@@ -69,6 +66,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
 
     private final static int MediumSize = 14;
     private final static int LargeSize = 16;
+
     private final static Font DEFAULT_PLAIN_MEDIUM_FONT = new Font(DefaultFont,Font.PLAIN,MediumSize);
     //private final static Font DEFAULT_BOLD_MEDIUM_FONT = new Font(DefaultFont,Font.BOLD,MediumSize);
     private final static Font DEFAULT_PLAIN_LARGE_FONT = new Font(DefaultFont,Font.PLAIN,LargeSize);
@@ -98,7 +96,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
             UIManager.put("Menu.font",DEFAULT_PLAIN_MEDIUM_FONT);
             UIManager.put("MenuBar.font",DEFAULT_PLAIN_MEDIUM_FONT);
             UIManager.put("MenuItem.acceleratorFont",DEFAULT_PLAIN_MEDIUM_FONT);
-            UIManager.put("MenuItem.font",DEFAULT_PLAIN_MEDIUM_FONT);
+            UIManager.put("MenuItem.font",DEFAULT_PLAIN_LARGE_FONT);
             UIManager.put("OptionPane.buttonFont",DEFAULT_PLAIN_MEDIUM_FONT);
             UIManager.put("OptionPane.font",DEFAULT_PLAIN_MEDIUM_FONT);
             UIManager.put("OptionPane.messageFont",DEFAULT_PLAIN_MEDIUM_FONT);

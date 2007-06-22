@@ -4,10 +4,8 @@ import org.redcross.sar.mso.committer.ICommitWrapperIf;
 import org.redcross.sar.mso.data.IAttributeIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Vector;
 import java.util.Collection;
+import java.util.Vector;
 
 /**
  * Class for managing MsoUpdateEvents.
@@ -90,7 +88,15 @@ public class MsoEventManagerImpl implements IMsoEventManagerIf
         {
             if (listener.hasInterestIn(aSource))
             {
-                listener.handleMsoUpdateEvent(event);
+                try
+                {
+                    listener.handleMsoUpdateEvent(event);
+                }
+                catch (Exception e)
+                {
+                    System.out.println("Exception in fireUpdate, listener: " + listener.toString());
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -104,7 +110,15 @@ public class MsoEventManagerImpl implements IMsoEventManagerIf
         MsoEvent.Commit event = new MsoEvent.Commit(aSource, anEventTypeMask);
         for (IMsoCommitListenerIf listener : theListeners)
         {
-            listener.handleMsoCommitEvent(event);
+            try
+            {
+                listener.handleMsoCommitEvent(event);
+            }
+            catch (Exception e)
+            {
+                System.out.println("Exception in fireCommit, listener: " + listener.toString());
+                e.printStackTrace();
+            }
         }
     }
 
@@ -127,7 +141,15 @@ public class MsoEventManagerImpl implements IMsoEventManagerIf
         MsoEvent.Gis event = new MsoEvent.Gis(aSource);
         for (IMsoGisListenerIf listener : m_gisListeners)
         {
-            listener.handleMsoGisEvent(event);
+            try
+            {
+                listener.handleMsoGisEvent(event);
+            }
+            catch (Exception e)
+            {
+                System.out.println("Exception in notifyGisUpdate, listener: " + listener.toString());
+                e.printStackTrace();
+            }
         }
     }
 
@@ -150,7 +172,15 @@ public class MsoEventManagerImpl implements IMsoEventManagerIf
         MsoEvent.DerivedUpdate event = new MsoEvent.DerivedUpdate(aSource, anEventTypeMask);
         for (IMsoDerivedUpdateListenerIf listener : m_derivedUpdateListeners)
         {
-            listener.handleMsoDerivedUpdateEvent(event);
+            try
+            {
+                listener.handleMsoDerivedUpdateEvent(event);
+            }
+            catch (Exception e)
+            {
+                System.out.println("Exception in notifyDerivedUpdate, listener: " + listener.toString());
+                e.printStackTrace();
+            }
         }
     }
 

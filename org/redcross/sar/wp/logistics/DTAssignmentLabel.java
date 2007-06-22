@@ -4,6 +4,7 @@ package org.redcross.sar.wp.logistics;
  */
 
 
+import org.redcross.sar.gui.renderers.IconRenderer;
 import org.redcross.sar.mso.data.IAssignmentIf;
 
 import javax.swing.*;
@@ -16,7 +17,7 @@ public class DTAssignmentLabel extends AssignmentLabel implements MouseMotionLis
 {
     private MouseEvent firstMouseEvent = null;
 
-    public DTAssignmentLabel(LogisticsIcon.AssignmentIcon anIcon, AssignmentLabelClickHandler aClickHandler, TransferHandler aTransferHandler)
+    public DTAssignmentLabel(IconRenderer.AssignmentIcon anIcon, AssignmentLabelClickHandler aClickHandler, TransferHandler aTransferHandler)
     {
         super(anIcon, aClickHandler);
         initLabel(aTransferHandler);

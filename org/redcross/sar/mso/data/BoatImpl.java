@@ -73,11 +73,6 @@ public class BoatImpl extends AbstractTransportUnit implements IBoatIf
         return IUnitIf.UnitType.BOAT;
     }
 
-    protected char getUnitNumberPrefix()
-    {
-        return 'B';
-    }
-
     public static BoatImpl implementationOf(IBoatIf anInterface) throws MsoCastException
     {
         try

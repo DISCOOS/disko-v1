@@ -42,7 +42,7 @@ public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf, ISerialNu
 
     public IAttributeIf.IMsoEnumIf<UnitType> getTypeAttribute();
 
-    public String getCompleteTypeName();
+    public String getTypeText();
 
     public void setStatus(UnitStatus aStatus);
 
@@ -54,11 +54,15 @@ public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf, ISerialNu
 
     public IAttributeIf.IMsoEnumIf<UnitStatus> getStatusAttribute();
 
+    public String getStatusText();
+
     /*-------------------------------------------------------------------------------------------
     * Methods for attributes
     *-------------------------------------------------------------------------------------------*/
 
     public String getUnitNumber();
+
+    public char getUnitNumberPrefix();
 
     public void setAverageSpeed(int anAverageSpeed);
 
@@ -178,7 +182,7 @@ public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf, ISerialNu
     /**
      * Add an allocated assignment to the unit at a given place in the list
      * @param newAssignment The assignment to add
-     * @param beforeAssignment Place the new assignment before this, if null, place to the end.  
+     * @param beforeAssignment Place the new assignment before this, if null, place to the end.
      * @return <code>false</code> if an error ({@link org.redcross.sar.util.except.IllegalOperationException}) occured, <code>true</code> otherwise.
      */
     public boolean addAllocatedAssignment(IAssignmentIf newAssignment, IAssignmentIf beforeAssignment);

@@ -4,9 +4,12 @@ import org.redcross.sar.mso.data.*;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent;
-import org.redcross.sar.util.except.*;
-import org.redcross.sar.util.except.MsoException;
-import org.redcross.sar.util.mso.*;
+import org.redcross.sar.util.except.DuplicateIdException;
+import org.redcross.sar.util.except.IllegalMsoArgumentException;
+import org.redcross.sar.util.except.MsoNullPointerException;
+import org.redcross.sar.util.mso.Position;
+import org.redcross.sar.util.mso.Route;
+import org.redcross.sar.util.mso.Track;
 
 import java.util.Calendar;
 
@@ -312,8 +315,17 @@ public class MsoManagerImpl implements IMsoManagerIf
 
     public IIntelligenceIf createIntelligence(IMsoObjectIf.IObjectIdIf anObjectId)
     {
-        return getExistingCmdPost().getIntelligenceList().createIntelligence(
-                anObjectId);
+        return getExistingCmdPost().getIntelligenceList().createIntelligence(anObjectId);
+    }
+
+    public IMessageIf createMessage()
+    {
+        return getExistingCmdPost().getMessageLog().createMessage();
+    }
+
+    public IMessageIf createMessage(IMsoObjectIf.IObjectIdIf anObjectId)
+    {
+        return getExistingCmdPost().getMessageLog().createMessage(anObjectId);
     }
 
     public IOperationAreaIf createOperationArea()

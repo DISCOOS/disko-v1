@@ -9,6 +9,7 @@ import org.redcross.sar.util.mso.Position;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  * Search or rescue unit.
@@ -33,6 +34,29 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
     private final MsoReferenceImpl<IHierarchicalUnitIf> m_superiorUnit = new MsoReferenceImpl<IHierarchicalUnitIf>(this, "SuperiorUnit", false);
     private final MsoReferenceImpl<IPersonnelIf> m_unitLeader = new MsoReferenceImpl<IPersonnelIf>(this, "UnitLeader", true);
 
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Unit");
+
+    public static String getText(String aKey)
+    {
+        return AbstractMsoObject.getBundleText(bundle, aKey);
+    }
+
+    public static String getEnumText(Enum anEnum)
+    {
+        return getText(anEnum.getClass().getSimpleName() + "." + anEnum.name() + ".text");
+    }
+
+    public static char getEnumLetter(Enum anEnum)
+    {
+        String letter = getText(anEnum.getClass().getSimpleName() + "." + anEnum.name() + ".letter");
+        if (letter.length() > 0)
+        {
+            return letter.charAt(0);
+        } else
+        {
+            return '?';
+        }
+    }
 
     public AbstractUnit(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
     {
@@ -102,7 +126,10 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
 
     protected abstract UnitType getTypeBySubclass();
 
-    protected abstract char getUnitNumberPrefix();
+    public char getUnitNumberPrefix()
+    {
+        return getEnumLetter(getType());
+    }
 
     /**
      * Local implementation of {@link AbstractMsoObject#registerModifiedData()}
@@ -146,9 +173,9 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
         return getType().name();
     }
 
-    public String getCompleteTypeName()
+    public String getTypeText()
     {
-        return getTypeName() + "_" + getSubTypeName();
+        return getEnumText(getType());
     }
 
     public abstract String getSubTypeName();
@@ -176,6 +203,11 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
     public IAttributeIf.IMsoEnumIf<UnitStatus> getStatusAttribute()
     {
         return m_status;
+    }
+
+    public String getStatusText()
+    {
+        return getEnumText(getStatus());
     }
 
     /*-------------------------------------------------------------------------------------------

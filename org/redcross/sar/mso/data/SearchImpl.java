@@ -25,6 +25,11 @@ public class SearchImpl extends AssignmentImpl implements ISearchIf
 
     private final AttributeImpl.MsoEnum<SearchSubType> m_subType = new AttributeImpl.MsoEnum<SearchSubType>(this,"SubType", SearchSubType.LINE);
 
+    public static String getSubTypeText(ISearchIf.SearchSubType aType)
+    {
+        return getText("SearchSubType." + aType.name() + ".text");
+    }
+
     public SearchImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
     {
         super(anObjectId, aNumber);
@@ -381,5 +386,13 @@ public class SearchImpl extends AssignmentImpl implements ISearchIf
     {
         return 2;
     }
+
+    @Override
+    public String getTypeText()
+    {
+        return getSubTypeText(getSubType());
+    }
+
+
 
 }

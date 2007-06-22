@@ -43,16 +43,11 @@ public class TeamImpl extends AbstractUnit implements ITeamIf
         return IUnitIf.UnitType.TEAM;
     }
 
-    protected char getUnitNumberPrefix()
-    {
-        return 'L';
-    }
-
     public String getSubTypeName()
     {
         return "CAR"; // todo expand
     }
-    
+
     public String toString()
     {
         return super.toString();

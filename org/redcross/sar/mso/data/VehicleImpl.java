@@ -47,11 +47,6 @@ public class VehicleImpl extends AbstractTransportUnit implements IVehicleIf
         return IUnitIf.UnitType.VEHICLE;
     }
 
-    protected char getUnitNumberPrefix()
-    {
-        return 'K';
-    }
-
     public String getSubTypeName()
     {
         return "CAR"; // todo expand

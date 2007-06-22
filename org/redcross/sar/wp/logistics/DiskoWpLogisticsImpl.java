@@ -1,15 +1,17 @@
 package org.redcross.sar.wp.logistics;
 
+import com.esri.arcgis.interop.AutomationException;
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.gui.NavBar;
+import org.redcross.sar.mso.data.AssignmentImpl;
+import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
 
-import com.esri.arcgis.interop.AutomationException;
-
 import javax.swing.*;
-
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.EnumSet;
+import java.util.ResourceBundle;
 /**
  * Created by IntelliJ IDEA.
  * User: vinjar
@@ -20,20 +22,44 @@ import java.util.EnumSet;
 /**
  *
  */
-public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDiskoWpLogistics {
+public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDiskoWpLogistics
+{
+    LogisticsPanel m_logisticsPanel;
 
-    public DiskoWpLogisticsImpl(IDiskoRole role) {
+    public DiskoWpLogisticsImpl(IDiskoRole role)
+    {
         super(role);
         initialize();
     }
 
-    private void initialize() {
+    private void initialize()
+    {
         loadProperties("properties");
-        JPanel lPanel = new LogisticsPanel(this).getPanel();
-        layoutComponent(lPanel);
+
+        try
+        {
+            wpBundle = ResourceBundle.getBundle("org.redcross.sar.wp.logistics.logistics");
+            System.out.println(wpBundle);
+        }
+        catch (java.util.MissingResourceException e)
+        {
+            System.out.println("Classname " + e.getClassName());
+            System.out.println("Key " + e.getKey());
+            e.printStackTrace();
+        }
+
+        m_logisticsPanel = new LogisticsPanel(this);
+        layoutComponent( m_logisticsPanel.getPanel());
+
+        //lp.getMapPanel().add((JComponent)super.getMap());
+
+//        DiskoMap map = getMap();
+//        map.setIsEditable(true);
+//        layoutComponent(map);
     }
 
-    public void activated() {
+    public void activated()
+    {
         super.activated();
         NavBar navBar = getApplication().getNavBar();
         EnumSet<NavBar.ToolCommandType> myInterests =
@@ -45,36 +71,68 @@ public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDisk
         myInterests.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND);
         myInterests.add(NavBar.ToolCommandType.MAP_TOGGLE_COMMAND);
         navBar.showButtons(myInterests);
-        try {
-			getMap().partialRefresh(null);
-		} catch (AutomationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        try
+        {
+            getMap().partialRefresh(null);
+        }
+        catch (AutomationException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     /* (non-Javadoc)
     * @see com.geodata.engine.disko.task.DiskoAp#getName()
     */
-    public String getName() {
+    public String getName()
+    {
         return "Logistikk";
     }
 
     /* (non-Javadoc)
      * @see com.geodata.engine.disko.task.DiskoAp#cancel()
      */
-    public void cancel() {
+    public void cancel()
+    {
         // TODO Auto-generated method stub
     }
 
     /* (non-Javadoc)
      * @see com.geodata.engine.disko.task.DiskoAp#finish()
      */
-    public void finish() {
+    public void finish()
+    {
         // TODO Auto-generated method stub
+    }
+
+
+    private String[] options = null;
+
+    public boolean confirmTransfer(IAssignmentIf anAssignment, IAssignmentIf.AssignmentStatus aStatus)
+    {
+        if (options == null)
+        {
+            options = new String[]{getText("yes.text"), "Nei"};
+        }
+        int n = JOptionPane.showOptionDialog(m_logisticsPanel.getPanel(),
+                MessageFormat.format(getText("confirm_assignmentTransfer.text"), anAssignment.getNumber(), AssignmentImpl.getEnumText(aStatus)),
+                getText("confirm_assignmentTransfer_title.text"),
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null, options, options[0]);
+        System.out.println(n);
+        return n == 0;
+    }
+
+    public void showTransferWarning()
+    {
+        showWarning(getText("transfer_warning.text"));
     }
 
 }

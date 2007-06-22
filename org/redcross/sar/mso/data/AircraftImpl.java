@@ -71,11 +71,6 @@ public class AircraftImpl extends AbstractTransportUnit implements IAircraftIf
         return IUnitIf.UnitType.AIRCRAFT;
     }
 
-    protected char getUnitNumberPrefix()
-    {
-        return 'F';
-    }
-
     /*-------------------------------------------------------------------------------------------
     * Methods for ENUM attributes
     *-------------------------------------------------------------------------------------------*/

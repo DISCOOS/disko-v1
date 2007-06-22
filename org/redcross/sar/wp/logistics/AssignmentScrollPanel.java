@@ -1,5 +1,7 @@
 package org.redcross.sar.wp.logistics;
 
+import org.redcross.sar.gui.DiskoScrollPanel;
+import org.redcross.sar.gui.renderers.IconRenderer;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IUnitIf;
 
@@ -36,7 +38,7 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
     /**
      * Pool of icons
      */
-    private final Vector<LogisticsIcon.AssignmentIcon> m_icons = new Vector<LogisticsIcon.AssignmentIcon>();
+    private final Vector<IconRenderer.AssignmentIcon> m_icons = new Vector<IconRenderer.AssignmentIcon>();
 
     /**
      * Pool of labels
@@ -249,7 +251,7 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
         int firstIndex = Math.max(m_minIndex, 0);
         int lastIndex = m_maxIndex < 0 ? m_assignmentList.size() - 1 : Math.min(m_assignmentList.size() - 1, m_maxIndex);
         int iv = 0;
-        LogisticsIcon.AssignmentIcon icon;
+        IconRenderer.AssignmentIcon icon;
 
         for (int i = firstIndex; i <= lastIndex; i++)
         {
@@ -259,7 +261,7 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
             {
                 if (m_icons.size() == iv)
                 {
-                    icon = new LogisticsIcon.AssignmentIcon(asg, m_selected.contains(asg));
+                    icon = new IconRenderer.AssignmentIcon(asg, m_selected.contains(asg), null);
                     m_icons.ensureCapacity(lastIndex - firstIndex + 1);
                     m_icons.add(icon);
                 } else
@@ -300,6 +302,6 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
      */
     public int getMaxNonscrollItems()
     {
-        return super.getMaxNonscrollItems(LogisticsIcon.AssignmentIcon.getIconSize());
+        return super.getMaxNonscrollItems(IconRenderer.AssignmentIcon.getIconSize());
     }
 }

@@ -1,4 +1,4 @@
-package org.redcross.sar.wp.logistics;
+package org.redcross.sar.gui;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;

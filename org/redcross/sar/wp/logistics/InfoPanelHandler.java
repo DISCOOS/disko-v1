@@ -1,24 +1,25 @@
 package org.redcross.sar.wp.logistics;
 
+import com.esri.arcgis.interop.AutomationException;
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
+import org.redcross.sar.mso.data.IPersonnelIf;
 import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent;
-import org.redcross.sar.wp.AbstractDiskoWpModule;
 import org.redcross.sar.wp.IDiskoWpModule;
-
-import com.esri.arcgis.interop.AutomationException;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.EnumSet;
+import java.util.Vector;
 
 /**
  *
@@ -36,7 +37,7 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
     private static final String UNIT_PRINT = "UnitPrint";
     private static final String UNIT_CHANGE = "UnitChange";
 
-    private AbstractDiskoWpModule aWpModule;
+    private DiskoWpLogisticsImpl m_wpModule;
     private JPanel m_infoPanel;
     private LogisticsInfoPanel m_unitInfoPanel;
     private LogisticsInfoPanel m_assignmentInfoPanel;
@@ -52,13 +53,13 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
 
     private final AssignmentLabel.AssignmentLabelClickHandler m_assignmentLabelMouseListener;
 
-    public InfoPanelHandler(JPanel anInfoPanel, AbstractDiskoWpModule aWpModule, AssignmentLabel.AssignmentLabelClickHandler aClickHandler)
+    public InfoPanelHandler(JPanel anInfoPanel, DiskoWpLogisticsImpl aWpModule, AssignmentLabel.AssignmentLabelClickHandler aClickHandler)
     {
         m_infoPanel = anInfoPanel;
         m_assignmentLabelMouseListener = aClickHandler;
-        this.aWpModule = aWpModule;
+        m_wpModule = aWpModule;
 
-        m_infoPanel.add(new JPanel(),EMPTY_PANEL_NAME);
+        m_infoPanel.add(new JPanel(), EMPTY_PANEL_NAME);
 
         initUnitInfoPanel();
         initAssignmentInfoPanel();
@@ -93,28 +94,43 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
 
     private void initUnitInfoPanel()
     {
-        m_unitInfoPanel = new LogisticsInfoPanel(5, 2, 2);
+        m_unitInfoPanel = new LogisticsInfoPanel(4, 2, 2);
         m_infoPanel.add(m_unitInfoPanel, UNIT_PANEL_NAME);
-        m_unitInfoPanel.setHeaders(new String[]{"Enhet", "5-tone", "", "Oppdrag", "Innsatstid", "Leder", "Medlemmer"});
-        m_unitInfoPanel.setButtons(new String[]{"ENDRE", "SKRIV UT"}, new String[]{UNIT_CHANGE, UNIT_PRINT}, this);
+        m_unitInfoPanel.setHeaders(new String[]{m_wpModule.getText("UnitInfoPanel_hdr_0.text"),
+                m_wpModule.getText("UnitInfoPanel_hdr_1.text"),
+                m_wpModule.getText("UnitInfoPanel_hdr_2.text"),
+                m_wpModule.getText("UnitInfoPanel_hdr_3.text"),
+                m_wpModule.getText("UnitInfoPanel_hdr_4.text"),
+                m_wpModule.getText("UnitInfoPanel_hdr_5.text")});
+
+        m_unitInfoPanel.setButtons(new String[]{"icons/60x60/change.gif",          // todo Internationalize
+                "icons/60x60/print.gif"}, new String[]{UNIT_CHANGE, UNIT_PRINT}, this);
     }
 
     private void initAssignmentInfoPanel()
     {
         m_assignmentInfoPanel = new LogisticsInfoPanel(5, 1, 4);
         m_infoPanel.add(m_assignmentInfoPanel, ASSIGNMENT_PANEL_NAME);
-        m_assignmentInfoPanel.setHeaders(new String[]{"Oppdrag", "Type", "Enhet", "Prioritet", "Innsatstid", "Fritekst"});
-        m_assignmentInfoPanel.setButtons(new String[]{"ENDRE", "SKRIV UT", "RESULTAT", "TILBAKE"}, new String[]{ASG_CHANGE, ASG_PRINT, ASG_RESULT, ASG_RETURN}, this);
+        m_assignmentInfoPanel.setHeaders(new String[]{m_wpModule.getText("AsgInfoPanel_hdr_0.text"),
+                m_wpModule.getText("AsgInfoPanel_hdr_1.text"),
+                m_wpModule.getText("AsgInfoPanel_hdr_2.text"),
+                m_wpModule.getText("AsgInfoPanel_hdr_3.text"),
+                m_wpModule.getText("AsgInfoPanel_hdr_4.text"),
+                m_wpModule.getText("AsgInfoPanel_hdr_5.text")});
+        m_assignmentInfoPanel.setButtons(new String[]{"icons/60x60/change.gif",          // todo Internationalize
+                "icons/60x60/print.gif",
+                "icons/60x60/result.gif",
+                "icons/60x60/back.gif"}, new String[]{ASG_CHANGE, ASG_PRINT, ASG_RESULT, ASG_RETURN}, this);
     }
 
     private void initAssignmentListPanel()
     {
         // Build up a scrollpane with room for assignment labels.
         JScrollPane scrollpane = new JScrollPane();
-        m_unitAssignmentsPanel = new AssignmentScrollPanel(scrollpane, new GridLayout(0,1,5,5), m_assignmentLabelMouseListener,false);
+        m_unitAssignmentsPanel = new AssignmentScrollPanel(scrollpane, new GridLayout(0, 1, 5, 5), m_assignmentLabelMouseListener, false);
         JLabel hl = m_unitAssignmentsPanel.getHeaderLabel();
         hl.setHorizontalAlignment(SwingConstants.CENTER);
-        hl.setPreferredSize(new Dimension(40,40));
+        hl.setPreferredSize(new Dimension(40, 40));
         m_infoPanel.add(scrollpane, ASSIGNMENT_LIST_PANEL_NAME);
     }
 
@@ -128,8 +144,8 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
 
     private void renderAssignment()
     {
-        m_assignmentInfoPanel.setTopText(0, m_displayedAsssignment.getNumber() + " (" + m_displayedAsssignment.getStatus().toString() + ")");
-        m_assignmentInfoPanel.setTopText(1, m_displayedAsssignment.getType().toString());
+        m_assignmentInfoPanel.setTopText(0, m_displayedAsssignment.getNumber() + " (" + m_displayedAsssignment.getStatusText() + ")");
+        m_assignmentInfoPanel.setTopText(1, m_displayedAsssignment.getTypeText());
         IUnitIf unit = m_displayedAsssignment.getOwningUnit();
         if (unit != null)
         {
@@ -138,11 +154,26 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
         {
             m_assignmentInfoPanel.setTopText(2, "");
         }
-        m_assignmentInfoPanel.setTopText(3,m_displayedAsssignment.getPriority().toString());
-        m_assignmentInfoPanel.setTopText(4, m_displayedAsssignment.getType().toString());
-        m_assignmentInfoPanel.setButtonEnabled(2, m_displayedAsssignment.hasBeenFinished());
+        m_assignmentInfoPanel.setTopText(3, m_displayedAsssignment.getPriorityText());
+        m_assignmentInfoPanel.setTopText(4, hoursSince(m_displayedAsssignment.getTimeAssigned()));
+        m_assignmentInfoPanel.setTopText(5, "");
 
+        m_assignmentInfoPanel.setButtonEnabled(2, m_displayedAsssignment.hasBeenFinished());
         m_assignmentInfoPanel.setButtonVisible(3, m_shallReturnToList);
+    }
+
+    private String hoursSince(Calendar aTime)
+    {
+        String time;
+        if (aTime != null)
+        {
+            Calendar now = Calendar.getInstance();
+            long actTimeInMillis = now.getTimeInMillis() - aTime.getTimeInMillis();
+            float actTimeInHours = actTimeInMillis / 3600000;
+            int displayedTimeInHours = Math.round(actTimeInHours);
+            return Integer.toString(displayedTimeInHours);
+        }
+        return " ";
     }
 
     void setUnitSelection(IUnitIf aUnit, int aSelectionIndex)
@@ -157,7 +188,9 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
     private void setupUnitAssignmentPanel()
     {
         JLabel hl = m_unitAssignmentsPanel.getHeaderLabel();
-        hl.setText(UnitTableModel.getSelectedAssignmentText(m_displayedUnitSelection) + " oppdrag for " + m_displayedUnit.getUnitNumber());
+        hl.setText(MessageFormat.format(m_wpModule.getText("AsgListInfoPanel_hdr.text"),
+                UnitTableModel.getSelectedAssignmentText(m_wpModule, m_displayedUnitSelection),
+                m_displayedUnit.getUnitNumber()));
         m_unitAssignmentsPanel.setSelectedUnit(m_displayedUnit);
         m_unitAssignmentsPanel.setSelectedStatus(UnitTableModel.getSelectedAssignmentStatus(m_displayedUnitSelection));
     }
@@ -183,25 +216,33 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
 
     void renderUnit()
     {
-        m_unitInfoPanel.setTopText(0, m_displayedUnit.getUnitNumber() + " " + m_displayedUnit.getStatus().toString());
+        m_unitInfoPanel.setTopText(0, m_displayedUnit.getUnitNumber() + " " + m_displayedUnit.getStatusText());
         m_unitInfoPanel.setTopText(1, m_displayedUnit.getCallSign());
-        m_unitInfoPanel.setTopText(2, "");
         IAssignmentIf activeAsg = m_displayedUnit.getActiveAssignment();
         if (activeAsg != null)
         {
-            m_unitInfoPanel.setTopText(3, Integer.toString(activeAsg.getNumber()));
-            Calendar asgAsgTime = activeAsg.getTimeAssigned();
-            Calendar now = Calendar.getInstance();
-            long actTimeInMillis = now.getTimeInMillis() - asgAsgTime.getTimeInMillis();
-            float actTimeInHours = actTimeInMillis / 3600000;
-            int displayedTimeInHours = Math.round(actTimeInHours);
-            m_unitInfoPanel.setTopText(4, Integer.toString(displayedTimeInHours));
+            m_unitInfoPanel.setTopText(2, Integer.toString(activeAsg.getNumber()));
+            m_unitInfoPanel.setTopText(3, hoursSince(activeAsg.getTimeAssigned()));
         } else
         {
+            m_unitInfoPanel.setTopText(2, "");
             m_unitInfoPanel.setTopText(3, "");
-            m_unitInfoPanel.setTopText(4, "");
+        }
+        IPersonnelIf person = m_displayedUnit.getUnitLeader();
+        if (person != null)
+        {
+            m_unitInfoPanel.setCenterText(1, person.getFirstname() + " " + person.getLastname());
+        } else
+        {
+            m_unitInfoPanel.setTopText(4, " ");
         }
 
+        Vector<String> memberNames = new Vector<String>();
+        for (IPersonnelIf p : m_displayedUnit.getUnitPersonnelItems())
+        {
+            memberNames.add( p.getFirstname() + " " + p.getLastname());
+        }
+        m_unitInfoPanel.setCenterText(2, memberNames);
         m_unitInfoPanel.repaint();
     }
 
@@ -239,25 +280,31 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
             System.out.println("Trykk 5: " + command + m_displayedAsssignment.getNumber());
         } else if (command.equalsIgnoreCase(ASG_CHANGE))
         {
-            try {
-            	IDiskoRole role = aWpModule.getDiskoRole();
-            	String id = role.getName()+"Taktikk";
-            	IDiskoWpModule calledModule = role.getDiskoWpModule(id);
-            	if (calledModule != null && !calledModule.isEditing()) {
-            		role.selectDiskoWpModule(calledModule);
-            		calledModule.setCallingWp(aWpModule.getName());
-            		aWpModule.getMap().setSelected(m_displayedAsssignment, true);
-            	}
-            	else {
-            		aWpModule.showWarning("Kan ikke redigere oppdrag");
-            	}
-			} catch (AutomationException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+            try
+            {
+                IDiskoRole role = m_wpModule.getDiskoRole();
+                String id = role.getName() + "Taktikk";
+                IDiskoWpModule calledModule = role.getDiskoWpModule(id);
+                if (calledModule != null && !calledModule.isEditing())
+                {
+                    role.selectDiskoWpModule(calledModule);
+                    calledModule.setCallingWp(m_wpModule.getName());
+                    m_wpModule.getMap().setSelected(m_displayedAsssignment, true);
+                } else
+                {
+                    m_wpModule.showWarning("Kan ikke redigere oppdrag");
+                }
+            }
+            catch (AutomationException e1)
+            {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+            catch (IOException e1)
+            {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
         }
     }
 }

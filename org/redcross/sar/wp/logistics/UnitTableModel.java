@@ -1,14 +1,15 @@
 package org.redcross.sar.wp.logistics;
 
+import org.redcross.sar.gui.AbstractPopupHandler;
+import org.redcross.sar.gui.PopupListener;
+import org.redcross.sar.gui.renderers.IconRenderer;
 import org.redcross.sar.mso.IMsoManagerIf;
-import org.redcross.sar.mso.data.IAssignmentIf;
-import org.redcross.sar.mso.data.IMsoObjectIf;
-import org.redcross.sar.mso.data.IUnitIf;
-import org.redcross.sar.mso.data.IUnitListIf;
+import org.redcross.sar.mso.data.*;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent;
 import org.redcross.sar.util.mso.Selector;
+import org.redcross.sar.wp.AbstractDiskoWpModule;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -18,9 +19,8 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.List;
 /**
@@ -44,13 +44,17 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
     private int m_selectedRow = -1;
     private int m_selectedColunm = -1;
     private EnumSet<IUnitIf.UnitType> m_unitTypeSelection;
+    DiskoWpLogisticsImpl m_wpModule;
+    IconRenderer.LogisticsIconClickHandler m_clickHandler;
 
-    public UnitTableModel(JTable aTable, IMsoEventManagerIf anEventManager, IUnitListIf aUnitList)
+    public UnitTableModel(JTable aTable, DiskoWpLogisticsImpl aWp, IUnitListIf aUnitList, IconRenderer.LogisticsIconClickHandler aClickHandler)
     {
         m_table = aTable;
-        m_eventManager = anEventManager;
+        m_wpModule = aWp;
+        m_eventManager = aWp.getMmsoEventManager();
         m_eventManager.addClientUpdateListener(this);
         m_unitList = aUnitList;
+        m_clickHandler = aClickHandler;
         m_actualUnitCount = 0;
         setRowSorter();
         JTableHeader tableHeader = m_table.getTableHeader();
@@ -62,7 +66,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         {
             public void valueChanged(ListSelectionEvent e)
             {
-                if (e.getValueIsAdjusting())
+                if (e.getValueIsAdjusting() || ! m_table.hasFocus())
                 {
                     return;
                 }
@@ -75,6 +79,19 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         };
         m_table.getSelectionModel().addListSelectionListener(l);
         m_table.getColumnModel().getSelectionModel().addListSelectionListener(l);
+        m_table.addFocusListener(new FocusListener()
+        {
+            public void focusGained(FocusEvent e)
+            {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public void focusLost(FocusEvent e)
+            {
+                m_table.clearSelection();
+            }
+        });
+
 
     }
 
@@ -140,12 +157,12 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
     private void assignIconRow(int i, IUnitIf aUnit)
     {
         Icon[] icons = m_iconRows.get(i);
-        ((LogisticsIcon.UnitIcon) icons[0]).setUnit(aUnit);
-        ((LogisticsIcon.AssignmentIcon) icons[1]).setAssignments(aUnit, 0);
-        ((LogisticsIcon.AssignmentIcon) icons[2]).setAssignments(aUnit, 1);
-        ((LogisticsIcon.AssignmentIcon) icons[3]).setAssignments(aUnit, 2);
-        ((LogisticsIcon.AssignmentIcon) icons[4]).setAssignments(aUnit, 3);
-        ((LogisticsIcon.InfoIcon) icons[5]).setInfo(aUnit.getRemarks());  // todo getInfo
+        ((IconRenderer.UnitIcon) icons[0]).setUnit(aUnit);
+        ((IconRenderer.AssignmentIcon) icons[1]).setAssignments(aUnit, 0);
+        ((IconRenderer.AssignmentIcon) icons[2]).setAssignments(aUnit, 1);
+        ((IconRenderer.AssignmentIcon) icons[3]).setAssignments(aUnit, 2);
+        ((IconRenderer.AssignmentIcon) icons[4]).setAssignments(aUnit, 3);
+        ((IconRenderer.InfoIcon) icons[5]).setInfo(aUnit.getRemarks());  // todo getInfo
     }
 
     public static IAssignmentIf.AssignmentStatus getSelectedAssignmentStatus(int aSelectorIndex)
@@ -178,9 +195,9 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         }
     }
 
-    public static String getSelectedAssignmentText(int aSelectorIndex)
+    public static String getSelectedAssignmentText(AbstractDiskoWpModule aWpModule, int aSelectorIndex)
     {
-        return getColName(aSelectorIndex + 1);
+        return aWpModule.getText(MessageFormat.format("UnitTable_hdr_{0}.text", aSelectorIndex + 1));
     }
 
     void buildTable()
@@ -205,24 +222,9 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         return getColName(column);
     }
 
-    public static String getColName(int column)
+    public String getColName(int column)
     {
-        switch (column)
-        {
-            case 0:
-                return "Enhet";
-            case 1:
-                return "Neste";
-            case 2:
-                return "Tildelt";
-            case 3:
-                return "Startet";
-            case 4:
-                return "Søkt";
-            default:
-                return "Info";
-        }
-
+        return m_wpModule.getText(MessageFormat.format("UnitTable_hdr_{0}.text", column));
     }
 
     @Override
@@ -230,13 +232,13 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
     {
         if (columnIndex == 0)
         {
-            return LogisticsIcon.UnitIcon.class;
+            return IconRenderer.UnitIcon.class;
         } else if (columnIndex == 5)
         {
-            return LogisticsIcon.InfoIcon.class;
+            return IconRenderer.InfoIcon.class;
         } else
         {
-            return LogisticsIcon.AssignmentIcon.class;
+            return IconRenderer.AssignmentIcon.class;
         }
     }
 
@@ -261,20 +263,19 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         return buttons[columnIndex];
     }
 
-    private LogisticsIcon.UnitIcon createUnitIcon(IUnitIf aUnit)
+    private IconRenderer.UnitIcon createUnitIcon(IUnitIf aUnit)
     {
-        LogisticsIcon.UnitIcon retVal = new LogisticsIcon.UnitIcon(aUnit, false);
-        return retVal;
+        return new IconRenderer.UnitIcon(aUnit, false, m_clickHandler);
     }
 
-    private LogisticsIcon.AssignmentIcon createAssignmentIcon(IUnitIf aUnit, int aSelectorIndex)
+    private IconRenderer.AssignmentIcon createAssignmentIcon(IUnitIf aUnit, int aSelectorIndex)
     {
-        return new LogisticsIcon.AssignmentIcon(aUnit, aSelectorIndex, false);
+        return new IconRenderer.AssignmentIcon(aUnit, aSelectorIndex, false, m_clickHandler);
     }
 
-    private LogisticsIcon.InfoIcon createInfoIcon(String anInfo)
+    private IconRenderer.InfoIcon createInfoIcon(String anInfo)
     {
-        return new LogisticsIcon.InfoIcon(anInfo, false);
+        return new IconRenderer.InfoIcon(anInfo, false);
     }
 
     @Override
@@ -285,21 +286,30 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
 
     public void setSelectedCell(int aRow, int aColumn)
     {
-        if (aRow != m_selectedRow || aColumn != m_selectedColunm)
+//        if (aRow != m_selectedRow || aColumn != m_selectedColunm)
         {
-            m_selectedRow = aRow;
-            m_selectedColunm = aColumn;
-            Object value = getValueAt(m_selectedRow, m_selectedColunm);
-            if (value instanceof LogisticsIcon)
+            if (aRow < 0 || aRow >= getRowCount() || aColumn < 0 || aColumn >= getColumnCount()) return;
+            System.out.println(MessageFormat.format("Selected row: {0}, selected column: {1}", aRow, aColumn));
+            try
             {
-                System.out.println(aRow + " " + aColumn + " " + ((LogisticsIcon) value).getIconWidth());
+                m_selectedRow = m_table.convertRowIndexToModel(aRow);
+                m_selectedColunm = m_table.convertColumnIndexToModel(aColumn);
+                Object value = getValueAt(m_selectedRow, m_selectedColunm);
+                if (value instanceof IconRenderer)
+                {
+                    System.out.println(aRow + " " + aColumn + " " + ((IconRenderer) value).getIconWidth());
+                    ((IconRenderer) value).iconSelected();
+                }
+            }
+            catch (IndexOutOfBoundsException e)
+            {
             }
         }
     }
 
-    public final static Comparator<LogisticsIcon.AssignmentIcon> ListLengthComparator = new Comparator<LogisticsIcon.AssignmentIcon>()
+    public final static Comparator<IconRenderer.AssignmentIcon> ListLengthComparator = new Comparator<IconRenderer.AssignmentIcon>()
     {
-        public int compare(LogisticsIcon.AssignmentIcon o1, LogisticsIcon.AssignmentIcon o2)
+        public int compare(IconRenderer.AssignmentIcon o1, IconRenderer.AssignmentIcon o2)
         {
             int l1 = o1.getAssignmentList() != null ? o1.getAssignmentList().size() : 0;
             int l2 = o2.getAssignmentList() != null ? o2.getAssignmentList().size() : 0;
@@ -307,9 +317,9 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         }
     };
 
-    public final static Comparator<LogisticsIcon.AssignmentIcon> PriorityComparator = new Comparator<LogisticsIcon.AssignmentIcon>()
+    public final static Comparator<IconRenderer.AssignmentIcon> PriorityComparator = new Comparator<IconRenderer.AssignmentIcon>()
     {
-        public int compare(LogisticsIcon.AssignmentIcon o1, LogisticsIcon.AssignmentIcon o2)
+        public int compare(IconRenderer.AssignmentIcon o1, IconRenderer.AssignmentIcon o2)
         {
             IAssignmentIf.AssignmentPriority p1 = getHighestPriority(o1.getAssignmentList());
             IAssignmentIf.AssignmentPriority p2 = getHighestPriority(o2.getAssignmentList());
@@ -377,9 +387,9 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         fireTableDataChanged();
     }
 
-    public abstract static class TimeComparator implements Comparator<LogisticsIcon.AssignmentIcon>
+    public abstract static class TimeComparator implements Comparator<IconRenderer.AssignmentIcon>
     {
-        public int compare(LogisticsIcon.AssignmentIcon o1, LogisticsIcon.AssignmentIcon o2)
+        public int compare(IconRenderer.AssignmentIcon o1, IconRenderer.AssignmentIcon o2)
         {
             Calendar c1 = getCompareTime(o1.getAssignmentList());
             Calendar c2 = getCompareTime(o2.getAssignmentList());
@@ -437,13 +447,29 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         }
     };
 
-    public final static Comparator<LogisticsIcon.UnitIcon> UnitNumberComparator = new Comparator<LogisticsIcon.UnitIcon>()
+    public final static Comparator<IconRenderer.UnitIcon> UnitTypeAndNumberComparator = new Comparator<IconRenderer.UnitIcon>()
     {
-        public int compare(LogisticsIcon.UnitIcon o1, LogisticsIcon.UnitIcon o2)
+        public int compare(IconRenderer.UnitIcon o1, IconRenderer.UnitIcon o2)
         {
-            int i1 = o1.getUnit().getNumber();
-            int i2 = o2.getUnit().getNumber();
-            return i1 - i2;
+            IUnitIf u1 = o1.getUnit();
+            IUnitIf u2 = o2.getUnit();
+            int i1 = u1.getUnitNumberPrefix();
+            int i2 = u2.getUnitNumberPrefix();
+            if (i1 == i2)
+            {
+                return u1.getNumber() - u2.getNumber();
+            } else
+            {
+                return i1 - i2;
+            }
+        }
+    };
+
+    public final static Comparator<IconRenderer.UnitIcon> UnitSpeedComparator = new Comparator<IconRenderer.UnitIcon>()
+    {
+        public int compare(IconRenderer.UnitIcon o1, IconRenderer.UnitIcon o2)
+        {
+            return o1.getUnit().getSpeed() - o2.getUnit().getSpeed();
         }
     };
 
@@ -463,7 +489,13 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
             switch (column)
             {
                 case 0:
-                    return UnitNumberComparator;
+                    switch (m_sortKeys[column])
+                    {
+                        case 2:
+                            return UnitSpeedComparator;
+                        default:
+                            return UnitTypeAndNumberComparator;
+                    }
                 case 1:
                 case 2:
                 case 3:
@@ -553,33 +585,39 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
 
             column = 0;
             setupColumn(column);
+            addButton(buttonWithAction("UnitTable_menu_unitType.text", column, 1), column);
+            addButton(buttonWithAction("UnitTable_menu_speed.text", column, 2), column);
+            addButton(buttonWithAction("UnitTable_menu_pauseTime.text", column, 3), column);
+            addButton(buttonWithAction("UnitTable_menu_workTime.text", column, 4), column);
+            addButton(buttonWithAction("UnitTable_menu_idleTime.text", column, 5), column);
+            m_buttons[column].get(0).setSelected(true);
 
             column++; // 1
             setupColumn(column);
-            addButton(buttonWithAction("Antall", column, 1), column);
-            addButton(buttonWithAction("Prioritet", column, 2), column);
+            addButton(buttonWithAction("UnitTable_menu_qty.text", column, 1), column);
+            addButton(buttonWithAction("UnitTable_menu_priority.text", column, 2), column);
             m_buttons[column].get(0).setSelected(true);
             m_menus[column].add(new JSeparator());
 
             column++; // 2
             setupColumn(column);
-            addButton(buttonWithAction("Prioritet", column, 2), column);
-            addButton(buttonWithAction("Tildelt tid", column, 3), column);
+            addButton(buttonWithAction("UnitTable_menu_priority.text", column, 2), column);
+            addButton(buttonWithAction("UnitTable_menu_assignedtime.text", column, 3), column);
             m_buttons[column].get(0).setSelected(true);
             m_menus[column].add(new JSeparator());
 
             column++; // 3
             setupColumn(column);
-            addButton(buttonWithAction("Prioritet", column, 2), column);
-            addButton(buttonWithAction("Start tid", column, 4), column);
-            addButton(buttonWithAction("Est. ferdig tid", column, 5), column);
+            addButton(buttonWithAction("UnitTable_menu_priority.text", column, 2), column);
+            addButton(buttonWithAction("UnitTable_menu_starttime.text", column, 4), column);
+            addButton(buttonWithAction("UnitTable_menu_endtime.text", column, 5), column);
             m_buttons[column].get(0).setSelected(true);
             m_menus[column].add(new JSeparator());
 
             column++; // 4
             setupColumn(column);
-            addButton(buttonWithAction("Antall", column, 1), column);
-            addButton(buttonWithAction("Prioritet", column, 2), column);
+            addButton(buttonWithAction("UnitTable_menu_qty.text", column, 1), column);
+            addButton(buttonWithAction("UnitTable_menu_priority.text", column, 2), column);
             m_buttons[column].get(0).setSelected(true);
             m_menus[column].add(new JSeparator());
 
@@ -603,7 +641,8 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
 
         private JRadioButtonMenuItem buttonWithAction(String aText, final int aColumn, final int aKeyIndex)
         {
-            AbstractAction action = new AbstractAction(aText)
+            String labelText = m_wpModule.getText(aText);
+            AbstractAction action = new AbstractAction(labelText)
             {
                 public void actionPerformed(ActionEvent e)
                 {
@@ -622,7 +661,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
                 {
                     continue;
                 }
-                String aText = t.name();
+                String aText = AbstractUnit.getEnumText(t);
                 String aCommand = t.name();
 
                 JMenuItem c = createMenuItem(true, aText, aCommand);
@@ -630,8 +669,8 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
                 m_unitSelections.put(aCommand, c);
             }
 
-            m_selectAll = createMenuItem(false, "Velg alle", "SelectAll");
-            m_deselectAll = createMenuItem(false, "Fjern alle", "DeselectAll");
+            m_selectAll = createMenuItem(false, m_wpModule.getText("UnitTable_menu_selectAll.text"), "SelectAll");
+            m_deselectAll = createMenuItem(false, m_wpModule.getText("UnitTable_menu_deselectAll.text"), "DeselectAll");
         }
 
         private JMenuItem createMenuItem(boolean makeCheckBox, String aText, String aCommand)
@@ -692,6 +731,5 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
             m_model.setTypeSelections(IUnitIf.UnitType.values(), aFlag);
         }
     }
-
 }
 

@@ -1,10 +1,10 @@
 package org.redcross.sar.mso;
 
 import org.redcross.sar.mso.data.*;
-import org.redcross.sar.util.except.MsoNullPointerException;
 import org.redcross.sar.util.except.IllegalMsoArgumentException;
-import org.redcross.sar.util.mso.*;
-
+import org.redcross.sar.util.except.MsoNullPointerException;
+import org.redcross.sar.util.mso.Position;
+import org.redcross.sar.util.mso.Route;
 
 import java.util.Calendar;
 
@@ -400,6 +400,21 @@ public interface IMsoManagerIf
      * @return The created object.
      */
     public IIntelligenceIf createIntelligence(IMsoObjectIf.IObjectIdIf anObjectId);
+
+    /**
+     * Create a new {@link org.redcross.sar.mso.data.IMessageIf} object and add it to the collection of Message objects.
+     *
+     * @return The created object.
+     */
+    public IMessageIf createMessage();
+
+    /**
+     * Create a new {@link org.redcross.sar.mso.data.IMessageIf} object and add it to the collection of Message objects.
+     *
+     * @param anObjectId The Object id
+     * @return The created object.
+     */
+    public IMessageIf createMessage(IMsoObjectIf.IObjectIdIf anObjectId);
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.IOperationAreaIf} object and add it to the collection of OperationArea objects.

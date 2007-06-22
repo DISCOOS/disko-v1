@@ -5,8 +5,9 @@ package org.redcross.sar.wp.logistics;
  */
 
 import org.redcross.sar.mso.data.IAssignmentIf;
+import org.redcross.sar.mso.data.IUnitIf;
+import org.redcross.sar.util.AssignmentTransferMessageCreator;
 import org.redcross.sar.util.except.IllegalOperationException;
-import org.redcross.sar.wp.AbstractDiskoWpModule;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,34 +24,17 @@ public class AssignmentLabelTransferHandler extends TransferHandler
     Component m_targetComponent;
 
     boolean m_shouldRemove;
-    AbstractDiskoWpModule m_wpModule;
+    DiskoWpLogisticsImpl m_wpModule;
 
-    public AssignmentLabelTransferHandler(DataFlavor aFlavor, AbstractDiskoWpModule aWpModule)
+    public AssignmentLabelTransferHandler(DataFlavor aFlavor, DiskoWpLogisticsImpl aWpModule)
     {
         m_labelFlavor = aFlavor;
         m_wpModule = aWpModule;
     }
 
-    private static final String[] options = {"Ja", "Nei"};
-
-    private boolean confirmTransfer(IAssignmentIf anAssignment, IAssignmentIf.AssignmentStatus aStatus)
-    {
-        int n = JOptionPane.showOptionDialog(m_wpModule.getApplication().getFrame(),
-                "Overføre oppdag " + anAssignment.getNumber() + " til status " + aStatus.toString(),
-                "Bekreft overføring",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null, options, options[0]);
-        System.out.println(n);
-        return n == 0;
-    }
-
-
     @Override
     public boolean importData(TransferSupport trs)
     {
-        Transferable tr = trs.getTransferable();
-
         if (trs.isDrop())
         {
             DropLocation dropl = trs.getDropLocation();
@@ -64,24 +48,36 @@ public class AssignmentLabelTransferHandler extends TransferHandler
                 AssignmentScrollPanel panel = (AssignmentScrollPanel) m_targetComponent;
                 IAssignmentIf transferredAssignment = getTransferredAssignment(trs);
 
-                if (confirmTransfer(transferredAssignment, panel.getSelectedStatus()))
+                if (m_wpModule.confirmTransfer(transferredAssignment, panel.getSelectedStatus()))
                 {
-                    try
+                    boolean transferOk = false;
+                    IUnitIf transferUnit= null;
+                    if (m_targetLabel != null && panel.getSelectedStatus() == IAssignmentIf.AssignmentStatus.ALLOCATED)
                     {
-                        if (m_targetLabel != null && panel.getSelectedStatus() == IAssignmentIf.AssignmentStatus.ALLOCATED)
-                        {
-                            panel.getSelectedUnit().addAllocatedAssignment(transferredAssignment, m_targetLabel.getAssignment());
-                        } else
+                        transferOk = panel.getSelectedUnit().addAllocatedAssignment(transferredAssignment, m_targetLabel.getAssignment());
+                        transferUnit = panel.getSelectedUnit();
+                    } else
+                    {
+                        try
                         {
                             transferredAssignment.setStatusAndOwner(panel.getSelectedStatus(), panel.getSelectedUnit());
+                            transferOk = true;
                         }
+                        catch (IllegalOperationException e)
+                        {
+                        }
+                    }
+
+                    if (transferOk)
+                    {
+                        AssignmentTransferMessageCreator.createMessage(m_wpModule, transferUnit, transferredAssignment);
 //                        m_wpModule.getMsoManager(). // todo add MessageLog update
                         m_wpModule.getMsoModel().commit();
                         return true;
                     }
-                    catch (IllegalOperationException e)
+                    else
                     {
-                        e.printStackTrace();
+                        m_wpModule.showTransferWarning();
                     }
                 }
             }
@@ -93,7 +89,6 @@ public class AssignmentLabelTransferHandler extends TransferHandler
     protected Transferable createTransferable(JComponent c)
     {
         m_sourceLabel = (DTAssignmentLabel) c;
-//        m_sourceIndex = m_sourceLabel.m_list.indexOf(m_sourceLabel.m_lp);
         m_shouldRemove = true;
         return new AssignmentTransferable(m_sourceLabel);
     }
@@ -107,16 +102,6 @@ public class AssignmentLabelTransferHandler extends TransferHandler
     @Override
     protected void exportDone(JComponent c, Transferable data, int action)
     {
-//        if (m_shouldRemove && (action == MOVE))
-//        {
-//            if (m_sourceLabel.m_list == m_targetLabel.m_list && m_targetIndex < m_sourceIndex)
-//            {
-//                m_sourceIndex++;
-//            }
-//            m_sourceLabel.m_list.remove(m_sourceIndex);
-//        }
-//        m_sourceLabel = null;
-// todo something else                m_wpModule.m_dataModified = true;
     }
 
     @Override
@@ -167,6 +152,8 @@ public class AssignmentLabelTransferHandler extends TransferHandler
                 m_targetComponent = parent;
             }
         }
+
+        // todo legg inn logikk for å håndtere omprioriteringer
 
         if (m_targetComponent instanceof AssignmentScrollPanel)
         {

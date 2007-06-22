@@ -9,6 +9,7 @@ import org.redcross.sar.util.except.MsoCastException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  * Unit assignments
@@ -35,6 +36,18 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
     //    private final MsoReferenceImpl<IHypothesisIf> m_assignmentHypothesis = new MsoReferenceImpl<IHypothesisIf>(this, "AssignmentHypothesis", true); todo slett
     private final MsoReferenceImpl<IAreaIf> m_plannedArea = new MsoReferenceImpl<IAreaIf>(this, "PlannedArea", true);
     private final MsoReferenceImpl<IAreaIf> m_reportedArea = new MsoReferenceImpl<IAreaIf>(this, "ReportedArea", true);
+
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Assignment");
+
+    public static String getText(String aKey)
+    {
+        return AbstractMsoObject.getBundleText(bundle,aKey);
+    }
+
+    public static String getEnumText(Enum anEnum)
+    {
+        return getText(anEnum.getClass().getSimpleName()+"."+anEnum.name() + ".text");
+    }
 
     public AssignmentImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
     {
@@ -166,7 +179,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
             System.out.print("none");
         }
         System.out.println(".");
-        changeOwnerAndStatus(aUnit, aStatus);
+        changeStatusAndOwner(aUnit, aStatus);
     }
 
     public void setStatus(String aStatus) throws IllegalOperationException
@@ -184,7 +197,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         setStatusAndOwner(status, aUnit);
     }
 
-    private void changeOwnerAndStatus(IUnitIf aUnit, AssignmentStatus aStatus)
+    private void changeStatusAndOwner(IUnitIf aUnit, AssignmentStatus aStatus)
     {
         IUnitIf owningUnit = getOwningUnit();
         AssignmentStatus oldStatus = getStatus();
@@ -194,7 +207,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
             owningUnit.removeUnitReference(this);
         }
         m_status.setValue(aStatus);
-        
+
         if (aStatus == AssignmentStatus.ALLOCATED)
         {
             setPrioritySequence(Integer.MAX_VALUE);
@@ -228,6 +241,11 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         return m_status;
     }
 
+    public String getStatusText()
+    {
+        return getEnumText(getStatus());
+    }
+
     public void setPriority(AssignmentPriority aPriority)
     {
         m_priority.setValue(aPriority);
@@ -253,6 +271,12 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         return m_priority;
     }
 
+    public String getPriorityText()
+    {
+        return getEnumText(getPriority());
+    }
+
+
     protected void setType(AssignmentType aType)
     {
         m_type.setValue(aType);
@@ -271,6 +295,11 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
     public IAttributeIf.IMsoEnumIf<AssignmentType> getTypeAttribute()
     {
         return m_type;
+    }
+
+    public String getTypeText()
+    {
+        return getEnumText(getType());
     }
 
     /*-------------------------------------------------------------------------------------------

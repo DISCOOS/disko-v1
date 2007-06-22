@@ -1,5 +1,6 @@
 package org.redcross.sar.wp.logistics;
 
+import org.redcross.sar.gui.AbstractPopupHandler;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.AssignmentImpl;
 import org.redcross.sar.mso.data.IAssignmentIf;
@@ -30,15 +31,16 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
     /**
      * Types of selection in left panel
      */
-    public enum Selection
-    {
-        READY, ALLOCATED, ASSIGNED, EXECUTING, FINISHED
-    }
+//    public enum Selection
+//    {
+//        READY, ALLOCATED, ASSIGNED, EXECUTING, FINISHED
+//    }
 
     /**
      * Initial value for selection
      */
-    private Selection m_assigmentSelection = Selection.READY;
+//    private Selection m_assigmentSelection = Selection.READY;
+    private IAssignmentIf.AssignmentStatus m_assigmentSelection = IAssignmentIf.AssignmentStatus.READY;
 
     /**
      * Selectors for left panel
@@ -85,7 +87,7 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
 
         panel2.getParent().addComponentListener(this);
 
-        setSelection(Selection.FINISHED);
+        setSelection(IAssignmentIf.AssignmentStatus.FINISHED);
         handleMsoUpdateEvent(null);
     }
 
@@ -121,7 +123,7 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
      */
     private void setSelectableList()
     {
-        java.util.List<IAssignmentIf> selectionList = m_assigmentSelection == Selection.READY ? m_priAssignments.getAssignmentList() : selectAssignments(m_selectableSelector);
+        java.util.List<IAssignmentIf> selectionList = m_assigmentSelection == IAssignmentIf.AssignmentStatus.READY ? m_priAssignments.getAssignmentList() : selectAssignments(m_selectableSelector);
         m_selectableAssignments.setAssignmentList(selectionList);
         m_selectableAssignments.setSelectedStatus(m_selectableStatus);
     }
@@ -175,12 +177,12 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
      * Set selection for left panel.
      * @param aSelection Value to set
      */
-    public void setSelection(Selection aSelection)
+    public void setSelection(IAssignmentIf.AssignmentStatus aSelection)
     {
         if (m_assigmentSelection != aSelection)
         {
             m_assigmentSelection = aSelection;
-            m_selectableAssignments.getHeaderLabel().setText(m_assigmentSelection.name());
+            m_selectableAssignments.getHeaderLabel().setText(AssignmentImpl.getEnumText(m_assigmentSelection));
             selectionChanged();
         }
     }
@@ -189,7 +191,7 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
      * Get selection for left panel
      * @return Selection value.
      */
-    public Selection getSelection()
+    public IAssignmentIf.AssignmentStatus getSelection()
     {
         return m_assigmentSelection;
     }
@@ -241,7 +243,7 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
      */
     private void renderSelectablePanel()
     {
-        if (m_assigmentSelection == Selection.READY)
+        if (m_assigmentSelection == IAssignmentIf.AssignmentStatus.READY)
         {
             m_selectableAssignments.setMinIndex(m_readyDivider);
         } else
@@ -257,9 +259,9 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
      */
     public static class SelectButton extends JRadioButtonMenuItem
     {
-        final Selection m_selection;
+        final IAssignmentIf.AssignmentStatus m_selection;
 
-        public SelectButton(AbstractAction anAction, Selection aSelection)
+        public SelectButton(AbstractAction anAction, IAssignmentIf.AssignmentStatus aSelection)
         {
             super(anAction);
             m_selection = aSelection;
@@ -267,7 +269,7 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
     }
 
     /**
-     * Handler of popup events, after the are detected by a {@link PopupListener}
+     * Handler of popup events, after the are detected by a {@link org.redcross.sar.gui.PopupListener}
      */
     public static class SelectionPopupHandler extends AbstractPopupHandler
     {
@@ -281,11 +283,11 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
             super();
             m_model = aModel;
 
-            addButton(buttonWithAction("Klar", Selection.READY));
-            addButton(buttonWithAction("Neste", Selection.ALLOCATED));
-            addButton(buttonWithAction("Tildelt", Selection.ASSIGNED));
-            addButton(buttonWithAction("Startet", Selection.EXECUTING));
-            addButton(buttonWithAction("Ferdig", Selection.FINISHED));
+            addButton(buttonWithAction(IAssignmentIf.AssignmentStatus.READY));
+            addButton(buttonWithAction(IAssignmentIf.AssignmentStatus.ALLOCATED));
+            addButton(buttonWithAction(IAssignmentIf.AssignmentStatus.ASSIGNED));
+            addButton(buttonWithAction(IAssignmentIf.AssignmentStatus.EXECUTING));
+            addButton(buttonWithAction(IAssignmentIf.AssignmentStatus.FINISHED));
         }
 
         /**
@@ -299,9 +301,10 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
             m_buttonGroup.add(aButton);
         }
 
-        private SelectButton buttonWithAction(String aText, final Selection aSelection)
+        private SelectButton buttonWithAction(final IAssignmentIf.AssignmentStatus aSelection)
         {
-            AbstractAction action = new AbstractAction(aText)
+            String buttonText = AssignmentImpl.getEnumText(aSelection);
+            AbstractAction action = new AbstractAction(buttonText)
             {
                 public void actionPerformed(ActionEvent e)
                 {
@@ -317,7 +320,7 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
          */
         public JPopupMenu getMenu(MouseEvent e)
         {
-            Selection s = m_model.getSelection();
+            IAssignmentIf.AssignmentStatus s = m_model.getSelection();
             for (SelectButton b : m_buttons)
             {
                 if (b.m_selection == s)

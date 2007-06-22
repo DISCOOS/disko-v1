@@ -1,29 +1,30 @@
 package org.redcross.sar.wp.logistics;
 
+import org.redcross.sar.gui.DiskoBorder;
+import org.redcross.sar.gui.renderers.IconRenderer;
 import org.redcross.sar.mso.data.IAssignmentIf;
 
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.text.MessageFormat;
 
 
-public class AssignmentLabel extends JLabel implements MouseListener
+public class AssignmentLabel extends JLabel implements MouseListener, FocusListener
 {
-    private final static Border InnerBorder = new LineBorder(Color.BLACK, 2, true);
-    private final static Border OuterBorder = BorderFactory.createMatteBorder(2, 10, 2, 10, new Color(236, 233, 216));
-
-    private final static Border LabelBorder = new CompoundBorder(OuterBorder, InnerBorder);
+    private final static Border LabelBorder = new DiskoBorder(2, 6, false);
 
     private final static Dimension LabelDimension = new Dimension(50, 50);
     private IAssignmentIf m_assignment;
+    private boolean m_isSelected;
 
     AssignmentLabelClickHandler m_clickHandler;
 
-    public AssignmentLabel(LogisticsIcon.AssignmentIcon anIcon, AssignmentLabelClickHandler aClickHandler)
+    public AssignmentLabel(IconRenderer.AssignmentIcon anIcon, AssignmentLabelClickHandler aClickHandler)
     {
         super();
         setAssignmentIcon(anIcon);
@@ -42,6 +43,8 @@ public class AssignmentLabel extends JLabel implements MouseListener
         m_clickHandler = aClickHandler;
         setFocusable(true);
         addMouseListener(this);
+        addFocusListener(this);
+        m_isSelected = false;
         setAppearence();
     }
 
@@ -57,7 +60,23 @@ public class AssignmentLabel extends JLabel implements MouseListener
         }
     }
 
-    public void setAssignmentIcon(LogisticsIcon.AssignmentIcon anIcon)
+    private void setSelected(boolean isSelected)
+    {
+        if (m_assignment != null)
+        {
+
+        } else
+        {
+            Icon icon = getIcon();
+            if (icon instanceof IconRenderer.AssignmentIcon)
+            {
+                ((IconRenderer.AssignmentIcon) icon).setSelected(isSelected);
+            }
+        }
+        repaint();
+    }
+
+    public void setAssignmentIcon(IconRenderer.AssignmentIcon anIcon)
     {
         super.setIcon(anIcon);
         setText("");
@@ -67,7 +86,7 @@ public class AssignmentLabel extends JLabel implements MouseListener
     public void setAssignment(IAssignmentIf anAssignment)
     {
         m_assignment = anAssignment;
-        setText(Integer.toString(anAssignment.getNumber()) + " " + anAssignment.getType().toString());
+        setText(MessageFormat.format("{0}: {1} {2}", anAssignment.getPrioritySequence(), Integer.toString(anAssignment.getNumber()), anAssignment.getTypeText()));
         setIcon(null);
     }
 
@@ -78,12 +97,14 @@ public class AssignmentLabel extends JLabel implements MouseListener
             return m_assignment;
         }
         Icon icon = getIcon();
-        return icon instanceof LogisticsIcon.AssignmentIcon ? ((LogisticsIcon.AssignmentIcon) icon).getAssignment() : null;
+        return icon instanceof IconRenderer.AssignmentIcon ? ((IconRenderer.AssignmentIcon) icon).getAssignment() : null;
     }
 
     public void mouseClicked(MouseEvent e)
     {
         //Since the user clicked on us, let's get focus!
+        requestFocus();
+        setSelected(true);
         m_clickHandler.handleClick(getAssignment());
 
     }
@@ -102,6 +123,24 @@ public class AssignmentLabel extends JLabel implements MouseListener
 
     public void mouseReleased(MouseEvent e)
     {
+    }
+
+    @Override
+    public boolean isFocusable()
+    {
+        return true;
+    }
+
+
+    public void focusGained(FocusEvent e)
+    {
+        System.out.println("Focus gained: " + getAssignment());
+    }
+
+    public void focusLost(FocusEvent e)
+    {
+        setSelected(false);
+        System.out.println("Focus lost: " + getAssignment());
     }
 
     public static interface AssignmentLabelClickHandler

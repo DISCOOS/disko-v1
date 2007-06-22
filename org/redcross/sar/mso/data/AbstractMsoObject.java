@@ -41,12 +41,12 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     /**
      * Set of reference lists.
      */
-    private final Map<String,MsoListImpl> m_referenceLists = new LinkedHashMap<String,MsoListImpl>();
+    private final Map<String, MsoListImpl> m_referenceLists = new LinkedHashMap<String, MsoListImpl>();
 
     /**
      * Set of reference objects.
      */
-    private final Map<String,MsoReferenceImpl> m_referenceObjects = new LinkedHashMap<String, MsoReferenceImpl>();
+    private final Map<String, MsoReferenceImpl> m_referenceObjects = new LinkedHashMap<String, MsoReferenceImpl>();
 
     /**
      * Mask for update events for client
@@ -216,7 +216,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     {
         if (aList != null)
         {
-            m_referenceLists.put(aList.getName().toLowerCase(),aList);
+            m_referenceLists.put(aList.getName().toLowerCase(), aList);
         } else
         {
             System.out.println("Error in setup: " + this + ": Try to add null list");
@@ -227,7 +227,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     {
         if (aReference != null)
         {
-            m_referenceObjects.put(aReference.getName().toLowerCase(),aReference);
+            m_referenceObjects.put(aReference.getName().toLowerCase(), aReference);
         } else
         {
             System.out.println("Error in setup: " + this + ": Try to add null reference");
@@ -821,6 +821,23 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         for (MsoListImpl list : m_referenceLists.values())
         {
             list.resumeNotifications();
+        }
+    }
+
+    public static String getBundleText(ResourceBundle aBundle, String aKey)
+    {
+        if (aBundle == null)
+        {
+            return aKey;
+        }
+        try
+        {
+            String retVal = aBundle.getString(aKey);
+            return retVal != null ? retVal : aKey;
+        }
+        catch (Exception e)
+        {
+            return aKey;
         }
     }
 
