@@ -306,12 +306,15 @@ public class MsoBasicTest
         try
         {
             IUnitIf vUnit1 = unitList.createVehicle("V1");
+            vUnit1.setStatus(IUnitIf.UnitStatus.READY);
             mainUnitCount++;
             int v1Count = 1;
             IUnitIf vUnit2 = unitList.createVehicle("V2");
+            vUnit2.setStatus(IUnitIf.UnitStatus.READY);
             mainUnitCount++;
             int v2Count = 1;
             IUnitIf vUnit3 = unitList.createVehicle("V3");
+            vUnit3.setStatus(IUnitIf.UnitStatus.READY);
             mainUnitCount++;
             int v3Count = 1;
             myUnitList.add(vUnit1);
@@ -398,10 +401,13 @@ public class MsoBasicTest
         int mainUnitCount = 0;
 
         IUnitIf vUnit1 = unitList.createVehicle("V1");
+        vUnit1.setStatus(IUnitIf.UnitStatus.READY);
         mainUnitCount++;
         IUnitIf vUnit2 = unitList.createVehicle("V2");
+        vUnit2.setStatus(IUnitIf.UnitStatus.READY);
         mainUnitCount++;
         IUnitIf vUnit3 = unitList.createVehicle("V3");
+        vUnit3.setStatus(IUnitIf.UnitStatus.READY);
         mainUnitCount++;
         assertEquals(unitList.size(), mainUnitCount);
         vUnit2.setSuperiorUnit(vUnit1);
@@ -565,7 +571,9 @@ public class MsoBasicTest
         unitListImpl.clear();
 
         IUnitIf vUnit1 = unitList.createVehicle("V1");
+        vUnit1.setStatus(IUnitIf.UnitStatus.READY);
         IUnitIf vUnit2 = unitList.createVehicle("V2");
+        vUnit2.setStatus(IUnitIf.UnitStatus.READY);
 
 
 
