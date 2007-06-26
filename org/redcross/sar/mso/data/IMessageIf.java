@@ -110,8 +110,9 @@ public interface IMessageIf extends ITimeItemIf, ISerialNumberedIf
 
     /**
      * Confirm receiver.
-     *
+     * <p/>
      * Trasnfer receiver to list og confirmed receivers.
+     *
      * @param anICommunicatorIf The receiver to transfer.
      * @return <code>true</code> if succeeded, false otherwise
      */
@@ -119,16 +120,41 @@ public interface IMessageIf extends ITimeItemIf, ISerialNumberedIf
 
     /**
      * Get list of unconfimred receivers.
+     *
      * @return the list.
      */
     public MsoListImpl<ICommunicatorIf> getBroadcastUnconfirmed();
 
     /**
      * Get list of confimred receivers.
+     *
      * @return the list.
      */
     public MsoListImpl<ICommunicatorIf> getBroadcastConfirmed();
 
 
+    /**
+     * Find a (optionally create a new) message line of given type.
+     *
+     * @param aType       Type of line to create.
+     * @param makeNewLine If set, create a new line if non-existing.
+     * @return Actualø line if found or created, otherwise null.
+     */
     public IMessageLineIf findMessageLine(IMessageLineIf.MessageLineType aType, boolean makeNewLine);
+
+    /**
+     * Delete a line
+     * @param aLine The line to delete
+     * @return
+     */
+    public boolean deleteMessageLine(IMessageLineIf aLine);
+
+    public boolean deleteMessageLine(int aLineNumber);
+
+    public boolean deleteMessageLine(IMessageLineIf.MessageLineType aType);
+
+    public IMessageLineIf createMessageLine(IMessageLineIf.MessageLineType aType);
+
+    public String getLines();
+
 }

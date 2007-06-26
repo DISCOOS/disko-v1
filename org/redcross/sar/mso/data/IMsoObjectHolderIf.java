@@ -21,5 +21,5 @@ public interface IMsoObjectHolderIf<M extends IMsoObjectIf>
      *
      * @param anObject The object to deleteObject
      */
-    public void doDeleteReference(M anObject);
+    public boolean doDeleteReference(M anObject);
 }

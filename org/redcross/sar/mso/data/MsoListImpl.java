@@ -206,7 +206,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
     {
     }
 
-    public void doDeleteReference(M anObject)
+    public boolean doDeleteReference(M anObject)
     {
         boolean localUpdateMode = MsoModelImpl.getInstance().getUpdateMode() == MsoModelImpl.UpdateMode.LOCAL_UPDATE_MODE;
         boolean updateServer = localUpdateMode;
@@ -233,7 +233,9 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
             {
                 ((AbstractMsoObject) m_owner).registerRemovedReference(updateServer);
             }
+            return true;
         }
+        return false;
     }
 
     public boolean removeReference(M anObject)
@@ -243,8 +245,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
             return anObject.deleteObject();
         } else
         {
-            doDeleteReference(anObject);
-            return true;
+            return doDeleteReference(anObject);
         }
     }
 

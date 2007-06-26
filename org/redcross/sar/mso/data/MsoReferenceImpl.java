@@ -266,7 +266,7 @@ public class MsoReferenceImpl<T extends IMsoObjectIf> implements IMsoReferenceIf
         }
     }
 
-    public void doDeleteReference(T anObject)
+    public boolean doDeleteReference(T anObject)
     {
         if (getReference() == anObject)
         {
@@ -274,7 +274,9 @@ public class MsoReferenceImpl<T extends IMsoObjectIf> implements IMsoReferenceIf
             Remove reference the "ordinary" way. Will create event for modified reference and state in this object.
              */
             setReference(null);
+            return true;
         }
+        return false;
     }
 
     public Collection<CommittableImpl.CommitReference> getCommittableRelations()

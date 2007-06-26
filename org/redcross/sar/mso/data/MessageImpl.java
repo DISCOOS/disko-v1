@@ -5,9 +5,11 @@ import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.except.MsoRuntimeException;
+import org.redcross.sar.util.mso.Selector;
 
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Comparator;
 
 /**
  * Communication message
@@ -418,16 +420,110 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
         return retVal + 1;
     }
 
-    private void addMessageLine(IMessageLineIf.MessageLineType aType)
+    private IMessageLineIf getMessageLine(int aNumber)
+    {
+        for (IMessageLineIf ml : m_messageLines.getItems())
+        {
+            if (ml.getLineNumber() == aNumber)
+            {
+                return ml;
+            }
+        }
+        return null;
+    }
+
+    private IMessageLineIf getMessageLine(IMessageLineIf.MessageLineType aType)
+    {
+        for (IMessageLineIf ml : m_messageLines.getItems())
+        {
+            if (ml.getLineType() == aType)
+            {
+                return ml;
+            }
+        }
+        return null;
+    }
+
+    public boolean deleteMessageLine(IMessageLineIf aLine)
+    {
+        if (aLine == null)
+        {
+            return false;
+        }
+        int deletedLineNumber = aLine.getLineNumber();
+        if (!m_messageLines.removeReference(aLine))
+        {
+            return false;
+        }
+        for (IMessageLineIf ml : m_messageLines.getItems())
+        {
+            if (ml.getLineNumber() > deletedLineNumber)
+            {
+                ml.setLineNumber(ml.getLineNumber() - 1);
+            }
+        }
+        return true;
+    }
+
+    public boolean deleteMessageLine(int aLineNumber)
+    {
+        return deleteMessageLine(getMessageLine(aLineNumber));
+    }
+
+    public boolean deleteMessageLine(IMessageLineIf.MessageLineType aType)
+    {
+        return deleteMessageLine(getMessageLine(aType));
+    }
+
+    public IMessageLineIf createMessageLine(IMessageLineIf.MessageLineType aType)
     {
         IMessageLineIf retVal = MsoModelImpl.getInstance().getMsoManager().getCmdPost().getMessageLines().createMessageLine();
         retVal.setLineType(aType);
         retVal.setLineNumber(getNextLineNumber());
         m_messageLines.add(retVal);
+        return retVal;
     }
 
     public IMessageLineIf findMessageLine(IMessageLineIf.MessageLineType aType, boolean makeNewLine)
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        for (IMessageLineIf ml : m_messageLines.getItems())
+        {
+            if (ml.getLineType() == aType)
+            {
+                return ml;
+            }
+        }
+        if (makeNewLine)
+        {
+            return createMessageLine(aType);
+        }
+        return null;
     }
+
+    public String getLines()
+    {
+        StringBuilder b = new StringBuilder();
+        for (IMessageLineIf line : m_messageLines.selectItems(m_messageLineSelector,m_lineNumberComparator) )
+        {
+            b.append(line.toString());
+        }
+        return b.toString();
+    }
+
+    private final Selector<IMessageLineIf> m_messageLineSelector = new Selector<IMessageLineIf>()
+    {
+        public boolean select(IMessageLineIf aMessageLine)
+        {
+            return true;
+        }
+    };
+
+    private final static Comparator<IMessageLineIf> m_lineNumberComparator = new Comparator<IMessageLineIf>()
+    {
+        public int compare(IMessageLineIf m1, IMessageLineIf m2)
+        {
+            return m1.getLineNumber() - m2.getLineNumber();
+        }
+    };
+
 }
