@@ -142,7 +142,7 @@ public class DrawDialog extends DiskoDialog {
 				final int index = i;
 				final JCheckBox cb = new JCheckBox();
 				IFeatureLayer flayer = snapLayerSelectionModel.getFeatureLayer(i);
-				cb.setText(flayer.getName().toLowerCase());
+				cb.setText(flayer.getName());
 				cb.setSelected(snapLayerSelectionModel.isSelected(i));
 				getSnapLayerPanel().add(cb);
 				cb.addActionListener(new java.awt.event.ActionListener() {

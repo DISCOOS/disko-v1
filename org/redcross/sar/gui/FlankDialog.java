@@ -199,7 +199,7 @@ public class FlankDialog extends DiskoDialog {
 				final int index = i;
 				final JCheckBox cb = new JCheckBox();
 				IFeatureLayer flayer = clipLayerSelectionModel.getFeatureLayer(i);
-				cb.setText(flayer.getName().toLowerCase());
+				cb.setText(flayer.getName());
 				cb.setSelected(clipLayerSelectionModel.isSelected(i));
 				getClipPanel().add(cb);
 				cb.addActionListener(new java.awt.event.ActionListener() {
