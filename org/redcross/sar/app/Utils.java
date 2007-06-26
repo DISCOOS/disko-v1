@@ -1,13 +1,13 @@
 package org.redcross.sar.app;
 
-import org.redcross.sar.gui.ErrorDialog;
-import org.redcross.sar.gui.UIFactory;
-
-import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
+
+import javax.swing.ImageIcon;
+
+import org.redcross.sar.gui.ErrorDialog;
 
 /**
  * Utility class containing access to methods for handling properties.
