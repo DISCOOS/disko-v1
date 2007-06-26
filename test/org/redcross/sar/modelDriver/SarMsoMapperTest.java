@@ -171,7 +171,7 @@ public class SarMsoMapperTest {
         testowner.addAttribute(attCopy);
 
         SarMsoMapper.mapSarFactToMsoAttr(att1, lFact);
-        ((SarFactLocation) lFact).updateLocation((float) pos2.getY(), (float) pos2.getX(), null, false);
+        ((SarFactLocation) lFact).updateLocation(pos2.getY(),  pos2.getX(), null, false);
         SarMsoMapper.mapMsoAttrToSarFact(lFact, att1, false);
 
         assertEquals(lFact, copyFact);
@@ -203,7 +203,7 @@ public class SarMsoMapperTest {
         testowner.addAttribute(attCopy);
 
         SarMsoMapper.mapSarFactToMsoAttr(att1, lFact);
-        ((SarFactLocation) lFact).updateLocation((float) pos2.getY(), (float) pos2.getX(), null, false);
+        ((SarFactLocation) lFact).updateLocation( pos2.getY(),  pos2.getX(), null, false);
         SarMsoMapper.mapMsoAttrToSarFact(lFact, att1, false);
 
         assertEquals(lFact, copyFact);
