@@ -13,6 +13,7 @@ SmallButton.height=64
 
 Taktikk.icon=icons/60x60/tactic.gif
 Logistikk.icon=icons/60x60/logistics.gif
+Sambandslogg.icon=icons/60x60/log.gif
 Kart.icon=icons/60x60/map.gif
 
 NAV.icon=icons/60x60/navigation.gif
@@ -82,7 +83,7 @@ SearchSubType.AIR.text=Flysøk
 SearchSubType.DOG.text=Hundesøk
 
 AssignmentPriority.HIGH.text=Høy
-AssignmentPriority.MEDIUM.text=Middels
+AssignmentPriority.MEDIUM.text=Normal
 AssignmentPriority.LOW.text=Lav
   
 AssignmentType.GENERAL.text=Generell
@@ -141,7 +142,7 @@ SHOW_ALL.text=Vis alle
 
 TacticsTaskType.ELEMENT_TASK.icon=icons/60x60/element.gif
 TacticsTaskType.LIST_TASK.icon=icons/60x60/list.gif
-TacticsTaskType.MISSON_TASK.icon=icons/60x60/assinment.gif
+TacticsTaskType..icon=icons/60x60/assinment.gif
 TacticsTaskType.HYPOTHESIS_TASK.icon=icons/60x60/hypothesis.gif
 TacticsTaskType.PRIORITY_TASK.icon=icons/60x60/priority.gif
 TacticsTaskType.REQUIREMENT_TASK.icon=icons/60x60/requirement.gif
