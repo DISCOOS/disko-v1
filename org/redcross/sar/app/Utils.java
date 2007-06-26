@@ -95,11 +95,11 @@ public class Utils {
 		if (obj instanceof Enum) {
 			Enum e = (Enum)obj;
 			key = e.getClass().getSimpleName()+"."+e.name()+".text";
-			return (props != null ? props.getProperty(key, e.name()) : e.name()).toUpperCase();
+			return (props != null ? props.getProperty(key, e.name()) : e.name());
 		}
 		String str = obj.toString();
 		key = str+".text";
-		return props.getProperty(key, str).toUpperCase();
+		return props.getProperty(key, str);
 	}
 	
 	public static ImageIcon getIcon(Enum e) {
