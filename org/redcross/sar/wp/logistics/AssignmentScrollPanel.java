@@ -63,13 +63,13 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
 
     private final boolean m_showIcons;
 
-    private final AssignmentLabel.AssignmentLabelClickHandler m_clickHandler;
+    private final AssignmentLabel.AssignmentLabelActionHandler m_actionHandler;
 
-    public AssignmentScrollPanel(JScrollPane aScrollPane, LayoutManager aLayoutManager, AssignmentLabel.AssignmentLabelClickHandler aClickHandler, boolean showIcons)
+    public AssignmentScrollPanel(JScrollPane aScrollPane, LayoutManager aLayoutManager, AssignmentLabel.AssignmentLabelActionHandler anActionHandler, boolean showIcons)
     {
         super(aScrollPane, aLayoutManager);
         m_showIcons = showIcons;
-        m_clickHandler = aClickHandler;
+        m_actionHandler = anActionHandler;
 
         setFocusable(true);
         setEnabled(true);
@@ -273,7 +273,7 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
                 if (m_labels.size() == iv)
                 {
                     m_labels.ensureCapacity(lastIndex - firstIndex + 1);
-                    m_labels.add(new DTAssignmentLabel(icon, m_clickHandler,getTransferHandler())); // Inherit transfer handler from panel
+                    m_labels.add(new DTAssignmentLabel(icon, m_actionHandler,getTransferHandler())); // Inherit transfer handler from panel
                 } else
                 {
                     m_labels.get(iv).setAssignmentIcon(icon);
@@ -283,7 +283,7 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
                 if (m_labels.size() == iv)
                 {
                     m_labels.ensureCapacity(lastIndex - firstIndex + 1);
-                    m_labels.add(new DTAssignmentLabel(asg, m_clickHandler,getTransferHandler())); // Inherit transfer handler from panel
+                    m_labels.add(new DTAssignmentLabel(asg, m_actionHandler,getTransferHandler())); // Inherit transfer handler from panel
                 } else
                 {
                     m_labels.get(iv).setAssignment(asg);

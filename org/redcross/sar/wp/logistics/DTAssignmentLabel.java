@@ -17,15 +17,15 @@ public class DTAssignmentLabel extends AssignmentLabel implements MouseMotionLis
 {
     private MouseEvent firstMouseEvent = null;
 
-    public DTAssignmentLabel(IconRenderer.AssignmentIcon anIcon, AssignmentLabelClickHandler aClickHandler, TransferHandler aTransferHandler)
+    public DTAssignmentLabel(IconRenderer.AssignmentIcon anIcon, AssignmentLabelActionHandler anActionHandler, TransferHandler aTransferHandler)
     {
-        super(anIcon, aClickHandler);
+        super(anIcon, anActionHandler);
         initLabel(aTransferHandler);
     }
 
-    public DTAssignmentLabel(IAssignmentIf anAssignment,AssignmentLabelClickHandler aClickHandler, TransferHandler aTransferHandler)
+    public DTAssignmentLabel(IAssignmentIf anAssignment, AssignmentLabelActionHandler anActionHandler, TransferHandler aTransferHandler)
     {
-        super(anAssignment,aClickHandler);
+        super(anAssignment,anActionHandler);
         initLabel(aTransferHandler);
     }
 
@@ -33,21 +33,8 @@ public class DTAssignmentLabel extends AssignmentLabel implements MouseMotionLis
     {
         setEnabled(true);
         addMouseMotionListener(this);
-
-        //Add the cut/copy/paste actions to the action map.
-        //This step is necessary because the menu's action listener
-        //looks for these actions to fire.
-        ActionMap map = this.getActionMap();
-        map.put(TransferHandler.getCutAction().getValue(Action.NAME),
-                TransferHandler.getCutAction());
-        map.put(TransferHandler.getCopyAction().getValue(Action.NAME),
-                TransferHandler.getCopyAction());
-        map.put(TransferHandler.getPasteAction().getValue(Action.NAME),
-                TransferHandler.getPasteAction());
-
         setTransferHandler(aTransferHandler);
     }
-
 
     @Override
     public void mousePressed(MouseEvent e)
@@ -64,7 +51,7 @@ public class DTAssignmentLabel extends AssignmentLabel implements MouseMotionLis
 
     public void mouseDragged(MouseEvent e)
     {
-        //Don't bother to drag if the component displays no icon.
+        //Don't bother to drag if the component represents no assignment
         if (getAssignment() == null)
         {
             return;

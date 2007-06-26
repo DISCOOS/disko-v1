@@ -207,6 +207,12 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
 
     public boolean hasBeenFinished();
 
+    /**
+     * Test if the assignment can change satus and owner.
+     * @param newStatus The new status
+     * @param newUnit The new owner
+     * @return <code>true</code> if the change is legal, <code>false</code> otherwise.
+     */
     public boolean canChangeToStatus(AssignmentStatus newStatus, IUnitIf newUnit);
 
     public boolean canChangeToStatus(String newStatus, IUnitIf newUnit);
@@ -224,7 +230,6 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
     public void verifyAllocatable(AssignmentStatus newStatus, IUnitIf aUnit, boolean unassignIfPossible) throws IllegalOperationException;
 
     int getTypenr();
-
 
 //    public final static EnumSet<AssignmentStatus> CAN_START_SET = EnumSet.of(AssignmentStatus.ALLOCATED, AssignmentStatus.ASSIGNED);
     public final static EnumSet<AssignmentStatus> ACTIVE_SET = EnumSet.of(AssignmentStatus.ALLOCATED, AssignmentStatus.ASSIGNED,AssignmentStatus.EXECUTING);

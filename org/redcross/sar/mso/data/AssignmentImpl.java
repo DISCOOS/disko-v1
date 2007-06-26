@@ -612,10 +612,10 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
             case DRAFT:
                 return newUnit == null && newStatus == AssignmentStatus.READY;
             case READY:
-                return newUnit != null && ACTIVE_SET.contains(newStatus);
+                return newUnit != null && ACTIVE_SET.contains(newStatus) && newUnit.canAccept(newStatus);
             case ALLOCATED:
             case ASSIGNED:
-                return newUnit == null ? newStatus == AssignmentStatus.READY : ACTIVE_SET.contains(newStatus);
+                return newUnit == null ? newStatus == AssignmentStatus.READY : (ACTIVE_SET.contains(newStatus)  && newUnit.canAccept(newStatus));
             case EXECUTING:
                 return newUnit == currentUnit && FINISHED_AND_REPORTED_SET.contains(newStatus);
             case ABORTED:

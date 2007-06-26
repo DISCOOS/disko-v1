@@ -22,25 +22,25 @@ public class AssignmentLabel extends JLabel implements MouseListener, FocusListe
     private IAssignmentIf m_assignment;
     private boolean m_isSelected;
 
-    AssignmentLabelClickHandler m_clickHandler;
+    AssignmentLabelActionHandler m_actionHandler;
 
-    public AssignmentLabel(IconRenderer.AssignmentIcon anIcon, AssignmentLabelClickHandler aClickHandler)
+    public AssignmentLabel(IconRenderer.AssignmentIcon anIcon, AssignmentLabelActionHandler anActionHandler)
     {
         super();
         setAssignmentIcon(anIcon);
-        initLabel(aClickHandler);
+        initLabel(anActionHandler);
     }
 
-    public AssignmentLabel(IAssignmentIf anAssignment, AssignmentLabelClickHandler aClickHandler)
+    public AssignmentLabel(IAssignmentIf anAssignment, AssignmentLabelActionHandler anActionHandler)
     {
         super();
         setAssignment(anAssignment);
-        initLabel(aClickHandler);
+        initLabel(anActionHandler);
     }
 
-    private void initLabel(AssignmentLabelClickHandler aClickHandler)
+    private void initLabel(AssignmentLabelActionHandler anActionHandler)
     {
-        m_clickHandler = aClickHandler;
+        m_actionHandler = anActionHandler;
         setFocusable(true);
         addMouseListener(this);
         addFocusListener(this);
@@ -105,7 +105,7 @@ public class AssignmentLabel extends JLabel implements MouseListener, FocusListe
         //Since the user clicked on us, let's get focus!
         requestFocus();
         setSelected(true);
-        m_clickHandler.handleClick(getAssignment());
+        m_actionHandler.handleClick(getAssignment());
 
     }
 
@@ -143,7 +143,7 @@ public class AssignmentLabel extends JLabel implements MouseListener, FocusListe
         System.out.println("Focus lost: " + getAssignment());
     }
 
-    public static interface AssignmentLabelClickHandler
+    public static interface AssignmentLabelActionHandler
     {
         public void handleClick(IAssignmentIf anAssignment);
     }

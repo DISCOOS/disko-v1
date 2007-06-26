@@ -1,7 +1,6 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.util.except.DuplicateIdException;
 
 import java.util.Calendar;
 import java.util.Collection;
@@ -180,6 +179,12 @@ public interface ICmdPostIf extends IMsoObjectIf
     public IMsoModelIf.ModificationState getMessageLogState(IMessageIf anIMessageIf);
 
     public Collection<IMessageIf> getMessageLogItems();
+
+    public IMessageLineListIf getMessageLines();
+
+    public IMsoModelIf.ModificationState getMessageLineState(IMessageLineIf anIMessageLineIf);
+
+    public Collection<IMessageLineIf> getMessageLineItems();
 
     public IOperationAreaListIf getOperationAreaList();
 

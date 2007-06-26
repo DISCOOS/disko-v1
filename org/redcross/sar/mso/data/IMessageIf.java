@@ -1,7 +1,6 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.util.except.DuplicateIdException;
 
 import java.util.Calendar;
 import java.util.Collection;
@@ -69,6 +68,14 @@ public interface IMessageIf extends ITimeItemIf, ISerialNumberedIf
 
     public Collection<ITaskIf> getMessageTasksItems();
 
+    public void addMessageLine(IMessageLineIf anIMessageLineIf);
+
+    public IMessageLineListIf getMessageLines();
+
+    public IMsoModelIf.ModificationState getMessageLinesState(IMessageLineIf anIMessageLineIf);
+
+    public Collection<IMessageLineIf> getMessageLineItems();
+
     public void addUnconfirmedReceiver(ICommunicatorIf anICommunicatorIf);
 
     public IMsoListIf<ICommunicatorIf> getUnconfirmedReceivers();
@@ -101,5 +108,27 @@ public interface IMessageIf extends ITimeItemIf, ISerialNumberedIf
     * Other methods
     *-------------------------------------------------------------------------------------------*/
 
+    /**
+     * Confirm receiver.
+     *
+     * Trasnfer receiver to list og confirmed receivers.
+     * @param anICommunicatorIf The receiver to transfer.
+     * @return <code>true</code> if succeeded, false otherwise
+     */
     public boolean confirmReceiver(ICommunicatorIf anICommunicatorIf);
+
+    /**
+     * Get list of unconfimred receivers.
+     * @return the list.
+     */
+    public MsoListImpl<ICommunicatorIf> getBroadcastUnconfirmed();
+
+    /**
+     * Get list of confimred receivers.
+     * @return the list.
+     */
+    public MsoListImpl<ICommunicatorIf> getBroadcastConfirmed();
+
+
+    public IMessageLineIf findMessageLine(IMessageLineIf.MessageLineType aType, boolean makeNewLine);
 }

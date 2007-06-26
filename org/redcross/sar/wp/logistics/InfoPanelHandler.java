@@ -51,12 +51,12 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
     private IAssignmentIf m_displayedAsssignment;
     private String m_displayedPanelName = "";
 
-    private final AssignmentLabel.AssignmentLabelClickHandler m_assignmentLabelMouseListener;
+    private final AssignmentLabel.AssignmentLabelActionHandler m_assignmentLabelMouseListener;
 
-    public InfoPanelHandler(JPanel anInfoPanel, DiskoWpLogisticsImpl aWpModule, AssignmentLabel.AssignmentLabelClickHandler aClickHandler)
+    public InfoPanelHandler(JPanel anInfoPanel, DiskoWpLogisticsImpl aWpModule, AssignmentLabel.AssignmentLabelActionHandler anActionHandler)
     {
         m_infoPanel = anInfoPanel;
-        m_assignmentLabelMouseListener = aClickHandler;
+        m_assignmentLabelMouseListener = anActionHandler;
         m_wpModule = aWpModule;
 
         m_infoPanel.add(new JPanel(), EMPTY_PANEL_NAME);

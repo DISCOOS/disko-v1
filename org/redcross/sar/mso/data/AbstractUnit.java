@@ -657,6 +657,25 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
 
         return true;
     }
+
+
+    public boolean canAccept(IAssignmentIf.AssignmentStatus aStatus)
+    {
+        switch(getStatus())
+        {
+            case READY:
+            case PAUSED:
+            case WORKING:
+                if (aStatus == IAssignmentIf.AssignmentStatus.ALLOCATED) return true;
+                else if (aStatus == IAssignmentIf.AssignmentStatus.ASSIGNED) return (getAssignedAssignments().size() == 0);
+                else if (aStatus == IAssignmentIf.AssignmentStatus.EXECUTING) return (getExecutingAssigment().size() == 0);
+                else return true;
+            case RELEASED:
+                return aStatus == IAssignmentIf.AssignmentStatus.REPORTED;
+            default:
+                return false;
+        }
+    }
 }
 
 

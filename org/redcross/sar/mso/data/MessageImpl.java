@@ -2,6 +2,7 @@ package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.except.MsoRuntimeException;
 
@@ -23,6 +24,8 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
     private final MsoListImpl<ICommunicatorIf> m_confirmedReceivers = new MsoListImpl<ICommunicatorIf>(this, CONFIRMED_RECEIVERS_NAME, false);
     private final TaskListImpl m_messageTasks = new TaskListImpl(this, "MessageTasks", false);
     private final MsoListImpl<ICommunicatorIf> m_unconfirmedReceivers = new MsoListImpl<ICommunicatorIf>(this, UNCONFIRMED_RECEIVERS_NAME, false);
+
+    private final MessageLineListImpl m_messageLines = new MessageLineListImpl(this, "MessageLines", false);
 
     private final MsoReferenceImpl<ICmdPostIf> m_sender = new MsoReferenceImpl<ICmdPostIf>(this, "Sender", true);
 
@@ -56,6 +59,7 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
         addList(m_confirmedReceivers);
         addList(m_messageTasks);
         addList(m_unconfirmedReceivers);
+        addList(m_messageLines);
     }
 
     @Override
@@ -72,6 +76,12 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
             m_messageTasks.add((ITaskIf) anObject);
             return;
         }
+        if (anObject instanceof IMessageLineIf)
+        {
+            m_messageLines.add((IMessageLineIf) anObject);
+            return;
+        }
+        super.addObjectReference(anObject, aReferenceName);
         if (anObject instanceof ICommunicatorIf)
         {
             if (CONFIRMED_RECEIVERS_NAME.equals(aReferenceName))
@@ -85,7 +95,6 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
                 return;
             }
         }
-        super.addObjectReference(anObject, aReferenceName);
     }
 
     public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
@@ -95,6 +104,12 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
             m_messageTasks.removeReference((ITaskIf) anObject);
             return;
         }
+        if (anObject instanceof IMessageLineIf)
+        {
+            m_messageLines.removeReference((IMessageLineIf) anObject);
+            return;
+        }
+        super.addObjectReference(anObject, aReferenceName);
         if (anObject instanceof ICommunicatorIf)
         {
             if (CONFIRMED_RECEIVERS_NAME.equals(aReferenceName))
@@ -266,6 +281,28 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
         return m_messageTasks.getItems();
     }
 
+
+    public void addMessageLine(IMessageLineIf anIMessageLineIf)
+    {
+        m_messageLines.add(anIMessageLineIf);
+    }
+
+    public IMessageLineListIf getMessageLines()
+    {
+        return m_messageLines;
+
+    }
+
+    public IMsoModelIf.ModificationState getMessageLinesState(IMessageLineIf anIMessageLineIf)
+    {
+        return m_messageLines.getState(anIMessageLineIf);
+    }
+
+    public Collection<IMessageLineIf> getMessageLineItems()
+    {
+        return m_messageLines.getItems();
+    }
+
     public void addUnconfirmedReceiver(ICommunicatorIf anICommunicatorIf)
     {
         m_unconfirmedReceivers.add(anICommunicatorIf);
@@ -366,5 +403,31 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
     public MsoListImpl<ICommunicatorIf> getBroadcastConfirmed()
     {
         return m_confirmedReceivers;
+    }
+
+    private int getNextLineNumber()
+    {
+        int retVal = 0;
+        for (IMessageLineIf ml : m_messageLines.getItems())
+        {
+            if (ml.getLineNumber() > retVal)
+            {
+                retVal = ml.getLineNumber();
+            }
+        }
+        return retVal + 1;
+    }
+
+    private void addMessageLine(IMessageLineIf.MessageLineType aType)
+    {
+        IMessageLineIf retVal = MsoModelImpl.getInstance().getMsoManager().getCmdPost().getMessageLines().createMessageLine();
+        retVal.setLineType(aType);
+        retVal.setLineNumber(getNextLineNumber());
+        m_messageLines.add(retVal);
+    }
+
+    public IMessageLineIf findMessageLine(IMessageLineIf.MessageLineType aType, boolean makeNewLine)
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

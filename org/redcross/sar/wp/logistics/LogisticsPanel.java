@@ -11,9 +11,14 @@ import org.redcross.sar.util.except.DuplicateIdException;
 import org.redcross.sar.util.except.IllegalOperationException;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.EnumSet;
@@ -50,14 +55,14 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
 
     private AssignmentScrollPanel m_selectableAssignmentsPanel;
     private AssignmentScrollPanel m_priAssignmentsPanel;
-    private AssignmentLabelTransferHandler m_assignmentLabelTransferHandler;
+    private AssignmentTransferHandler m_assignmentTransferHandler;
 
     private InfoPanelHandler m_infoPanelHandler;
 
-    private AssignmentLabel.AssignmentLabelClickHandler m_labelClickHandler;
-    private AssignmentLabel.AssignmentLabelClickHandler m_listPanelClickHandler;
+    private AssignmentLabel.AssignmentLabelActionHandler m_labelActionHandler;
+    private AssignmentLabel.AssignmentLabelActionHandler m_listPanelActionHandler;
 
-    private IconRenderer.LogisticsIconClickHandler m_iconClickHandler;
+    private IconRenderer.LogisticsIconActionHandler m_iconActionHandler;
 
     public LogisticsPanel(DiskoWpLogisticsImpl aWp)
     {
@@ -71,7 +76,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         {
             return;
         }
-        defineSubpanelClickHandlers();
+        defineSubpanelActionHandlers();
         m_splitter3.setLeftComponent((JComponent) m_map);
         setSplitters();
         setPanelSizes();
@@ -79,33 +84,14 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         initInfoPanels();
         initAssignmentPanels();
 
-//        JTableButtonMouseListener theListener = new JTableButtonMouseListener(m_unit1Table);
-//        m_unit1Table.addMouseListener(theListener);
-//        m_unit1Table.addMouseMotionListener(theListener);
-//        m_unit1Table.setDefaultEditor(JComponent.class, new JComponentCellEditor());
-
-//        m_assignmentTable.setModel(new AssignmentTableModel(m_wpModule.getMmsoEventManager(), m_assignmentList));
-//        m_assignmentTable.setAutoCreateColumnsFromModel(true);
-//        m_assignmentTable.setDefaultRenderer(java.util.List.class, new AssignmentPanelRenderer());
-//        m_assignmentTable.setShowGrid(false);
-
-
         addToListeners();
-        /*MoveButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                moveAssigment(1);
-            }
-        });*/
-
     }
 
     private boolean defineTransferHandler()
     {
         try
         {
-            m_assignmentLabelTransferHandler = new AssignmentLabelTransferHandler(new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType + ";class=org.redcross.sar.mso.data.IAssignmentIf"), m_wpModule);
+            m_assignmentTransferHandler = new AssignmentTransferHandler(m_wpModule);
         }
         catch (ClassNotFoundException e)
         {
@@ -115,9 +101,9 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         return true;
     }
 
-    private void defineSubpanelClickHandlers()
+    private void defineSubpanelActionHandlers()
     {
-        m_labelClickHandler = new AssignmentLabel.AssignmentLabelClickHandler()
+        m_labelActionHandler = new AssignmentLabel.AssignmentLabelActionHandler()
         {
             public void handleClick(IAssignmentIf anAssignment)
             {
@@ -125,7 +111,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
             }
         };
 
-        m_listPanelClickHandler = new AssignmentLabel.AssignmentLabelClickHandler()
+        m_listPanelActionHandler = new AssignmentLabel.AssignmentLabelActionHandler()
         {
             public void handleClick(IAssignmentIf anAssignment)
             {
@@ -133,7 +119,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
             }
         };
 
-        m_iconClickHandler = new IconRenderer.LogisticsIconClickHandler()
+        m_iconActionHandler = new IconRenderer.LogisticsIconActionHandler()
         {
             public void handleClick(IUnitIf aUnit)
             {
@@ -180,16 +166,16 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         m_AssignmentSubPaneRight.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         m_AssignmentSubPaneRight.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 
-        m_selectableAssignmentsPanel = new AssignmentScrollPanel(m_AssignmentSubPaneLeft, new FlowLayout(FlowLayout.LEFT, 5, 5), m_labelClickHandler, true);
-        m_selectableAssignmentsPanel.setTransferHandler(m_assignmentLabelTransferHandler);
+        m_selectableAssignmentsPanel = new AssignmentScrollPanel(m_AssignmentSubPaneLeft, new FlowLayout(FlowLayout.LEFT, 5, 5), m_labelActionHandler, true);
+        m_selectableAssignmentsPanel.setTransferHandler(m_assignmentTransferHandler);
 
         JLabel hl;
         hl = m_selectableAssignmentsPanel.getHeaderLabel();
         hl.setHorizontalAlignment(SwingConstants.CENTER);
         hl.setPreferredSize(new Dimension(40, 40));
 
-        m_priAssignmentsPanel = new AssignmentScrollPanel(m_AssignmentSubPaneRight, new FlowLayout(FlowLayout.LEFT, 5, 5), m_labelClickHandler, true);
-        m_priAssignmentsPanel.setTransferHandler(m_assignmentLabelTransferHandler);
+        m_priAssignmentsPanel = new AssignmentScrollPanel(m_AssignmentSubPaneRight, new FlowLayout(FlowLayout.LEFT, 5, 5), m_labelActionHandler, true);
+        m_priAssignmentsPanel.setTransferHandler(m_assignmentTransferHandler);
         hl = m_priAssignmentsPanel.getHeaderLabel();
         hl.setHorizontalAlignment(SwingConstants.CENTER);
         hl.setPreferredSize(new Dimension(40, 40));
@@ -199,7 +185,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
 
     private void initUnitTable()
     {
-        UnitTableModel model = new UnitTableModel(m_unitTable, m_wpModule, m_unitList, m_iconClickHandler);
+        final UnitTableModel model = new UnitTableModel(m_unitTable, m_wpModule, m_unitList, m_iconActionHandler);
         m_unitTable.setModel(model);
         m_unitTable.setAutoCreateColumnsFromModel(true);
         m_unitTable.setDefaultRenderer(IconRenderer.UnitIcon.class, new LogisticsIconRenderer());
@@ -215,12 +201,59 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         m_unitTable.setCellSelectionEnabled(true);
         JTableHeader th = m_unitTable.getTableHeader();
         th.setPreferredSize(new Dimension(40, 40));
+        m_unitTable.setTransferHandler(m_assignmentTransferHandler);
+
+        ListSelectionListener l = new ListSelectionListener()
+        {
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (e.getValueIsAdjusting() || !m_unitTable.hasFocus())
+                {
+                    return;
+                }
+
+                model.setSelectedCell(m_unitTable.getSelectionModel().getLeadSelectionIndex(),
+                        m_unitTable.getColumnModel().getSelectionModel().
+                                getLeadSelectionIndex());
+
+            }
+        };
+        m_unitTable.getSelectionModel().addListSelectionListener(l);
+        m_unitTable.getColumnModel().getSelectionModel().addListSelectionListener(l);
+        m_unitTable.addFocusListener(new FocusListener()
+        {
+            public void focusGained(FocusEvent e)
+            {
+            }
+
+            public void focusLost(FocusEvent e)
+            {
+                m_unitTable.clearSelection();
+            }
+        });
+
+        m_unitTable.setDragEnabled(true);
+
+        m_unitTable.addMouseMotionListener(new MouseMotionListener()
+        {
+            public void mouseDragged(MouseEvent e)
+            {
+                System.out.println("Mouse dragged");
+            }
+
+            public void mouseMoved(MouseEvent e)
+            {
+                System.out.println("Mouse moved");
+            }
+        });
+
+
     }
 
     private void initInfoPanels()
     {
-        m_infoPanelHandler = new InfoPanelHandler(m_infoPanel, m_wpModule, m_listPanelClickHandler);
-        m_infoPanelHandler.setSelectionTransferHandler(m_assignmentLabelTransferHandler);
+        m_infoPanelHandler = new InfoPanelHandler(m_infoPanel, m_wpModule, m_listPanelActionHandler);
+        m_infoPanelHandler.setSelectionTransferHandler(m_assignmentTransferHandler);
     }
 
     private void addToListeners()

@@ -235,7 +235,7 @@ public class IconRenderer implements Icon
     public static class UnitIcon extends IconRenderer
     {
         static final Dimension m_iconSize = new Dimension(50, 50);
-        IconRenderer.LogisticsIconClickHandler m_clickHandler;
+        IconRenderer.LogisticsIconActionHandler m_actionHandler;
 
         static final HashMap<IUnitIf.UnitType, Image> m_images = new LinkedHashMap<IUnitIf.UnitType, Image>();
         IUnitIf m_unit;
@@ -306,14 +306,14 @@ public class IconRenderer implements Icon
             }
         }
 
-        public UnitIcon(IUnitIf aUnit, boolean isSelected, LogisticsIconClickHandler aClickHandler)
+        public UnitIcon(IUnitIf aUnit, boolean isSelected, LogisticsIconActionHandler anActionHandler)
         {
             super(null, true, null, m_iconSize.width, m_iconSize.height, 1.25F, false, false, isSelected);
             if (m_images.size() == 0)
             {
                 initImageMap();
             }
-            m_clickHandler = aClickHandler;
+            m_actionHandler = anActionHandler;
             setUnit(aUnit);
         }
 
@@ -344,18 +344,18 @@ public class IconRenderer implements Icon
         @Override
         public void iconSelected()
         {
-            if (m_clickHandler == null)
+            if (m_actionHandler == null)
             {
                 return;
             }
-            m_clickHandler.handleClick(m_unit);
+            m_actionHandler.handleClick(m_unit);
         }
     }
 
     public static class AssignmentIcon extends IconRenderer
     {
         static final Dimension m_iconSize = new Dimension(50, 50);
-        IconRenderer.LogisticsIconClickHandler m_clickHandler;
+        IconRenderer.LogisticsIconActionHandler m_actionHandler;
 
         IAssignmentIf m_assignment;
         java.util.List<IAssignmentIf> m_assignments;
@@ -409,21 +409,21 @@ public class IconRenderer implements Icon
             m_leftIcons.add(ISearchIf.SearchSubType.URBAN);
         }
 
-        public AssignmentIcon(IAssignmentIf anAssignment, boolean isSelected, LogisticsIconClickHandler aClickHandler)
+        public AssignmentIcon(IAssignmentIf anAssignment, boolean isSelected, LogisticsIconActionHandler anActionHandler)
         {
             super(null, false, null, m_iconSize.width, m_iconSize.height, 1.0F, false, true, isSelected);
             initImageMap();
             m_singleAssigmentIcon = true;
-            m_clickHandler = aClickHandler;
+            m_actionHandler = anActionHandler;
             setAssignment(anAssignment);
         }
 
-        public AssignmentIcon(IUnitIf aUnit, int aSelectorIndex, boolean isSelected, LogisticsIconClickHandler aClickHandler)
+        public AssignmentIcon(IUnitIf aUnit, int aSelectorIndex, boolean isSelected, LogisticsIconActionHandler anActionHandler)
         {
             super(null, false, null, m_iconSize.width, m_iconSize.height, 1.0F, false, true, isSelected);
             initImageMap();
             m_singleAssigmentIcon = false;
-            m_clickHandler = aClickHandler;
+            m_actionHandler = anActionHandler;
             setAssignments(aUnit, aSelectorIndex);
         }
 
@@ -505,13 +505,13 @@ public class IconRenderer implements Icon
         @Override
         public void iconSelected()
         {
-            if (m_clickHandler == null)
+            if (m_actionHandler == null)
             {
                 return;
             }
             if (m_singleAssigmentIcon)
             {
-                m_clickHandler.handleClick(m_assignment);
+                m_actionHandler.handleClick(m_assignment);
             } else
             {
                 m_assignments = UnitTableModel.getSelectedAssignments(m_actUnit, m_selectorIndex);
@@ -520,10 +520,10 @@ public class IconRenderer implements Icon
                     return;
                 } else if (m_assignments.size() == 1)
                 {
-                    m_clickHandler.handleClick(m_assignments.get(0));
+                    m_actionHandler.handleClick(m_assignments.get(0));
                 } else
                 {
-                    m_clickHandler.handleClick(m_actUnit, m_selectorIndex);
+                    m_actionHandler.handleClick(m_actUnit, m_selectorIndex);
                 }
             }
         }
@@ -562,7 +562,7 @@ public class IconRenderer implements Icon
         }
     }
 
-    public interface LogisticsIconClickHandler
+    public interface LogisticsIconActionHandler
     {
         public void handleClick(IUnitIf aUnit);
 

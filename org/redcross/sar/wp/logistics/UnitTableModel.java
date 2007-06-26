@@ -12,14 +12,14 @@ import org.redcross.sar.util.mso.Selector;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.List;
@@ -31,7 +31,7 @@ import java.util.List;
  */
 
 /**
- *
+ *  Table model for unit table in logistics WP
  */
 public class UnitTableModel extends AbstractTableModel implements IMsoUpdateListenerIf
 {
@@ -45,53 +45,30 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
     private int m_selectedColunm = -1;
     private EnumSet<IUnitIf.UnitType> m_unitTypeSelection;
     DiskoWpLogisticsImpl m_wpModule;
-    IconRenderer.LogisticsIconClickHandler m_clickHandler;
+    IconRenderer.LogisticsIconActionHandler m_actionHandler;
 
-    public UnitTableModel(JTable aTable, DiskoWpLogisticsImpl aWp, IUnitListIf aUnitList, IconRenderer.LogisticsIconClickHandler aClickHandler)
+    /**
+     * Creator
+     * @param aTable The displayed table.
+     * @param aWp The related wor process.
+     * @param aUnitList Reference to the list of units.
+     * @param anActionHandler The handler of icon actions.
+     */
+    public UnitTableModel(JTable aTable, DiskoWpLogisticsImpl aWp, IUnitListIf aUnitList, IconRenderer.LogisticsIconActionHandler anActionHandler)
     {
         m_table = aTable;
         m_wpModule = aWp;
         m_eventManager = aWp.getMmsoEventManager();
         m_eventManager.addClientUpdateListener(this);
         m_unitList = aUnitList;
-        m_clickHandler = aClickHandler;
+        m_actionHandler = anActionHandler;
         m_actualUnitCount = 0;
         setRowSorter();
-        JTableHeader tableHeader = m_table.getTableHeader();
         m_unitTypeSelection = EnumSet.allOf(IUnitIf.UnitType.class);
 
-        PopupListener listener = new PopupListener(new HeaderPopupHandler(this, m_table));
+        PopupListener listener = new PopupListener(new UnitTableModel.HeaderPopupHandler(this, m_table));
+        JTableHeader tableHeader = m_table.getTableHeader();
         tableHeader.addMouseListener(listener);
-        ListSelectionListener l = new ListSelectionListener()
-        {
-            public void valueChanged(ListSelectionEvent e)
-            {
-                if (e.getValueIsAdjusting() || ! m_table.hasFocus())
-                {
-                    return;
-                }
-
-                setSelectedCell(m_table.getSelectionModel().getLeadSelectionIndex(),
-                        m_table.getColumnModel().getSelectionModel().
-                                getLeadSelectionIndex());
-
-            }
-        };
-        m_table.getSelectionModel().addListSelectionListener(l);
-        m_table.getColumnModel().getSelectionModel().addListSelectionListener(l);
-        m_table.addFocusListener(new FocusListener()
-        {
-            public void focusGained(FocusEvent e)
-            {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            public void focusLost(FocusEvent e)
-            {
-                m_table.clearSelection();
-            }
-        });
-
 
     }
 
@@ -265,12 +242,12 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
 
     private IconRenderer.UnitIcon createUnitIcon(IUnitIf aUnit)
     {
-        return new IconRenderer.UnitIcon(aUnit, false, m_clickHandler);
+        return new IconRenderer.UnitIcon(aUnit, false, m_actionHandler);
     }
 
     private IconRenderer.AssignmentIcon createAssignmentIcon(IUnitIf aUnit, int aSelectorIndex)
     {
-        return new IconRenderer.AssignmentIcon(aUnit, aSelectorIndex, false, m_clickHandler);
+        return new IconRenderer.AssignmentIcon(aUnit, aSelectorIndex, false, m_actionHandler);
     }
 
     private IconRenderer.InfoIcon createInfoIcon(String anInfo)
@@ -286,9 +263,12 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
 
     public void setSelectedCell(int aRow, int aColumn)
     {
-//        if (aRow != m_selectedRow || aColumn != m_selectedColunm)
+        if (aRow != m_selectedRow || aColumn != m_selectedColunm)
         {
-            if (aRow < 0 || aRow >= getRowCount() || aColumn < 0 || aColumn >= getColumnCount()) return;
+            if (aRow < 0 || aRow >= getRowCount() || aColumn < 0 || aColumn >= getColumnCount())
+            {
+                return;
+            }
             System.out.println(MessageFormat.format("Selected row: {0}, selected column: {1}", aRow, aColumn));
             try
             {
@@ -387,6 +367,22 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         fireTableDataChanged();
     }
 
+    public IUnitIf getUnitAt(int aRow)
+    {
+     return ((IconRenderer.UnitIcon) m_iconRows.get(aRow)[0]).getUnit();
+    }
+
+    public boolean canAcceptAssignment(IAssignmentIf anAssignment, int aRow, int aColumn)
+    {
+        if (aColumn == 0 || aColumn == 5)
+        {
+            return false;
+        }
+        IUnitIf rowUnit = getUnitAt(aRow);
+        IAssignmentIf.AssignmentStatus columnStatus = UnitTableModel.getSelectedAssignmentStatus(aColumn - 1);
+        return anAssignment.canChangeToStatus(columnStatus, rowUnit);
+    }
+
     public abstract static class TimeComparator implements Comparator<IconRenderer.AssignmentIcon>
     {
         public int compare(IconRenderer.AssignmentIcon o1, IconRenderer.AssignmentIcon o2)
@@ -475,13 +471,11 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
 
     public static class UnitTableRowSorter extends TableRowSorter<UnitTableModel>
     {
-        UnitTableModel m_model;
         int[] m_sortKeys = new int[]{0, 1, 2, 2, 2, 0}; // default initial values
 
         public UnitTableRowSorter(UnitTableModel aModel)
         {
             super(aModel);
-            m_model = aModel;
         }
 
         public Comparator<?> getComparator(int column)
@@ -561,9 +555,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
 
     public class HeaderPopupHandler extends AbstractPopupHandler implements ActionListener
     {
-        private final UnitTableModel m_model;
         private final TableColumnModel m_columnModel;
-        //        private final UnitTableRowSorter m_rowSorter;
         private final JPopupMenu[] m_menus = new JPopupMenu[6];
         private final Vector<JRadioButtonMenuItem>[] m_buttons = new Vector[6];
         private final ButtonGroup[] m_buttonGroups = new ButtonGroup[6];
@@ -574,9 +566,8 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
 
         public HeaderPopupHandler(UnitTableModel aModel, JTable aTable)
         {
-            m_model = aModel;
             m_columnModel = aTable.getColumnModel();
-            m_rowSorter = m_model.getRowSorter();
+            m_rowSorter = getRowSorter();
 
             createUnitSelectionBoxes();
             m_menuSeparator = new JSeparator();
@@ -646,7 +637,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    m_model.getRowSorter().setSortKey(aColumn, aKeyIndex);
+                    getRowSorter().setSortKey(aColumn, aKeyIndex);
                 }
             };
             return new JRadioButtonMenuItem(action);
@@ -718,7 +709,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
                 selectAll(false);
             } else if (c != null)
             {
-                m_model.setTypeSelections(command, c.isSelected());
+                setTypeSelections(command, c.isSelected());
             }
         }
 
@@ -728,8 +719,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
             {
                 m.setSelected(aFlag);
             }
-            m_model.setTypeSelections(IUnitIf.UnitType.values(), aFlag);
+            setTypeSelections(IUnitIf.UnitType.values(), aFlag);
         }
     }
 }
-

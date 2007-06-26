@@ -39,6 +39,7 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     private final HypothesisListImpl m_hypothesisList = new HypothesisListImpl(this, "HypothesisList", true, 100);
     private final IntelligenceListImpl m_intelligenceList = new IntelligenceListImpl(this, "IntelligenceList", true, 100);
     private final MessageLogImpl m_messageLog = new MessageLogImpl(this, "MessageLog", true, 100);
+    private final MessageLineListImpl m_messageLineList = new MessageLineListImpl(this, "MessageLineList", true, 1000);
     private final OperationAreaListImpl m_operationAreaList = new OperationAreaListImpl(this, "OperationAreaList", true, 100);
     private final POIListImpl m_pOIList = new POIListImpl(this, "POIList", true, 100);
     private final RouteListImpl m_routeList = new RouteListImpl(this, "RouteList", true, 100);
@@ -107,6 +108,7 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
         addList(m_hypothesisList);
         addList(m_intelligenceList);
         addList(m_messageLog);
+        addList(m_messageLineList);
         addList(m_operationAreaList);
         addList(m_pOIList);
         addList(m_routeList);
@@ -540,6 +542,22 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
         return m_messageLog.getItems();
     }
 
+
+    public IMessageLineListIf getMessageLines()
+    {
+        return m_messageLineList;
+    }
+
+    public IMsoModelIf.ModificationState getMessageLineState(IMessageLineIf anIMessageLineIf)
+    {
+        return m_messageLineList.getState(anIMessageLineIf);
+    }
+
+    public Collection<IMessageLineIf> getMessageLineItems()
+    {
+        return m_messageLineList.getItems();
+    }
+
     public IOperationAreaListIf getOperationAreaList()
     {
         return m_operationAreaList;
@@ -712,7 +730,6 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     {
         return null;
     }
-
 
     public List<IHierarchicalUnitIf> getSubOrdinates()
     {

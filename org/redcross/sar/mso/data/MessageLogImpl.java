@@ -1,7 +1,5 @@
 package org.redcross.sar.mso.data;
 
-import org.redcross.sar.util.except.DuplicateIdException;
-
 import java.util.Calendar;
 
 public class MessageLogImpl extends MsoListImpl<IMessageIf> implements IMessageLogIf
@@ -34,6 +32,5 @@ public class MessageLogImpl extends MsoListImpl<IMessageIf> implements IMessageL
         checkCreateOp();
         IMessageIf retVal = getItem(anObjectId);
         return retVal != null ? retVal : createdItem(new MessageImpl(anObjectId, -1));
-
     }
 }
