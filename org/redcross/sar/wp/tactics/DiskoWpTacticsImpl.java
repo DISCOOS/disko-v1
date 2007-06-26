@@ -43,6 +43,7 @@ import org.redcross.sar.map.feature.OperationAreaFeatureClass;
 import org.redcross.sar.map.feature.POIFeatureClass;
 import org.redcross.sar.map.feature.SearchAreaFeatureClass;
 import org.redcross.sar.map.layer.AreaLayer;
+import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.map.layer.OperationAreaLayer;
 import org.redcross.sar.map.layer.POILayer;
 import org.redcross.sar.map.layer.SearchAreaLayer;
@@ -110,6 +111,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 	private SearchAreaLayer searchAreaLayer = null;
 	private POILayer poiLayer = null;
 	private AreaLayer areaLayer = null;
+	private IMsoFeatureLayer currentLayer = null;
 	private IAssignmentIf currentAssignment = null;
 	private IMsoFeature currentMsoFeature = null;
 	private boolean isInitializing = true;
@@ -176,6 +178,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 			IMsoFeatureClass msoFC = (IMsoFeatureClass)e.getSource();
 			List selection = msoFC.getSelected();
 			if (selection != null && selection.size() > 0) {
+				getMap().partialRefresh(currentLayer, null);
 				JList elementList = getElementDialog().getElementList();
 				getElementToggleButton().setEnabled(false);
 				IMsoFeature msoFeature = (IMsoFeature)selection.get(0);
@@ -264,10 +267,10 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		navBar.showButtons(myTools);
 
 		IDiskoMapManager mapManager = getMap().getMapManager();
-		opAreaLayer = (OperationAreaLayer) mapManager.getMsoLayer(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA);
-		searchAreaLayer = (SearchAreaLayer) mapManager.getMsoLayer(IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA);
-		poiLayer = (POILayer) mapManager.getMsoLayer(IMsoManagerIf.MsoClassCode.CLASSCODE_POI);
-		areaLayer = (AreaLayer) mapManager.getMsoLayer(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
+		opAreaLayer = (OperationAreaLayer) mapManager.getMsoLayer(IMsoFeatureLayer.LayerCode.OPERATION_AREA_LAYER);
+		searchAreaLayer = (SearchAreaLayer) mapManager.getMsoLayer(IMsoFeatureLayer.LayerCode.SEARCH_AREA_LAYER);
+		poiLayer = (POILayer) mapManager.getMsoLayer(IMsoFeatureLayer.LayerCode.POI_LAYER);
+		areaLayer = (AreaLayer) mapManager.getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER);
 		
 		drawTool = navBar.getDrawTool();
 		poiTool = navBar.getPOITool();
@@ -286,15 +289,6 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		selectElement();
 		enableSelection(true);
 		enableFinishCancel(false);
-		try {
-			getMap().partialRefresh(null);
-		} catch (AutomationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	
 	private void selectElement() {	
@@ -439,23 +433,23 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 	}
 	
 	private void reset() {
+		currentMsoFeature.setSelected(false);
+		hideDialogs(null);
+		getElementToggleButton().setEnabled(true);
+		eraseTool.removeAll();
+		isEditing = false;
+		enableFinishCancel(false);
+
+		if (callingWp != null) {
+			String id = getDiskoRole().getName()+callingWp;
+			getDiskoRole().selectDiskoWpModule(id);
+			callingWp = null;
+			return;
+		}
+		//select next element
+		selectElement();
 		try {
-			currentMsoFeature.setSelected(false);
-			hideDialogs(null);
-			getElementToggleButton().setEnabled(true);
-			eraseTool.removeAll();
-			isEditing = false;
-			enableFinishCancel(false);
-			
-			if (callingWp != null) {
-				String id = getDiskoRole().getName()+callingWp;
-				getDiskoRole().selectDiskoWpModule(id);
-				callingWp = null;
-				return;
-			}
-			//select next element
-			selectElement();
-			getMap().partialRefresh(null);
+			getMap().partialRefresh(currentLayer, null);
 		} catch (AutomationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -966,6 +960,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 					showOperationAreaButtons();
 					POIType[] poiTypes = { POIType.INTELLIGENCE };
 					poiDialog.setTypes(poiTypes);
+					currentLayer = opAreaLayer;
 					featureClass = (IMsoFeatureClass) opAreaLayer.getFeatureClass();
 				} 
 				else if (currentElement == IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA) {
@@ -977,6 +972,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 					showSearchAreaButtons();
 					POIType[] poiTypes = { POIType.INTELLIGENCE };
 					poiDialog.setTypes(poiTypes);
+					currentLayer = searchAreaLayer;
 					featureClass = (IMsoFeatureClass) searchAreaLayer.getFeatureClass();
 				} 
 				else {
@@ -993,6 +989,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 					showSearchButtons();
 					POIType[] poiTypes = { POIType.START, POIType.VIA, POIType.STOP };
 					poiDialog.setTypes(poiTypes);
+					currentLayer = areaLayer;
 					featureClass = (IMsoFeatureClass) areaLayer.getFeatureClass();
 					flankTool.setFeatureClass(featureClass);
 					splitTool.setFeatureClass(featureClass);
