@@ -1,11 +1,13 @@
 package org.redcross.sar.app;
 
+import org.redcross.sar.gui.ErrorDialog;
+import org.redcross.sar.gui.UIFactory;
+
+import javax.swing.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
-import javax.swing.ImageIcon;
-
-import org.redcross.sar.gui.ErrorDialog;
 
 /**
  * Utility class containing access to methods for handling properties.
@@ -68,7 +70,20 @@ public class Utils {
 				return new ImageIcon(imgURL, name);
 			}
 		}
-		return null;
+      else
+      {
+         BufferedImage defaultImage = new BufferedImage(30, 30, BufferedImage.TYPE_INT_RGB);
+
+         java.awt.Graphics2D g2 = defaultImage.createGraphics();
+         java.awt.Color col = new java.awt.Color(255, 0, 0);
+         g2.setColor(col);
+         g2.fill3DRect(0, 0, 30, 30, true);
+
+         ImageIcon img=new ImageIcon(defaultImage,name+" not found");
+
+         return img;
+      }
+      return null;
 	 }
 	
 	public static String translate(Object obj) {
