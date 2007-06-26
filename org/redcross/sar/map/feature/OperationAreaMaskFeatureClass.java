@@ -4,39 +4,39 @@ import java.io.IOException;
 
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.mso.data.IAreaIf;
-import org.redcross.sar.mso.data.IAreaListIf;
-import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
+import org.redcross.sar.mso.data.IOperationAreaIf;
 import org.redcross.sar.mso.event.MsoEvent.EventType;
 import org.redcross.sar.mso.event.MsoEvent.Update;
 
 import com.esri.arcgis.geometry.esriGeometryType;
 import com.esri.arcgis.interop.AutomationException;
 
-public class AreaFeatureClass extends AbstractMsoFeatureClass {
+public class OperationAreaMaskFeatureClass extends AbstractMsoFeatureClass {
 
 	private static final long serialVersionUID = 1L;
 	
-	public AreaFeatureClass(IMsoManagerIf.MsoClassCode classCode, IMsoModelIf msoModel) {
+	public OperationAreaMaskFeatureClass(IMsoManagerIf.MsoClassCode classCode, IMsoModelIf msoModel) {
 		super(classCode, msoModel);
 	}
 	
 	public void handleMsoUpdateEvent(Update e) {
 		try {
 			int type = e.getEventTypeMask();
-			IAreaIf area = (IAreaIf)e.getSource();
-			IMsoFeature msoFeature = getFeature(area.getObjectId());
+			IOperationAreaIf opArea = (IOperationAreaIf)e.getSource();
+			IMsoFeature msoFeature = getFeature(opArea.getObjectId());
 			
 			if (type == EventType.ADDED_REFERENCE_EVENT.maskValue()) {
-				createFeature(area);
+				createFeature(opArea);
 			}
-			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && msoFeature != null &&
-					!area.getGeodata().equals(msoFeature.getGeodata())) {
+			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && 
+					msoFeature != null && 
+					!opArea.getGeodata().equals(msoFeature.getGeodata())) {
 				msoFeature.msoGeometryChanged();
 				isDirty = true;
 			}
-			else if (type == EventType.DELETED_OBJECT_EVENT.maskValue() && msoFeature != null) {
+			else if (type == EventType.DELETED_OBJECT_EVENT.maskValue() && 
+					msoFeature != null) {
 				removeFeature(msoFeature);
 				isDirty = true;
 			}
@@ -49,16 +49,10 @@ public class AreaFeatureClass extends AbstractMsoFeatureClass {
 		}
 	}
 	
-	public String createMsoObject() {
-		ICmdPostIf cmdPost = msoModel.getMsoManager().getCmdPost();
-		IAreaListIf areaList = cmdPost.getAreaList();
-		IAreaIf area = areaList.createArea();
-		return area.getObjectId();
-	}
-	
 	@SuppressWarnings("unchecked")
-	private AreaFeature createFeature(IMsoObjectIf obj) throws AutomationException, IOException {
-		AreaFeature feature = new AreaFeature();
+	private OperationAreaMaskFeature createFeature(IMsoObjectIf obj) 
+			throws AutomationException, IOException {
+		OperationAreaMaskFeature feature = new OperationAreaMaskFeature();
 		feature.setSpatialReference(srs);
 		feature.setMsoObject(obj);
 		data.add(feature);

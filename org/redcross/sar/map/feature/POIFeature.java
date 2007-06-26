@@ -12,11 +12,12 @@ import com.esri.arcgis.interop.AutomationException;
 public class POIFeature extends AbstractMsoFeature {
 
 	private static final long serialVersionUID = 1L;
+	private Position pos = null;
 
 	@Override
 	public void msoGeometryChanged() throws IOException, AutomationException {
 		IPOIIf poi = (IPOIIf)msoObject;
-		Position pos = poi.getPosition();
+		pos = poi.getPosition();
 		if (pos != null) {
 			geometry = MapUtil.getEsriPoint(pos, srs);
 		}
@@ -38,7 +39,10 @@ public class POIFeature extends AbstractMsoFeature {
 	}
 	
 	public int getGeodataCount() {
-		IPOIIf poi = (IPOIIf)msoObject;
-		return poi.getPosition() != null ? 1: 0;
+		return pos != null ? 1: 0;
+	}
+	
+	public Object getGeodata() {
+		return pos;
 	}
 }

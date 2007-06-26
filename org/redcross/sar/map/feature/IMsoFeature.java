@@ -25,6 +25,8 @@ public interface IMsoFeature extends IFeature {
 	
 	public void addGeodata(IGeodataIf geodata);
 	
+	public Object getGeodata();
+	
 	public void removeGeodataAt(int index);
 	
 	public void setGeodataAt(int index, IGeodataIf geodata);

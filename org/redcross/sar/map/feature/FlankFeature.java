@@ -34,6 +34,7 @@ public class FlankFeature extends AbstractMsoFeature {
 	private static final int RIGHT_SIDE_FLANK = 2;
 	private List<Polygon> leftFlanks  = null;
 	private List<Polygon> rightFlanks = null;
+	private GeoCollection geoColl = null;
 	
 	public FlankFeature() {
 		leftFlanks  = new ArrayList<Polygon>();
@@ -52,7 +53,7 @@ public class FlankFeature extends AbstractMsoFeature {
 	public void msoGeometryChanged() throws IOException, AutomationException {
 		System.out.println("Flank changed");
 		IAreaIf area = (IAreaIf)msoObject;
-		GeoCollection geoColl = area.getGeodata();
+		geoColl = area.getGeodata();
 		if (geoColl != null) {
 			leftFlanks.clear();
 			rightFlanks.clear();
@@ -64,6 +65,10 @@ public class FlankFeature extends AbstractMsoFeature {
 				}
 			}
 		}
+	}
+	
+	public Object getGeodata() {
+		return geoColl;
 	}
 	
 	private void createFlankForRoute(Route route) throws IOException, AutomationException {

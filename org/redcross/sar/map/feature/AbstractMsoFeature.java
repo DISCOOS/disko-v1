@@ -64,6 +64,10 @@ public abstract class AbstractMsoFeature implements IMsoFeature {
 	public void setGeodataAt(int index, IGeodataIf geodata) {
 	}
 	
+	public Object getGeodata() {
+		return null;
+	}
+	
 	public int getGeodataCount() {
 		return 0;
 	}

@@ -11,7 +11,6 @@ import org.redcross.sar.mso.data.ISearchAreaListIf;
 import org.redcross.sar.mso.event.MsoEvent.EventType;
 import org.redcross.sar.mso.event.MsoEvent.Update;
 
-import com.esri.arcgis.geodatabase.IFeature;
 import com.esri.arcgis.geometry.esriGeometryType;
 import com.esri.arcgis.interop.AutomationException;
 
@@ -28,21 +27,18 @@ public class SearchAreaFeatureClass extends AbstractMsoFeatureClass {
 			int type = e.getEventTypeMask();
 			ISearchAreaIf searchArea = (ISearchAreaIf)e.getSource();
 			IMsoFeature msoFeature = getFeature(searchArea.getObjectId());
-			IMsoModelIf.ModificationState geodataState = searchArea.getGeodataState();
-			System.out.println(classCode.name()+" ModificationState: "+geodataState.name());
 			
-			if (type == EventType.ADDED_REFERENCE_EVENT.maskValue() &&
-					geodataState == IMsoModelIf.ModificationState.STATE_SERVER_MODIFIED) {
-				System.out.println(classCode.name()+" .... created");
+			if (type == EventType.ADDED_REFERENCE_EVENT.maskValue()) {
 				createFeature(searchArea);
 			}
-			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && msoFeature != null) {
-				System.out.println(classCode.name()+" .... modified");
+			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && msoFeature != null &&
+					!searchArea.getGeodata().equals(msoFeature.getGeodata())) {
 				msoFeature.msoGeometryChanged();
+				isDirty = true;
 			}
 			else if (type == EventType.DELETED_OBJECT_EVENT.maskValue() && msoFeature != null) {
-				System.out.println(classCode.name()+" .... deleted");
 				removeFeature(msoFeature);
+				isDirty = true;
 			}
 		} catch (AutomationException e1) {
 			// TODO Auto-generated catch block
@@ -52,11 +48,12 @@ public class SearchAreaFeatureClass extends AbstractMsoFeatureClass {
 			e1.printStackTrace();
 		}
 	}
-
-	public IFeature createFeature() throws IOException, AutomationException {
+	
+	public String createMsoObject() {
 		ICmdPostIf cmdPost = msoModel.getMsoManager().getCmdPost();
 		ISearchAreaListIf searchAreaList = cmdPost.getSearchAreaList();
-		return createFeature(searchAreaList.createSearchArea());
+		ISearchAreaIf searchArea = searchAreaList.createSearchArea();
+		return searchArea.getObjectId();
 	}
 	
 	@SuppressWarnings("unchecked")

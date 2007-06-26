@@ -68,7 +68,6 @@ public class EraseTool extends AbstractCommandTool {
 					//editFeature.removeGeodata(null);
 					editFeature.delete();
 				}
-				map.partialRefresh(null);
 				break;
 			}
 		}

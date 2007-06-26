@@ -12,11 +12,12 @@ public class SearchAreaFeature extends AbstractMsoFeature {
 
 	
 	private static final long serialVersionUID = 1L;
+	private org.redcross.sar.util.mso.Polygon msoPolygon = null;
 
 	@Override
 	public void msoGeometryChanged() throws IOException, AutomationException {
 		ISearchAreaIf searchArea = (ISearchAreaIf)msoObject;
-		org.redcross.sar.util.mso.Polygon msoPolygon = searchArea.getGeodata();
+		msoPolygon = searchArea.getGeodata();
 		if (msoPolygon != null) {
 			geometry = MapUtil.getEsriPolygon(msoPolygon, srs);
 		}
@@ -38,7 +39,10 @@ public class SearchAreaFeature extends AbstractMsoFeature {
 	}
 	
 	public int getGeodataCount() {
-		ISearchAreaIf searchArea = (ISearchAreaIf)msoObject;
-		return searchArea.getGeodata() != null ? 1: 0;
+		return msoPolygon != null ? 1: 0;
+	}
+	
+	public Object getGeodata() {
+		return msoPolygon;
 	}
 }

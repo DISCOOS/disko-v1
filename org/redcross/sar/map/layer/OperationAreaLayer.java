@@ -7,6 +7,7 @@ import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.OperationAreaFeatureClass;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
+
 import com.esri.arcgis.display.IDisplay;
 import com.esri.arcgis.display.RgbColor;
 import com.esri.arcgis.display.SimpleFillSymbol;
@@ -23,6 +24,7 @@ public class OperationAreaLayer extends AbstractMsoFeatureLayer {
  	
  	public OperationAreaLayer(IMsoModelIf msoModel) {
  		setClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA);
+ 		setLayerCode(LayerCode.OPERATION_AREA_LAYER);
  		featureClass = new OperationAreaFeatureClass(
  				IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA, msoModel);
 		try {
@@ -36,31 +38,26 @@ public class OperationAreaLayer extends AbstractMsoFeatureLayer {
 		}
 	}
 	
-	public void draw(int drawPhase, IDisplay display, ITrackCancel trackCancel)
-			throws IOException, AutomationException {
-		try {
-			if (display == null || !this.isVisible) {
-				return;
-			}
-			for (int i = 0; i < featureClass.featureCount(null); i++) {
-				IMsoFeature feature = (IMsoFeature)featureClass.getFeature(i);
-				if (feature.isSelected()) {
-					display.setSymbol(selectionSymbol);
-				}
-				else {
-					display.setSymbol(symbol);
-				}
-				Polygon polygon = (Polygon)feature.getShape();
-				if (polygon != null) {
-					display.drawPolygon(polygon);
-				}
-			}
-			isDirty = false;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
+ 	public void draw(int drawPhase, IDisplay display, ITrackCancel trackCancel)
+ 			throws IOException, AutomationException {
+ 		try {
+ 			if (display == null || !this.isVisible) {
+ 				return;
+ 			}
+ 			for (int i = 0; i < featureClass.featureCount(null); i++) {
+ 				IMsoFeature feature = (IMsoFeature)featureClass.getFeature(i);
+ 				Polygon polygon = (Polygon)feature.getShape();
+ 				if (polygon != null) {
+ 					if (feature.isSelected()) 
+ 						display.setSymbol(selectionSymbol);
+ 					else display.setSymbol(symbol);
+ 					display.drawPolygon(polygon);
+ 				}
+ 			}
+ 		} catch (Exception e) {
+ 			e.printStackTrace();
+ 		}
+ 	}
 
 	private void createSymbols() throws UnknownHostException, IOException {
 		symbol = new SimpleFillSymbol();

@@ -91,7 +91,7 @@ public interface IDiskoMap {
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#partialRefresh(com.esri.arcgis.geometry.IEnvelope)
 	 */
-	public void partialRefresh(IEnvelope env) throws IOException,
+	public void partialRefresh(Object obj, IEnvelope env) throws IOException,
 			AutomationException;
 
 }

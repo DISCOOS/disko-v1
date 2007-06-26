@@ -25,9 +25,9 @@ public class FlankLayer extends AbstractMsoFeatureLayer {
 	
 	public FlankLayer(IMsoModelIf msoModel) {
 		setClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
+		setLayerCode(LayerCode.FLANK_LAYER);
  		featureClass = new FlankFeatureClass(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA, msoModel);
 		try {
-			setName("FLANKE"); // TODO: 
 			createSymbols();
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
@@ -57,7 +57,6 @@ public class FlankLayer extends AbstractMsoFeatureLayer {
 					display.drawPolygon((IPolygon)rightFlanks.get(j));
 				}
 			}
-			isDirty = false;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

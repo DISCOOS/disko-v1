@@ -146,19 +146,21 @@ public class DrawTool extends AbstractCommandTool {
 		else if (featureClass.getShapeType() == esriGeometryType.esriGeometryPolygon) {
 			Polygon polygon = getPolygon(pathGeometry);
 			polygon.setSpatialReferenceByRef(map.getSpatialReference());
-			editFeature = (IMsoFeature) featureClass.createFeature();
+		
+			String objID = featureClass.createMsoObject();
+			editFeature = (IMsoFeature) featureClass.getFeature(objID);
 			editFeature.setGeodata(MapUtil.getMsoPolygon(polygon));
 			featureClass.setSelected(editFeature, true);
 		}
 		else if (featureClass.getShapeType() == esriGeometryType.esriGeometryBag) {
 			if (editFeature == null) {
-				editFeature = (IMsoFeature) featureClass.createFeature();
+				String objID = featureClass.createMsoObject();
+				editFeature = (IMsoFeature) featureClass.getFeature(objID);
 			}
 			editFeature.addGeodata(MapUtil.getMsoRoute(pathGeometry));
 			featureClass.setSelected(editFeature, true);
 		}
 		reset();
-		map.getActiveView().refresh();
 		map.fireEditLayerChanged();
 	}
 	

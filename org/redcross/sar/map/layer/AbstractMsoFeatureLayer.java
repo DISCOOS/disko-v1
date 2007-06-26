@@ -28,6 +28,7 @@ public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoD
 	
 	protected String name = null;
 	protected IMsoManagerIf.MsoClassCode classCode = null;
+	protected IMsoFeatureLayer.LayerCode layerCode = null;
 	protected IEnvelope extent = null;
 	protected ISpatialReference srs = null;
 	protected IFeatureClass featureClass = null;
@@ -35,7 +36,6 @@ public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoD
 	protected boolean isValid, isVisible = true;
 	protected double maximumScale, minimumScale = 0;
 	protected boolean showTips = false;
-	protected boolean isDirty = false;
 
 	public AbstractMsoFeatureLayer() {
 	}
@@ -58,7 +58,15 @@ public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoD
 
 	public void setClassCode(IMsoManagerIf.MsoClassCode classCode) {
 		this.classCode = classCode;
-		this.name = Utils.translate(classCode);
+	}
+	
+	public void setLayerCode(IMsoFeatureLayer.LayerCode layerCode) {
+		this.layerCode = layerCode;
+		name = Utils.translate(layerCode);
+	}
+	
+	public IMsoFeatureLayer.LayerCode getLayerCode() {
+		return layerCode;
 	}
 
 	public boolean isValid() throws IOException, AutomationException {

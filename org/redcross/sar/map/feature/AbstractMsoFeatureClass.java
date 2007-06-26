@@ -50,6 +50,7 @@ public abstract class AbstractMsoFeatureClass implements IMsoFeatureClass, IGeoD
 	protected ArrayList<IDiskoMapEventListener> listeners = null;
 	protected DiskoMapEvent diskoMapEvent = null;
 	protected EnumSet<IMsoManagerIf.MsoClassCode> myInterests = null;
+	protected boolean isDirty = false;
 	
 	public AbstractMsoFeatureClass(IMsoManagerIf.MsoClassCode classCode, IMsoModelIf msoModel) {
 		this.classCode = classCode;
@@ -76,6 +77,18 @@ public abstract class AbstractMsoFeatureClass implements IMsoFeatureClass, IGeoD
 
 	public void setMsoModel(IMsoModelIf msoModel) {
 		this.msoModel = msoModel;
+	}
+	
+	public String createMsoObject() {
+		return null;
+	}
+	
+	public void setIsDirty(boolean isDirty) {
+		this.isDirty = isDirty;
+	}
+	
+	public boolean getIsDirty() {
+		return isDirty;
 	}
 
 	public void handleMsoUpdateEvent(Update e) {

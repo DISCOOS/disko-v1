@@ -25,6 +25,7 @@ import com.esri.arcgis.carto.FeatureLayer;
 import com.esri.arcgis.carto.IFeatureLayer;
 import com.esri.arcgis.carto.ILayer;
 import com.esri.arcgis.carto.IMap;
+import com.esri.arcgis.carto.esriViewDrawPhase;
 import com.esri.arcgis.controls.IMapControlEvents2Adapter;
 import com.esri.arcgis.controls.IMapControlEvents2OnAfterDrawEvent;
 import com.esri.arcgis.controls.IMapControlEvents2OnExtentUpdatedEvent;
@@ -55,6 +56,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	private ArrayList<IDiskoMapEventListener> listeners = null;
 	private DiskoMapEvent diskoMapEvent = null;
 	protected EnumSet<IMsoManagerIf.MsoClassCode> myInterests = null;
+	
 
 	/**
 	 * Default constructor
@@ -69,6 +71,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 		
 		myInterests = EnumSet.of(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
 		myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA);
+		myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA);
 		myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_POI);
 		IMsoEventManagerIf msoEventManager = msoModel.getEventManager();
 		msoEventManager.addClientUpdateListener(this);
@@ -109,7 +112,12 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 			IFeatureLayer layer = (IFeatureLayer)customLayers.get(i);
 			layer.setSpatialReferenceByRef(getSpatialReference());
 			focusMap.addLayer(layer);
+			layer.setCached(true);
 		}
+		// reactivate
+		getActiveView().deactivate();			
+		getActiveView().activate(getHWnd());			
+		getActiveView().refresh();
 		
 		// set all featurelayers not selectabel
 		for (int i = 0; i < focusMap.getLayerCount(); i++) {
@@ -124,23 +132,24 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	}
 	
 	public void handleMsoUpdateEvent(Update e) {
-		/*try {
+		try {
 			IMsoObjectIf msoObj = (IMsoObjectIf)e.getSource();
-			IMsoFeatureLayer msoLayer = mapManager.getMsoLayer(msoObj.getMsoClassCode());
-			IMsoFeatureClass fc = (IMsoFeatureClass)msoLayer.getFeatureClass();
-			IMsoFeature feature = fc.getFeature(msoObj.getObjectId());
-			if (feature != null && feature.getExtent() != null) {
-				IEnvelope extent = feature.getExtent();
-				partialRefresh(extent);
+			List msoLayers = mapManager.getMsoLayers(msoObj.getMsoClassCode());
+			for (int i = 0; i < msoLayers.size(); i++) {
+				IFeatureLayer flayer = (IFeatureLayer)msoLayers.get(i);
+				IMsoFeatureClass fc = (IMsoFeatureClass)flayer.getFeatureClass();
+				if (fc.getIsDirty()) {
+					partialRefresh(flayer, null);
+					fc.setIsDirty(false);
+				}
 			}
-			
 		} catch (AutomationException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}*/
+		}
 	}
 
 	public boolean hasInterestIn(IMsoObjectIf aMsoObject) {
@@ -314,11 +323,21 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 			msoObject = assignment.getPlannedArea();
 		}
 		if (msoObject != null) {
-			IMsoFeatureLayer msoLayer = getMapManager().getMsoLayer(msoObject.getMsoClassCode());
-			if (msoLayer != null)  {
-				IMsoFeatureClass msoFC = (IMsoFeatureClass)msoLayer.getFeatureClass();
+			IEnvelope env = null;
+			List msoLayers = mapManager.getMsoLayers(msoObject.getMsoClassCode());
+			for (int i = 0; i < msoLayers.size(); i++) {
+				IFeatureLayer flayer = (IFeatureLayer)msoLayers.get(i);
+				IMsoFeatureClass msoFC = (IMsoFeatureClass)flayer.getFeatureClass();
 				IMsoFeature msoFeature = msoFC.getFeature(msoObject.getObjectId());
-				zoomToFeature(msoFeature);
+				IEnvelope extent = msoFeature.getExtent();
+				if (extent != null) {
+					if (env == null)
+						env = extent.getEnvelope();
+					else env.union(extent);
+				}
+			}
+			if (env != null) {
+				setExtent(env);
 			}
 		}
 	}
@@ -330,9 +349,10 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 			msoObject = assignment.getPlannedArea();
 		}
 		if (msoObject != null) {
-			IMsoFeatureLayer msoLayer = getMapManager().getMsoLayer(msoObject.getMsoClassCode());
-			if (msoLayer != null)  {
-				IMsoFeatureClass msoFC = (IMsoFeatureClass)msoLayer.getFeatureClass();
+			List msoLayers = mapManager.getMsoLayers(msoObject.getMsoClassCode());
+			for (int i = 0; i < msoLayers.size(); i++) {
+				IFeatureLayer flayer = (IFeatureLayer)msoLayers.get(i);
+				IMsoFeatureClass msoFC = (IMsoFeatureClass)flayer.getFeatureClass();
 				msoFC.clearSelected();
 				IMsoFeature msoFeature = msoFC.getFeature(msoObject.getObjectId());
 				msoFC.setSelected(msoFeature, selected);
@@ -402,14 +422,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#partialRefresh(com.esri.arcgis.geometry.IEnvelope)
 	 */
-	public void partialRefresh(IEnvelope env) throws IOException, AutomationException {
-		if (env != null) {
-			getActiveView().partialRefresh(
-					com.esri.arcgis.carto.esriViewDrawPhase.esriViewGeography, 
-					null, env);
-		}
-		else {
-			getActiveView().refresh();
-		}
+	public void partialRefresh(Object obj, IEnvelope env) throws IOException, AutomationException {
+		getActiveView().partialRefresh(esriViewDrawPhase.esriViewGeography, obj, env);
 	}
 }

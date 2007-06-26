@@ -11,7 +11,6 @@ import org.redcross.sar.mso.data.IPOIListIf;
 import org.redcross.sar.mso.event.MsoEvent.EventType;
 import org.redcross.sar.mso.event.MsoEvent.Update;
 
-import com.esri.arcgis.geodatabase.IFeature;
 import com.esri.arcgis.geometry.esriGeometryType;
 import com.esri.arcgis.interop.AutomationException;
 
@@ -28,21 +27,19 @@ public class POIFeatureClass extends AbstractMsoFeatureClass {
 			int type = e.getEventTypeMask();
 			IPOIIf poi = (IPOIIf)e.getSource();
 			IMsoFeature msoFeature = getFeature(poi.getObjectId());
-			IMsoModelIf.ModificationState geodataState = poi.getPositionState();
-			System.out.println(classCode.name()+" ModificationState: "+geodataState.name());
 			
-			if (type == EventType.ADDED_REFERENCE_EVENT.maskValue() &&
-					geodataState == IMsoModelIf.ModificationState.STATE_SERVER_MODIFIED) {
-				System.out.println(classCode.name()+" .... created");
+			if (type == EventType.ADDED_REFERENCE_EVENT.maskValue()) {
 				createFeature(poi);
 			}
-			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && msoFeature != null) {
-				System.out.println(classCode.name()+" .... modified");
-				msoFeature.msoGeometryChanged();
+			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && msoFeature != null &&
+					!poi.getPosition().equals(msoFeature.getGeodata())) {
+				msoFeature.msoGeometryChanged(); 
+				isDirty = true;
+				System.out.println(poi+" modifyed");
 			}
 			else if (type == EventType.DELETED_OBJECT_EVENT.maskValue() && msoFeature != null) {
-				System.out.println(classCode.name()+" .... deleted");
 				removeFeature(msoFeature);
+				isDirty = true;
 			}
 		} catch (AutomationException e1) {
 			// TODO Auto-generated catch block
@@ -52,11 +49,12 @@ public class POIFeatureClass extends AbstractMsoFeatureClass {
 			e1.printStackTrace();
 		}
 	}
-
-	public IFeature createFeature() throws IOException, AutomationException {
+	
+	public String createMsoObject() {
 		ICmdPostIf cmdPost = msoModel.getMsoManager().getCmdPost();
 		IPOIListIf poiList = cmdPost.getPOIList();
-		return createFeature(poiList.createPOI());
+		IPOIIf poi = poiList.createPOI();
+		return poi.getObjectId();
 	}
 	
 	@SuppressWarnings("unchecked")

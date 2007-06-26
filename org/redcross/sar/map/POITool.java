@@ -1,6 +1,7 @@
 package org.redcross.sar.map;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -60,8 +61,10 @@ public class POITool extends AbstractCommandTool {
 			map = (DiskoMap)obj;
 			map.addDiskoMapEventListener(this);
 			IDiskoMapManager mapManager = getMap().getMapManager();
-			OperationAreaLayer opAreaLayer = (OperationAreaLayer) mapManager.
-				getMsoLayer(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA);
+			
+			List layers = mapManager.getMsoLayers(
+					IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA);
+			OperationAreaLayer opAreaLayer = (OperationAreaLayer) layers.get(0);
 			opAreaFC = (OperationAreaFeatureClass)opAreaLayer.getFeatureClass();
 			poiDialog = (POIDialog)dialog;
 			poiDialog.setLocationRelativeTo(map, DiskoDialog.POS_WEST, false);
@@ -81,7 +84,6 @@ public class POITool extends AbstractCommandTool {
 			throws IOException, AutomationException {
 		if (editFeature != null) {
 			editFeature.setSelected(false);
-			refresh((Point)editFeature.getShape());
 		}
 	}	
 	
@@ -102,7 +104,9 @@ public class POITool extends AbstractCommandTool {
 			showWarning("PUI er utenfor operasjonsområdet");
 			return;
 		}
-		editFeature = (IMsoFeature)featureClass.createFeature();
+		String objID = featureClass.createMsoObject();
+		editFeature = (IMsoFeature) featureClass.getFeature(objID);
+		
 		if (area != null) {
 			// snapping
 			IFeature feature = search(areaFC, point);
@@ -137,8 +141,6 @@ public class POITool extends AbstractCommandTool {
 		if (!extent.contains(point)) {
 			extent.centerAt(point);
 			map.setExtent(extent);
-		} else {
-			refresh(point);
 		}
 		map.fireEditLayerChanged();
 	}
@@ -172,9 +174,9 @@ public class POITool extends AbstractCommandTool {
 		boolean flag = false;
 		for (int i = 0; i < fc.featureCount(null); i++) {
 			Polygon polygon = (Polygon)fc.getFeature(i).getShape();
-		if (polygon.contains(geom)) {
-			flag = true;
-		}
+			if (polygon.contains(geom)) {
+				flag = true;
+			}
 		}
 		return flag;
 	}

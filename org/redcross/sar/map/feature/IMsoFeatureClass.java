@@ -21,6 +21,8 @@ public interface IMsoFeatureClass extends IFeatureClass {
 
 	public void setMsoModel(IMsoModelIf msoModel);
 	
+	public String createMsoObject();
+	
 	public void setSpatialReference(ISpatialReference srs) throws IOException, AutomationException;
 	
 	public IMsoFeature getFeature(String id);
@@ -36,4 +38,8 @@ public interface IMsoFeatureClass extends IFeatureClass {
 	public void addDiskoMapEventListener(IDiskoMapEventListener listener);
 	
 	public void removeDiskoMapEventListener(IDiskoMapEventListener listener);
+	
+	public void setIsDirty(boolean isDirty);
+	
+	public boolean getIsDirty();
 }

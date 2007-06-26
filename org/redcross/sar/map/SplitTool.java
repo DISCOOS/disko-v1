@@ -57,7 +57,7 @@ public class SplitTool extends AbstractCommandTool {
 						Polyline[] result = split((Polyline)subGeom, p); 
 						editFeature.setGeodataAt(index, MapUtil.getMsoRoute(result[0]));
 						editFeature.addGeodata(MapUtil.getMsoRoute(result[1]));
-						map.partialRefresh(subGeom.getEnvelope());
+						map.partialRefresh(subGeom.getEnvelope(), null);
 					}
 				}
 			}

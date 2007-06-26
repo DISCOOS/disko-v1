@@ -28,11 +28,14 @@ public class FlankFeatureClass extends AbstractMsoFeatureClass {
 			if (type == EventType.ADDED_REFERENCE_EVENT.maskValue()) {
 				createFeature(area);
 			}
-			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && msoFeature != null) {
+			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && msoFeature != null &&
+					!area.getGeodata().equals(msoFeature.getGeodata())) {
 				msoFeature.msoGeometryChanged();
+				isDirty = true;
 			}
 			else if (type == EventType.DELETED_OBJECT_EVENT.maskValue() && msoFeature != null) {
 				removeFeature(msoFeature);
+				isDirty = true;
 			}
 		} catch (AutomationException e1) {
 			// TODO Auto-generated catch block

@@ -25,6 +25,7 @@ public class AreaLayer extends AbstractMsoFeatureLayer {
  	
  	public AreaLayer(IMsoModelIf msoModel) {
  		setClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
+ 		setLayerCode(LayerCode.AREA_LAYER);
  		featureClass = new AreaFeatureClass(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA, msoModel);
 		try {
 			createSymbols();
@@ -45,14 +46,12 @@ public class AreaLayer extends AbstractMsoFeatureLayer {
 			}
 			for (int i = 0; i < featureClass.featureCount(null); i++) {
 				IMsoFeature feature = (IMsoFeature)featureClass.getFeature(i);
-				if (feature.isSelected()) {
-					display.setSymbol(selectionSymbol);
-				}
-				else {
-					display.setSymbol(symbol);
-				}
 				GeometryBag geomBag = (GeometryBag)feature.getShape();
 				if (geomBag != null) {
+					if (feature.isSelected()) 
+						display.setSymbol(selectionSymbol);
+					else display.setSymbol(symbol);
+					
 					for (int j = 0; j < geomBag.getGeometryCount(); j++) {
 						IGeometry geom = geomBag.getGeometry(j);
 						if (geom instanceof IPolyline) {
@@ -60,8 +59,8 @@ public class AreaLayer extends AbstractMsoFeatureLayer {
 						}
 					}
 				}
+
 			}
-			isDirty = false;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

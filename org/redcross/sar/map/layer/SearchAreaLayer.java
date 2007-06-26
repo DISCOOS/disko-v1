@@ -24,6 +24,7 @@ public class SearchAreaLayer extends AbstractMsoFeatureLayer {
  	
  	public SearchAreaLayer(IMsoModelIf msoModel) {
  		setClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA);
+ 		setLayerCode(LayerCode.SEARCH_AREA_LAYER);
  		featureClass = new SearchAreaFeatureClass(IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA, msoModel);
 		try {
 			createSymbols();
@@ -44,18 +45,14 @@ public class SearchAreaLayer extends AbstractMsoFeatureLayer {
 			}
 			for (int i = 0; i < featureClass.featureCount(null); i++) {
 				IMsoFeature feature = (IMsoFeature)featureClass.getFeature(i);
-				if (feature.isSelected()) {
-					display.setSymbol(selectionSymbol);
-				}
-				else {
-					display.setSymbol(symbol);
-				}
 				Polygon polygon = (Polygon)feature.getShape();
 				if (polygon != null) {
+					if (feature.isSelected()) 
+						display.setSymbol(selectionSymbol);
+					else display.setSymbol(symbol);
 					display.drawPolygon(polygon);
 				}
 			}
-			isDirty = false;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

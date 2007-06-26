@@ -14,6 +14,7 @@ import org.redcross.sar.map.layer.AreaLayer;
 import org.redcross.sar.map.layer.FlankLayer;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.map.layer.OperationAreaLayer;
+import org.redcross.sar.map.layer.OperationAreaMaskLayer;
 import org.redcross.sar.map.layer.POILayer;
 import org.redcross.sar.map.layer.SearchAreaLayer;
 import org.redcross.sar.mso.IMsoManagerIf;
@@ -42,6 +43,7 @@ public class DiskoMapManagerImpl implements IDiskoMapManager {
 		msoLayers.add(new SearchAreaLayer(app.getMsoModel()));
 		msoLayers.add(new AreaLayer(app.getMsoModel()));
 		msoLayers.add(new FlankLayer(app.getMsoModel()));
+		msoLayers.add(new OperationAreaMaskLayer(app.getMsoModel()));
 		setInitMxdPaths();
 	}
 
@@ -94,7 +96,6 @@ public class DiskoMapManagerImpl implements IDiskoMapManager {
 			}			
 		}
 		System.out.println("setInitMxdPaths(), antall mxd'er: " + sMxdPaths.size());
-		
 	}
 
 	/*
@@ -204,10 +205,21 @@ public class DiskoMapManagerImpl implements IDiskoMapManager {
 		return msoLayers;
 	}
 	
-	public IMsoFeatureLayer getMsoLayer(IMsoManagerIf.MsoClassCode classCode) {
+	public List getMsoLayers(IMsoManagerIf.MsoClassCode classCode) {
+		ArrayList<IMsoFeatureLayer> result = new ArrayList<IMsoFeatureLayer>();
 		for (int i = 0; i < msoLayers.size(); i++) {
 			IMsoFeatureLayer msoFeatureLayer = (IMsoFeatureLayer)msoLayers.get(i);
 			if (msoFeatureLayer.getClassCode() == classCode) {
+				result.add(msoFeatureLayer);
+			}
+		}
+		return result;
+	}
+	
+	public IMsoFeatureLayer getMsoLayer(IMsoFeatureLayer.LayerCode layerCode) {
+		for (int i = 0; i < msoLayers.size(); i++) {
+			IMsoFeatureLayer msoFeatureLayer = (IMsoFeatureLayer)msoLayers.get(i);
+			if (msoFeatureLayer.getLayerCode() == layerCode) {
 				return msoFeatureLayer;
 			}
 		}

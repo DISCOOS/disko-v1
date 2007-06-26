@@ -64,6 +64,5 @@ public class SelectFeatureTool extends AbstractCommandTool {
 				break;
 			}
 		}
-		map.partialRefresh(null);
 	}
 }

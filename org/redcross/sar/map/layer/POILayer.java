@@ -22,6 +22,7 @@ public class POILayer extends AbstractMsoFeatureLayer {
  	
  	public POILayer(IMsoModelIf msoModel) {
  		setClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_POI);
+ 		setLayerCode(LayerCode.POI_LAYER);
 		featureClass = new POIFeatureClass(IMsoManagerIf.MsoClassCode.CLASSCODE_POI, msoModel);
 		try {
 			createSymbols();
@@ -42,18 +43,14 @@ public class POILayer extends AbstractMsoFeatureLayer {
 			}
 			for (int i = 0; i < featureClass.featureCount(null); i++) {
 				IMsoFeature feature = (IMsoFeature)featureClass.getFeature(i);
-				if (feature.isSelected()) {
-					display.setSymbol(selectionSymbol);
-				}
-				else {
-					display.setSymbol(symbol);
-				}
 				Point point = (Point)feature.getShape();
 				if (point != null) {
+					if (feature.isSelected()) 
+						display.setSymbol(selectionSymbol);
+					else display.setSymbol(symbol);
 					display.drawPoint(point);
 				}
 			}
-			isDirty = false;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

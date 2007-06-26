@@ -17,11 +17,12 @@ import com.esri.arcgis.interop.AutomationException;
 public class AreaFeature extends AbstractMsoFeature {
 
 	private static final long serialVersionUID = 1L;
+	private GeoCollection geoColl = null;
 
 	@Override
 	public void msoGeometryChanged() throws IOException, AutomationException {
 		IAreaIf area = (IAreaIf)msoObject;
-		GeoCollection geoColl = area.getGeodata();
+		geoColl = area.getGeodata();
 		if (geoColl != null) {
 			GeometryBag geomBag = new GeometryBag();
 			Iterator iter = geoColl.getPositions().iterator();
@@ -60,9 +61,11 @@ public class AreaFeature extends AbstractMsoFeature {
 		area.setGeodata(clone);
 	}
 	
+	public Object getGeodata() {
+		return geoColl;
+	}
+	
 	public int getGeodataCount() {
-		IAreaIf area = (IAreaIf)msoObject;
-		GeoCollection geoColl = area.getGeodata();
 		return geoColl != null ? geoColl.getPositions().size() : 0;
 	}
 	
