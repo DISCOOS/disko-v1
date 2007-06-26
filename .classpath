@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding=".classpath|.project|.settings/|DiskoModules.xml|app.properties|icons/|jndi.properties|lib/|mapping/|properties|test/" including="org/" kind="src" path=""/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Program Files/ArcGIS/java/lib/arcobjects.jar"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/thomasl/DISKO/Disko/lib/wmscommon.jar"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/thomasl/DISKO/Disko/lib/arcobjects.jar"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/thomasl/DISKO/Disko/lib/castor-0.9.5.jar"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/thomasl/DISKO/Disko/lib/ekit10.jar"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/thomasl/DISKO/Disko/lib/infobus.jar"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/thomasl/DISKO/Disko/lib/jbcl.jar"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/thomasl/DISKO/Disko/lib/jdic.jar"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/thomasl/DISKO/Disko/lib/jdic-native.jar"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/thomasl/DISKO/Disko/lib/jms.jar"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/thomasl/DISKO/Disko/lib/jndi.jar"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/thomasl/DISKO/Disko/lib/ldap.jar"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/thomasl/DISKO/Disko/lib/SaraApi.jar"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/thomasl/DISKO/Disko/lib/swiftmq.jar"/>
+	<classpathentry kind="lib" path="C:/API/junit4.3.1/junit-4.3.1.jar"/>
+	<classpathentry kind="output" path=""/>
+</classpath>

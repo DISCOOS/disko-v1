@@ -9,6 +9,7 @@ import org.rescuenorway.saraccess.model.SarFact;
 import org.rescuenorway.saraccess.model.SarFactLocation;
 import org.rescuenorway.saraccess.model.SarFactTrack;
 import org.rescuenorway.saraccess.model.SarFactArea;
+import org.redcross.sar.modelDriver.SarMsoMapper;
 import org.redcross.sar.mso.data.AttributeImpl;
 import org.redcross.sar.mso.data.VehicleImpl;
 import org.redcross.sar.mso.data.AbstractMsoObject;

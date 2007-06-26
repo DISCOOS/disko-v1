@@ -5,7 +5,8 @@ import org.junit.After;
 import org.junit.Ignore; 
 import org.junit.Test; 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
+
+import org.redcross.sar.modelDriver.SarModelDriver;
 import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.IMsoManagerIf;

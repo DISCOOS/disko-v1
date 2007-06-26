@@ -2,6 +2,7 @@ package org.redcross.sar.mso;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
+import org.redcross.sar.mso.*;
 import org.redcross.sar.mso.data.*;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.util.except.DuplicateIdException;
