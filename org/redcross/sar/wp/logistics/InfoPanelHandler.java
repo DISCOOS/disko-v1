@@ -289,6 +289,7 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
                 {
                     role.selectDiskoWpModule(calledModule);
                     calledModule.setCallingWp(m_wpModule.getName());
+                    calledModule.getMap().zoomToMsoObject(m_displayedAsssignment);
                     m_wpModule.getMap().setSelected(m_displayedAsssignment, true);
                 } else
                 {
