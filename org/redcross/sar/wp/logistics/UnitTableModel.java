@@ -196,11 +196,6 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
     @Override
     public String getColumnName(int column)
     {
-        return getColName(column);
-    }
-
-    public String getColName(int column)
-    {
         return m_wpModule.getText(MessageFormat.format("UnitTable_hdr_{0}.text", column));
     }
 
