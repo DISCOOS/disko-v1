@@ -3,6 +3,7 @@
 	<DiskoRolle name="nl" title="Nestleder">
 		<DiskoModule classname="org.redcross.sar.wp.tactics.DiskoWpTacticsImpl"/>
 		<DiskoModule classname="org.redcross.sar.wp.logistics.DiskoWpLogisticsImpl"/>
+		<DiskoModule classname="org.redcross.sar.wp.messageLog.DiskoWpMessageLogImpl"/>
 	</DiskoRolle>
 	<DiskoRolle name="al" title="Aksjonsleder">
 		<DiskoModule classname="org.redcross.sar.wp.states.DiskoWpStatesImpl"/>
