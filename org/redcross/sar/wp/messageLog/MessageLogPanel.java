@@ -81,6 +81,8 @@ public class MessageLogPanel
 
     private void setTableData()
     {
+        LogTableModel ltm = (LogTableModel) m_logTable.getModel();
+        ltm.buildTable();
     }
 
 
