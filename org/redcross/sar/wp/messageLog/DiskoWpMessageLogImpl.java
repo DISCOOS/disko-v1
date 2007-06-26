@@ -1,19 +1,11 @@
 package org.redcross.sar.wp.messageLog;
 
-import com.esri.arcgis.interop.AutomationException;
+import java.util.EnumSet;
+import java.util.ResourceBundle;
+
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.gui.NavBar;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
-
-import java.io.IOException;
-import java.util.EnumSet;
-import java.util.ResourceBundle;
-/**
- * Created by IntelliJ IDEA.
- * User: vinjar
- * Date: 25.jun.2007
- * To change this template use File | Settings | File Templates.
- */
 
 /**
  *
@@ -60,20 +52,6 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
         myInterests.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND);
         myInterests.add(NavBar.ToolCommandType.MAP_TOGGLE_COMMAND);
         navBar.showButtons(myInterests);
-        try
-        {
-            getMap().partialRefresh(null);
-        }
-        catch (AutomationException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
     }
 
     /* (non-Javadoc)
