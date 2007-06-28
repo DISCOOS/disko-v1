@@ -2,8 +2,12 @@ package org.redcross.sar.map;
 
 import java.awt.Toolkit;
 import java.io.IOException;
+import java.util.Vector;
 
 import org.redcross.sar.map.feature.IMsoFeature;
+import org.redcross.sar.mso.data.IAreaIf;
+import org.redcross.sar.util.mso.GeoCollection;
+import org.redcross.sar.util.mso.IGeodataIf;
 
 import com.esri.arcgis.geodatabase.IFeature;
 import com.esri.arcgis.geometry.GeometryBag;
@@ -55,9 +59,12 @@ public class SplitTool extends AbstractCommandTool {
 					IGeometry subGeom = geomBag.getGeometry(index);
 					if (subGeom instanceof Polyline) {
 						Polyline[] result = split((Polyline)subGeom, p); 
-						editFeature.setGeodataAt(index, MapUtil.getMsoRoute(result[0]));
-						editFeature.addGeodata(MapUtil.getMsoRoute(result[1]));
-						map.partialRefresh(subGeom.getEnvelope(), null);
+						IAreaIf area = (IAreaIf)editFeature.getMsoObject();
+						GeoCollection clone = clone(area.getGeodata());
+						((Vector<IGeodataIf>)clone.getPositions()).set(index, 
+								MapUtil.getMsoRoute(result[0]));
+						clone.add(MapUtil.getMsoRoute(result[1]));
+						area.setGeodata(clone);
 					}
 				}
 			}

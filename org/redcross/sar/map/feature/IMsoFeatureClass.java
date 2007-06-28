@@ -21,7 +21,7 @@ public interface IMsoFeatureClass extends IFeatureClass {
 
 	public void setMsoModel(IMsoModelIf msoModel);
 	
-	public String createMsoObject();
+	public IMsoFeature createMsoFeature();
 	
 	public void setSpatialReference(ISpatialReference srs) throws IOException, AutomationException;
 	

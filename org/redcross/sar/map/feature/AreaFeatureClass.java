@@ -7,7 +7,6 @@ import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.IAreaIf;
 import org.redcross.sar.mso.data.IAreaListIf;
 import org.redcross.sar.mso.data.ICmdPostIf;
-import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.event.MsoEvent.EventType;
 import org.redcross.sar.mso.event.MsoEvent.Update;
 
@@ -29,7 +28,10 @@ public class AreaFeatureClass extends AbstractMsoFeatureClass {
 			IMsoFeature msoFeature = getFeature(area.getObjectId());
 			
 			if (type == EventType.ADDED_REFERENCE_EVENT.maskValue()) {
-				createFeature(area);
+				msoFeature = new AreaFeature();
+				msoFeature.setSpatialReference(srs);
+				msoFeature.setMsoObject(area);
+				data.add(msoFeature);
 			}
 			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && msoFeature != null &&
 					!area.getGeodata().equals(msoFeature.getGeodata())) {
@@ -49,21 +51,12 @@ public class AreaFeatureClass extends AbstractMsoFeatureClass {
 		}
 	}
 	
-	public String createMsoObject() {
+	public IMsoFeature createMsoFeature() {
 		ICmdPostIf cmdPost = msoModel.getMsoManager().getCmdPost();
 		IAreaListIf areaList = cmdPost.getAreaList();
 		IAreaIf area = areaList.createArea();
-		return area.getObjectId();
+		return getFeature(area.getObjectId());
 	}
-	
-	@SuppressWarnings("unchecked")
-	private AreaFeature createFeature(IMsoObjectIf obj) throws AutomationException, IOException {
-		AreaFeature feature = new AreaFeature();
-		feature.setSpatialReference(srs);
-		feature.setMsoObject(obj);
-		data.add(feature);
-		return feature;
- 	}
 
 	public int getShapeType() throws IOException, AutomationException {
 		return esriGeometryType.esriGeometryBag;

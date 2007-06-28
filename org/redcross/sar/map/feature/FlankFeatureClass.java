@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.IAreaIf;
-import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.event.MsoEvent.EventType;
 import org.redcross.sar.mso.event.MsoEvent.Update;
 
@@ -26,10 +25,13 @@ public class FlankFeatureClass extends AbstractMsoFeatureClass {
 			IAreaIf area = (IAreaIf)e.getSource();
 			IMsoFeature msoFeature = getFeature(area.getObjectId());
 			if (type == EventType.ADDED_REFERENCE_EVENT.maskValue()) {
-				createFeature(area);
+				msoFeature = new FlankFeature();
+				msoFeature.setSpatialReference(srs);
+				msoFeature.setMsoObject(area);
+				data.add(msoFeature);
 			}
-			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && msoFeature != null &&
-					!area.getGeodata().equals(msoFeature.getGeodata())) {
+			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && msoFeature != null) {
+				System.out.println("updating flanke ....");
 				msoFeature.msoGeometryChanged();
 				isDirty = true;
 			}
@@ -45,15 +47,6 @@ public class FlankFeatureClass extends AbstractMsoFeatureClass {
 			e1.printStackTrace();
 		}
 	}
-	
-	@SuppressWarnings("unchecked")
-	private FlankFeature createFeature(IMsoObjectIf obj) throws AutomationException, IOException {
-		FlankFeature feature = new FlankFeature();
-		feature.setSpatialReference(srs);
-		feature.setMsoObject(obj);
-		data.add(feature);
-		return feature;
- 	}
 
 	public int getShapeType() throws IOException, AutomationException {
 		return esriGeometryType.esriGeometryBag;

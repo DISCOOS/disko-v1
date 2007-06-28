@@ -3,7 +3,6 @@ package org.redcross.sar.map.feature;
 import java.io.IOException;
 
 import org.redcross.sar.mso.data.IMsoObjectIf;
-import org.redcross.sar.util.mso.IGeodataIf;
 
 import com.esri.arcgis.geodatabase.IFields;
 import com.esri.arcgis.geodatabase.IObjectClass;
@@ -49,21 +48,6 @@ public abstract class AbstractMsoFeature implements IMsoFeature {
 		return isSelected;
 	}
 	
-	public void setGeodata(IGeodataIf geodata) {
-	}
-	
-	public void removeGeodata(IGeodataIf geodata) {
-	}
-	
-	public void addGeodata(IGeodataIf geodata) {
-	}
-	
-	public void removeGeodataAt(int index) {
-	}
-	
-	public void setGeodataAt(int index, IGeodataIf geodata) {
-	}
-	
 	public Object getGeodata() {
 		return null;
 	}
@@ -100,7 +84,6 @@ public abstract class AbstractMsoFeature implements IMsoFeature {
 	}
 
 	public void delete() throws IOException, AutomationException {
-		msoObject.deleteObject();
 	}
 
 	public int getOID() throws IOException, AutomationException {

@@ -42,8 +42,8 @@ public class DiskoMapManagerImpl implements IDiskoMapManager {
 		msoLayers.add(new OperationAreaLayer(app.getMsoModel()));
 		msoLayers.add(new SearchAreaLayer(app.getMsoModel()));
 		msoLayers.add(new AreaLayer(app.getMsoModel()));
-		msoLayers.add(new FlankLayer(app.getMsoModel()));
 		msoLayers.add(new OperationAreaMaskLayer(app.getMsoModel()));
+		msoLayers.add(new FlankLayer(app.getMsoModel()));
 		setInitMxdPaths();
 	}
 

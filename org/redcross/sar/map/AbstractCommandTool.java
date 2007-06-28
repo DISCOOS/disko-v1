@@ -2,6 +2,7 @@ package org.redcross.sar.map;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.Iterator;
 import java.util.Properties;
 
 import org.redcross.sar.event.DiskoMapEvent;
@@ -9,6 +10,9 @@ import org.redcross.sar.event.IDiskoMapEventListener;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.IMsoFeatureClass;
+import org.redcross.sar.map.layer.OperationAreaLayer;
+import org.redcross.sar.util.mso.GeoCollection;
+import org.redcross.sar.util.mso.IGeodataIf;
 
 import com.esri.arcgis.display.IDisplayTransformation;
 import com.esri.arcgis.geodatabase.IFeature;
@@ -21,6 +25,7 @@ import com.esri.arcgis.geometry.IEnvelope;
 import com.esri.arcgis.geometry.IPoint;
 import com.esri.arcgis.geometry.IRelationalOperator;
 import com.esri.arcgis.geometry.Point;
+import com.esri.arcgis.geometry.Polygon;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.systemUI.ICommand;
 import com.esri.arcgis.systemUI.ITool;
@@ -33,6 +38,7 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 	protected IDisplayTransformation transform = null;
 	protected IMsoFeatureClass featureClass = null;
 	protected IMsoFeature editFeature = null;
+	protected OperationAreaLayer opAreaLayer = null;
 	
 	protected IDisplayTransformation getTransform() 
 			throws IOException, AutomationException {
@@ -110,6 +116,29 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 			}
 		}
 		return -1;
+	}
+	
+	protected GeoCollection clone(GeoCollection oldColl) {
+		GeoCollection newColl = new GeoCollection(null);
+		if (oldColl != null) {
+			Iterator iter = oldColl.getPositions().iterator();
+			while (iter.hasNext()) {
+				newColl.add((IGeodataIf)iter.next());
+			}
+		}
+		return newColl;
+	}
+	
+	protected boolean insideOpArea(IPoint point) throws AutomationException, IOException {
+		boolean flag = false;
+		IFeatureClass fc = opAreaLayer.getFeatureClass();
+		for (int i = 0; i < fc.featureCount(null); i++) {
+			Polygon polygon = (Polygon)fc.getFeature(i).getShape();
+			if (polygon.contains(point)) {
+				flag = true;
+			}
+		}
+		return flag;
 	}
 
 	public int getBitmap() throws IOException, AutomationException {

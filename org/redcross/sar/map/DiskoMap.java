@@ -137,7 +137,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 			List msoLayers = mapManager.getMsoLayers(msoObj.getMsoClassCode());
 			for (int i = 0; i < msoLayers.size(); i++) {
 				IFeatureLayer flayer = (IFeatureLayer)msoLayers.get(i);
-				IMsoFeatureClass fc = (IMsoFeatureClass)flayer.getFeatureClass();
+				IMsoFeatureClass fc  = (IMsoFeatureClass)flayer.getFeatureClass();
 				if (fc.getIsDirty()) {
 					partialRefresh(flayer, null);
 					fc.setIsDirty(false);

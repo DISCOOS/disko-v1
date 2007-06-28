@@ -2,15 +2,18 @@ package org.redcross.sar.map;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Vector;
 
+import org.redcross.sar.map.feature.AreaFeatureClass;
 import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.IMsoFeatureClass;
+import org.redcross.sar.mso.data.IAreaIf;
+import org.redcross.sar.util.mso.GeoCollection;
 
 import com.esri.arcgis.geodatabase.IFeature;
 import com.esri.arcgis.geometry.GeometryBag;
 import com.esri.arcgis.geometry.IGeometry;
 import com.esri.arcgis.geometry.Point;
-import com.esri.arcgis.geometry.esriGeometryType;
 import com.esri.arcgis.interop.AutomationException;
 
 /**
@@ -60,13 +63,16 @@ public class EraseTool extends AbstractCommandTool {
 			if (feature != null && feature instanceof IMsoFeature) {
 				editFeature = (IMsoFeature)feature;
 				IGeometry geom = editFeature.getShape();
-				if (fc.getShapeType() == esriGeometryType.esriGeometryBag) {
+				if (fc instanceof AreaFeatureClass) {
 					GeometryBag geomBag = (GeometryBag)geom;
-					editFeature.removeGeodataAt(getGeomIndex(geomBag, p));
+					int index = getGeomIndex(geomBag, p);
+					IAreaIf area = (IAreaIf)editFeature.getMsoObject();
+					GeoCollection clone = clone(area.getGeodata());
+					((Vector)clone.getPositions()).remove(index);
+					area.setGeodata(clone);
 				}
 				else {
-					//editFeature.removeGeodata(null);
-					editFeature.delete();
+					editFeature.getMsoObject().deleteObject();
 				}
 				break;
 			}

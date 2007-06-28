@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.IOperationAreaIf;
 import org.redcross.sar.mso.event.MsoEvent.EventType;
 import org.redcross.sar.mso.event.MsoEvent.Update;
@@ -27,7 +26,10 @@ public class OperationAreaMaskFeatureClass extends AbstractMsoFeatureClass {
 			IMsoFeature msoFeature = getFeature(opArea.getObjectId());
 			
 			if (type == EventType.ADDED_REFERENCE_EVENT.maskValue()) {
-				createFeature(opArea);
+				msoFeature = new OperationAreaMaskFeature();
+				msoFeature.setSpatialReference(srs);
+				msoFeature.setMsoObject(opArea);
+				data.add(msoFeature);
 			}
 			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && 
 					msoFeature != null && 
@@ -48,16 +50,6 @@ public class OperationAreaMaskFeatureClass extends AbstractMsoFeatureClass {
 			e1.printStackTrace();
 		}
 	}
-	
-	@SuppressWarnings("unchecked")
-	private OperationAreaMaskFeature createFeature(IMsoObjectIf obj) 
-			throws AutomationException, IOException {
-		OperationAreaMaskFeature feature = new OperationAreaMaskFeature();
-		feature.setSpatialReference(srs);
-		feature.setMsoObject(obj);
-		data.add(feature);
-		return feature;
- 	}
 
 	public int getShapeType() throws IOException, AutomationException {
 		return esriGeometryType.esriGeometryBag;

@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.ICmdPostIf;
-import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.ISearchAreaIf;
 import org.redcross.sar.mso.data.ISearchAreaListIf;
 import org.redcross.sar.mso.event.MsoEvent.EventType;
@@ -29,7 +28,10 @@ public class SearchAreaFeatureClass extends AbstractMsoFeatureClass {
 			IMsoFeature msoFeature = getFeature(searchArea.getObjectId());
 			
 			if (type == EventType.ADDED_REFERENCE_EVENT.maskValue()) {
-				createFeature(searchArea);
+				msoFeature = new SearchAreaFeature();
+				msoFeature.setSpatialReference(srs);
+				msoFeature.setMsoObject(searchArea);
+				data.add(msoFeature);
 			}
 			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && msoFeature != null &&
 					!searchArea.getGeodata().equals(msoFeature.getGeodata())) {
@@ -49,21 +51,12 @@ public class SearchAreaFeatureClass extends AbstractMsoFeatureClass {
 		}
 	}
 	
-	public String createMsoObject() {
+	public IMsoFeature createMsoFeature() {
 		ICmdPostIf cmdPost = msoModel.getMsoManager().getCmdPost();
 		ISearchAreaListIf searchAreaList = cmdPost.getSearchAreaList();
 		ISearchAreaIf searchArea = searchAreaList.createSearchArea();
-		return searchArea.getObjectId();
+		return getFeature(searchArea.getObjectId());
 	}
-	
-	@SuppressWarnings("unchecked")
-	private SearchAreaFeature createFeature(IMsoObjectIf obj) throws AutomationException, IOException {
-		SearchAreaFeature feature = new SearchAreaFeature();
-		feature.setSpatialReference(srs);
-		feature.setMsoObject(obj);
-		data.add(feature);
-		return feature;
- 	}
 	
 	public int getShapeType() throws IOException, AutomationException {
 		return esriGeometryType.esriGeometryPolygon;

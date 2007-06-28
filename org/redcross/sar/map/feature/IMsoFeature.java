@@ -3,7 +3,6 @@ package org.redcross.sar.map.feature;
 import java.io.IOException;
 
 import org.redcross.sar.mso.data.IMsoObjectIf;
-import org.redcross.sar.util.mso.IGeodataIf;
 
 import com.esri.arcgis.geodatabase.IFeature;
 import com.esri.arcgis.geometry.ISpatialReference;
@@ -19,17 +18,7 @@ public interface IMsoFeature extends IFeature {
 
 	public void msoGeometryChanged() throws IOException, AutomationException;
 	
-	public void setGeodata(IGeodataIf geodata);
-	
-	public void removeGeodata(IGeodataIf geodata);
-	
-	public void addGeodata(IGeodataIf geodata);
-	
 	public Object getGeodata();
-	
-	public void removeGeodataAt(int index);
-	
-	public void setGeodataAt(int index, IGeodataIf geodata);
 	
 	public int getGeodataCount();
 	

@@ -46,7 +46,7 @@ public abstract class AbstractMsoFeatureClass implements IMsoFeatureClass, IGeoD
 	protected IMsoManagerIf.MsoClassCode classCode = null;
 	protected IMsoModelIf msoModel = null;
 	protected ISpatialReference srs = null;
-	protected ArrayList data = null;
+	protected ArrayList<IMsoFeature> data = null;
 	protected ArrayList<IDiskoMapEventListener> listeners = null;
 	protected DiskoMapEvent diskoMapEvent = null;
 	protected EnumSet<IMsoManagerIf.MsoClassCode> myInterests = null;
@@ -58,7 +58,7 @@ public abstract class AbstractMsoFeatureClass implements IMsoFeatureClass, IGeoD
 		myInterests = EnumSet.of(classCode);
 		IMsoEventManagerIf msoEventManager = msoModel.getEventManager();
 		msoEventManager.addClientUpdateListener(this);
-		data = new ArrayList();
+		data = new ArrayList<IMsoFeature>();
 		listeners = new ArrayList<IDiskoMapEventListener>();
 		diskoMapEvent = new DiskoMapEvent(this);
 	}
@@ -79,7 +79,7 @@ public abstract class AbstractMsoFeatureClass implements IMsoFeatureClass, IGeoD
 		this.msoModel = msoModel;
 	}
 	
-	public String createMsoObject() {
+	public IMsoFeature createMsoFeature() {
 		return null;
 	}
 	

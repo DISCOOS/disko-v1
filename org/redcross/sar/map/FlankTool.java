@@ -65,21 +65,10 @@ public class FlankTool extends AbstractCommandTool {
 				if (route != null) {
 					route.setLayout(getLayout());
 					//HACK: To force firing events.
-					area.setGeodata(cloneGeoCollection(geoColl));
-					map.getActiveView().refresh();
-					map.fireEditLayerChanged();
+					area.setGeodata(clone(area.getGeodata()));
 				}
 			}
 		}
-	}
-	
-	private GeoCollection cloneGeoCollection(GeoCollection oldColl) {
-		GeoCollection newColl = new GeoCollection(null);
-		Iterator iter = oldColl.getPositions().iterator();
-		while (iter.hasNext()) {
-			newColl.add((IGeodataIf)iter.next());
-		}
-		return newColl;
 	}
 	
 	private Route getRouteAt(GeoCollection geoColl, int index) {
@@ -112,7 +101,6 @@ public class FlankTool extends AbstractCommandTool {
 				layout += flayer.getFeatureClass().getAliasName()+",";
 			}
 		}
-		System.out.println(layout);
 		return layout;
 	}
 }

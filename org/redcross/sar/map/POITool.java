@@ -1,34 +1,27 @@
 package org.redcross.sar.map;
 
+import java.awt.Toolkit;
 import java.io.IOException;
-import java.util.List;
-
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 import org.redcross.sar.app.IDiskoApplication;
-import org.redcross.sar.app.Utils;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.POIDialog;
 import org.redcross.sar.map.feature.AreaFeature;
 import org.redcross.sar.map.feature.AreaFeatureClass;
 import org.redcross.sar.map.feature.IMsoFeature;
-import org.redcross.sar.map.feature.OperationAreaFeatureClass;
+import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.map.layer.OperationAreaLayer;
-import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.IAreaIf;
 import org.redcross.sar.mso.data.IPOIIf;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
 
 import com.esri.arcgis.geodatabase.IFeature;
-import com.esri.arcgis.geodatabase.IFeatureClass;
 import com.esri.arcgis.geometry.Envelope;
 import com.esri.arcgis.geometry.GeometryBag;
 import com.esri.arcgis.geometry.IEnvelope;
 import com.esri.arcgis.geometry.IGeometry;
 import com.esri.arcgis.geometry.IPolyline;
 import com.esri.arcgis.geometry.Point;
-import com.esri.arcgis.geometry.Polygon;
 import com.esri.arcgis.geometry.Polyline;
 import com.esri.arcgis.interop.AutomationException;
 
@@ -43,7 +36,6 @@ public class POITool extends AbstractCommandTool {
 	
 	private POIDialog poiDialog = null;
 	private IAreaIf area = null;
-	private OperationAreaFeatureClass opAreaFC = null;
 	private AreaFeatureClass areaFC = null;
 	private IEnvelope env = null;
 		
@@ -60,14 +52,12 @@ public class POITool extends AbstractCommandTool {
 		if (obj instanceof IDiskoMap) {
 			map = (DiskoMap)obj;
 			map.addDiskoMapEventListener(this);
-			IDiskoMapManager mapManager = getMap().getMapManager();
-			
-			List layers = mapManager.getMsoLayers(
-					IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA);
-			OperationAreaLayer opAreaLayer = (OperationAreaLayer) layers.get(0);
-			opAreaFC = (OperationAreaFeatureClass)opAreaLayer.getFeatureClass();
 			poiDialog = (POIDialog)dialog;
 			poiDialog.setLocationRelativeTo(map, DiskoDialog.POS_WEST, false);
+			
+			//getting operation areas
+			opAreaLayer = (OperationAreaLayer) map.getMapManager().getMsoLayer(
+					IMsoFeatureLayer.LayerCode.OPERATION_AREA_LAYER);
 		}
 	}
 	
@@ -99,13 +89,15 @@ public class POITool extends AbstractCommandTool {
 	}
 	
 	public void addPOIAt(Point point) throws IOException, AutomationException {
-		// check if POI is inside Operation area
-		if (!isContaining(opAreaFC, point)) {
-			showWarning("PUI er utenfor operasjonsområdet");
+		//check if point inside operation area
+		if (!insideOpArea(point)) {
+			Toolkit.getDefaultToolkit().beep();
 			return;
 		}
-		String objID = featureClass.createMsoObject();
-		editFeature = (IMsoFeature) featureClass.getFeature(objID);
+		editFeature = featureClass.createMsoFeature();
+		IPOIIf poi = (IPOIIf)editFeature.getMsoObject();
+		point.setSpatialReferenceByRef(map.getSpatialReference());
+		poi.setPosition(MapUtil.getMsoPosistion(point));
 		
 		if (area != null) {
 			// snapping
@@ -128,11 +120,8 @@ public class POITool extends AbstractCommandTool {
 					}
 				}
 			}
-			IPOIIf poi = (IPOIIf)editFeature.getMsoObject();
 			area.addAreaPOI(poi);
 		}
-		point.setSpatialReferenceByRef(map.getSpatialReference());
-		editFeature.setGeodata(MapUtil.getMsoPosistion(point));
 		featureClass.setSelected(editFeature, true);
 		poiDialog.setMsoFeature(editFeature);
 		
@@ -167,28 +156,5 @@ public class POITool extends AbstractCommandTool {
 				com.esri.arcgis.carto.esriViewDrawPhase.esriViewGeography,null, env);
 		}
 		
-	}
-	
-	private boolean isContaining(IFeatureClass fc, IGeometry geom) 
-			throws AutomationException, IOException {
-		boolean flag = false;
-		for (int i = 0; i < fc.featureCount(null); i++) {
-			Polygon polygon = (Polygon)fc.getFeature(i).getShape();
-			if (polygon.contains(geom)) {
-				flag = true;
-			}
-		}
-		return flag;
-	}
-	
-	private void showWarning(final String msg) {
-		Runnable r = new Runnable(){
-            public void run() {
-            	JOptionPane.showMessageDialog(map, 
-            		msg, Utils.translate(opAreaFC.getClassCode()),
-            		JOptionPane.WARNING_MESSAGE);
-            }
-        };
-        SwingUtilities.invokeLater(r);
 	}
 }

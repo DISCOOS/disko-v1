@@ -2,7 +2,6 @@ package org.redcross.sar.map.feature;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.Vector;
 
 import org.redcross.sar.map.MapUtil;
 import org.redcross.sar.mso.data.IAreaIf;
@@ -40,43 +39,11 @@ public class AreaFeature extends AbstractMsoFeature {
 		}
 	}
 	
-	public void addGeodata(IGeodataIf geodata) {
-		IAreaIf area = (IAreaIf)msoObject;
-		GeoCollection clone = clone(area.getGeodata());
-		clone.add(geodata);
-		area.setGeodata(clone);
-	}
-	
-	public void removeGeodataAt(int index) {
-		IAreaIf area = (IAreaIf)msoObject;
-		GeoCollection clone = clone(area.getGeodata());
-		((Vector)clone.getPositions()).remove(index);
-		area.setGeodata(clone);
-	}
-	
-	public void setGeodataAt(int index, IGeodataIf geodata) {
-		IAreaIf area = (IAreaIf)msoObject;
-		GeoCollection clone = clone(area.getGeodata());
-		((Vector<IGeodataIf>)clone.getPositions()).set(index, geodata);
-		area.setGeodata(clone);
-	}
-	
 	public Object getGeodata() {
 		return geoColl;
 	}
 	
 	public int getGeodataCount() {
 		return geoColl != null ? geoColl.getPositions().size() : 0;
-	}
-	
-	private GeoCollection clone(GeoCollection oldColl) {
-		GeoCollection newColl = new GeoCollection(null);
-		if (oldColl != null) {
-			Iterator iter = oldColl.getPositions().iterator();
-			while (iter.hasNext()) {
-				newColl.add((IGeodataIf)iter.next());
-			}
-		}
-		return newColl;
 	}
 }

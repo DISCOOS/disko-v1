@@ -20,6 +20,7 @@ public class OperationAreaMaskLayer extends AbstractMsoFeatureLayer {
 
 	private static final long serialVersionUID = 1L;
 	private SimpleFillSymbol fill = null;
+	private TransparencyDisplayFilter filter = null;
 	
 	public OperationAreaMaskLayer(IMsoModelIf msoModel) {
 		setClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA);
@@ -47,8 +48,6 @@ public class OperationAreaMaskLayer extends AbstractMsoFeatureLayer {
  				IMsoFeature feature = (IMsoFeature)featureClass.getFeature(i);
  				Polygon polygon = (Polygon)feature.getShape();
  				if (polygon != null) {
- 					TransparencyDisplayFilter filter = new TransparencyDisplayFilter();
- 					filter.setTransparency((short)50);
  					display.setFilterByRef(filter);
  					display.setSymbol(fill);
  					display.drawPolygon(polygon);
@@ -61,6 +60,9 @@ public class OperationAreaMaskLayer extends AbstractMsoFeatureLayer {
 	}
 
 	private void createSymbols() throws UnknownHostException, IOException {
+		filter = new TransparencyDisplayFilter();
+		filter.setTransparency((short)50);
+			
 		fill = new SimpleFillSymbol();
 		RgbColor blueColor = new RgbColor();
 		blueColor.setBlue(255);

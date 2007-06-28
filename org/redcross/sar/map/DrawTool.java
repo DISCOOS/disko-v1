@@ -1,5 +1,6 @@
 package org.redcross.sar.map;
 
+import java.awt.Toolkit;
 import java.io.IOException;
 import java.util.List;
 
@@ -7,8 +8,16 @@ import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.DrawDialog;
-import org.redcross.sar.map.feature.IMsoFeature;
+import org.redcross.sar.map.feature.AreaFeatureClass;
+import org.redcross.sar.map.feature.OperationAreaFeatureClass;
+import org.redcross.sar.map.feature.SearchAreaFeatureClass;
 import org.redcross.sar.map.index.IndexedGeometry;
+import org.redcross.sar.map.layer.IMsoFeatureLayer;
+import org.redcross.sar.map.layer.OperationAreaLayer;
+import org.redcross.sar.mso.data.IAreaIf;
+import org.redcross.sar.mso.data.IOperationAreaIf;
+import org.redcross.sar.mso.data.ISearchAreaIf;
+import org.redcross.sar.util.mso.GeoCollection;
 
 import com.esri.arcgis.carto.InvalidArea;
 import com.esri.arcgis.display.IScreenDisplay;
@@ -24,7 +33,6 @@ import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.geometry.Polygon;
 import com.esri.arcgis.geometry.Polyline;
 import com.esri.arcgis.geometry.SegmentGraph;
-import com.esri.arcgis.geometry.esriGeometryType;
 import com.esri.arcgis.interop.AutomationException;
 
 /**
@@ -103,6 +111,10 @@ public class DrawTool extends AbstractCommandTool {
 			setSnapableLayers(drawDialog.getSnapModel().getSelected());
 			setSnapTolerance(map.getActiveView().getExtent().getWidth()/100);
 			drawDialog.setSnapTolerance(getSnapTolerance());
+			
+			// getting operation areas
+			opAreaLayer = (OperationAreaLayer) map.getMapManager().getMsoLayer(
+					IMsoFeatureLayer.LayerCode.OPERATION_AREA_LAYER);
 		}
 	}
 	
@@ -141,23 +153,30 @@ public class DrawTool extends AbstractCommandTool {
 		pathGeometry.simplify();
 		pathGeometry.setSpatialReferenceByRef(map.getSpatialReference());
 		
-		if (featureClass.getShapeType() == esriGeometryType.esriGeometryPolyline) {
-		}
-		else if (featureClass.getShapeType() == esriGeometryType.esriGeometryPolygon) {
+		if (featureClass instanceof OperationAreaFeatureClass) {
 			Polygon polygon = getPolygon(pathGeometry);
 			polygon.setSpatialReferenceByRef(map.getSpatialReference());
-		
-			String objID = featureClass.createMsoObject();
-			editFeature = (IMsoFeature) featureClass.getFeature(objID);
-			editFeature.setGeodata(MapUtil.getMsoPolygon(polygon));
+			editFeature = featureClass.createMsoFeature();
+			IOperationAreaIf opArea = (IOperationAreaIf)editFeature.getMsoObject();
+			opArea.setGeodata(MapUtil.getMsoPolygon(polygon));
 			featureClass.setSelected(editFeature, true);
 		}
-		else if (featureClass.getShapeType() == esriGeometryType.esriGeometryBag) {
+		else if (featureClass instanceof SearchAreaFeatureClass) {
+			Polygon polygon = getPolygon(pathGeometry);
+			polygon.setSpatialReferenceByRef(map.getSpatialReference());
+			editFeature = featureClass.createMsoFeature();
+			ISearchAreaIf searchArea = (ISearchAreaIf)editFeature.getMsoObject();
+			searchArea.setGeodata(MapUtil.getMsoPolygon(polygon));
+			featureClass.setSelected(editFeature, true);
+		}
+		else if (featureClass instanceof AreaFeatureClass) {
 			if (editFeature == null) {
-				String objID = featureClass.createMsoObject();
-				editFeature = (IMsoFeature) featureClass.getFeature(objID);
+				editFeature = featureClass.createMsoFeature();
 			}
-			editFeature.addGeodata(MapUtil.getMsoRoute(pathGeometry));
+			IAreaIf area = (IAreaIf)editFeature.getMsoObject();
+			GeoCollection clone = clone(area.getGeodata());
+			clone.add(MapUtil.getMsoRoute(pathGeometry));
+			area.setGeodata(clone);
 			featureClass.setSelected(editFeature, true);
 		}
 		reset();
@@ -181,6 +200,11 @@ public class DrawTool extends AbstractCommandTool {
 			return;
 		}
 		p2 = transform(x,y);
+		// check if point inside operation area
+		if (!(featureClass instanceof OperationAreaFeatureClass) && !insideOpArea(p2)) {
+			Toolkit.getDefaultToolkit().beep();
+			return;
+		}
 		//try snapping
 		searchEnvelope.centerAt(p2);
 		Polyline pline = (Polyline)indexedGeometry.search(searchEnvelope);
