@@ -33,8 +33,6 @@ public class UIFactory {
 	public NumPadDialog getNumPadDialog(){
 		if (numPadDialog == null) {
 			numPadDialog = new NumPadDialog(app.getFrame());
-			
-			
 		}
 		return numPadDialog;						
 	}

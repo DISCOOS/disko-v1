@@ -30,7 +30,7 @@ public class NumPadDialog extends JDialog {
 	private JButton delButton = null;
 	private JButton okButton = null;	
 	private JTextField jtf = null;
-	private Dimension size = new Dimension(50,40);
+	private Dimension size = new Dimension(60,50);
 
 	public NumPadDialog(Frame owner) {
 		super(owner);
