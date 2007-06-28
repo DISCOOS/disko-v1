@@ -55,7 +55,6 @@ import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IHypothesisIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.IOperationAreaIf;
-import org.redcross.sar.mso.data.IPOIIf;
 import org.redcross.sar.mso.data.ISearchAreaIf;
 import org.redcross.sar.mso.data.ISearchIf;
 import org.redcross.sar.mso.data.IUnitIf;
@@ -65,10 +64,6 @@ import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
 import org.redcross.sar.wp.TestData.BuildTestData;
 
-import com.esri.arcgis.geodatabase.IFeatureClass;
-import com.esri.arcgis.geometry.GeometryBag;
-import com.esri.arcgis.geometry.IGeometry;
-import com.esri.arcgis.geometry.Polygon;
 import com.esri.arcgis.interop.AutomationException;
 
 /**
@@ -184,19 +179,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 				IMsoFeature msoFeature = (IMsoFeature)selection.get(0);
 				IMsoObjectIf msoObject = msoFeature.getMsoObject();
 				
-				
-				if (msoObject instanceof IPOIIf) {
-					
-				} else if (msoObject instanceof IAreaIf) {
-					GeometryBag geomBag = (GeometryBag)msoFeature.getShape();
-					for (int i = 0; i < geomBag.getGeometryCount(); i++) {
-						IGeometry geom = geomBag.getGeometry(i);
-						if (!isContaining(opAreaLayer.getFeatureClass(), geom)) {
-							showWarning("Oppdraget er ikke innenfor operasjonsområde. Tegn på nytt");
-							msoFeature.removeGeodataAt(i);
-					        return;
-						}
-					}
+				if (msoObject instanceof IAreaIf) {
 					IAreaIf area = (IAreaIf)msoObject;
 					AreaFeatureClass areaFC = (AreaFeatureClass) areaLayer.getFeatureClass();
 					poiTool.setArea(area, areaFC);
@@ -208,16 +191,13 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 						drawTool.setEditFeature(msoFeature);
 						setFrameText(Utils.translate(search.getSubType()));
 					}
-				} else if (msoObject instanceof ISearchAreaIf) {
+				} 
+				else if (msoObject instanceof ISearchAreaIf) {
 					elementList.setSelectedValue(msoObject.getMsoClassCode(), false);
 					setFrameText(Utils.translate(msoObject.getMsoClassCode()));
-					if (!isContaining(opAreaLayer.getFeatureClass(), msoFeature.getShape())) {
-						showWarning("Søkeområde er ikke innenfor operasjonsområde. Tegn på nytt");
-						msoFeature.delete();
-						return;
-					}
 					showSearchAreaButtons();
-				} else if (msoObject instanceof IOperationAreaIf) {
+				} 
+				else if (msoObject instanceof IOperationAreaIf) {
 					elementList.setSelectedValue(msoObject.getMsoClassCode(), false);
 					setFrameText(Utils.translate(msoObject.getMsoClassCode()));
 					showOperationAreaButtons();
@@ -322,18 +302,6 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		NavBar navBar = getApplication().getNavBar();
 		navBar.getFlankToggleButton().setVisible(true);
 		navBar.getSplitToggleButton().setVisible(true);
-	}
-	
-	private boolean isContaining(IFeatureClass fc, IGeometry geom) 
-			throws AutomationException, IOException {
-		boolean flag = false;
-		for (int i = 0; i < fc.featureCount(null); i++) {
-			Polygon polygon = (Polygon)fc.getFeature(i).getShape();
-			if (polygon.contains(geom)) {
-				flag = true;
-			}
-		}
-		return flag;
 	}
 	
 	/*
