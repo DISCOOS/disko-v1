@@ -19,6 +19,7 @@ import java.awt.*;
 public class MessageLogPanel
 {
     private JPanel WorkspacePanel;
+    private JPanel m_topPanel;
     private JSplitPane m_splitter1;
     private DiskoWpMessageLogImpl m_wpModule;
     private IDiskoMap m_map;
@@ -44,7 +45,10 @@ public class MessageLogPanel
         m_splitter1.setOrientation(0);
 
         WorkspacePanel.add(m_splitter1, BorderLayout.CENTER);
-
+        
+        initTopPanel();
+        
+        // Init log panel
         m_logPanel = new JPanel();
         m_logPanel.setLayout(new BorderLayout(0, 0));
         m_logPanel.setFocusCycleRoot(true);
@@ -57,6 +61,16 @@ public class MessageLogPanel
         m_scrollPane1.setViewportView(m_logTable);
 
         initLogTable();
+    }
+    
+    private void initTopPanel()
+    {
+        m_topPanel = new MessageLogStatusPanel();
+        m_topPanel.setMinimumSize(new Dimension(800, 188));
+        m_splitter1.setContinuousLayout(true);
+        m_splitter1.setDividerLocation(188);
+        m_splitter1.setResizeWeight(0.0);
+        m_splitter1.setLeftComponent(m_topPanel);
     }
 
     private void initLogTable()
