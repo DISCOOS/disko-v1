@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Point;
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.List;
@@ -13,15 +14,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
-import javax.swing.JSpinner;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.SpinnerNumberModel;
 import javax.swing.border.BevelBorder;
 
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.event.IDiskoMapEventListener;
 import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.gui.NumPadDialog;
 import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.IMsoFeatureClass;
 import org.redcross.sar.mso.data.IAreaIf;
@@ -42,16 +43,16 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 	private JSlider prioritySlider = null;
 	private JTextField priorityTextField = null;
 	private JLabel personelLabel = null;
-	private JSpinner personelSpinner = null;
-	private JLabel progressLabel = null;
-	private JSpinner progressSpinner = null;
-	private JLabel criticalQuestionsLabel = null;
 	private JScrollPane criticalQuestionsScrollPane = null;
 	private JTextArea criticalQuestionsTextArea = null;
+	private JTabbedPane tabbedPane = null;  //  @jve:decl-index=0:visual-constraint="10,10"
+	private JTextField personelTextField = null;
+	private DiskoWpTacticsImpl wp = null;
 	
 	
 	public SearchRequirementDialog(DiskoWpTacticsImpl wp) {
 		super(wp.getApplication().getFrame());
+		this.wp = wp;
 		initialize();
 		// TODO Auto-generated constructor stub
 	}
@@ -62,15 +63,33 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 	 */
 	private void initialize() {
 		try {
-            this.setContentPane(getContentPanel());
-            this.setPreferredSize(new Dimension(800, 230));
-            this.setSize(new Dimension(800, 230));
+            this.setPreferredSize(new Dimension(800, 145));
+            this.setSize(new Dimension(989, 145));
+            this.setContentPane(getTabbedPane());
             this.pack();
-				
 		}
 		catch (java.lang.Throwable e) {
 			//  Do Something
 		}
+	}
+	
+	/**
+	 * This method initializes tabbedPane	
+	 * 	
+	 * @return javax.swing.JTabbedPane	
+	 */
+	private JTabbedPane getTabbedPane() {
+		if (tabbedPane == null) {
+			try {
+				tabbedPane = new JTabbedPane();
+				tabbedPane.addTab("Krav", null, getContentPanel(), null);
+				tabbedPane.addTab("Merknad", null, getCriticalQuestionsScrollPane(), null);
+				tabbedPane.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+			} catch (java.lang.Throwable e) {
+				// TODO: Something
+			}
+		}
+		return tabbedPane;
 	}
 	
 	public void reset() {
@@ -94,11 +113,13 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 	}
 	
 	public int getPersonelNeed() {
-		return ((Integer)getPersonelSpinner().getValue()).intValue();
-	}
-	
-	public int getEstimatedProgress() {
-		return ((Integer)getProgressSpinner().getValue()).intValue();
+		try {
+			return Integer.parseInt(getPersonelTextField().getText());
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return -1;
 	}
 	
 	public String getCriticalQuestions() {
@@ -122,11 +143,7 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 	}
 	
 	public void setPersonelNeed(int need) {
-		getPersonelSpinner().setValue(need);
-	}
-	
-	public void setEstimatedProgress(int estimatedProgress) {
-		getProgressSpinner().setValue(estimatedProgress);
+		getPersonelTextField().setText(String.valueOf(need));
 	}
 	
 	public void setCriticalQuestions(String questions) {
@@ -141,6 +158,12 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 	private JPanel getContentPanel() {
 		if (contentPanel == null) {
 			try {
+				GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
+				gridBagConstraints1.fill = GridBagConstraints.HORIZONTAL;
+				gridBagConstraints1.gridy = 1;
+				gridBagConstraints1.weightx = 1.0;
+				gridBagConstraints1.anchor = GridBagConstraints.NORTHWEST;
+				gridBagConstraints1.gridx = 3;
 				GridBagConstraints gridBagConstraints13 = new GridBagConstraints();
 				gridBagConstraints13.fill = GridBagConstraints.NONE;
 				gridBagConstraints13.gridy = 4;
@@ -176,49 +199,11 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 				gridBagConstraints61.anchor = GridBagConstraints.WEST;
 				gridBagConstraints61.insets = new Insets(5, 0, 5, 0);
 				gridBagConstraints61.weightx = 1.0;
-				GridBagConstraints gridBagConstraints11 = new GridBagConstraints();
-				gridBagConstraints11.fill = GridBagConstraints.BOTH;
-				gridBagConstraints11.gridy = 5;
-				gridBagConstraints11.weightx = 1.0;
-				gridBagConstraints11.weighty = 1.0;
-				gridBagConstraints11.gridheight = 1;
-				gridBagConstraints11.anchor = GridBagConstraints.WEST;
-				gridBagConstraints11.insets = new Insets(0, 0, 5, 0);
-				gridBagConstraints11.gridx = 1;
-				GridBagConstraints gridBagConstraints10 = new GridBagConstraints();
-				gridBagConstraints10.gridx = 0;
-				gridBagConstraints10.anchor = GridBagConstraints.NORTHWEST;
-				gridBagConstraints10.fill = GridBagConstraints.NONE;
-				gridBagConstraints10.insets = new Insets(0, 10, 0, 10);
-				gridBagConstraints10.gridy = 5;
-				criticalQuestionsLabel = new JLabel();
-				criticalQuestionsLabel.setText("Kritiske spørsmål:");
-				GridBagConstraints gridBagConstraints9 = new GridBagConstraints();
-				gridBagConstraints9.fill = GridBagConstraints.VERTICAL;
-				gridBagConstraints9.gridy = 3;
-				gridBagConstraints9.weightx = 1.0;
-				gridBagConstraints9.anchor = GridBagConstraints.WEST;
-				gridBagConstraints9.insets = new Insets(0, 0, 5, 0);
-				gridBagConstraints9.gridx = 1;
-				GridBagConstraints gridBagConstraints8 = new GridBagConstraints();
-				gridBagConstraints8.gridx = 0;
-				gridBagConstraints8.anchor = GridBagConstraints.WEST;
-				gridBagConstraints8.insets = new Insets(0, 10, 0, 0);
-				gridBagConstraints8.gridy = 3;
-				progressLabel = new JLabel();
-				progressLabel.setText("Estimert tidsbruk i timer:");
-				GridBagConstraints gridBagConstraints7 = new GridBagConstraints();
-				gridBagConstraints7.fill = GridBagConstraints.VERTICAL;
-				gridBagConstraints7.gridy = 2;
-				gridBagConstraints7.weightx = 1.0;
-				gridBagConstraints7.anchor = GridBagConstraints.WEST;
-				gridBagConstraints7.insets = new Insets(5, 0, 5, 0);
-				gridBagConstraints7.gridx = 1;
 				GridBagConstraints gridBagConstraints6 = new GridBagConstraints();
-				gridBagConstraints6.gridx = 0;
-				gridBagConstraints6.anchor = GridBagConstraints.WEST;
-				gridBagConstraints6.insets = new Insets(0, 10, 0, 0);
-				gridBagConstraints6.gridy = 2;
+				gridBagConstraints6.gridx = 3;
+				gridBagConstraints6.anchor = GridBagConstraints.SOUTHWEST;
+				gridBagConstraints6.insets = new Insets(0, 0, 0, 0);
+				gridBagConstraints6.gridy = 0;
 				personelLabel = new JLabel();
 				personelLabel.setText("Mannskapsbehov:");
 				GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
@@ -239,17 +224,12 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 				contentPanel.setLayout(new GridBagLayout());
 				contentPanel.add(priorityLabel, gridBagConstraints3);
 				contentPanel.add(personelLabel, gridBagConstraints6);
-				contentPanel.add(progressLabel, gridBagConstraints8);
-				contentPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-				contentPanel.add(criticalQuestionsLabel, gridBagConstraints10);
-				contentPanel.add(getCriticalQuestionsScrollPane(), gridBagConstraints11);
 				contentPanel.add(accuracyLabel, gridBagConstraints);
-				contentPanel.add(getPersonelSpinner(), gridBagConstraints7);
-				contentPanel.add(getProgressSpinner(), gridBagConstraints9);
 				contentPanel.add(getAccuracySlider(), gridBagConstraints61);
 				contentPanel.add(getAccuracyTextField(), gridBagConstraints71);
 				contentPanel.add(getPrioritySlider(), gridBagConstraints81);
 				contentPanel.add(getPriorityTextField(), gridBagConstraints91);
+				contentPanel.add(getPersonelTextField(), gridBagConstraints1);
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
@@ -360,53 +340,35 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 		}
 		return priorityTextField;
 	}
-
+	
 	/**
-	 * This method initializes personelComboBox	
+	 * This method initializes personelTextField	
 	 * 	
-	 * @return javax.swing.JComboBox	
+	 * @return javax.swing.JTextField	
 	 */
-	private JSpinner getPersonelSpinner() {
-		if (personelSpinner == null) {
+	private JTextField getPersonelTextField() {
+		if (personelTextField == null) {
 			try {
-				personelSpinner = new JSpinner();
-				personelSpinner.setPreferredSize(new Dimension(125, 20));
-				SpinnerNumberModel model = new SpinnerNumberModel(5, 1, 50, 1); 
-				personelSpinner.setModel(model);
-				personelSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
-					public void stateChanged(javax.swing.event.ChangeEvent e) {
-						fireDialogStateChanged();
+				personelTextField = new JTextField();
+				personelTextField.addMouseListener(new java.awt.event.MouseAdapter() {
+					public void mouseClicked(java.awt.event.MouseEvent e) {					
+						if (e.getClickCount() == 2){
+							NumPadDialog npDialog = wp.getApplication().
+								getUIFactory().getNumPadDialog();
+							Point p = personelTextField.getLocationOnScreen();
+							p.setLocation(p.x + personelTextField.getWidth()-
+									npDialog.getWidth(), p.y-npDialog.getHeight()-2);
+							npDialog.setLocation(p);					
+							npDialog.setTextField(personelTextField);
+							npDialog.setVisible(true);	
+						}
 					}
-				});
+				});	
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
 		}
-		return personelSpinner;
-	}
-
-	/**
-	 * This method initializes progressComboBox	
-	 * 	
-	 * @return javax.swing.JComboBox	
-	 */
-	private JSpinner getProgressSpinner() {
-		if (progressSpinner == null) {
-			try {
-				progressSpinner = new JSpinner();
-				progressSpinner.setPreferredSize(new Dimension(125, 20));
-				SpinnerNumberModel model = new SpinnerNumberModel(1, 1, 24, 1); 
-				progressSpinner.setModel(model);
-				progressSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
-					public void stateChanged(javax.swing.event.ChangeEvent e) {
-						fireDialogStateChanged();
-					}
-				});
-			} catch (java.lang.Throwable e) {
-				// TODO: Something
-			}
-		}
-		return progressSpinner;
+		return personelTextField;
 	}
 
 	/**
@@ -476,12 +438,10 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 				setPriority(search.getPriority());
 				setAccuracy(search.getPlannedAccuracy());
 				setPersonelNeed(search.getPlannedPersonnel());
-				setEstimatedProgress(search.getPlannedProgress());
 				return;
 			}
 		}
 		reset();
 	}
-
 }  //  @jve:decl-index=0:visual-constraint="10,10"
 

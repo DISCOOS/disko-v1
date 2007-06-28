@@ -48,6 +48,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 	private JToggleButton requirementToggleButton = null;
 	private JToggleButton descriptionToggleButton = null;
 	private JToggleButton unitToggleButton = null;
+	private JToggleButton estimateToggleButton = null;
 	private Enum currentElement = null;
 	private POITool poiTool = null;
 	private DrawTool drawTool = null;
@@ -62,6 +63,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 	private PriorityDialog priorityDialog = null;
 	private UnitSelectionDialog unitSelectionDialog = null;
 	private SearchRequirementDialog searchRequirementDialog = null;
+	private EstimateDialog estimateDialog = null;
 	private ListDialog listDialog = null;
 	private AssignmentStatusDialog assignmentStatusDialog = null;
 	private ListSelectionListener elementListSelectionListener = null;
@@ -103,6 +105,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		layoutButton(getPriorityToggleButton(), true);
 		layoutButton(getHypotheseToggleButton(), true);
 		layoutButton(getRequirementToggleButton(), true);
+		layoutButton(getEstimateToggleButton(), true);
 		layoutButton(getDescriptionToggleButton(), true);
 		layoutButton(getUnitToggleButton(), true);
 	}
@@ -318,18 +321,20 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 					search.setSubType((SearchSubType) currentElement);
 					search.setPlannedAccuracy(dialog.getAccuracy());
 					search.setPlannedPersonnel(dialog.getPersonelNeed());
-					search.setPlannedProgress(dialog.getEstimatedProgress());
+					//search.setPlannedProgress(dialog.getEstimatedProgress());
 				}
 				currentAssignment.setPriority(dialog.getPriority());
 				currentAssignment.setRemarks(getTextAreaDialog().getText());
 
 				hideDialogs(null);
 				// dialog for setting status
-				SubMenuPanel subMenu = getApplication().getUIFactory().getSubMenuPanel();
-				java.awt.Point p = subMenu.getFinishButton().getLocationOnScreen();
-				p.setLocation(p.x - getAssignmentStatusDialog().getWidth() - 2, p.y-1);
-				getAssignmentStatusDialog().setLocation(p);
-				getAssignmentStatusDialog().setVisible(true);
+				if (currentAssignment.getStatus() == IAssignmentIf.AssignmentStatus.EMPTY) {
+					SubMenuPanel subMenu = getApplication().getUIFactory().getSubMenuPanel();
+					java.awt.Point p = subMenu.getFinishButton().getLocationOnScreen();
+					p.setLocation(p.x - getAssignmentStatusDialog().getWidth() - 2, p.y-1);
+					getAssignmentStatusDialog().setLocation(p);
+					getAssignmentStatusDialog().setVisible(true);
+				}
 			}
 		}
 		catch (IllegalOperationException e) {
@@ -459,6 +464,16 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		}
 		return searchRequirementDialog;
 	}
+	
+	private EstimateDialog getEstimateDialog() {
+		if (estimateDialog == null) {
+			estimateDialog = new EstimateDialog(this);
+			estimateDialog.setIsToggable(false);
+			estimateDialog.addDialogListener(this);
+			dialogs.add(estimateDialog);
+		}
+		return estimateDialog;
+	}
 
 	private UnitSelectionDialog getUnitSelectionDialog() {
 		if (unitSelectionDialog == null) {
@@ -493,6 +508,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		getHypotheseToggleButton().setVisible(false);
 		getPriorityToggleButton().setVisible(false);
 		getRequirementToggleButton().setVisible(false);
+		getEstimateToggleButton().setVisible(false);
 		getDescriptionToggleButton().setVisible(false);
 		getUnitToggleButton().setVisible(false);
 
@@ -507,6 +523,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		getHypotheseToggleButton().setVisible(true);
 		getPriorityToggleButton().setVisible(true);
 		getRequirementToggleButton().setVisible(false);
+		getEstimateToggleButton().setVisible(false);
 		getDescriptionToggleButton().setVisible(false);
 		getUnitToggleButton().setVisible(false);
 
@@ -521,6 +538,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		getHypotheseToggleButton().setVisible(false);
 		getPriorityToggleButton().setVisible(false);
 		getRequirementToggleButton().setVisible(true);
+		getEstimateToggleButton().setVisible(true);
 		getDescriptionToggleButton().setVisible(true);
 		getUnitToggleButton().setVisible(true);
 
@@ -835,6 +853,40 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 			}
 		}
 		return requirementToggleButton;
+	}
+	
+	private JToggleButton getEstimateToggleButton() {
+		if (estimateToggleButton == null) {
+			try {
+				estimateToggleButton = new JToggleButton();
+				Enum key = TacticsTaskType.ESTIMATE_TASK;
+				ImageIcon icon = Utils.getIcon(key);
+				if (icon != null) {
+					estimateToggleButton.setIcon(icon);
+				} else {
+					estimateToggleButton.setText(key.name());
+				}
+				estimateToggleButton.setPreferredSize(buttonSize);
+				estimateToggleButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						EstimateDialog dialog = getEstimateDialog();
+						hideDialogs(dialog);
+						if (estimateToggleButton.isSelected() && dialog.isVisible()) {
+							dialog.setVisible(false);
+						} 
+						else {
+							dialog.setLocationRelativeTo((JComponent) getMap(), 
+									DiskoDialog.POS_SOUTH, true);
+							dialog.setVisible(true);
+						}
+					}
+				});
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return estimateToggleButton;
 	}
 
 	JToggleButton getUnitToggleButton() {
