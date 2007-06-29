@@ -168,7 +168,7 @@ public class BuildTestData
         message.setStatus(IMessageIf.MessageStatus.UNCONFIRMED);
         messageLine = message.findMessageLine(IMessageLineIf.MessageLineType.TEXT,true);
         messageLine.setText("Tekst Linje 2");
-        
+
         message = messageLog.createMessage();
         message.setCreated(Calendar.getInstance());
         message.setCalendar(Calendar.getInstance());
