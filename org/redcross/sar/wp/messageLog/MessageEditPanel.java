@@ -86,9 +86,9 @@ public class MessageEditPanel extends JPanel
     	m_toLabel.setText(to);
     }
     
-    public void setMessage(String string)
+    public void setMessage(String[] messageString)
     {
-    	m_messagePanel.setText(string);
+    	m_messagePanel.setText(messageString);
     }
     
     public void setTask(String task)
@@ -106,7 +106,7 @@ public class MessageEditPanel extends JPanel
     	
     	// Top row label
         JLabel label = new JLabel(labelString);
-        label.setBorder(BorderFactory.createLineBorder(Color.black));
+        //label.setBorder(BorderFactory.createLineBorder(Color.black));
         label.setAlignmentY(Component.TOP_ALIGNMENT);
         panel.add(label);
         

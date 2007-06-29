@@ -112,8 +112,14 @@ public class MessageEditStatusPanel extends JPanel
 		this.add(m_buttonRow, BorderLayout.SOUTH);
 	}
 
-	public void setText(String text) 
+	public void setText(String[] messageString) 
 	{
-		//m_textArea.setText(text);
+		String[] columnNames = {""};
+		Object data[][] = new Object[messageString.length][1];
+		for(int i=0; i<messageString.length; i++)
+		{
+			data[i][0] = messageString[i];
+		}
+		m_messageTextTable = new JTable(data, columnNames);
 	}
 }

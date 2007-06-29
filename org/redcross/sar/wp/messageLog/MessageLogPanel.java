@@ -16,7 +16,6 @@ import java.awt.*;
  * To change this template use File | Settings | File Templates.
  */
 
-
 /**
  *
  */
@@ -97,7 +96,7 @@ public class MessageLogPanel
           
         // Set column widths
         TableColumn column = m_logTable.getColumnModel().getColumn(0);
-        column.setMaxWidth(MessageEditPanel.SMALL_PANEL_WIDTH);
+        column.setMaxWidth(MessageEditPanel.SMALL_PANEL_WIDTH/2);
         column = m_logTable.getColumnModel().getColumn(1);
         column.setMaxWidth(MessageEditPanel.SMALL_PANEL_WIDTH);
         column = m_logTable.getColumnModel().getColumn(2);

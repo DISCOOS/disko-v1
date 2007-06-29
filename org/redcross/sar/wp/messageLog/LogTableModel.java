@@ -96,7 +96,7 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
             case 0:
             	Boolean expand = (Boolean)m_rowSelectionMap.get(message.getNumber());
             	StringBuilder string = new StringBuilder(Integer.toString(message.getNumber()));
-            	string.append("   ");
+            	string.append(" ");
             	if(expand)
             	{
             		string.append("-");
