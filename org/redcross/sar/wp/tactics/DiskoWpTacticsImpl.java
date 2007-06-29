@@ -121,7 +121,6 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 
 	public void onMapReplaced(DiskoMapEvent e)
 			throws IOException, AutomationException {
-		System.out.println("onMapReplaced");
 		//must be done here after the map has been loaded
 		final JToggleButton button = getApplication().getNavBar().getDrawLineToggleButton();
 		Runnable r = new Runnable(){
@@ -141,7 +140,6 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 			IMsoFeatureClass msoFC = (IMsoFeatureClass)e.getSource();
 			List selection = msoFC.getSelected();
 			if (selection != null && selection.size() > 0) {
-				getMap().partialRefresh(currentLayer, null);
 				JList elementList = getElementDialog().getElementList();
 				getElementToggleButton().setEnabled(false);
 				IMsoFeature msoFeature = (IMsoFeature)selection.get(0);
@@ -272,6 +270,9 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 	 */
 	public void cancel() {
 		fireTaskCanceled();
+		if (currentMsoFeature == null) {
+			return;
+		}
 		getMsoModel().rollback();
 		reset();
 	}
@@ -283,6 +284,9 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 	 */
 	public void finish() {
 		try {
+			if (currentMsoFeature == null) {
+				return;
+			}
 			if (currentMsoFeature instanceof OperationAreaFeature) {
 				IOperationAreaIf opArea = (IOperationAreaIf) currentMsoFeature.getMsoObject();
 				opArea.setRemarks(getTextAreaDialog().getText());
@@ -560,8 +564,9 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 			OperationAreaFeatureClass opAreaFC  = (OperationAreaFeatureClass)opAreaLayer.getFeatureClass();
 			SearchAreaFeatureClass searchAreaFC = (SearchAreaFeatureClass)searchAreaLayer.getFeatureClass();
 			AreaFeatureClass areaFC = (AreaFeatureClass)areaLayer.getFeatureClass();
-			POIFeatureClass poiFC = (POIFeatureClass)poiLayer.getFeatureClass();
+			//POIFeatureClass poiFC = (POIFeatureClass)poiLayer.getFeatureClass();
 
+			selectFeatureTool.removeAll();
 			NavBar navBar = getApplication().getNavBar();
 			if (enable) {
 				opAreaFC.addDiskoMapEventListener(this);
@@ -575,10 +580,10 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 				areaFC.addDiskoMapEventListener(getSearchRequirementDialog());
 				areaFC.addDiskoMapEventListener(getEstimateDialog());
 
-				selectFeatureTool.addFeatureClass(poiFC);
-				selectFeatureTool.addFeatureClass(areaFC);
-				selectFeatureTool.addFeatureClass(searchAreaFC);
-				selectFeatureTool.addFeatureClass(opAreaFC);
+				selectFeatureTool.addSelectableLayer(poiLayer);
+				selectFeatureTool.addSelectableLayer(areaLayer);
+				selectFeatureTool.addSelectableLayer(searchAreaLayer);
+				selectFeatureTool.addSelectableLayer(opAreaLayer);
 				navBar.getSelectFeatureToggleButton().setEnabled(true);
 				//navBar.getSelectFeatureToggleButton().doClick();
 			} else {
@@ -592,8 +597,6 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 				searchAreaFC.removeDiskoMapEventListener(getPriorityDialog());
 				areaFC.removeDiskoMapEventListener(getSearchRequirementDialog());
 				areaFC.removeDiskoMapEventListener(getEstimateDialog());
-
-				selectFeatureTool.removeAll();
 				navBar.getSelectFeatureToggleButton().setEnabled(false);
 			}
 		} catch (AutomationException e) {
