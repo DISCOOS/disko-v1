@@ -22,17 +22,18 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.util.mso.DTG;
 
 import com.sun.corba.se.impl.javax.rmi.CORBA.Util;
 
-public class MessageLogStatusPanel extends JPanel
+public class MessageEditPanel extends JPanel
 {
 	private final static Dimension BUTTON_DIMENSION = new Dimension(60, 60);
 	private final static int PANEL_HEIGHT = 180;
-	private final static int SMALL_PANEL_WIDTH = 64;
+	public final static int SMALL_PANEL_WIDTH = 64;
 	
 	private JPanel m_nrPanel;
 	private JLabel m_nrLabel;
@@ -49,7 +50,7 @@ public class MessageLogStatusPanel extends JPanel
     private JLabel m_toLabel;
     private JButton m_changeToButton;
     
-    private JPanel m_messagePanel;
+    private MessageEditStatusPanel m_messagePanel;
     
     private JPanel m_taskPanel;
     private JLabel m_taskLabel;
@@ -60,7 +61,7 @@ public class MessageLogStatusPanel extends JPanel
     private JButton m_waitEndStatusButton;
     private JButton m_finishedStatusButton;
     
-    public MessageLogStatusPanel()
+    public MessageEditPanel()
     {
     	initPanels();
     }
@@ -70,9 +71,9 @@ public class MessageLogStatusPanel extends JPanel
     	m_nrLabel.setText(Integer.toString(nr));
     }
     
-    public void setDTG(DTG dtg)
+    public void setDTG(String dtg)
     {
-    	m_dtgLabel.setText(dtg.toString());
+    	m_dtgLabel.setText(dtg);
     }
     
     public void setFrom(String from)
@@ -85,48 +86,43 @@ public class MessageLogStatusPanel extends JPanel
     	m_toLabel.setText(to);
     }
     
+    public void setMessage(String string)
+    {
+    	m_messagePanel.setText(string);
+    }
+    
     public void setTask(String task)
     {
     	m_taskLabel.setText(task);
     }
     
-    private void createPanel(JPanel panel, int width, int height, String labelString, JLabel infoLabel, JButton button, GridBagConstraints gbc)
+    private JPanel createPanel(int width, int height, String labelString, GridBagConstraints gbc)
     {
-    	panel = new JPanel();
+    	JPanel panel = new JPanel();
     	panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-    	GridBagConstraints gbcLocal = new GridBagConstraints();
     	panel.setBorder(BorderFactory.createLineBorder(Color.black));
     	panel.setMinimumSize(new Dimension(width, height));
     	panel.setPreferredSize(new Dimension(width, height));
     	
     	// Top row label
         JLabel label = new JLabel(labelString);
-        //label.setBorder(BorderFactory.createLineBorder(Color.black));
+        label.setBorder(BorderFactory.createLineBorder(Color.black));
         label.setAlignmentY(Component.TOP_ALIGNMENT);
         panel.add(label);
         
-        panel.add(Box.createVerticalGlue());
-        
-        // Info row label
-        infoLabel = new JLabel();
-        infoLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
-        panel.add(infoLabel, gbcLocal);
-        
-        panel.add(Box.createVerticalGlue());
-        
-        // Add button if not already created
-        if(button == null)
-        {
-        	button = new JButton();
-        	button.setIcon(createImageIcon("icons/60x60/change.gif"));
-        	button.setMaximumSize(BUTTON_DIMENSION);
-            button.setMinimumSize(BUTTON_DIMENSION);
-            button.setPreferredSize(BUTTON_DIMENSION);
-            button.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-            panel.add(button, gbcLocal);
-        }
-        
     	this.add(panel, gbc);
+    	return panel;
+    }
+    
+    private JButton createChangeButton()
+    {
+    	JButton button = new JButton();
+    	button.setIcon(createImageIcon("icons/60x60/change.gif"));
+    	button.setMaximumSize(BUTTON_DIMENSION);
+        button.setMinimumSize(BUTTON_DIMENSION);
+        button.setPreferredSize(BUTTON_DIMENSION);
+        button.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+        return button;
     }
     
     protected static ImageIcon createImageIcon(String path)
@@ -155,30 +151,56 @@ public class MessageLogStatusPanel extends JPanel
     	// Nr panel
     	gbc.gridx = 0;
     	gbc.gridy = 0;
-        createPanel(m_nrPanel, SMALL_PANEL_WIDTH, PANEL_HEIGHT, "Nr", m_nrLabel, new JButton(), gbc);
+        m_nrPanel = createPanel(SMALL_PANEL_WIDTH/2, PANEL_HEIGHT, "Nr", gbc);
+        m_nrLabel = new JLabel();
+        m_nrLabel.setAlignmentY(Component.TOP_ALIGNMENT);
+        m_nrPanel.add(m_nrLabel);
+        m_nrPanel.add(Box.createVerticalGlue());
        
         // DTG panel
         gbc.gridx = 1;
-        createPanel(m_dtgPanel, SMALL_PANEL_WIDTH, PANEL_HEIGHT, "DTG", m_dtgLabel, m_changeDTGButton, gbc);
+        m_dtgPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT, "DTG", gbc);
+        m_dtgLabel = new JLabel();
+        m_dtgLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
+        m_dtgPanel.add(m_dtgLabel);
+        m_changeDTGButton = createChangeButton();
+        m_dtgPanel.add(Box.createVerticalGlue());
+        m_dtgPanel.add(m_changeDTGButton);
         
         // From panel
         gbc.gridx = 2;
-        createPanel(m_fromPanel, SMALL_PANEL_WIDTH, PANEL_HEIGHT, "Fra", m_fromLabel, m_changeFromButton, gbc);
+        m_fromPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT, "Fra", gbc);
+        m_fromLabel = new JLabel();
+        m_fromPanel.add(m_fromLabel);
+        m_changeFromButton = createChangeButton();
+        m_fromPanel.add(Box.createVerticalGlue());
+        m_fromPanel.add(m_changeFromButton);
 
         // To panel
         gbc.gridx = 3;
-        createPanel(m_toPanel, SMALL_PANEL_WIDTH, PANEL_HEIGHT, "Til", m_toLabel, m_changeToButton, gbc);
+        m_toPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT, "Til", gbc);
+        m_toLabel = new JLabel();
+        m_toPanel.add(m_toLabel);
+        m_changeToButton = createChangeButton();
+        m_toPanel.add(Box.createVerticalGlue());
+        m_toPanel.add(m_changeToButton);
         
         // Message panel
         gbc.weightx = 1.0;
         gbc.gridx = 4;
-        m_messagePanel = new MessageStatusPanel();
+        m_messagePanel = new MessageEditStatusPanel();
         this.add(m_messagePanel, gbc);
         
         // Task panel
         gbc.weightx = 0.0;
         gbc.gridx = 5;
-        createPanel(m_taskPanel, 2*SMALL_PANEL_WIDTH, PANEL_HEIGHT, "Oppgave", m_taskLabel, m_changeTaskButton, gbc);
+        m_taskPanel = createPanel(2*SMALL_PANEL_WIDTH, PANEL_HEIGHT, "Oppgave", gbc);
+        m_taskLabel = new JLabel();
+        m_taskLabel.setAlignmentY(Component.TOP_ALIGNMENT);
+        m_taskPanel.add(m_taskLabel);
+        m_changeTaskButton = createChangeButton();
+        m_taskPanel.add(Box.createVerticalGlue());
+        m_taskPanel.add(m_changeTaskButton);
         
         // Status panel
         gbc.gridx = 6;

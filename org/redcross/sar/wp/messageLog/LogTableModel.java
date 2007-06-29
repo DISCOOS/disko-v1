@@ -14,6 +14,7 @@ import javax.swing.table.AbstractTableModel;
 import java.text.MessageFormat;
 import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 /**
  * Created by IntelliJ IDEA.
@@ -21,10 +22,12 @@ import java.util.List;
  * Date: 25.jun.2007
  * To change this template use File | Settings | File Templates.
  */
+import java.util.Map;
 
 /**
  *
  */
+
 public class LogTableModel extends AbstractTableModel implements IMsoUpdateListenerIf
 {
     IMessageLogIf m_messageLog;
@@ -33,7 +36,8 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
 
     private IMsoEventManagerIf m_eventManager;
     DiskoWpMessageLogImpl m_wpModule;
-
+    
+    private HashMap<Integer, Boolean> m_rowSelectionMap;
 
     public LogTableModel(JTable aTable, DiskoWpMessageLogImpl aModule, IMessageLogIf aMessageLog)
     {
@@ -42,6 +46,7 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
         m_eventManager = aModule.getMmsoEventManager();
         m_eventManager.addClientUpdateListener(this);
         m_messageLog = aMessageLog;
+        m_rowSelectionMap = new HashMap<Integer, Boolean>();
     }
 
     public int getRowCount()
@@ -57,21 +62,57 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     void buildTable()
     {
         m_messageList = m_messageLog.selectItems(m_messageSelector, m_lineNumberComparator);
+        
+        // Update hashmap
+        int numMessages = m_messageList.size();
+        for(int i=0; i<numMessages; i++)
+        {
+        	int messageNr = m_messageList.get(i).getNumber();
+        	if(!m_rowSelectionMap.containsKey(Integer.valueOf(messageNr)))
+        	{
+        		m_rowSelectionMap.put(Integer.valueOf(messageNr), Boolean.valueOf(false));
+        	}        	
+        }
     }
-
+    
+    public Class<?> getColumnClass(int c)
+    {
+    	switch(c)
+    	{
+    		case 4:
+    			return JTextPane.class;
+    		default:
+    			return String.class;
+    			
+    	}
+    }
 
     public Object getValueAt(int rowIndex, int columnIndex)
     {
         IMessageIf message = m_messageList.get(rowIndex);
+        
         switch (columnIndex)
         {
             case 0:
-                return Integer.toString(message.getNumber());
+            	Boolean expand = (Boolean)m_rowSelectionMap.get(message.getNumber());
+            	StringBuilder string = new StringBuilder(Integer.toString(message.getNumber()));
+            	string.append("   ");
+            	if(expand)
+            	{
+            		string.append("-");
+            	}
+            	else
+            	{
+            		string.append("+");
+            	}
+                return string.toString();
             case 1:
                 return message.getDTG();
             case 2:
+            	//return message.getFrom();
                 return "";
             case 3:
+            	// return message.getTo();
                 return "";
             case 4:
                 return message.getLines();
@@ -85,9 +126,9 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     @Override
     public String getColumnName(int column)
     {
-        return m_wpModule.getText(MessageFormat.format("LogTable_hdr_{0}.text", column));
+    	return null;
+        //return m_wpModule.getText(MessageFormat.format("LogTable_hdr_{0}.text", column));
     }
-
 
     public void handleMsoUpdateEvent(MsoEvent.Update e)
     {
@@ -102,8 +143,6 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     {
         return myInterests.contains(aMsoObject.getMsoClassCode());
     }
-
-
 
     private final Selector<IMessageIf> m_messageSelector = new Selector<IMessageIf>()
     {
@@ -120,6 +159,11 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
             return m1.getNumber() - m2.getNumber();
         }
     };
+
+	public HashMap getRowMap() 
+	{
+		return m_rowSelectionMap;
+	}
 
 }
 

@@ -13,18 +13,22 @@ import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
 
 import org.redcross.sar.app.Utils;
 
-public class MessageStatusPanel extends JPanel
+public class MessageEditStatusPanel extends JPanel
 {
 	private final static Dimension BUTTON_DIMENSION = new Dimension(60, 60);
 	
 	private JLabel m_messageLabel;
 	
+	private JTable m_messageTextTable;
 	private JScrollPane m_textScrollPane;
 	
 	private JPanel m_buttonRow;
@@ -37,7 +41,7 @@ public class MessageStatusPanel extends JPanel
 	private JButton m_listButton;
 	private JButton m_deleteButton;
 	
-	public MessageStatusPanel()
+	public MessageEditStatusPanel()
 	{
 		super(new BorderLayout());
 		setMinimumSize(new Dimension(480, 180));
@@ -56,7 +60,9 @@ public class MessageStatusPanel extends JPanel
 	
 	private void initTextPane()
 	{
-		m_textScrollPane = new JScrollPane();
+		m_messageTextTable = new JTable();
+		m_messageTextTable.setBorder(BorderFactory.createLineBorder(Color.black));
+		m_textScrollPane = new JScrollPane(m_messageTextTable);
 		this.add(m_textScrollPane, BorderLayout.CENTER);
 	}
 	
@@ -104,5 +110,10 @@ public class MessageStatusPanel extends JPanel
 		initButton(m_deleteButton, "Slett", "icons/60x60/delete.gif");
 		
 		this.add(m_buttonRow, BorderLayout.SOUTH);
+	}
+
+	public void setText(String text) 
+	{
+		//m_textArea.setText(text);
 	}
 }
