@@ -144,6 +144,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         try
         {
             m_map.zoomToMsoObject(anAssignment);
+            //m_map.setSelected(anAssignment, true);
         }
         catch (AutomationException e)
         {
