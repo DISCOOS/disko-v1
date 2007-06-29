@@ -285,15 +285,14 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
                 IDiskoRole role = m_wpModule.getDiskoRole();
                 String id = role.getName() + "Taktikk";
                 IDiskoWpModule calledModule = role.getDiskoWpModule(id);
-                if (calledModule != null && !calledModule.isEditing())
+                if (calledModule != null)
                 {
                     role.selectDiskoWpModule(calledModule);
                     calledModule.setCallingWp(m_wpModule.getName());
                     calledModule.getMap().zoomToMsoObject(m_displayedAsssignment);
                     m_wpModule.getMap().setSelected(m_displayedAsssignment, true);
-                } else
-                {
-                    m_wpModule.showWarning("Kan ikke redigere oppdrag");
+                } else {
+                    m_wpModule.showWarning("Taktikk er ikke funnet");
                 }
             }
             catch (AutomationException e1)
