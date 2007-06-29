@@ -4,6 +4,9 @@ import java.awt.Toolkit;
 import java.io.IOException;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.gui.DiskoDialog;
@@ -48,6 +51,7 @@ public class DrawTool extends AbstractCommandTool {
 	private List snapLayers = null;
 	private boolean isActive = false;
 	private boolean isDirty = false;
+	private IDiskoApplication app = null;
 	
 	// holds path geometry
 	private Polyline pathGeometry = null;
@@ -70,6 +74,7 @@ public class DrawTool extends AbstractCommandTool {
 	 * Constructs the DrawTool
 	 */
 	public DrawTool(IDiskoApplication app) throws IOException {
+		this.app = app;
 		//symbol to draw with
 		drawSymbol = new SimpleLineSymbol();	
 		RgbColor drawColor = new RgbColor();
@@ -150,42 +155,66 @@ public class DrawTool extends AbstractCommandTool {
 		if (editLayer == null) {
 			return;
 		}
-		IMsoFeatureClass featureClass = (IMsoFeatureClass)editLayer.getFeatureClass();
-		featureClass.clearSelected();
-		if (editFeature == null) {
-			editFeature = featureClass.createMsoFeature();
-		}
-		pathGeometry.simplify();
-		pathGeometry.setSpatialReferenceByRef(map.getSpatialReference());
-		
-		if (featureClass instanceof OperationAreaFeatureClass) {
-			Polygon polygon = getPolygon(pathGeometry);
-			polygon.setSpatialReferenceByRef(map.getSpatialReference());
-			IOperationAreaIf opArea = (IOperationAreaIf)editFeature.getMsoObject();
-			opArea.setGeodata(MapUtil.getMsoPolygon(polygon));
-			featureClass.setSelected(editFeature, true);
-		}
-		else if (featureClass instanceof SearchAreaFeatureClass) {
-			Polygon polygon = getPolygon(pathGeometry);
-			polygon.setSpatialReferenceByRef(map.getSpatialReference());
-			ISearchAreaIf searchArea = (ISearchAreaIf)editFeature.getMsoObject();
-			searchArea.setGeodata(MapUtil.getMsoPolygon(polygon));
-			featureClass.setSelected(editFeature, true);
-		}
-		else if (featureClass instanceof AreaFeatureClass) {
-			IAreaIf area = (IAreaIf)editFeature.getMsoObject();
-			GeoCollection clone = clone(area.getGeodata());
-			clone.add(MapUtil.getMsoRoute(pathGeometry));
-			area.setGeodata(clone);
-			featureClass.setSelected(editFeature, true);
-		}
+		final Polyline polyline = pathGeometry;
+		Runnable r = new Runnable() {
+			public void run() {
+				try {
+					IMsoFeatureClass featureClass = (IMsoFeatureClass)editLayer.getFeatureClass();
+					if (editFeature == null) {
+						editFeature = featureClass.createMsoFeature();
+					}
+					editFeature.setSelected(true);
+					polyline.simplify();
+					polyline.setSpatialReferenceByRef(map.getSpatialReference());
+
+					if (featureClass instanceof OperationAreaFeatureClass) {
+						Polygon polygon = getPolygon(polyline);
+						polygon.setSpatialReferenceByRef(map.getSpatialReference());
+						IOperationAreaIf opArea = (IOperationAreaIf)editFeature.getMsoObject();
+						if (opArea.getGeodata() == null || showYesNo() == 0) {
+							opArea.setGeodata(MapUtil.getMsoPolygon(polygon));
+						}
+					}
+					else if (featureClass instanceof SearchAreaFeatureClass) {
+						Polygon polygon = getPolygon(polyline);
+						polygon.setSpatialReferenceByRef(map.getSpatialReference());
+						ISearchAreaIf searchArea = (ISearchAreaIf)editFeature.getMsoObject();
+						if (searchArea.getGeodata() == null || showYesNo() == 0) {
+							searchArea.setGeodata(MapUtil.getMsoPolygon(polygon));
+						}
+					}
+					else if (featureClass instanceof AreaFeatureClass) {
+						IAreaIf area = (IAreaIf)editFeature.getMsoObject();
+						GeoCollection clone = cloneGeoCollection(area.getGeodata());
+						clone.add(MapUtil.getMsoRoute(polyline));
+						area.setGeodata(clone);
+					}
+					featureClass.setSelected(editFeature, true);
+					map.fireEditLayerChanged();
+				} catch (AutomationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+		SwingUtilities.invokeLater(r);
 		reset();
-		map.fireEditLayerChanged();
+	}
+	
+	private int showYesNo() {
+		Object[] options = {"Ja","Nei"};
+		return JOptionPane.showOptionDialog(app.getFrame(), 
+				"Erstatte eksisterende geometri ?",
+				"Draw tool", JOptionPane.YES_NO_CANCEL_OPTION,
+				JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 	}
 	
 	private Polygon getPolygon(Polyline pline) throws IOException, AutomationException {
 		// closing
-		pline.addPoint(pathGeometry.getFromPoint(), null, null);
+		pline.addPoint(pline.getFromPoint(), null, null);
 		Polygon polygon = new Polygon();
 		for (int i = 0; i < pline.getPointCount(); i++) {
 			polygon.addPoint(pline.getPoint(i), null, null);
@@ -258,13 +287,13 @@ public class DrawTool extends AbstractCommandTool {
 	}
 
 	public void reset() throws IOException {
+		refreshForegroundPartial();
 		pathGeometry = null;
 		rubberBand = null;
 		snapGeometry = null;
 		p1 = new Point();
 		p1.setX(0);
 		p1.setY(0);
-		refreshForegroundPartial();
 	}
 	
 	private void updatePath() throws IOException, AutomationException {

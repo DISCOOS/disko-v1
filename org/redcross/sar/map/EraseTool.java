@@ -69,7 +69,7 @@ public class EraseTool extends AbstractCommandTool {
 					GeometryBag geomBag = (GeometryBag)geom;
 					int index = getGeomIndex(geomBag, p);
 					IAreaIf area = (IAreaIf)editFeature.getMsoObject();
-					GeoCollection clone = clone(area.getGeodata());
+					GeoCollection clone = cloneGeoCollection(area.getGeodata());
 					((Vector)clone.getPositions()).remove(index);
 					area.setGeodata(clone);
 				}

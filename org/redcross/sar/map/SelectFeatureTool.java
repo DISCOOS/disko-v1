@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.IMsoFeatureClass;
+import org.redcross.sar.map.layer.IMsoFeatureLayer;
 
 import com.esri.arcgis.geodatabase.IFeature;
 import com.esri.arcgis.geometry.Point;
@@ -19,7 +20,7 @@ public class SelectFeatureTool extends AbstractCommandTool {
 
 	private static final long serialVersionUID = 1L;
 	private Point p = null;
-	private ArrayList<IMsoFeatureClass> featureClasses = null;
+	private ArrayList<IMsoFeatureLayer> selectableLayers = null;
 	
 	/**
 	 * Constructs the DrawTool
@@ -28,7 +29,7 @@ public class SelectFeatureTool extends AbstractCommandTool {
 		p = new Point();
 		p.setX(0);
 		p.setY(0);
-		featureClasses = new ArrayList<IMsoFeatureClass>();
+		selectableLayers = new ArrayList<IMsoFeatureLayer>();
 	}
 
 	public void onCreate(Object obj) throws IOException, AutomationException {
@@ -37,14 +38,14 @@ public class SelectFeatureTool extends AbstractCommandTool {
 		}
 	}
 	
-	public void addFeatureClass(IMsoFeatureClass fc) {
-		if (featureClasses.indexOf(fc) == -1) {
-			featureClasses.add(fc);
+	public void addSelectableLayer(IMsoFeatureLayer layer) {
+		if (selectableLayers.indexOf(layer) == -1) {
+			selectableLayers.add(layer);
 		}
 	}
 	
 	public void removeAll() {
-		featureClasses.clear();
+		selectableLayers.clear();
 	}
 
 	public void onMouseDown(int button, int shift, int x, int y)
@@ -53,16 +54,19 @@ public class SelectFeatureTool extends AbstractCommandTool {
 		p.setY(y); 
 		transform(p);
 		
-		for (int i = 0; i < featureClasses.size(); i++) {
-			IMsoFeatureClass fc = (IMsoFeatureClass)featureClasses.get(i);
+		for (int i = 0; i < selectableLayers.size(); i++) {
+			IMsoFeatureLayer layer = (IMsoFeatureLayer)selectableLayers.get(i);
+			IMsoFeatureClass fc = (IMsoFeatureClass)layer.getFeatureClass();
 			fc.clearSelected();
 		}
-		for (int i = 0; i < featureClasses.size(); i++) {
-			IMsoFeatureClass fc = (IMsoFeatureClass)featureClasses.get(i);
+		for (int i = 0; i < selectableLayers.size(); i++) {
+			IMsoFeatureLayer layer = (IMsoFeatureLayer)selectableLayers.get(i);
+			IMsoFeatureClass fc = (IMsoFeatureClass)layer.getFeatureClass();
 			IFeature feature = search(fc, p);
 			if (feature != null && feature instanceof IMsoFeature) {
 				editFeature = (IMsoFeature)feature;
 				fc.setSelected(editFeature, true);
+				map.partialRefresh(layer, null);
 				break;
 			}
 		}

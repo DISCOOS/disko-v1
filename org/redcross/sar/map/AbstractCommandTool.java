@@ -118,7 +118,7 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 		return -1;
 	}
 	
-	protected GeoCollection clone(GeoCollection oldColl) {
+	protected GeoCollection cloneGeoCollection(GeoCollection oldColl) {
 		GeoCollection newColl = new GeoCollection(null);
 		if (oldColl != null) {
 			Iterator iter = oldColl.getPositions().iterator();

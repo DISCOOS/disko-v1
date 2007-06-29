@@ -135,14 +135,20 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 		try {
 			IMsoObjectIf msoObj = (IMsoObjectIf)e.getSource();
 			List msoLayers = mapManager.getMsoLayers(msoObj.getMsoClassCode());
-			for (int i = 0; i < msoLayers.size(); i++) {
+			IFeatureLayer flayer = (IFeatureLayer)msoLayers.get(0);
+			IMsoFeatureClass fc  = (IMsoFeatureClass)flayer.getFeatureClass();
+			if (fc.getIsDirty()) {
+				partialRefresh(flayer, null);
+				fc.setIsDirty(false);
+			}
+			/*for (int i = 0; i < msoLayers.size(); i++) {
 				IFeatureLayer flayer = (IFeatureLayer)msoLayers.get(i);
 				IMsoFeatureClass fc  = (IMsoFeatureClass)flayer.getFeatureClass();
 				if (fc.getIsDirty()) {
 					partialRefresh(flayer, null);
 					fc.setIsDirty(false);
 				}
-			}
+			}*/
 		} catch (AutomationException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

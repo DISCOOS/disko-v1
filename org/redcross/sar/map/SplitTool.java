@@ -62,7 +62,7 @@ public class SplitTool extends AbstractCommandTool {
 					if (subGeom instanceof Polyline) {
 						Polyline[] result = split((Polyline)subGeom, p); 
 						IAreaIf area = (IAreaIf)editFeature.getMsoObject();
-						GeoCollection clone = clone(area.getGeodata());
+						GeoCollection clone = cloneGeoCollection(area.getGeodata());
 						((Vector<IGeodataIf>)clone.getPositions()).set(index, 
 								MapUtil.getMsoRoute(result[0]));
 						clone.add(MapUtil.getMsoRoute(result[1]));
