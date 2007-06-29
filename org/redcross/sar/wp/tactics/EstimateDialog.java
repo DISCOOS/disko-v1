@@ -8,14 +8,26 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
+import org.redcross.sar.event.DiskoMapEvent;
+import org.redcross.sar.event.IDiskoMapEventListener;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.NumPadDialog;
+import org.redcross.sar.map.feature.IMsoFeature;
+import org.redcross.sar.map.feature.IMsoFeatureClass;
+import org.redcross.sar.mso.data.IAreaIf;
+import org.redcross.sar.mso.data.IAssignmentIf;
+import org.redcross.sar.mso.data.ISearchIf;
+
+import com.esri.arcgis.interop.AutomationException;
 
 import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
+import java.io.IOException;
+import java.util.List;
+
 import javax.swing.JTextField;
 
-public class EstimateDialog extends DiskoDialog {
+public class EstimateDialog extends DiskoDialog implements IDiskoMapEventListener {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPanel = null;
@@ -43,6 +55,23 @@ public class EstimateDialog extends DiskoDialog {
 		catch (java.lang.Throwable e) {
 			//  Do Something
 		}
+	}
+	
+	private void reset() {
+		getTimeTextField().setText(null);
+	}
+	
+	public int getEstimatedTime() {
+		try {
+			return Integer.parseInt(getTimeTextField().getText());
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+		}
+		return 0;
+	}
+	
+	public void setEstimatedTime(int estimatedTime) {
+		getTimeTextField().setText(String.valueOf(estimatedTime));
 	}
 
 	/**
@@ -85,7 +114,13 @@ public class EstimateDialog extends DiskoDialog {
 		if (timeTextField == null) {
 			try {
 				timeTextField = new JTextField();
+				timeTextField.setText("0");
 				timeTextField.setPreferredSize(new Dimension(100, 20));
+				timeTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+					public void keyTyped(java.awt.event.KeyEvent e) {
+						fireDialogStateChanged();
+					}
+				});
 				timeTextField.addMouseListener(new java.awt.event.MouseAdapter() {
 					public void mouseClicked(java.awt.event.MouseEvent e) {					
 						if (e.getClickCount() == 2){
@@ -97,6 +132,7 @@ public class EstimateDialog extends DiskoDialog {
 							npDialog.setLocation(p);					
 							npDialog.setTextField(timeTextField);
 							npDialog.setVisible(true);	
+							fireDialogStateChanged();
 						}
 					}
 				});	
@@ -105,6 +141,38 @@ public class EstimateDialog extends DiskoDialog {
 			}
 		}
 		return timeTextField;
+	}
+
+	public void editLayerChanged(DiskoMapEvent e) {
+		// TODO Auto-generated method stub
+	}
+
+	public void onAfterScreenDraw(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+	}
+
+	public void onExtentUpdated(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+	}
+
+	public void onMapReplaced(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+	}
+
+	public void onSelectionChanged(DiskoMapEvent e) throws IOException, AutomationException {
+		IMsoFeatureClass msoFC = (IMsoFeatureClass)e.getSource();
+		List selection = msoFC.getSelected();
+		if (selection != null && selection.size() > 0) {
+			IMsoFeature msoFeature = (IMsoFeature)selection.get(0);
+			IAreaIf area = (IAreaIf)msoFeature.getMsoObject();
+			IAssignmentIf assignment = area.getOwningAssignment();
+			if (assignment instanceof ISearchIf) {
+				ISearchIf search = (ISearchIf)assignment;
+				setEstimatedTime(search.getPlannedProgress());
+				return;
+			}
+		}
+		reset();
 	}
 
 }  //  @jve:decl-index=0:visual-constraint="10,10"

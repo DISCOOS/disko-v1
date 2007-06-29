@@ -43,8 +43,8 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 	private JSlider prioritySlider = null;
 	private JTextField priorityTextField = null;
 	private JLabel personelLabel = null;
-	private JScrollPane criticalQuestionsScrollPane = null;
-	private JTextArea criticalQuestionsTextArea = null;
+	private JScrollPane remarksScrollPane = null;
+	private JTextArea remarksTextArea = null;
 	private JTabbedPane tabbedPane = null;  //  @jve:decl-index=0:visual-constraint="10,10"
 	private JTextField personelTextField = null;
 	private DiskoWpTacticsImpl wp = null;
@@ -83,7 +83,7 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 			try {
 				tabbedPane = new JTabbedPane();
 				tabbedPane.addTab("Krav", null, getContentPanel(), null);
-				tabbedPane.addTab("Merknad", null, getCriticalQuestionsScrollPane(), null);
+				tabbedPane.addTab("Merknad", null, getRemarksScrollPane(), null);
 				tabbedPane.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
@@ -95,7 +95,7 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 	public void reset() {
 		getAccuracyTextField().setText(null);
 		getPriorityTextField().setText(null);
-		getCriticalQuestionsTextArea().setText(null);
+		getRemarksTextArea().setText(null);
 	}
 	
 	public int getAccuracy() {
@@ -117,13 +117,12 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 			return Integer.parseInt(getPersonelTextField().getText());
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-		return -1;
+		return 0;
 	}
 	
-	public String getCriticalQuestions() {
-		return getCriticalQuestionsTextArea().getText();
+	public String getRemarks() {
+		return getRemarksTextArea().getText();
 	}
 	
 	public void setAccuracy(int accuracy) {
@@ -146,8 +145,8 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 		getPersonelTextField().setText(String.valueOf(need));
 	}
 	
-	public void setCriticalQuestions(String questions) {
-		getCriticalQuestionsTextArea().setText(questions);
+	public void setRemarks(String remarks) {
+		getRemarksTextArea().setText(remarks);
 	}
 
 	/**
@@ -350,6 +349,12 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 		if (personelTextField == null) {
 			try {
 				personelTextField = new JTextField();
+				personelTextField.setText("0");
+				personelTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+					public void keyTyped(java.awt.event.KeyEvent e) {
+						fireDialogStateChanged();
+					}
+				});
 				personelTextField.addMouseListener(new java.awt.event.MouseAdapter() {
 					public void mouseClicked(java.awt.event.MouseEvent e) {					
 						if (e.getClickCount() == 2){
@@ -361,6 +366,7 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 							npDialog.setLocation(p);					
 							npDialog.setTextField(personelTextField);
 							npDialog.setVisible(true);	
+							fireDialogStateChanged();
 						}
 					}
 				});	
@@ -376,16 +382,16 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 	 * 	
 	 * @return javax.swing.JScrollPane	
 	 */
-	private JScrollPane getCriticalQuestionsScrollPane() {
-		if (criticalQuestionsScrollPane == null) {
+	private JScrollPane getRemarksScrollPane() {
+		if (remarksScrollPane == null) {
 			try {
-				criticalQuestionsScrollPane = new JScrollPane();
-				criticalQuestionsScrollPane.setViewportView(getCriticalQuestionsTextArea());
+				remarksScrollPane = new JScrollPane();
+				remarksScrollPane.setViewportView(getRemarksTextArea());
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
 		}
-		return criticalQuestionsScrollPane;
+		return remarksScrollPane;
 	}
 
 	/**
@@ -393,12 +399,12 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 	 * 	
 	 * @return javax.swing.JTextArea	
 	 */
-	private JTextArea getCriticalQuestionsTextArea() {
-		if (criticalQuestionsTextArea == null) {
+	private JTextArea getRemarksTextArea() {
+		if (remarksTextArea == null) {
 			try {
-				criticalQuestionsTextArea = new JTextArea();
-				criticalQuestionsTextArea.setLineWrap(true);
-				criticalQuestionsTextArea.addKeyListener(new java.awt.event.KeyAdapter() {
+				remarksTextArea = new JTextArea();
+				remarksTextArea.setLineWrap(true);
+				remarksTextArea.addKeyListener(new java.awt.event.KeyAdapter() {
 					public void keyTyped(java.awt.event.KeyEvent e) {
 						fireDialogStateChanged();
 					}
@@ -407,7 +413,7 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 				// TODO: Something
 			}
 		}
-		return criticalQuestionsTextArea;
+		return remarksTextArea;
 	}
 
 	public void editLayerChanged(DiskoMapEvent e) {
@@ -438,6 +444,7 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 				setPriority(search.getPriority());
 				setAccuracy(search.getPlannedAccuracy());
 				setPersonelNeed(search.getPlannedPersonnel());
+				setRemarks(search.getRemarks());
 				return;
 			}
 		}
