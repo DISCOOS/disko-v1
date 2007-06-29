@@ -10,6 +10,7 @@ import org.redcross.sar.util.mso.Selector;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * Communication message
@@ -500,14 +501,16 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
         return null;
     }
 
-    public String getLines()
+    public String[] getLines()
     {
-        StringBuilder b = new StringBuilder();
-        for (IMessageLineIf line : m_messageLines.selectItems(m_messageLineSelector,m_lineNumberComparator) )
+    	List<IMessageLineIf> lines =  m_messageLines.selectItems(m_messageLineSelector,m_lineNumberComparator);
+    	int numLines = lines.size();
+        String[] lineArray = new String[numLines];
+        for(int i=0; i<numLines; i++)
         {
-            b.append(line.toString());
+        	lineArray[i] = lines.get(i).getText();
         }
-        return b.toString();
+        return lineArray;        
     }
 
     private final Selector<IMessageLineIf> m_messageLineSelector = new Selector<IMessageLineIf>()

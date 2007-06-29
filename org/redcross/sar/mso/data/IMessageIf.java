@@ -155,6 +155,6 @@ public interface IMessageIf extends ITimeItemIf, ISerialNumberedIf
 
     public IMessageLineIf createMessageLine(IMessageLineIf.MessageLineType aType);
 
-    public String getLines();
+    public String[] getLines();
 
 }
