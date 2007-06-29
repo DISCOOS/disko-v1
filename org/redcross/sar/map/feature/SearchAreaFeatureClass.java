@@ -27,7 +27,7 @@ public class SearchAreaFeatureClass extends AbstractMsoFeatureClass {
 			ISearchAreaIf searchArea = (ISearchAreaIf)e.getSource();
 			IMsoFeature msoFeature = getFeature(searchArea.getObjectId());
 			
-			if (type == EventType.ADDED_REFERENCE_EVENT.maskValue()) {
+			if (type == EventType.CREATED_OBJECT_EVENT.maskValue()) {
 				msoFeature = new SearchAreaFeature();
 				msoFeature.setSpatialReference(srs);
 				msoFeature.setMsoObject(searchArea);

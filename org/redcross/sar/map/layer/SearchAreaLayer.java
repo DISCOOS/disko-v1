@@ -63,23 +63,23 @@ public class SearchAreaLayer extends AbstractMsoFeatureLayer {
 		symbol = new SimpleFillSymbol();
 		symbol.setStyle(com.esri.arcgis.display.esriSimpleFillStyle.esriSFSNull);
 		
-		RgbColor c = new RgbColor();
-		c.setBlue(255);
+		RgbColor color = new RgbColor();
+		color.setBlue(255);
 		
 		SimpleLineSymbol outlineSymbol = new SimpleLineSymbol();	
 		outlineSymbol.setWidth(3);
-		outlineSymbol.setColor(c);
+		outlineSymbol.setColor(color);
 		symbol.setOutline(outlineSymbol);
 			
 		selectionSymbol = new SimpleFillSymbol();
 		selectionSymbol.setStyle(com.esri.arcgis.display.esriSimpleFillStyle.esriSFSNull);
-		c = new RgbColor();
-		c.setBlue(255);
-		c.setGreen(255);
+		RgbColor selectionColor = new RgbColor();
+		selectionColor.setBlue(255);
+		selectionColor.setGreen(255);
 		
 		SimpleLineSymbol selectedOutlineSymbol = new SimpleLineSymbol();	
 		selectedOutlineSymbol.setWidth(3);
-		selectedOutlineSymbol.setColor(c);
+		selectedOutlineSymbol.setColor(selectionColor);
 		selectionSymbol.setOutline(selectedOutlineSymbol);
 	}
 }

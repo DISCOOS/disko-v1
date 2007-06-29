@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Vector;
 
 import org.redcross.sar.map.feature.IMsoFeature;
+import org.redcross.sar.map.feature.IMsoFeatureClass;
 import org.redcross.sar.mso.data.IAreaIf;
 import org.redcross.sar.util.mso.GeoCollection;
 import org.redcross.sar.util.mso.IGeodataIf;
@@ -48,6 +49,7 @@ public class SplitTool extends AbstractCommandTool {
 		p.setY(y); 
 		transform(p);
 
+		IMsoFeatureClass featureClass = (IMsoFeatureClass)editLayer.getFeatureClass();
 		IFeature feature = search(featureClass, p);
 		if (feature != null && feature instanceof IMsoFeature) {
 			editFeature = (IMsoFeature)feature;
@@ -65,6 +67,7 @@ public class SplitTool extends AbstractCommandTool {
 								MapUtil.getMsoRoute(result[0]));
 						clone.add(MapUtil.getMsoRoute(result[1]));
 						area.setGeodata(clone);
+						map.fireEditLayerChanged();
 					}
 				}
 			}

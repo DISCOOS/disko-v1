@@ -9,7 +9,7 @@ import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.event.IDiskoMapEventListener;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.map.feature.IMsoFeature;
-import org.redcross.sar.map.feature.IMsoFeatureClass;
+import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.map.layer.OperationAreaLayer;
 import org.redcross.sar.util.mso.GeoCollection;
 import org.redcross.sar.util.mso.IGeodataIf;
@@ -36,7 +36,7 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 	protected DiskoDialog dialog = null;
 	protected Properties properties = null;
 	protected IDisplayTransformation transform = null;
-	protected IMsoFeatureClass featureClass = null;
+	protected IMsoFeatureLayer editLayer = null;
 	protected IMsoFeature editFeature = null;
 	protected OperationAreaLayer opAreaLayer = null;
 	
@@ -76,14 +76,14 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 	public DiskoMap getMap() {
 		return map;
 	}
-	
-	public IMsoFeatureClass getFeatureClass() {
-		return featureClass;
-	}
 
-	public void setFeatureClass(IMsoFeatureClass featureClass) {
+	public void setEditLayer(IMsoFeatureLayer editLayer) {
 		editFeature = null;
-		this.featureClass = featureClass;
+		this.editLayer = editLayer;
+	}
+	
+	public IMsoFeatureLayer getEditLayer() {
+		return editLayer;
 	}
 	
 	public void setEditFeature(IMsoFeature msoFeature) {

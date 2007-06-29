@@ -9,6 +9,7 @@ import org.redcross.sar.mso.data.IAreaListIf;
 import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.event.MsoEvent.EventType;
 import org.redcross.sar.mso.event.MsoEvent.Update;
+import org.redcross.sar.util.mso.GeoCollection;
 
 import com.esri.arcgis.geometry.esriGeometryType;
 import com.esri.arcgis.interop.AutomationException;
@@ -27,7 +28,7 @@ public class AreaFeatureClass extends AbstractMsoFeatureClass {
 			IAreaIf area = (IAreaIf)e.getSource();
 			IMsoFeature msoFeature = getFeature(area.getObjectId());
 			
-			if (type == EventType.ADDED_REFERENCE_EVENT.maskValue()) {
+			if (type == EventType.CREATED_OBJECT_EVENT.maskValue()) {
 				msoFeature = new AreaFeature();
 				msoFeature.setSpatialReference(srs);
 				msoFeature.setMsoObject(area);
@@ -55,6 +56,7 @@ public class AreaFeatureClass extends AbstractMsoFeatureClass {
 		ICmdPostIf cmdPost = msoModel.getMsoManager().getCmdPost();
 		IAreaListIf areaList = cmdPost.getAreaList();
 		IAreaIf area = areaList.createArea();
+		area.setGeodata(new GeoCollection(null));
 		return getFeature(area.getObjectId());
 	}
 

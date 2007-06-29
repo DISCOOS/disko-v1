@@ -27,7 +27,7 @@ public class POIFeatureClass extends AbstractMsoFeatureClass {
 			IPOIIf poi = (IPOIIf)e.getSource();
 			IMsoFeature msoFeature = getFeature(poi.getObjectId());
 			
-			if (type == EventType.ADDED_REFERENCE_EVENT.maskValue()) {
+			if (type == EventType.CREATED_OBJECT_EVENT.maskValue()) {
 				msoFeature = new POIFeature();
 				msoFeature.setSpatialReference(srs);
 				msoFeature.setMsoObject(poi);

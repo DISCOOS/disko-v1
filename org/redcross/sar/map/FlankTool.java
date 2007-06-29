@@ -7,7 +7,8 @@ import java.util.List;
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.FlankDialog;
-import org.redcross.sar.map.feature.AreaFeature;
+import org.redcross.sar.map.feature.FlankFeature;
+import org.redcross.sar.map.feature.IMsoFeatureClass;
 import org.redcross.sar.mso.data.IAreaIf;
 import org.redcross.sar.util.mso.GeoCollection;
 import org.redcross.sar.util.mso.IGeodataIf;
@@ -53,19 +54,22 @@ public class FlankTool extends AbstractCommandTool {
 		p.setY(y); 
 		transform(p);
 
+		IMsoFeatureClass featureClass = (IMsoFeatureClass)editLayer.getFeatureClass();
 		IFeature feature = search(featureClass, p);
-		if (feature != null && feature instanceof AreaFeature) {
-			AreaFeature areaFeature = (AreaFeature)feature;
-			GeometryBag geomBag = (GeometryBag)areaFeature.getShape();
+		if (feature != null && feature instanceof FlankFeature) {
+			FlankFeature flankFeature = (FlankFeature)feature;
+			GeometryBag geomBag = (GeometryBag)flankFeature.getShape();
 			int index = getGeomIndex(geomBag, p);
 			if (index > -1) {
-				IAreaIf area = (IAreaIf)areaFeature.getMsoObject();
+				IAreaIf area = (IAreaIf)flankFeature.getMsoObject();
 				GeoCollection geoColl = area.getGeodata();
 				Route route = getRouteAt(geoColl, index);
 				if (route != null) {
+					System.out.println(route);
 					route.setLayout(getLayout());
-					//HACK: To force firing events.
-					area.setGeodata(clone(area.getGeodata()));
+					flankFeature.msoGeometryChanged();
+					map.partialRefresh(editLayer, null);
+					map.fireEditLayerChanged();
 				}
 			}
 		}

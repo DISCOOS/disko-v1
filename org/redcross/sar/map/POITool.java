@@ -9,6 +9,7 @@ import org.redcross.sar.gui.POIDialog;
 import org.redcross.sar.map.feature.AreaFeature;
 import org.redcross.sar.map.feature.AreaFeatureClass;
 import org.redcross.sar.map.feature.IMsoFeature;
+import org.redcross.sar.map.feature.IMsoFeatureClass;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.map.layer.OperationAreaLayer;
 import org.redcross.sar.mso.data.IAreaIf;
@@ -79,6 +80,7 @@ public class POITool extends AbstractCommandTool {
 	
 	public void addPOIAt(double x, double y) throws IOException, AutomationException {
 		if (editFeature != null) {
+			IMsoFeatureClass featureClass = (IMsoFeatureClass)editLayer.getFeatureClass();
 			featureClass.clearSelected();
 			refresh((Point)editFeature.getShape());
 		}
@@ -94,6 +96,7 @@ public class POITool extends AbstractCommandTool {
 			Toolkit.getDefaultToolkit().beep();
 			return;
 		}
+		IMsoFeatureClass featureClass = (IMsoFeatureClass)editLayer.getFeatureClass();
 		editFeature = featureClass.createMsoFeature();
 		IPOIIf poi = (IPOIIf)editFeature.getMsoObject();
 		point.setSpatialReferenceByRef(map.getSpatialReference());

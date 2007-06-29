@@ -20,6 +20,7 @@ import com.esri.arcgis.geodatabase.IFeatureClass;
 import com.esri.arcgis.geodatabase.IFeatureCursor;
 import com.esri.arcgis.geodatabase.SpatialFilter;
 import com.esri.arcgis.geodatabase.esriSpatialRelEnum;
+import com.esri.arcgis.geometry.GeometryBag;
 import com.esri.arcgis.geometry.IGeometry;
 import com.esri.arcgis.geometry.IGeometryCollection;
 import com.esri.arcgis.geometry.Line;
@@ -56,13 +57,17 @@ public class FlankFeature extends AbstractMsoFeature {
 		if (geoColl != null) {
 			leftFlanks.clear();
 			rightFlanks.clear();
+			GeometryBag geomBag = new GeometryBag();
 			Iterator iter = geoColl.getPositions().iterator();
 			while (iter.hasNext()) {
 				IGeodataIf geodata = (IGeodataIf) iter.next();
 				if (geodata instanceof Route) {
+					Polyline polyline = MapUtil.getEsriPolyline((Route)geodata, srs);
+					geomBag.addGeometry(polyline, null, null);
 					createFlankForRoute((Route)geodata);
 				}
 			}
+			geometry = geomBag;
 		}
 	}
 	

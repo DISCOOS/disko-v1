@@ -9,6 +9,7 @@ import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.DrawDialog;
 import org.redcross.sar.map.feature.AreaFeatureClass;
+import org.redcross.sar.map.feature.IMsoFeatureClass;
 import org.redcross.sar.map.feature.OperationAreaFeatureClass;
 import org.redcross.sar.map.feature.SearchAreaFeatureClass;
 import org.redcross.sar.map.index.IndexedGeometry;
@@ -146,9 +147,10 @@ public class DrawTool extends AbstractCommandTool {
 	}
 
 	public void onDblClick() throws IOException, AutomationException {
-		if (featureClass == null) {
+		if (editLayer == null) {
 			return;
 		}
+		IMsoFeatureClass featureClass = (IMsoFeatureClass)editLayer.getFeatureClass();
 		featureClass.clearSelected();
 		pathGeometry.simplify();
 		pathGeometry.setSpatialReferenceByRef(map.getSpatialReference());
@@ -196,9 +198,10 @@ public class DrawTool extends AbstractCommandTool {
 
 	public void onMouseDown(int button, int shift, int x, int y)
 			throws IOException, AutomationException {
-		if (featureClass == null) {
+		if (editLayer == null) {
 			return;
 		}
+		IMsoFeatureClass featureClass = (IMsoFeatureClass)editLayer.getFeatureClass();
 		p2 = transform(x,y);
 		// check if point inside operation area
 		if (!(featureClass instanceof OperationAreaFeatureClass) && !insideOpArea(p2)) {
@@ -228,7 +231,7 @@ public class DrawTool extends AbstractCommandTool {
 	
 	public void onMouseMove(int button, int shift, int x, int y)
 			throws IOException, AutomationException {
-		if (featureClass == null) {
+		if (editLayer == null) {
 			return;
 		}
 		//Only create the trace every other time the mouse moves

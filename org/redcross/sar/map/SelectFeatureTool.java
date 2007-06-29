@@ -38,7 +38,9 @@ public class SelectFeatureTool extends AbstractCommandTool {
 	}
 	
 	public void addFeatureClass(IMsoFeatureClass fc) {
-		featureClasses.add(fc);
+		if (featureClasses.indexOf(fc) == -1) {
+			featureClasses.add(fc);
+		}
 	}
 	
 	public void removeAll() {

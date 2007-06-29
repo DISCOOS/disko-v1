@@ -44,7 +44,9 @@ public class EraseTool extends AbstractCommandTool {
 	}
 	
 	public void addFeatureClass(IMsoFeatureClass fc) {
-		featureClasses.add(fc);
+		if (featureClasses.indexOf(fc) == -1) {
+			featureClasses.add(fc);
+		}
 	}
 	
 	public void removeAll() {
@@ -74,6 +76,7 @@ public class EraseTool extends AbstractCommandTool {
 				else {
 					editFeature.getMsoObject().deleteObject();
 				}
+				map.fireEditLayerChanged();
 				break;
 			}
 		}
