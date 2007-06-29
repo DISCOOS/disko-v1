@@ -20,26 +20,34 @@ public class DiskoScrollPanel extends JPanel implements Scrollable
     private JLabel m_header;
     private Corner m_corner;
 
-    protected int m_hgap = 5;
-    protected int m_vgap = 5;
+    protected final int m_hgap;
+    protected final int m_vgap;
+    protected int m_colCount = 0;
 
+    protected boolean m_horizontalFlow = true;
+    protected Insets m_componentInsets;
 
-    public DiskoScrollPanel(JScrollPane aScrollPane, LayoutManager aLayoutManager)
+    public DiskoScrollPanel(JScrollPane aScrollPane, FlowLayout aLayoutManager)
+    {
+        this(aScrollPane, aLayoutManager, aLayoutManager.getHgap(), aLayoutManager.getVgap(), true);
+    }
+
+    public DiskoScrollPanel(JScrollPane aScrollPane, GridLayout aLayoutManager)
+    {
+        this(aScrollPane, aLayoutManager, aLayoutManager.getHgap(), aLayoutManager.getVgap(), true);
+    }
+
+    public DiskoScrollPanel(JScrollPane aScrollPane, LayoutManager aLayoutManager, int aHgap, int aVgap, boolean isHorizontalFlow)
     {
         super(aLayoutManager);
         m_surroundingScrollPane = aScrollPane;
         m_layoutManager = aLayoutManager;
 
-        if (m_layoutManager instanceof FlowLayout)
-        {
-            m_hgap = ((FlowLayout) m_layoutManager).getHgap();
-            m_vgap = ((FlowLayout) m_layoutManager).getVgap();
-        } else if (m_layoutManager instanceof GridLayout)
-        {
-            m_hgap = ((GridLayout) m_layoutManager).getHgap();
-            m_vgap = ((GridLayout) m_layoutManager).getVgap();
-        }
+        m_hgap = aHgap;
+        m_vgap = aVgap;
+        m_horizontalFlow = isHorizontalFlow;
 
+        m_componentInsets = new Insets(m_vgap / 2, m_hgap / 2, m_vgap / 2, m_hgap / 2);
         m_surroundingScrollPane.setViewportView(this);
 
         m_header = new JLabel();
@@ -47,7 +55,6 @@ public class DiskoScrollPanel extends JPanel implements Scrollable
 
         m_corner = new DiskoScrollPanel.Corner(m_header.getBackground());
         m_surroundingScrollPane.setCorner(JScrollPane.UPPER_TRAILING_CORNER, m_corner);
-//        setBackground(Color.white);
         m_surroundingScrollPane.setViewportBorder(BorderFactory.createLineBorder(Color.black));
 
         ComponentAdapter resizeHandler = new ComponentAdapter()
@@ -61,54 +68,209 @@ public class DiskoScrollPanel extends JPanel implements Scrollable
         getParent().addComponentListener(resizeHandler);
     }
 
+    public void setCols(int aColumnCount)
+    {
+        m_colCount = Math.max(aColumnCount, 0);
+    }
+
     /**
      * Resize the panel according to width and max label size.
      *
-     * @param dataChanged Indicated that the method is called due to change of data content.
+     * @param dataChanged Indicates that the method is called due to change of data content.
      */
     protected void resizePanel(boolean dataChanged)
     {
-        if (!m_childSizeSet)
-        {
-            int width = m_defaultDimension.width;
-            int height = m_defaultDimension.height;
-            for (Component c : m_childrenComponents)
-            {
-                m_childSizeSet = c.getHeight() > 0;
-                width = Math.max(width, c.getPreferredSize().width);
-                height = Math.max(height, c.getPreferredSize().height);
-            }
-            m_childDimension.width = width;
-            m_childDimension.height = height;
-        }
-
-        Dimension myDimension = getSize();
-        LayoutManager lm = getLayout();
+        int rows;
         int cols;
-        if (lm instanceof GridLayout)
+        Dimension myDimension = getSize();
+
+        if (m_childrenComponents.size() > 0)
         {
-            cols = ((GridLayout) lm).getColumns();
+            if (!m_childSizeSet)
+            {
+                int width = m_defaultDimension.width;
+                int height = m_defaultDimension.height;
+                for (Component c : m_childrenComponents)
+                {
+                    m_childSizeSet = c.getHeight() > 0;
+                    width = Math.max(width, c.getPreferredSize().width);
+                    height = Math.max(height, c.getPreferredSize().height);
+                }
+                m_childDimension.width = width;
+                m_childDimension.height = height;
+            }
+
+            LayoutManager lm = getLayout();
+            if (m_colCount > 0)
+            {
+                cols = m_colCount;
+            } else if (lm instanceof GridLayout)
+            {
+                cols = ((GridLayout) lm).getColumns();
+            } else
+            {
+                cols = myDimension.width / (m_childDimension.width + m_hgap);
+            }
+            cols = Math.max(cols, 1);
+            rows = ((m_childrenComponents.size() - 1) / cols) + 1;
         } else
         {
-            cols = myDimension.width / (m_childDimension.width + m_hgap);
+            m_childSizeSet = false;
+            cols = 0;
+            rows = 0;
         }
-        cols = Math.max(cols, 1);
-        int rows = ((m_childrenComponents.size() - 1) / cols) + 1;
 
-        int newHeight = rows * (m_childDimension.height + m_vgap);
-        newHeight = Math.max(newHeight, getParent().getHeight());
+        int newHeight = Math.max(rows * (m_childDimension.height + m_vgap), getParent().getHeight());
+
+        if (!m_horizontalFlow)
+        {
+            rows = Math.max(newHeight / (m_childDimension.height + m_vgap), 1);
+        }
+
+        if (m_childSizeSet)
+        {
+            //
+            if (m_layoutManager instanceof GridBagLayout)
+            { // layout components manually
+                layoutGridBag(rows, cols);
+            } else if (m_layoutManager instanceof SpringLayout)
+            { // layout components manually
+                layoutSpring(rows, cols, myDimension.width + m_hgap);
+            }
+        }
+
         if (newHeight != myDimension.height)
         {
             myDimension.height = newHeight;
             setPreferredSize(myDimension);
-            revalidate();
-            repaint();
+//            revalidate();
+//            repaint();
         } else if (dataChanged)
         {
-            revalidate();
-            repaint();
+//            revalidate();
+//            repaint();
         }
+        revalidate();
+        repaint();
     }
+
+    private void layoutGridBag(int rows, int cols)
+    {
+        GridBagLayout layout = (GridBagLayout) m_layoutManager;
+        int irow = 0;
+        int icol = 0;
+        for (Component c : m_childrenComponents)
+        {
+            GridBagConstraints gbc = layout.getConstraints(c);
+            gbc.gridwidth = 1;
+            gbc.gridheight = 1;
+            gbc.weightx = 1;
+            gbc.weighty = 1;
+            gbc.gridx = icol;
+            gbc.gridy = irow;
+            gbc.anchor = GridBagConstraints.FIRST_LINE_START;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.insets = m_componentInsets;
+            gbc.ipadx = 0;
+            gbc.ipady = 0;
+            layout.setConstraints(c, gbc);
+            if (m_horizontalFlow)
+            {
+                icol++;
+                if (icol == cols)
+                {
+                    icol = 0;
+                    irow++;
+                }
+
+            } else
+            {
+                irow++;
+                if (irow == rows)
+                {
+                    irow = 0;
+                    icol++;
+                }
+            }
+        }
+        layout.layoutContainer(this);
+    }
+
+    private void layoutSpring(int rows, int cols, int aPanelWidth)
+    {
+        SpringLayout layout = (SpringLayout) m_layoutManager;
+        Spring xPadSpring = Spring.constant(m_hgap);
+        Spring yPadSpring = Spring.constant(m_vgap);
+        Spring initialXSpring = Spring.constant(0);
+        Spring initialYSpring = Spring.constant(0);
+
+        SpringLayout.Constraints lastConstraint = null;
+        SpringLayout.Constraints lastRowConstraint = null;
+        SpringLayout.Constraints lastColumnConstraint = null;
+        int irow = 0;
+        int icol = 0;
+        for (Component c : m_childrenComponents)
+        {
+            SpringLayout.Constraints cons = layout.getConstraints(c);
+            if (irow == 0)
+            {
+                lastColumnConstraint = lastConstraint;
+            }
+
+            if (icol == 0)
+            { //start of new row
+                lastRowConstraint = lastConstraint;
+                cons.setX(initialXSpring);
+            } else if (m_horizontalFlow)
+            { //x position depends on previous component
+                cons.setX(Spring.sum(lastConstraint.getConstraint(SpringLayout.EAST), xPadSpring));
+            } else
+            { //x position depends on previous column
+                cons.setX(Spring.sum(lastColumnConstraint.getConstraint(SpringLayout.EAST), xPadSpring));
+            }
+
+            if (m_colCount > 0)
+            {
+                Dimension cDim = c.getPreferredSize();
+                cDim.width = ((aPanelWidth-5) / m_colCount);
+                c.setPreferredSize(cDim);
+            }
+
+
+            if (irow == 0)
+            { //first row
+                lastColumnConstraint = lastConstraint;
+                cons.setY(initialYSpring);
+            } else if (!m_horizontalFlow)
+            { //y position depends on previous component
+                cons.setY(Spring.sum(lastConstraint.getConstraint(SpringLayout.SOUTH), yPadSpring));
+            } else
+            { //y position depends on previous row
+                cons.setY(Spring.sum(lastRowConstraint.getConstraint(SpringLayout.SOUTH), yPadSpring));
+            }
+            lastConstraint = cons;
+            if (m_horizontalFlow)
+            {
+                icol++;
+                if (icol == cols)
+                {
+                    icol = 0;
+                    irow++;
+                }
+
+            } else
+            {
+                irow++;
+                if (irow == rows)
+                {
+                    irow = 0;
+                    icol++;
+                }
+            }
+        }
+        layout.layoutContainer(this);
+    }
+
 
     @Override
     public Component add(Component aComponent)

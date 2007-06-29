@@ -225,11 +225,16 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         {
             public void focusGained(FocusEvent e)
             {
+                System.out.println("Focus gained");
+                model.setSelectedCell(m_unitTable.getSelectionModel().getLeadSelectionIndex(),
+                        m_unitTable.getColumnModel().getSelectionModel().
+                                getLeadSelectionIndex());
             }
 
             public void focusLost(FocusEvent e)
             {
                 m_unitTable.clearSelection();
+                System.out.println("Focus lost");
             }
         });
 

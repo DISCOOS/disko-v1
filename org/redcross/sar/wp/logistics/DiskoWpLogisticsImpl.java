@@ -1,17 +1,17 @@
 package org.redcross.sar.wp.logistics;
 
-import java.text.MessageFormat;
-import java.util.EnumSet;
-import java.util.ResourceBundle;
-
-import javax.swing.JOptionPane;
-
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.gui.NavBar;
 import org.redcross.sar.mso.data.AssignmentImpl;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
+import org.redcross.sar.wp.TestData.BuildTestData;
+
+import javax.swing.*;
+import java.text.MessageFormat;
+import java.util.EnumSet;
+import java.util.ResourceBundle;
 
 /**
  *
@@ -24,6 +24,9 @@ public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDisk
     {
         super(role);
         initialize();
+        BuildTestData.createUnitsAndAssignments(getMsoModel());
+        BuildTestData.createMessages(getMsoModel());
+
     }
 
     private void initialize()

@@ -207,16 +207,6 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
 
     public boolean hasBeenFinished();
 
-    /**
-     * Test if the assignment can change satus and owner.
-     * @param newStatus The new status
-     * @param newUnit The new owner
-     * @return <code>true</code> if the change is legal, <code>false</code> otherwise.
-     */
-    public boolean canChangeToStatus(AssignmentStatus newStatus, IUnitIf newUnit);
-
-    public boolean canChangeToStatus(String newStatus, IUnitIf newUnit);
-
     public IUnitIf getOwningUnit();
 
     /**

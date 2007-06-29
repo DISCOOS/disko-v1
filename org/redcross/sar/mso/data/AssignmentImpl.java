@@ -3,6 +3,7 @@ package org.redcross.sar.mso.data;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.MsoModelImpl;
+import org.redcross.sar.util.AssignmentTransferUtilities;
 import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.util.except.MsoCastException;
 
@@ -157,7 +158,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
 
     public void setStatusAndOwner(AssignmentStatus aStatus, IUnitIf aUnit) throws IllegalOperationException
     {
-        if (!canChangeToStatus(aStatus, aUnit))
+        if (!AssignmentTransferUtilities.assignmentCanChangeToStatus(this, aStatus, aUnit))
         {
             throw new IllegalOperationException("Cannont change status from " + getStatus() + " to " + aStatus);
         }
@@ -585,46 +586,6 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         return getStatus().ordinal() >= AssignmentStatus.ABORTED.ordinal();
     }
 
-    public boolean canChangeToStatus(String newStatus, IUnitIf newUnit)
-    {
-        AssignmentStatus status = getStatusAttribute().enumValue(newStatus);
-        if (status == null)
-        {
-            return false;
-        }
-        return canChangeToStatus(status, newUnit);
-    }
-
-    public boolean canChangeToStatus(AssignmentStatus newStatus, IUnitIf newUnit)
-    {
-        IUnitIf currentUnit = getOwningUnit();
-        AssignmentStatus currentStatus = getStatus();
-
-        if (newStatus == currentStatus && newUnit == currentUnit)
-        {
-            return newStatus == AssignmentStatus.ALLOCATED;     // Can drop on the same in order to change priority
-        }
-
-        switch (currentStatus)
-        {
-            case EMPTY:
-                return newUnit == null && (newStatus == AssignmentStatus.DRAFT || newStatus == AssignmentStatus.READY);
-            case DRAFT:
-                return newUnit == null && newStatus == AssignmentStatus.READY;
-            case READY:
-                return newUnit != null && ACTIVE_SET.contains(newStatus) && newUnit.canAccept(newStatus);
-            case ALLOCATED:
-            case ASSIGNED:
-                return newUnit == null ? newStatus == AssignmentStatus.READY : (ACTIVE_SET.contains(newStatus)  && newUnit.canAccept(newStatus));
-            case EXECUTING:
-                return newUnit == currentUnit && FINISHED_AND_REPORTED_SET.contains(newStatus);
-            case ABORTED:
-            case FINISHED:
-                return newUnit == currentUnit && newStatus == AssignmentStatus.REPORTED;
-        }
-        return false;
-    }
-
     public IUnitIf getOwningUnit()
     {
         List<IUnitIf> retVal = MsoModelImpl.getInstance().getMsoManager().getCmdPost().getUnitList().selectItems(
@@ -641,7 +602,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
     public void verifyAllocatable(AssignmentStatus newStatus, IUnitIf aUnit, boolean unassignIfPossible) throws IllegalOperationException
     {
         // todo Test on type of assigment compared to type of unit.
-        if (!canChangeToStatus(AssignmentStatus.ALLOCATED, aUnit))
+        if (!AssignmentTransferUtilities.assignmentCanChangeToStatus(this,AssignmentStatus.ALLOCATED, aUnit))
         {
             throw new IllegalOperationException("Assignment " + this + " cannot change status to ALLOCATED.");
         }

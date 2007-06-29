@@ -88,8 +88,6 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		elementListSelectionListener = new ElementListSelectionListener();
 
 		BuildTestData.createCmdPost(getMsoModel());
-	    /*BuildTestData.createUnitsAndAssignments(getMsoModel());
-        BuildTestData.createMessages(getMsoModel());*/
         buttonSize = getApplication().getUIFactory().getLargeButtonSize();
 		initialize();
 	}
@@ -462,7 +460,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		}
 		return searchRequirementDialog;
 	}
-	
+
 	private EstimateDialog getEstimateDialog() {
 		if (estimateDialog == null) {
 			estimateDialog = new EstimateDialog(this);
@@ -851,7 +849,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		}
 		return requirementToggleButton;
 	}
-	
+
 	private JToggleButton getEstimateToggleButton() {
 		if (estimateToggleButton == null) {
 			try {
@@ -870,9 +868,9 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 						hideDialogs(dialog);
 						if (estimateToggleButton.isSelected() && dialog.isVisible()) {
 							dialog.setVisible(false);
-						} 
+						}
 						else {
-							dialog.setLocationRelativeTo((JComponent) getMap(), 
+							dialog.setLocationRelativeTo((JComponent) getMap(),
 									DiskoDialog.POS_SOUTH, true);
 							dialog.setVisible(true);
 						}

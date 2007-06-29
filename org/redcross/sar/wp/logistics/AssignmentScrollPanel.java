@@ -65,90 +65,47 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
 
     private final AssignmentLabel.AssignmentLabelActionHandler m_actionHandler;
 
-    public AssignmentScrollPanel(JScrollPane aScrollPane, LayoutManager aLayoutManager, AssignmentLabel.AssignmentLabelActionHandler anActionHandler, boolean showIcons)
+    public AssignmentScrollPanel(JScrollPane aScrollPane, FlowLayout aLayoutManager, AssignmentLabel.AssignmentLabelActionHandler anActionHandler, boolean showIcons)
     {
         super(aScrollPane, aLayoutManager);
         m_showIcons = showIcons;
         m_actionHandler = anActionHandler;
+        initPanel();
+    }
+
+    public AssignmentScrollPanel(JScrollPane aScrollPane, GridLayout aLayoutManager, AssignmentLabel.AssignmentLabelActionHandler anActionHandler, boolean showIcons)
+    {
+        super(aScrollPane, aLayoutManager);
+        m_showIcons = showIcons;
+        m_actionHandler = anActionHandler;
+        initPanel();
+    }
+
+    public AssignmentScrollPanel(JScrollPane aScrollPane, LayoutManager aLayoutManager, int aHgap, int aVgap, boolean isHorizontalFlow, AssignmentLabel.AssignmentLabelActionHandler anActionHandler, boolean showIcons)
+    {
+        super(aScrollPane, aLayoutManager, aHgap, aVgap, isHorizontalFlow);
+        m_showIcons = showIcons;
+        m_actionHandler = anActionHandler;
+        initPanel();
+    }
+
+    private void initPanel()
+    {
 
         setFocusable(true);
         setEnabled(true);
-        System.out.println(this + " " + isFocusable());
-
 
         addFocusListener(new FocusListener(){
             public void focusGained(FocusEvent e)
             {
-                System.out.println("Focus gained" + e.getComponent());
             }
 
             public void focusLost(FocusEvent e)
             {
-                System.out.println("Focus lost" + e.getComponent());
             }
         });
 
-//        m_mouseAdapter = new MouseInputAdapter(){
-//            private MouseEvent m_firstMouseEvent = null;
-//            @Override
-//            public void mouseClicked(MouseEvent e)
-//            {
-//                System.out.println("MouseClicked" + e.getComponent() + " " + getComponentAt(e.getX(),e.getY()));
-//            }
-//
-//            @Override
-//            public void mousePressed(MouseEvent e)
-//            {
-//                System.out.println("MousePressed" + e.getComponent());
-//                m_firstMouseEvent = e;
-//                e.consume();
-//            }
-//
-//            @Override
-//            public void mouseReleased(MouseEvent e)
-//            {
-//                System.out.println("MouseReleased" + e.getComponent());
-//                m_firstMouseEvent = null;
-//            }
-//
-//            @Override
-//            public void mouseDragged(MouseEvent e)
-//            {
-//                System.out.println("MouseDragged" + e.getComponent());
-//                if (m_firstMouseEvent != null) {
-//                    e.consume();
-//
-//                    //If they are holding down the control key, COPY rather than MOVE
-//                    int ctrlMask = InputEvent.CTRL_DOWN_MASK;
-//                    int action = ((e.getModifiersEx() & ctrlMask) == ctrlMask) ?
-//                          TransferHandler.COPY : TransferHandler.MOVE;
-//
-//                    int dx = Math.abs(e.getX() - m_firstMouseEvent.getX());
-//                    int dy = Math.abs(e.getY() - m_firstMouseEvent.getY());
-//                    //Arbitrarily define a 5-pixel shift as the
-//                    //official beginning of a drag.
-//                    if (dx > 5 || dy > 5) {
-//                        //This is a drag, not a click.
-//                        JComponent c = (JComponent)e.getSource();
-//                        TransferHandler handler = c.getTransferHandler();
-//                        //Tell the transfer handler to initiate the drag.
-//                        if (handler != null)
-//                        {
-//                            handler.exportAsDrag(c, m_firstMouseEvent, action);
-//                        }
-//                        m_firstMouseEvent = null;
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void mouseMoved(MouseEvent e)
-//            {
-//                System.out.println("MouseMoved" + e.getComponent());
-//            }
-//        };
     }
-
     /**
      * Set list of assignments to show
      *
@@ -217,22 +174,6 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
     public void addSelected(IAssignmentIf anAsg)
     {
         m_selected.add(anAsg);
-    }
-
-    public void removeAll()
-    {
-//        for (JLabel label : m_labels)
-//        {
-//            for (EventListener listener : label.getListeners(MouseListener.class))
-//            {
-//                label.removeMouseListener((MouseListener)listener);
-//            }
-//            for (EventListener listener : label.getListeners(MouseMotionListener.class))
-//            {
-//                label.removeMouseMotionListener((MouseMotionListener)listener);
-//            }
-//        }
-        super.removeAll();
     }
 
     /**

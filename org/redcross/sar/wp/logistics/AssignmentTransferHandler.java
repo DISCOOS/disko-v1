@@ -6,7 +6,7 @@ package org.redcross.sar.wp.logistics;
 
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IUnitIf;
-import org.redcross.sar.util.AssignmentTransferMessageCreator;
+import org.redcross.sar.util.AssignmentTransferUtilities;
 import org.redcross.sar.util.except.IllegalOperationException;
 
 import javax.swing.*;
@@ -93,7 +93,7 @@ public class AssignmentTransferHandler extends TransferHandler
                 }
                 if (transferOk)
                 {
-                    AssignmentTransferMessageCreator.createMessage(m_wpModule, targetUnit, transferredAssignment);
+                    AssignmentTransferUtilities.createCommunicationMessage(m_wpModule, targetUnit, transferredAssignment);
                     m_wpModule.getMsoModel().commit();
                     return true;
                 } else
@@ -175,7 +175,7 @@ public class AssignmentTransferHandler extends TransferHandler
         if (m_targetComponent instanceof AssignmentScrollPanel)
         {
             AssignmentScrollPanel panel = (AssignmentScrollPanel) m_targetComponent;
-            return transferredAssignment.canChangeToStatus(panel.getSelectedStatus(), panel.getSelectedUnit());
+            return AssignmentTransferUtilities.assignmentCanChangeToStatus(transferredAssignment, panel.getSelectedStatus(), panel.getSelectedUnit());
         } else if (m_targetComponent instanceof JTable)
         {
             JTable targetTable = (JTable) m_targetComponent;

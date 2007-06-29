@@ -39,7 +39,7 @@ public class DTAssignmentLabel extends AssignmentLabel implements MouseMotionLis
     @Override
     public void mousePressed(MouseEvent e)
     {
-        //Don't bother to drag if there is no icon.
+        //Don't bother to drag if there is no assignment.
         if (getAssignment() == null)
         {
             return;

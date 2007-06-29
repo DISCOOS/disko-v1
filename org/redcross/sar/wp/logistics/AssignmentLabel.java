@@ -18,7 +18,7 @@ public class AssignmentLabel extends JLabel implements MouseListener, FocusListe
 {
     private final static Border LabelBorder = new DiskoBorder(2, 6, false);
 
-    private final static Dimension LabelDimension = new Dimension(50, 50);
+    private final static Dimension LabelDimension = new Dimension(150, 50);
     private IAssignmentIf m_assignment;
     private boolean m_isSelected;
 
@@ -55,6 +55,10 @@ public class AssignmentLabel extends JLabel implements MouseListener, FocusListe
             setBackground(Color.WHITE);
             setOpaque(true);
             setBorder(LabelBorder);
+            if (getIcon() == null)
+            {
+                setMinimumSize(LabelDimension);
+            }
             setPreferredSize(LabelDimension);
             setHorizontalAlignment(SwingConstants.CENTER);
         }

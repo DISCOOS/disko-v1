@@ -6,7 +6,6 @@ import org.redcross.sar.mso.data.IMessageLogIf;
 import javax.swing.*;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
-
 import java.awt.*;
 
 /**
@@ -47,9 +46,9 @@ public class MessageLogPanel
         m_splitter1.setOrientation(0);
 
         WorkspacePanel.add(m_splitter1, BorderLayout.CENTER);
-        
+
         initTopPanel();
-        
+
         // Init log panel
         m_logPanel = new JPanel();
         m_logPanel.setLayout(new BorderLayout(0, 0));
@@ -61,15 +60,15 @@ public class MessageLogPanel
         m_logPanel.add(m_scrollPane1, BorderLayout.CENTER);
         m_logTable = new JTable();
         m_scrollPane1.setViewportView(m_logTable);
-        
+
         m_rowSelectionListener = new MessageRowSelectionListener(m_topPanel);
         m_logTable.getSelectionModel().addListSelectionListener(m_rowSelectionListener);
         initLogTable();
-        
+
         // Register the log table with the row selection listener
         m_rowSelectionListener.setTable(m_logTable);
     }
-    
+
     private void initTopPanel()
     {
         m_topPanel = new MessageEditPanel();
@@ -93,7 +92,7 @@ public class MessageLogPanel
         m_logTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         m_logTable.setRowMargin(2);
         m_logTable.setRowHeight(22);
-          
+
         // Set column widths
         TableColumn column = m_logTable.getColumnModel().getColumn(0);
         column.setMaxWidth(MessageEditPanel.SMALL_PANEL_WIDTH/2);
@@ -108,11 +107,11 @@ public class MessageLogPanel
         column.setMinWidth(MessageEditPanel.SMALL_PANEL_WIDTH*2);
         column = m_logTable.getColumnModel().getColumn(6);
         column.setMaxWidth(MessageEditPanel.SMALL_PANEL_WIDTH);
-        
+
         // Init custom renderer
         column = m_logTable.getColumnModel().getColumn(4);
         column.setCellRenderer(new MessageTableRenderer());
-        
+
         JTableHeader tableHeader = m_logTable.getTableHeader();
         tableHeader.setResizingAllowed(false);
         tableHeader.setReorderingAllowed(false);

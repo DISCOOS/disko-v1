@@ -8,6 +8,7 @@ import org.redcross.sar.mso.data.*;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent;
+import org.redcross.sar.util.AssignmentTransferUtilities;
 import org.redcross.sar.util.mso.Selector;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
 
@@ -258,7 +259,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
 
     public void setSelectedCell(int aRow, int aColumn)
     {
-        if (aRow != m_selectedRow || aColumn != m_selectedColunm)
+//        if (aRow != m_selectedRow || aColumn != m_selectedColunm)
         {
             if (aRow < 0 || aRow >= getRowCount() || aColumn < 0 || aColumn >= getColumnCount())
             {
@@ -375,7 +376,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         }
         IUnitIf rowUnit = getUnitAt(aRow);
         IAssignmentIf.AssignmentStatus columnStatus = UnitTableModel.getSelectedAssignmentStatus(aColumn - 1);
-        return anAssignment.canChangeToStatus(columnStatus, rowUnit);
+        return AssignmentTransferUtilities.assignmentCanChangeToStatus(anAssignment,columnStatus, rowUnit);
     }
 
     public abstract static class TimeComparator implements Comparator<IconRenderer.AssignmentIcon>
@@ -577,6 +578,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
             addButton(buttonWithAction("UnitTable_menu_workTime.text", column, 4), column);
             addButton(buttonWithAction("UnitTable_menu_idleTime.text", column, 5), column);
             m_buttons[column].get(0).setSelected(true);
+            m_menus[column].add(new JSeparator());
 
             column++; // 1
             setupColumn(column);
