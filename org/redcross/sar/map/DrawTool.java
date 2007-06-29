@@ -152,13 +152,15 @@ public class DrawTool extends AbstractCommandTool {
 		}
 		IMsoFeatureClass featureClass = (IMsoFeatureClass)editLayer.getFeatureClass();
 		featureClass.clearSelected();
+		if (editFeature == null) {
+			editFeature = featureClass.createMsoFeature();
+		}
 		pathGeometry.simplify();
 		pathGeometry.setSpatialReferenceByRef(map.getSpatialReference());
 		
 		if (featureClass instanceof OperationAreaFeatureClass) {
 			Polygon polygon = getPolygon(pathGeometry);
 			polygon.setSpatialReferenceByRef(map.getSpatialReference());
-			editFeature = featureClass.createMsoFeature();
 			IOperationAreaIf opArea = (IOperationAreaIf)editFeature.getMsoObject();
 			opArea.setGeodata(MapUtil.getMsoPolygon(polygon));
 			featureClass.setSelected(editFeature, true);
@@ -166,15 +168,11 @@ public class DrawTool extends AbstractCommandTool {
 		else if (featureClass instanceof SearchAreaFeatureClass) {
 			Polygon polygon = getPolygon(pathGeometry);
 			polygon.setSpatialReferenceByRef(map.getSpatialReference());
-			editFeature = featureClass.createMsoFeature();
 			ISearchAreaIf searchArea = (ISearchAreaIf)editFeature.getMsoObject();
 			searchArea.setGeodata(MapUtil.getMsoPolygon(polygon));
 			featureClass.setSelected(editFeature, true);
 		}
 		else if (featureClass instanceof AreaFeatureClass) {
-			if (editFeature == null) {
-				editFeature = featureClass.createMsoFeature();
-			}
 			IAreaIf area = (IAreaIf)editFeature.getMsoObject();
 			GeoCollection clone = clone(area.getGeodata());
 			clone.add(MapUtil.getMsoRoute(pathGeometry));
