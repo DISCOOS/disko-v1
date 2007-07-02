@@ -94,7 +94,7 @@ public class WMSLayerSelectionModel {
 			//System.out.println("setLayerVisibility");
 			WMSMapLayer wmslayer = layers[index];			
 			wmslayer.setVisible(visible);
-			map.partialRefresh(null);
+			map.partialRefresh(wmslayer, null);
 	}		
 	
 	/**
@@ -109,8 +109,8 @@ public class WMSLayerSelectionModel {
 			for (int i = 0; i < layers.length; i++){
 				WMSMapLayer flayer = layers[i];			
 				flayer.setVisible(visible);
+				map.partialRefresh(flayer, null);
 			}
-			map.partialRefresh(null);
 	}	
 	
 	/**
@@ -127,8 +127,9 @@ public class WMSLayerSelectionModel {
 				int idx = index[i];
 				WMSMapLayer flayer = layers[idx];			
 				flayer.setVisible(visible);
+				map.partialRefresh(flayer, null);
 			}
-			map.partialRefresh(null);
+			
 	}	
 	
 	
