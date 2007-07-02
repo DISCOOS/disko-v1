@@ -13,6 +13,8 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Vector;
+import java.util.Enumeration;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -25,10 +27,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
+import javax.swing.AbstractButton;
 
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.map.CustomMapData;
+import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.DiskoMapManagerImpl;
 import org.redcross.sar.map.MapSourceInfo;
 
@@ -67,6 +71,11 @@ public class MapOptionDialog extends DiskoDialog {
 	private JLabel labelHeadType = null;
 	private JLabel labelStatus = null;
 	
+	private ButtonGroup bgPrimar = new ButtonGroup();
+	private ButtonGroup bgSecond = new ButtonGroup();
+	private ArrayList<MapSourceInfo> mapSourceList = new ArrayList<MapSourceInfo>();
+	
+	
 	public MapOptionDialog(IDiskoApplication app){
 		super(app.getFrame());
 		this.app = app;
@@ -101,7 +110,7 @@ public class MapOptionDialog extends DiskoDialog {
 		
 		//contentPanel.setBorder(BorderFactory.createTitledBorder(null, "Kartoppsett", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Tahoma", Font.PLAIN, 11), new Color(0, 70, 213)));
 		contentPanel.add(getCenterPanel(), BorderLayout.CENTER);
-		//contentPanel.add(getButtonPanel(), BorderLayout.SOUTH);
+		contentPanel.add(getButtonPanel(), BorderLayout.SOUTH);
 		
 		return contentPanel;
 	}
@@ -181,7 +190,7 @@ public class MapOptionDialog extends DiskoDialog {
 				addDataPanel = new JPanel();
 				addDataPanel.setLayout(new BorderLayout());
 				addDataPanel.add(getBrowsePanel(), BorderLayout.CENTER);
-				addDataPanel.add(getButtonPanel(), BorderLayout.SOUTH);
+				//addDataPanel.add(getButtonPanel(), BorderLayout.SOUTH);
 				addDataPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));				
 				
 			} catch (java.lang.Throwable e) {
@@ -268,14 +277,12 @@ public class MapOptionDialog extends DiskoDialog {
 				mapInfoPanel.setLayout(vfl);
 				
 				
-				ButtonGroup bgPrimar = new ButtonGroup();
-				ButtonGroup bgSecondar = new ButtonGroup();
+				//ButtonGroup bgPrimar = new ButtonGroup();
+				//ButtonGroup bgSecond = new ButtonGroup();
 				
 				//Gets a list of availble mxd docs
 				DiskoMapManagerImpl manager = (DiskoMapManagerImpl) app.getDiskoMapManager();
-				ArrayList list = manager.getMapsTable();
-				
-				
+				mapSourceList = manager.getMapsTable();
 				
 				MapSourceInfo mapInfo = new MapSourceInfo();
 				Dimension dCb = new Dimension(30,16);
@@ -320,9 +327,9 @@ public class MapOptionDialog extends DiskoDialog {
 				mapInfoPanel.add(headerRow);
 				
 				//iterere igjennom lista
-				for(int i = 0; i < list.size(); i++){
+				for(int i = 0; i < mapSourceList.size(); i++){
 					
-					mapInfo = (MapSourceInfo) list.get(i);
+					mapInfo = (MapSourceInfo) mapSourceList.get(i);
 					final String mxd = mapInfo.getMxdPath();
 					FlowLayout fl = new FlowLayout();
 					fl.setAlignment(FlowLayout.LEFT);
@@ -331,6 +338,7 @@ public class MapOptionDialog extends DiskoDialog {
 					JCheckBox cbPrimar = new JCheckBox();	
 					cbPrimar.setSelected(mapInfo.getPrimarMap());
 					cbPrimar.setPreferredSize(dCb);
+					/*
 					cbPrimar.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(java.awt.event.ActionEvent e) {
 							try{
@@ -340,20 +348,23 @@ public class MapOptionDialog extends DiskoDialog {
 							}							
 						}
 					});
-					
+					*/
 					bgPrimar.add(cbPrimar);
 					row.add(cbPrimar);
 					
 					JCheckBox cbSecond = new JCheckBox();
 					cbSecond.setPreferredSize(dCb);
 					cbSecond.setSelected(mapInfo.getSecondaryMap());
+					
+					/*
 					cbSecond.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(java.awt.event.ActionEvent e) {							
 							setSecondaryMxd(mxd); 							
 						}
 					});
+					*/
 					
-					bgSecondar.add(cbSecond);
+					bgSecond.add(cbSecond);
 					row.add(cbSecond);
 					
 					JLabel mxdPath = new JLabel(mapInfo.getMxdPath());
@@ -398,6 +409,8 @@ public class MapOptionDialog extends DiskoDialog {
 	private JButton getFinishButton() {
 		if (finishButton == null) {
 			try{
+				
+				
 				Dimension size = app.getUIFactory().getSmallButtonSize();
 				String iconName = "finish.icon";
 				Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
@@ -408,11 +421,61 @@ public class MapOptionDialog extends DiskoDialog {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
 						System.out.println("actionPerformed(): finish"); 
 						//checks if active tab is addData
+						//testing
+						CustomMapData addDatatest = new CustomMapData();
+						//addDatatest.AddWMSLayer(map, "")
+						//slutt testint
+						
+						
+						
 						if (jTabbedMapPane.getSelectedIndex() == 1 && file != null){
-							CustomMapData addData = new CustomMapData();					
-							addData.AddCustomData(app, file);
+							//legger inn et hack for å sjekke filtype. Burde vært fikset med et filter.
+							String fname = file.getName();	
+							int i = fname.lastIndexOf(".") + 1;
+							String ext = fname.substring(i, fname.length());
+							if(ext.equalsIgnoreCase("tif") || ext.equalsIgnoreCase("tiff") || ext.equalsIgnoreCase("shp")){
+								CustomMapData addData = new CustomMapData();					
+								addData.AddCustomData(app, file);
+							}
+							else{
+								//åpne meldingsboks
+								System.out.println("Feil fil format");
+							}
 							textFieldBrowse.setText("");
 							file = null;//nullstiller
+							//System.out.println("FinishButton: add data");
+						}
+						else if(jTabbedMapPane.getSelectedIndex() == 0){
+							AbstractButton abstractButton = (AbstractButton) e.getSource();
+							MapSourceInfo map = new MapSourceInfo();
+							//loop igjennom cb og sett primær og sekundær kart.
+							int j = 0;
+							for (Enumeration<AbstractButton> enumerator = bgPrimar.getElements(); enumerator.hasMoreElements();){
+								//System.out.println("test: " + j + ", element: " );	
+								if (enumerator.nextElement().isSelected()){
+									//System.out.println("isSelecta_gangsta");
+									map = mapSourceList.get(j);
+									map.setPrimarMap(true);
+									try{
+										setPrimaryMxd(map.getMxdPath());
+										//System.out.println("Nytt primær kart satt: " + map.getMxdPath());
+									}catch(IOException ioe){
+										ioe.printStackTrace();
+									}
+								}	
+								j=j+1;
+							}
+							int k = 0;
+							for (Enumeration<AbstractButton> enumerator_2 = bgSecond.getElements(); enumerator_2.hasMoreElements();){
+								if (enumerator_2.nextElement().isSelected()){
+									map = mapSourceList.get(k);
+									map.setSecondaryMap(true);
+									setSecondaryMxd(map.getMxdPath());
+									//System.out.println("Nytt sekundær kart satt: " + map.getMxdPath());
+								}
+								k = k+1;								
+							}							
+							
 						}
 						else
 							System.out.println("FinishButton: ingen action");
@@ -443,8 +506,12 @@ public class MapOptionDialog extends DiskoDialog {
 				cancelButton.setIcon(icon);
 				cancelButton.setText("");
 				cancelButton.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent e) {
-						textFieldBrowse.setText("");
+					public void actionPerformed(java.awt.event.ActionEvent e) {						
+						if (jTabbedMapPane.getSelectedIndex() == 1){
+							//addmapdata tab active
+							textFieldBrowse.setText("");
+							System.out.println("actionPerformed() blanker adddata field");
+						}
 						setVisible(false);
 						System.out.println("actionPerformed() Cancel"); // TODO Auto-generated Event stub actionPerformed()
 					}
@@ -533,7 +600,7 @@ public class MapOptionDialog extends DiskoDialog {
 		//fDialog.setFilenameFilter();
 		//fDialog.setFilenameFilter(arg0)
 		
-		FileDialog fileDialog = new FileDialog(this, "Legg til", FileDialog.LOAD);
+		FileDialog fileDialog = new FileDialog(this, "Legg til .shp, .tif eller .tiff fil", FileDialog.LOAD);
 		
 		FilenameFilter filter = new FilenameFilter(){
 			public boolean accept(File dir, String name) {
