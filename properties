@@ -38,6 +38,7 @@ ToolCommandType.FLANK_TOOL.icon=icons/60x60/edge.gif
 ToolCommandType.DRAW_TOOL.icon=icons/60x60/drawing.gif
 ToolCommandType.ERASE_TOOL.icon=icons/60x60/eraser.gif
 ToolCommandType.SPLIT_TOOL.icon=icons/60x60/split.gif
+ToolCommandType.TOC_TOOL.icon=icons/60x60/toc.gif
 ToolCommandType.SELECT_FEATURE_TOOL.icon=icons/60x60/choose.gif
 ToolCommandType.ZOOM_IN_TOOL.icon=icons/60x60/zoomin.gif
 ToolCommandType.ZOOM_OUT_TOOL.icon=icons/60x60/zoomout.gif
@@ -49,6 +50,7 @@ ToolCommandType.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND.icon=icons/60x60/next.gif
 ToolCommandType.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND.icon=icons/60x60/back.gif
 ToolCommandType.MAP_TOGGLE_COMMAND.icon=icons/60x60/map_1.gif
 ToolCommandType.MAP_TOGGLE_COMMAND_2.icon=icons/60x60/map_2.gif
+
 
 UnitType.COMMAND_POST.icon=icons/60x60/command.gif
 UnitType.TEAM.icon=icons/60x60/people.gif
