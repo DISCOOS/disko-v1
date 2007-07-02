@@ -5,18 +5,24 @@ import java.io.File;
 import org.redcross.sar.app.IDiskoApplication;
 
 import com.esri.arcgis.carto.RasterLayer;
+
+import com.esri.arcgis.carto.FeatureLayer;
+import com.esri.arcgis.carto.WMSLayer;
 //import com.esri.arcgis.datasourcesraster.RasterDataset;
 //import com.esri.arcgis.datasourcesraster.RasterWorkspace;
 //import com.esri.arcgis.datasourcesraster.RasterWorkspaceFactory;
+
+import com.esri.arcgis.system.FileStream;
+
+
 
 public class CustomMapData {
 	
 	
 	public void AddCustomData(IDiskoApplication app, File f){
 		String fname = f.getName();
-		String path = f.getAbsolutePath().substring(0,f.getAbsolutePath().length()-fname.length());
-		DiskoMap map = (DiskoMap) app.getCurrentMap();		
-		//System.out.println(path + " :_: " + fname +" " + f.getAbsolutePath());
+		String path = f.getAbsolutePath().substring(0,f.getAbsolutePath().length()-fname.length());		
+		DiskoMap map = (DiskoMap) app.getCurrentMap();	
 		System.out.println("sjekker ext");
 		//må sjekke fil type 
 		int i = fname.lastIndexOf(".") + 1;
@@ -26,7 +32,7 @@ public class CustomMapData {
 		
 		if(ext.equalsIgnoreCase("tif") || ext.equalsIgnoreCase("tiff")){
 			System.out.println("raster");
-			AddRasterFile(map, f.getAbsolutePath());			
+			AddRasterFile(map, f.getAbsolutePath());	
 		}
 		else if (ext.equalsIgnoreCase("shp")){
 			System.out.println("shp");
@@ -36,19 +42,22 @@ public class CustomMapData {
 		//lagre kartet med de nye dataene
 		try{
 			System.out.println("Ikke lagret");
-			//FileStream fs = new FileStream();
+			FileStream fs = new FileStream();
 			//fs.open("C:\\DISKO\\Disko.mxd", com.esri.arcgis.system.esriFilePermission.esriReadWrite);
+			//fs.loadFromFile("C:\\DISKO\\Disko.mxd");
 			//map.save(fs, 0);
 		}catch (Exception e){
 			e.printStackTrace();
-			System.out.println("FileStream feilet");
-			
-		}		
+			System.out.println("FileStream feilet");			
+		}	
+		//else hvis meldingsboks
 		
 	}
 	
 	private boolean addShapeFile(DiskoMap map, String fname, String path){
 		try{
+			//map
+			FeatureLayer fl = new FeatureLayer();
 			map.addShapeFile(path, fname);	
 			return true;
 			//map.save(mxd, false);//må ha tak i mxd dokumentet
@@ -67,11 +76,31 @@ public class CustomMapData {
 		try{			
 			RasterLayer rl = new RasterLayer();
 			rl.createFromFilePath(fullpath);			
-			map.addLayer(rl, map.getLayerCount());
+			//adds on top
+			map.addLayer(rl, 0);
+			//adds in bottom
+			//map.addLayer(rl, map.getLayerCount());
+			
 			return true;
 			
 		}catch(Exception e){
 			System.out.println("Error new RasterLayer");
+			return false;
+		}
+	}
+	
+	public boolean AddWMSLayer(DiskoMap map, String wmsurl){
+//		RasterDataset rd = openRasterDataset(path, fname);
+		try{	
+			System.out.println("Skal legge til WMSLayer");
+			WMSLayer wmsl = new WMSLayer(wmsurl);
+			//adds on top	
+			map.addLayer(wmsl,0);
+			
+			return true;
+			
+		}catch(Exception e){
+			System.out.println("Error new WMSLayer");
 			return false;
 		}
 	}
