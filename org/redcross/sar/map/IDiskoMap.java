@@ -35,11 +35,59 @@ public interface IDiskoMap {
 	 */
 	public SnapLayerSelectionModel getSnapLayerSelectionModel()
 			throws IOException, AutomationException;
+	
+	/* (non-Javadoc)
+	 * @see org.redcross.sar.map.IDiskoMap#getSnapLayerSelectionModel()
+	 */
+	public void setSnapLayerSelectionModel()
+			throws IOException, AutomationException;
 
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
 	 */
 	public ClipLayerSelectionModel getClipLayerSelectionModel()
+			throws IOException, AutomationException;
+	
+	/* (non-Javadoc)
+	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
+	 */
+	public void setClipLayerSelectionModel()
+			throws IOException, AutomationException;
+	
+	/* (non-Javadoc)
+	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
+	 */
+	public MsoLayerSelectionModel getMsoLayerSelectionModel()
+			throws IOException, AutomationException;
+	
+	/* (non-Javadoc)
+	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
+	 */
+	public void setMsoLayerSelectionModel()
+			throws IOException, AutomationException;
+	
+	/* (non-Javadoc)
+	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
+	 */
+	public WMSLayerSelectionModel getWMSLayerSelectionModel()
+			throws IOException, AutomationException;
+	
+	/* (non-Javadoc)
+	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
+	 */
+	public void setWMSLayerSelectionModel()
+			throws IOException, AutomationException;
+	
+	/* (non-Javadoc)
+	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
+	 */
+	public DefaultMapLayerSelectionModel getDefaultMapLayerSelectionModel()
+			throws IOException, AutomationException;
+	
+	/* (non-Javadoc)
+	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
+	 */
+	public void setDefaultMapLayerSelectionModel()
 			throws IOException, AutomationException;
 	
 	public IDiskoMapManager getMapManager();
