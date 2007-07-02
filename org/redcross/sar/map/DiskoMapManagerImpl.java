@@ -11,6 +11,7 @@ import javax.swing.filechooser.FileSystemView;
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.map.layer.AbstractMsoFeatureLayer;
 import org.redcross.sar.map.layer.AreaLayer;
+import org.redcross.sar.map.layer.DiskoWMSLayer;
 import org.redcross.sar.map.layer.FlankLayer;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.map.layer.OperationAreaLayer;
@@ -20,6 +21,8 @@ import org.redcross.sar.map.layer.SearchAreaLayer;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.util.MapInfoComparator;
 
+import com.esri.arcgis.carto.ILayer;
+import com.esri.arcgis.carto.IMap;
 import com.esri.arcgis.geometry.IEnvelope;
 import com.esri.arcgis.interop.AutomationException;
 
@@ -33,6 +36,7 @@ public class DiskoMapManagerImpl implements IDiskoMapManager {
 	private boolean primarActive = true;
 	private ArrayList<String> sMxdPaths = new ArrayList<String>();
 
+	
 	public DiskoMapManagerImpl(IDiskoApplication app) {
 		this.app = app;
 		maps = new ArrayList<DiskoMap>();
@@ -44,7 +48,7 @@ public class DiskoMapManagerImpl implements IDiskoMapManager {
 		msoLayers.add(new AreaLayer(app.getMsoModel()));
 		msoLayers.add(new OperationAreaMaskLayer(app.getMsoModel()));
 		msoLayers.add(new FlankLayer(app.getMsoModel()));
-		setInitMxdPaths();
+		setInitMxdPaths();		
 	}
 
 	/*
@@ -116,6 +120,11 @@ public class DiskoMapManagerImpl implements IDiskoMapManager {
 	 * @throws IOException
 	 */
 	public void toggleMap() throws IOException{
+		
+
+		//initWMSLayers();
+		
+		
 		DiskoMap map = (DiskoMap) app.getCurrentMap();
 		String mapname = map.getDocumentFilename();		
 		if(mapname.equalsIgnoreCase(this.primarMxdDoc)){ 
@@ -128,6 +137,8 @@ public class DiskoMapManagerImpl implements IDiskoMapManager {
 		}		
 		//toggle icon
 		app.getNavBar().switchIcon("maptoggle", primarActive);
+		
+		
 	}	
 	
 	public void setPrimarMxdDoc(String mxddoc){
@@ -224,5 +235,31 @@ public class DiskoMapManagerImpl implements IDiskoMapManager {
 			}
 		}
 		return null;
+	}
+	
+	public void initWMSLayers() throws IOException{
+		System.out.println("initWMSLayers");
+		DiskoWMSLayer wms = new DiskoWMSLayer();
+		DiskoMap map = (DiskoMap) app.getCurrentMap();
+		IMap focusMap = map.getActiveView().getFocusMap();
+		System.out.println(map.getLayerCount());
+		try{
+			ILayer wmsLayer = (ILayer) wms.createWMSLayer();
+			wmsLayer.setVisible(true);
+			focusMap.addLayer(wmsLayer);			
+			System.out.println("har lagt til et layer");
+		}catch(IOException ioe){
+			ioe.printStackTrace();
+		}
+		map.getActiveView().refresh();
+		
+		System.out.println(map.getLayerCount());
+		
+		for (int i = 0; i < focusMap.getLayerCount(); i++){
+			ILayer lay = focusMap.getLayer(i);
+			System.out.println(lay.getName());
+			
+		}
+		
 	}
 }
