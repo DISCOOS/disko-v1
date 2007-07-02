@@ -22,6 +22,7 @@ import org.redcross.sar.app.Utils;
 import org.redcross.sar.map.DrawTool;
 import org.redcross.sar.map.EraseTool;
 import org.redcross.sar.map.FlankTool;
+import org.redcross.sar.map.TocTool;
 import org.redcross.sar.map.IDiskoMap;
 import org.redcross.sar.map.IDiskoTool;
 import org.redcross.sar.map.POITool;
@@ -60,7 +61,8 @@ public class NavBar extends JPanel {
 		ZOOM_FULL_EXTENT_COMMAND,
 		ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND,
 		ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND,
-		MAP_TOGGLE_COMMAND
+		MAP_TOGGLE_COMMAND,
+		TOC_TOOL
     }
 	
 	public enum ButtonPlacement {
@@ -90,12 +92,14 @@ public class NavBar extends JPanel {
 	private JButton zoomToLastExtentForwardButton = null;
 	private JButton zoomToLastExtentBackwardButton = null;	
 	private JButton mapToggleButton = null;
+	private JButton tocToggleButton = null;
 	
 	private DrawTool drawTool = null;
 	private FlankTool flankTool = null;
 	private EraseTool eraseTool = null;
 	private SplitTool splitTool = null;
 	private POITool puiTool = null;
+	private TocTool tocTool = null;
 	private SelectFeatureTool selectFeatureTool = null;
 	private ControlsMapZoomInTool zoomInTool = null;
 	private ControlsMapZoomOutTool zoomOutTool = null;
@@ -159,6 +163,8 @@ public class NavBar extends JPanel {
 				ToolCommandType.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND, ButtonPlacement.RIGHT);	
 		addCommand(getMapToggleButton(), getMapToggleCommand(), 
 				ToolCommandType.MAP_TOGGLE_COMMAND, ButtonPlacement.RIGHT);
+		addCommand(getTocToggleButton(), getTocTool(), 
+				ToolCommandType.TOC_TOOL, ButtonPlacement.RIGHT);
 	}
 	
 	private JPanel getLeftPanel() {
@@ -219,6 +225,18 @@ public class NavBar extends JPanel {
 		}
 		return flankTool;
 	}
+	
+	public TocTool getTocTool() {
+		if (tocTool == null) {
+			try {
+				tocTool = new TocTool(app);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return tocTool;
+	}	
 	
 	public EraseTool getEraseTool() {
 		if (eraseTool == null) {
@@ -315,7 +333,7 @@ public class NavBar extends JPanel {
 		}
 		return panTool;
 	}
-	
+		
 	private ControlsMapZoomInFixedCommand getZoomInFixedCommand() {
 		if (zoomInFixedCommand == null) {
 			try {
@@ -554,6 +572,20 @@ public class NavBar extends JPanel {
 			}			
 		}
 		return mapToggleButton;
+	}
+	
+	public JButton getTocToggleButton(){
+		if (tocToggleButton == null) {
+			try {
+				Dimension size = app.getUIFactory().getSmallButtonSize();
+				tocToggleButton = new JButton();
+				tocToggleButton.setPreferredSize(size);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}			
+		}
+		return tocToggleButton;
 	}
 	
 	public JButton getZoomInFixedButton() {
