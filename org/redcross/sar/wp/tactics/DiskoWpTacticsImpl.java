@@ -50,11 +50,13 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 	private JToggleButton unitToggleButton = null;
 	private JToggleButton estimateToggleButton = null;
 	private POITool poiTool = null;
+	private TocTool tocTool = null;
 	private DrawTool drawTool = null;
 	private EraseTool eraseTool = null;
 	private FlankTool flankTool = null;
 	private SplitTool splitTool = null;
 	private POIDialog poiDialog = null;
+	private TocDialog tocDialog = null;
 	private SelectFeatureTool selectFeatureTool = null;
 	private ArrayList<DiskoDialog> dialogs = null;
 	private TextAreaDialog textAreaDialog = null;
@@ -212,6 +214,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 
 		drawTool = navBar.getDrawTool();
 		poiTool = navBar.getPOITool();
+		tocTool = navBar.getTocTool();
 		eraseTool = navBar.getEraseTool();
 		flankTool = navBar.getFlankTool();
 		splitTool = navBar.getSplitTool();
