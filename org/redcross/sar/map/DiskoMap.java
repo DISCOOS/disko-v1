@@ -52,11 +52,13 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	private IDiskoMapManager mapManager = null;
 	private SnapLayerSelectionModel snapLayerSelectionModel = null;
 	private ClipLayerSelectionModel clipLayerSelectionModel = null;
+	private MsoLayerSelectionModel msoLayerSelectionModel = null;
+	private WMSLayerSelectionModel wmsLayerSelectionModel = null;	
+	private DefaultMapLayerSelectionModel defaultMapLayerSelectionModel = null;
 	private IDiskoTool currentTool = null;
 	private ArrayList<IDiskoMapEventListener> listeners = null;
 	private DiskoMapEvent diskoMapEvent = null;
 	protected EnumSet<IMsoManagerIf.MsoClassCode> myInterests = null;
-	
 
 	/**
 	 * Default constructor
@@ -71,7 +73,6 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 		
 		myInterests = EnumSet.of(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
 		myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA);
-		myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA);
 		myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_POI);
 		IMsoEventManagerIf msoEventManager = msoModel.getEventManager();
 		msoEventManager.addClientUpdateListener(this);
@@ -112,12 +113,8 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 			IFeatureLayer layer = (IFeatureLayer)customLayers.get(i);
 			layer.setSpatialReferenceByRef(getSpatialReference());
 			focusMap.addLayer(layer);
-			layer.setCached(true);
+			
 		}
-		// reactivate
-		getActiveView().deactivate();			
-		getActiveView().activate(getHWnd());			
-		getActiveView().refresh();
 		
 		// set all featurelayers not selectabel
 		for (int i = 0; i < focusMap.getLayerCount(); i++) {
@@ -132,30 +129,23 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	}
 	
 	public void handleMsoUpdateEvent(Update e) {
-		try {
+		/*try {
 			IMsoObjectIf msoObj = (IMsoObjectIf)e.getSource();
-			List msoLayers = mapManager.getMsoLayers(msoObj.getMsoClassCode());
-			IFeatureLayer flayer = (IFeatureLayer)msoLayers.get(0);
-			IMsoFeatureClass fc  = (IMsoFeatureClass)flayer.getFeatureClass();
-			if (fc.getIsDirty()) {
-				partialRefresh(flayer, null);
-				fc.setIsDirty(false);
+			IMsoFeatureLayer msoLayer = mapManager.getMsoLayer(msoObj.getMsoClassCode());
+			IMsoFeatureClass fc = (IMsoFeatureClass)msoLayer.getFeatureClass();
+			IMsoFeature feature = fc.getFeature(msoObj.getObjectId());
+			if (feature != null && feature.getExtent() != null) {
+				IEnvelope extent = feature.getExtent();
+				partialRefresh(extent);
 			}
-			/*for (int i = 0; i < msoLayers.size(); i++) {
-				IFeatureLayer flayer = (IFeatureLayer)msoLayers.get(i);
-				IMsoFeatureClass fc  = (IMsoFeatureClass)flayer.getFeatureClass();
-				if (fc.getIsDirty()) {
-					partialRefresh(flayer, null);
-					fc.setIsDirty(false);
-				}
-			}*/
+			
 		} catch (AutomationException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}
+		}*/
 	}
 
 	public boolean hasInterestIn(IMsoObjectIf aMsoObject) {
@@ -248,6 +238,14 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	}
 	
 	/* (non-Javadoc)
+	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
+	 */
+	public void setSnapLayerSelectionModel() 
+		throws IOException, AutomationException {
+		snapLayerSelectionModel = new SnapLayerSelectionModel(this);
+	}
+	
+	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#getSnapLayerSelectionModel()
 	 */
 	public SnapLayerSelectionModel getSnapLayerSelectionModel() 
@@ -256,6 +254,15 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 			snapLayerSelectionModel = new SnapLayerSelectionModel(this);
 		}
 		return snapLayerSelectionModel;
+	}
+	
+
+	/* (non-Javadoc)
+	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
+	 */
+	public void setClipLayerSelectionModel()  
+		throws IOException, AutomationException{
+		clipLayerSelectionModel = new ClipLayerSelectionModel(this);
 	}
 	
 	/* (non-Javadoc)
@@ -267,6 +274,63 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 			clipLayerSelectionModel = new ClipLayerSelectionModel(this);
 		}
 		return clipLayerSelectionModel;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
+	 */
+	public void setMsoLayerSelectionModel() 
+		throws IOException, AutomationException{
+		msoLayerSelectionModel = new MsoLayerSelectionModel(this);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
+	 */
+	public MsoLayerSelectionModel getMsoLayerSelectionModel() 
+			throws IOException, AutomationException {
+		if (msoLayerSelectionModel == null) {
+			msoLayerSelectionModel = new MsoLayerSelectionModel(this);
+		}
+		return msoLayerSelectionModel;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
+	 */
+	public void setWMSLayerSelectionModel()  
+		throws IOException, AutomationException {
+		wmsLayerSelectionModel = new WMSLayerSelectionModel(this);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
+	 */
+	public WMSLayerSelectionModel getWMSLayerSelectionModel() 
+			throws IOException, AutomationException {
+		if (wmsLayerSelectionModel == null) {
+			wmsLayerSelectionModel = new WMSLayerSelectionModel(this);
+		}
+		return wmsLayerSelectionModel;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
+	 */
+	public void setDefaultMapLayerSelectionModel()   
+		throws IOException, AutomationException {
+		defaultMapLayerSelectionModel = new DefaultMapLayerSelectionModel(this);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
+	 */
+	public DefaultMapLayerSelectionModel getDefaultMapLayerSelectionModel() 
+			throws IOException, AutomationException {
+		if (defaultMapLayerSelectionModel == null) {
+			defaultMapLayerSelectionModel = new DefaultMapLayerSelectionModel(this);
+		}
+		return defaultMapLayerSelectionModel;
 	}
 	
 	public IDiskoMapManager getMapManager() {
