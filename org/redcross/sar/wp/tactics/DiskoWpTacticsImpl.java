@@ -52,6 +52,7 @@ import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.IOperationAreaIf;
 import org.redcross.sar.mso.data.ISearchAreaIf;
 import org.redcross.sar.mso.data.ISearchIf;
+import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
 import org.redcross.sar.mso.data.ISearchIf.SearchSubType;
@@ -166,12 +167,13 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 			List selection = msoFC.getSelected();
 			if (selection != null && selection.size() > 0) {
 				JList elementList = getElementDialog().getElementList();
-				getElementToggleButton().setEnabled(false);
 				IMsoFeature msoFeature = (IMsoFeature)selection.get(0);
 				IMsoObjectIf msoObject = msoFeature.getMsoObject();
 
 				if (msoObject instanceof IAreaIf) {
 					IAreaIf area = (IAreaIf)msoObject;
+					poiTool.setArea(area);
+					getDescriptionDialog().setArea(area);
 					if (area.getOwningAssignment() instanceof ISearchIf) {
 						ISearchIf search = (ISearchIf)area.getOwningAssignment();
 						elementList.setSelectedValue(search.getSubType(), false);
@@ -181,6 +183,8 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 					elementList.setSelectedValue(msoObject.getMsoClassCode(), false);
 				}
 				drawTool.setEditFeature(msoFeature);
+				NavBar navBar = getApplication().getNavBar();
+				navBar.getPOIToggleButton().setEnabled(true);
 			}
 		} catch (RuntimeException e1) {
 			// TODO Auto-generated catch block
@@ -202,6 +206,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 			NavBar navBar = getApplication().getNavBar();
 			navBar.getPOIToggleButton().setEnabled(true);
 		}
+		getElementToggleButton().setEnabled(false);
 	}
 
 	public void dialogCanceled(DialogEvent e) {
@@ -304,6 +309,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		try {
 			IMsoFeature msoFeature = drawTool.getEditFeature();
 			if (msoFeature.getMsoObject() == null){
+				reset();
 				return;
 			}
 			Enum element = (Enum) getElementDialog().getElementList().getSelectedValue();
@@ -339,18 +345,15 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 				search.setPlannedAccuracy(dialog.getAccuracy());
 				search.setPlannedPersonnel(dialog.getPersonelNeed());
 				search.setPlannedProgress(getEstimateDialog().getEstimatedTime());
-				
-				//unit
-				//IUnitIf unit = getUnitSelectionDialog().getSelectedUnit();
-				//unit.addUnitAssignment(search, search.getStatus());
 					
 				// dialog for setting status
 				if (search.getStatus() != AssignmentStatus.READY) {
+					IUnitIf unit = getUnitSelectionDialog().getSelectedUnit();
 					SubMenuPanel subMenu = getApplication().getUIFactory().getSubMenuPanel();
 					java.awt.Point p = subMenu.getFinishButton().getLocationOnScreen();
 					p.setLocation(p.x - getAssignmentStatusDialog().getWidth() - 2, p.y-1);
 					getAssignmentStatusDialog().setLocation(p);
-					getAssignmentStatusDialog().setAssignment(search);
+					getAssignmentStatusDialog().setAssignment(search, unit);
 					getAssignmentStatusDialog().setVisible(true);
 				}
 			}
@@ -369,11 +372,11 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 
 	private void reset() {
 		hideDialogs(null);
-		getElementToggleButton().setEnabled(true);
 		isEditing = false;
 		enableFinishCancel(false);
 		poiTool.setArea(null);
 		drawTool.setEditFeature(null);
+		getElementToggleButton().setEnabled(true);
 		
 		callingWp = null;
 		//Possible to go back ?
@@ -383,19 +386,27 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 			callingWp = null;
 			return;
 		}*/
-		try {
-			IMsoFeatureClass featureClass = (IMsoFeatureClass)currentLayer.getFeatureClass();
-			featureClass.clearSelected();
-			getMap().partialRefresh(currentLayer, null);
-		} catch (AutomationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		clearSelected();
 		//select next element
 		selectElement();
+	}
+	
+	private void clearSelected() {
+		if (currentLayer != null) {
+			try {
+				IMsoFeatureClass featureClass = (IMsoFeatureClass)currentLayer.getFeatureClass();
+				if (featureClass.getSelected().size() > 0) {
+					featureClass.clearSelected();
+					getMap().partialRefresh(currentLayer, null);
+				}
+			} catch (AutomationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private void hideDialogs(JDialog notToHideDialog) {

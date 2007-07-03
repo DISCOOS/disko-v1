@@ -12,6 +12,7 @@ import javax.swing.border.BevelBorder;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.mso.data.IAssignmentIf;
+import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
 import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.wp.tactics.IDiskoWpTactics.TacticsTaskType;
@@ -24,6 +25,7 @@ public class AssignmentStatusDialog extends DiskoDialog {
 	private JButton readyButton = null;
 	private Dimension buttonSize = null;
 	private IAssignmentIf assignment = null;  //  @jve:decl-index=0:
+	private IUnitIf unit = null;  //  @jve:decl-index=0:
 
 	public AssignmentStatusDialog(DiskoWpTacticsImpl wp) {
 		super(wp.getApplication().getFrame());
@@ -49,8 +51,9 @@ public class AssignmentStatusDialog extends DiskoDialog {
 		}
 	}
 	
-	public void setAssignment(IAssignmentIf assignment) {
+	public void setAssignment(IAssignmentIf assignment, IUnitIf unit) {
 		this.assignment = assignment;
+		this.unit = unit;
 	}
 
 	/**
@@ -95,12 +98,7 @@ public class AssignmentStatusDialog extends DiskoDialog {
 				draftButton.setPreferredSize(buttonSize);
 				draftButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
-						try {
-							assignment.setStatus(AssignmentStatus.DRAFT);
-						} catch (IllegalOperationException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
+						setStatus(AssignmentStatus.DRAFT);
 						setVisible(false);
 					}
 				});
@@ -130,12 +128,7 @@ public class AssignmentStatusDialog extends DiskoDialog {
 				readyButton.setPreferredSize(buttonSize);
 				readyButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
-						try {
-							assignment.setStatus(AssignmentStatus.READY);
-						} catch (IllegalOperationException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
+						setStatus(AssignmentStatus.READY);
 						setVisible(false);
 					}
 				});
@@ -144,5 +137,18 @@ public class AssignmentStatusDialog extends DiskoDialog {
 			}
 		}
 		return readyButton;
+	}
+	
+	private void setStatus(AssignmentStatus status) {
+		try {
+			if (unit != null) {
+			    //unit.addUnitAssignment(assignment, status);
+			} else {
+				assignment.setStatus(status);
+			}
+		} catch (IllegalOperationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
