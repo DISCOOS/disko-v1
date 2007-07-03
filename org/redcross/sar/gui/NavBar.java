@@ -93,7 +93,7 @@ public class NavBar extends JPanel {
 	private JButton zoomToLastExtentForwardButton = null;
 	private JButton zoomToLastExtentBackwardButton = null;	
 	private JButton mapToggleButton = null;
-	private JButton tocToggleButton = null;
+	private JToggleButton tocToggleButton = null;
 	private JButton eraseButton = null;
 	
 	private DrawTool drawTool = null;
@@ -576,11 +576,11 @@ public class NavBar extends JPanel {
 		return mapToggleButton;
 	}
 	
-	public JButton getTocToggleButton(){
+	public JToggleButton getTocToggleButton(){
 		if (tocToggleButton == null) {
 			try {
 				Dimension size = app.getUIFactory().getSmallButtonSize();
-				tocToggleButton = new JButton();
+				tocToggleButton = new JToggleButton();
 				tocToggleButton.setPreferredSize(size);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -807,7 +807,6 @@ public class NavBar extends JPanel {
 				}
 				else {
 					command.onClick();
-					
 				}
 			} catch (AutomationException e1) {
 				// TODO Auto-generated catch block
