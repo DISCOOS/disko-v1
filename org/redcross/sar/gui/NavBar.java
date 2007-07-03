@@ -20,7 +20,7 @@ import javax.swing.JToggleButton;
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.map.DrawTool;
-import org.redcross.sar.map.EraseTool;
+import org.redcross.sar.map.EraseCommand;
 import org.redcross.sar.map.FlankTool;
 import org.redcross.sar.map.TocTool;
 import org.redcross.sar.map.IDiskoMap;
@@ -56,6 +56,7 @@ public class NavBar extends JPanel {
 		ZOOM_IN_TOOL,
 		ZOOM_OUT_TOOL,
 		PAN_TOOL,
+		ERASE_COMMAND,
 		ZOOM_IN_FIXED_COMMAND,
 		ZOOM_OUT_FIXED_COMMAND,
 		ZOOM_FULL_EXTENT_COMMAND,
@@ -93,13 +94,14 @@ public class NavBar extends JPanel {
 	private JButton zoomToLastExtentBackwardButton = null;	
 	private JButton mapToggleButton = null;
 	private JButton tocToggleButton = null;
+	private JButton eraseButton = null;
 	
 	private DrawTool drawTool = null;
 	private FlankTool flankTool = null;
-	private EraseTool eraseTool = null;
 	private SplitTool splitTool = null;
 	private POITool puiTool = null;
 	private TocTool tocTool = null;
+	private EraseCommand eraseCommand = null;
 	private SelectFeatureTool selectFeatureTool = null;
 	private ControlsMapZoomInTool zoomInTool = null;
 	private ControlsMapZoomOutTool zoomOutTool = null;
@@ -139,12 +141,12 @@ public class NavBar extends JPanel {
 				ToolCommandType.FLANK_TOOL, ButtonPlacement.LEFT);
 		addCommand(getDrawLineToggleButton(), getDrawTool(), 
 				ToolCommandType.DRAW_TOOL, ButtonPlacement.LEFT);
-		addCommand(getEraseToggleButton(), getEraseTool(), 
-				ToolCommandType.ERASE_TOOL, ButtonPlacement.LEFT);
 		addCommand(getSplitToggleButton(), getSplitTool(), 
 				ToolCommandType.SPLIT_TOOL, ButtonPlacement.LEFT);
 		addCommand(getSelectFeatureToggleButton(), getSelectFeatureTool(), 
 				ToolCommandType.SELECT_FEATURE_TOOL, ButtonPlacement.LEFT);
+		addCommand(getEraseButton(), getEraseCommand(), 
+				ToolCommandType.ERASE_COMMAND, ButtonPlacement.LEFT);
 		addCommand(getZoomInToggleButton(), getZoomInTool(), 
 				ToolCommandType.ZOOM_IN_TOOL, ButtonPlacement.RIGHT);
 		addCommand(getZoomOutToggleButton(), getZoomOutTool(), 
@@ -237,18 +239,6 @@ public class NavBar extends JPanel {
 		}
 		return tocTool;
 	}	
-	
-	public EraseTool getEraseTool() {
-		if (eraseTool == null) {
-			try {
-				eraseTool = new EraseTool();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		return eraseTool;
-	}
 	
 	public SplitTool getSplitTool() {
 		if (splitTool == null) {
@@ -423,6 +413,18 @@ public class NavBar extends JPanel {
 			}
 		}
 		return mapToggle;
+	}
+	
+	private EraseCommand getEraseCommand() {		
+		if (eraseCommand == null) {
+			try {
+				eraseCommand = new EraseCommand();			
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return eraseCommand;
 	}
 	
 	
@@ -658,6 +660,20 @@ public class NavBar extends JPanel {
 		}
 		return zoomToLastExtentBackwardButton;
 	}
+	
+	public JButton getEraseButton(){
+		if (eraseButton == null) {
+			try {
+				Dimension size = app.getUIFactory().getSmallButtonSize();
+				eraseButton = new JButton();
+				eraseButton.setPreferredSize(size);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}			
+		}
+		return eraseButton;
+	}
 		
 	public void taskChanged() {
 		//unselectAll();
@@ -788,10 +804,6 @@ public class NavBar extends JPanel {
 				}
 				if (command instanceof ITool && map != null) {
 					map.setCurrentToolByRef((ITool)command);
-				}
-				else if (command instanceof MapToggleCommand){					
-					mapToggle = (MapToggleCommand) command;
-					mapToggle.onClick(app);
 				}
 				else {
 					command.onClick();

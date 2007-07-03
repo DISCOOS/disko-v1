@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
@@ -16,7 +18,6 @@ import javax.swing.border.TitledBorder;
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.map.DrawTool;
 import org.redcross.sar.map.IDiskoMap;
-import org.redcross.sar.map.SnapLayerSelectionModel;
 
 import com.borland.jbcl.layout.VerticalFlowLayout;
 import com.esri.arcgis.carto.IFeatureLayer;
@@ -26,32 +27,29 @@ public class DrawDialog extends DiskoDialog {
 	
 	private static final long serialVersionUID = 1L;
 	private DrawTool tool = null;
-	private SnapLayerSelectionModel snapLayerSelectionModel = null;  //  @jve:decl-index=0:
 	private JPanel mainPanel = null;
 	private JSlider snapToleranceSlider = null;
 	private JPanel layerSelectionPanel = null;
 	private JPanel centerPanel = null;
+	private ArrayList<JCheckBox> checkBoxes = new ArrayList<JCheckBox>();
+	private ArrayList<IFeatureLayer> layers = new ArrayList<IFeatureLayer>();
 	
 	public DrawDialog(IDiskoApplication app, DrawTool tool) {
 		super(app.getFrame());
 		this.tool = tool;
+		checkBoxes = new ArrayList<JCheckBox>();
+		layers = new ArrayList<IFeatureLayer>();
 		initialize();
 	}
 	
 	public void onLoad(IDiskoMap map) throws IOException {
-		this.snapLayerSelectionModel = map.getSnapLayerSelectionModel();
-		updateLayerSelection();
 		getSnapToleranceSlider().setValue((int)tool.getSnapTolerance());
-	}
-	
-	public SnapLayerSelectionModel getSnapModel() {
-		return snapLayerSelectionModel;
 	}
 	
 	private void initialize() {
 		try {
             this.setContentPane(getMainPanel());
-            this.setPreferredSize(new Dimension(195,500));
+            this.setPreferredSize(new Dimension(225,500));
             this.pack();
 				
 		}
@@ -68,8 +66,6 @@ public class DrawDialog extends DiskoDialog {
 				mainPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 				mainPanel.setLayout(new BorderLayout());
 				mainPanel.add(getCenterPanel(), BorderLayout.CENTER);
-				//mainPanel.add(getSouthPanel(), BorderLayout.SOUTH);
-				//mainPanel.add(getNorthPanel(), BorderLayout.NORTH);
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
@@ -85,13 +81,12 @@ public class DrawDialog extends DiskoDialog {
 		if (snapToleranceSlider == null) {
 			try {
 				snapToleranceSlider = new JSlider();
-				snapToleranceSlider.setOrientation(JSlider.VERTICAL);
-				snapToleranceSlider.setMinorTickSpacing(5);
-				snapToleranceSlider.setMajorTickSpacing(20);
+				snapToleranceSlider.setOrientation(JSlider.HORIZONTAL);
+				snapToleranceSlider.setMinorTickSpacing(10);
+				snapToleranceSlider.setMajorTickSpacing(50);
 				snapToleranceSlider.setPaintLabels(true);
 				snapToleranceSlider.setPaintTicks(true);
-				snapToleranceSlider.setMaximum(100);
-				snapToleranceSlider.setPreferredSize(new Dimension(80, 175));
+				snapToleranceSlider.setMaximum(250);
 				snapToleranceSlider.setBorder(BorderFactory.createTitledBorder(null, 
 						"Snapp Tol", TitledBorder.LEFT, TitledBorder.TOP, 
 						new Font("Tahoma", Font.PLAIN, 11), new Color(0, 70, 213)));
@@ -134,28 +129,58 @@ public class DrawDialog extends DiskoDialog {
 		return layerSelectionPanel;
 	}
 	
-	private void updateLayerSelection() {
+	private JCheckBox getCheckBox(String name) {
+		for (int i = 0; i < checkBoxes.size(); i++) {
+			JCheckBox cb = (JCheckBox)checkBoxes.get(i);
+			if (cb.getText().equals(name)) {
+				return cb;
+			}
+		}
+		return null;
+	}
+	
+	private void hideAll() {
+		for (int i = 0; i < checkBoxes.size(); i++) {
+			JCheckBox cb = (JCheckBox)checkBoxes.get(i);
+			cb.setVisible(false);
+		}
+	}
+	
+	private void setSnapableLayers() {
+		try {
+			ArrayList<IFeatureLayer> snapableLayers = new ArrayList<IFeatureLayer>();
+			for (int i = 0; i < checkBoxes.size(); i++) {
+				JCheckBox cb = (JCheckBox)checkBoxes.get(i);
+				if (cb.isVisible() && cb.isSelected()) {
+					snapableLayers.add(layers.get(i));
+				}
+			}
+			tool.setSnapableLayers(snapableLayers);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+	
+	public void updateLayerSelection(List<IFeatureLayer> updateLayers) {
 		//adding checkboxes
 		try {
-			getSnapLayerPanel().removeAll();
-			for (int i = 0; i < snapLayerSelectionModel.getLayerCount(); i++) {
-				final int index = i;
-				final JCheckBox cb = new JCheckBox();
-				IFeatureLayer flayer = snapLayerSelectionModel.getFeatureLayer(i);
-				cb.setText(flayer.getName());
-				cb.setSelected(snapLayerSelectionModel.isSelected(i));
-				getSnapLayerPanel().add(cb);
-				cb.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent e) {
-						snapLayerSelectionModel.setSelected(index, cb.isSelected());
-						try {
-							tool.setSnapableLayers(snapLayerSelectionModel.getSelected());
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+			hideAll();
+			for (int i = 0; i < updateLayers.size(); i++) {
+				IFeatureLayer flayer = (IFeatureLayer)updateLayers.get(i);
+				JCheckBox cb = getCheckBox(flayer.getName());
+				if (cb == null) {
+					cb = new JCheckBox(flayer.getName());
+					checkBoxes.add(cb);
+					layers.add(flayer);
+					getSnapLayerPanel().add(cb);
+					cb.addActionListener(new java.awt.event.ActionListener() {
+						public void actionPerformed(java.awt.event.ActionEvent e) {
+							setSnapableLayers();
 						}
-					}
-				});
+					});
+				}
+				cb.setVisible(true);
 			}
 		} catch (AutomationException e) {
 			// TODO Auto-generated catch block

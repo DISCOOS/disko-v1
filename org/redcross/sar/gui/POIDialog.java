@@ -99,7 +99,7 @@ public class POIDialog extends DiskoDialog {
 				borderLayout1.setVgap(5);
 				borderLayout1.setHgap(0);
 				txtAreaLabel = new JLabel();
-				txtAreaLabel.setText("Beskrivelse:");
+				txtAreaLabel.setText("Merknad:");
 				contentPanel = new JPanel();
 				contentPanel.setLayout(borderLayout1);
 				contentPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
@@ -293,10 +293,7 @@ public class POIDialog extends DiskoDialog {
 					IMsoFeature msoFeature = tool.getCurrent();
 					if (msoFeature != null) {
 						IPOIIf poi = (IPOIIf)msoFeature.getMsoObject();
-						String remarks = poi.getRemarks();
-						char c = e.getKeyChar();
-						String text = remarks != null ? remarks+c : ""+c; 
-						poi.setRemarks(text);
+						poi.setRemarks(txtArea.getText());
 					}
 				}
 			});

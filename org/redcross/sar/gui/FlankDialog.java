@@ -18,18 +18,14 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
 
 import org.redcross.sar.app.IDiskoApplication;
-import org.redcross.sar.map.ClipLayerSelectionModel;
 import org.redcross.sar.map.FlankTool;
 import org.redcross.sar.map.IDiskoMap;
 
 import com.borland.jbcl.layout.VerticalFlowLayout;
-import com.esri.arcgis.carto.IFeatureLayer;
-import com.esri.arcgis.interop.AutomationException;
 
 public class FlankDialog extends DiskoDialog {
 
 	private static final long serialVersionUID = 1L;
-	private ClipLayerSelectionModel clipLayerSelectionModel = null;
 	private JPanel contentPanel = null;
 	private JPanel centerPanel = null;
 	private JPanel flankerPanel = null;
@@ -63,12 +59,7 @@ public class FlankDialog extends DiskoDialog {
 	}
 	
 	public void onLoad(IDiskoMap diskoMap) throws IOException {
-		this.clipLayerSelectionModel = diskoMap.getClipLayerSelectionModel();
 		updateLayerSelection();
-	}
-	
-	public ClipLayerSelectionModel getClipModel() {
-		return clipLayerSelectionModel;
 	}
 
 	/**
@@ -193,7 +184,7 @@ public class FlankDialog extends DiskoDialog {
 	
 	private void updateLayerSelection() {
 		//adding checkboxes
-		try {
+		/*try {
 			getClipPanel().removeAll();
 			for (int i = 0; i < clipLayerSelectionModel.getLayerCount(); i++) {
 				final int index = i;
@@ -214,7 +205,7 @@ public class FlankDialog extends DiskoDialog {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	/**
