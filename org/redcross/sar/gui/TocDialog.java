@@ -4,36 +4,30 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
-import java.util.Iterator;
 
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.ButtonGroup;
 
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.event.IDiskoMapEventListener;
-import org.redcross.sar.map.DiskoMap;
-import org.redcross.sar.map.IDiskoMap;
-import org.redcross.sar.map.IDiskoTool;
-import org.redcross.sar.map.TocTool;
-import org.redcross.sar.map.MsoLayerSelectionModel;
 import org.redcross.sar.map.DefaultMapLayerSelectionModel;
+import org.redcross.sar.map.IDiskoMap;
+import org.redcross.sar.map.MsoLayerSelectionModel;
+import org.redcross.sar.map.TocTool;
 import org.redcross.sar.map.WMSLayerSelectionModel;
 
 import com.borland.jbcl.layout.VerticalFlowLayout;
 import com.esri.arcgis.carto.IFeatureLayer;
 import com.esri.arcgis.carto.WMSMapLayer;
 import com.esri.arcgis.interop.AutomationException;
-import com.esri.arcgis.systemUI.ICommand;
-
-import javax.swing.JLabel;
-import java.awt.event.KeyEvent;
 
 public class TocDialog extends DiskoDialog implements IDiskoMapEventListener{
 	
