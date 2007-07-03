@@ -72,6 +72,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 		
 		myInterests = EnumSet.of(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
 		myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA);
+		myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA);
 		myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_POI);
 		IMsoEventManagerIf msoEventManager = msoModel.getEventManager();
 		msoEventManager.addClientUpdateListener(this);
