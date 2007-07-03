@@ -37,24 +37,19 @@ import java.awt.event.KeyEvent;
 
 public class TocDialog extends DiskoDialog implements IDiskoMapEventListener{
 	
-	private IDiskoApplication app = null;
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPanel = null;
 	private JPanel layerSelectionPanel = null;
-	private ButtonGroup bgLayers = new ButtonGroup();
 	private MsoLayerSelectionModel msoLayerSelectionModel = null;  //  @jve:decl-index=0:
 	private DefaultMapLayerSelectionModel defaultMapLayerSelectionModel = null;
 	private WMSLayerSelectionModel wmsLayerSelectionModel = null;
 	private JLabel labelMsoLayers = null;
 	private JLabel labeWMSLayers = null;
 	private JLabel labelDefMapLayers = null;
-	private DiskoMap map = null;
+	private IDiskoMap map = null;
 	
 	public TocDialog(IDiskoApplication app, TocTool tool) {
 		super(app.getFrame());
-		this.app = app;
-		map = (DiskoMap) app.getCurrentMap();
-        map.addDiskoMapEventListener(this);
 		initialize();
 	}
 	
@@ -115,6 +110,8 @@ public class TocDialog extends DiskoDialog implements IDiskoMapEventListener{
 	}
 	
 	public void onLoad(IDiskoMap map) throws IOException {
+		this.map = map;
+        map.addDiskoMapEventListener(this);
 		this.msoLayerSelectionModel = map.getMsoLayerSelectionModel();
 		this.defaultMapLayerSelectionModel = map.getDefaultMapLayerSelectionModel();
 		this.wmsLayerSelectionModel = map.getWMSLayerSelectionModel();
