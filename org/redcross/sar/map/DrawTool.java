@@ -165,6 +165,7 @@ public class DrawTool extends AbstractTool {
 		Runnable r = new Runnable() {
 			public void run() {
 				try {
+					map.setSupressDrawing(true);
 					IMsoFeatureClass featureClass = (IMsoFeatureClass)editLayer.getFeatureClass();
 					if (editFeature == null) {
 						editFeature = featureClass.createMsoFeature();
@@ -189,15 +190,14 @@ public class DrawTool extends AbstractTool {
 						}
 					}
 					else if (featureClass instanceof AreaFeatureClass) {
-						map.setSupressDrawing(true);
 						IAreaIf area = (IAreaIf)editFeature.getMsoObject();
 						GeoCollection clone = cloneGeoCollection(area.getGeodata());
 						clone.add(MapUtil.getMsoRoute(polyline));
 						area.setGeodata(clone);
 						((AreaFeatureClass)featureClass).updateAreaPOIs(area);
-						map.setSupressDrawing(false);
-						map.partialRefresh(editLayer, null);
 					}
+					map.setSupressDrawing(false);
+					map.partialRefresh(editLayer, null);
 					map.fireEditLayerChanged();
 				} catch (AutomationException e) {
 					// TODO Auto-generated catch block
