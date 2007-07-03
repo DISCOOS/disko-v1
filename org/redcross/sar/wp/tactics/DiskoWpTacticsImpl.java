@@ -238,7 +238,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		myTools.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND);
 		myTools.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND);
 		myTools.add(NavBar.ToolCommandType.MAP_TOGGLE_COMMAND);
-		myTools.add(NavBar.ToolCommandType.TOC_TOOL);
+		myTools.add(NavBar.ToolCommandType.TOC_COMMAND);
 		navBar.showButtons(myTools);
 
 		IDiskoMapManager mapManager = getMap().getMapManager();
