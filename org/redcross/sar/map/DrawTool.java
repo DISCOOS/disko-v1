@@ -3,8 +3,6 @@ package org.redcross.sar.map;
 import java.awt.Toolkit;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -53,7 +51,6 @@ public class DrawTool extends AbstractTool {
 
 	private static final long serialVersionUID = 1L;
 	
-	private List snapLayers = null;
 	private boolean isActive = false;
 	private boolean isDirty = false;
 	private IDiskoApplication app = null;
@@ -127,14 +124,6 @@ public class DrawTool extends AbstractTool {
 			// getting operation areas
 			opAreaLayer = (OperationAreaLayer) map.getMapManager().getMsoLayer(
 					IMsoFeatureLayer.LayerCode.OPERATION_AREA_LAYER);
-		}
-	}
-	
-	public void setSnapableLayers(List snapLayers) throws IOException, AutomationException {
-		if (snapLayers != this.snapLayers) {
-			isDirty = true;
-			this.snapLayers = snapLayers;
-			updateIndexedGeometry();
 		}
 	}
 	
@@ -405,6 +394,19 @@ public class DrawTool extends AbstractTool {
 		return nearestPoint;
 	}
 	
+	public void setIsDirty() {
+		isDirty = true;
+		try {
+			updateIndexedGeometry();
+		} catch (AutomationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	private void updateIndexedGeometry() throws IOException, AutomationException {
 		if (!isActive) {
 			isDirty = true;
@@ -414,7 +416,8 @@ public class DrawTool extends AbstractTool {
 			if (indexedGeometry != null) {
 				updateSnapLayers();
 				Envelope extent = (Envelope)map.getActiveView().getExtent();
-				indexedGeometry.update(extent, snapLayers);
+				DrawDialog drawDialog = (DrawDialog)dialog;
+				indexedGeometry.update(extent, drawDialog.getSnapableLayers());
 			}
 			isDirty = false;
 		}
