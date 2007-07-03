@@ -40,8 +40,6 @@ public class OperationAreaMaskFeatureClass extends AbstractMsoFeatureClass {
 			}
 			else if (type == EventType.DELETED_OBJECT_EVENT.maskValue() && 
 					msoFeature != null) {
-				msoFeature.setShapeByRef(null);
-				msoFeature.setMsoObject(null);
 				removeFeature(msoFeature);
 				isDirty = true;
 			}
