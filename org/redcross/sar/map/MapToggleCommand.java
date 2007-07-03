@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import com.esri.arcgis.interop.AutomationException;
 
-public class MapToggleCommand extends AbstractCommand {
+public class MapToggleCommand extends AbstractCommandTool {
 
 	private static final long serialVersionUID = 1L;
 	

@@ -30,7 +30,7 @@ import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.systemUI.ICommand;
 import com.esri.arcgis.systemUI.ITool;
 
-public abstract class AbstractTool implements ICommand, ITool, IDiskoTool, IDiskoMapEventListener {
+public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool, IDiskoMapEventListener {
 	
 	protected DiskoMap map = null;
 	protected DiskoDialog dialog = null;

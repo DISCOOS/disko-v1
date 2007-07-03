@@ -47,7 +47,7 @@ import com.esri.arcgis.interop.AutomationException;
  * @author geira
  *
  */
-public class DrawTool extends AbstractTool {
+public class DrawTool extends AbstractCommandTool {
 
 	private static final long serialVersionUID = 1L;
 	
