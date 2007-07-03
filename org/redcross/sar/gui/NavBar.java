@@ -22,7 +22,7 @@ import org.redcross.sar.app.Utils;
 import org.redcross.sar.map.DrawTool;
 import org.redcross.sar.map.EraseCommand;
 import org.redcross.sar.map.FlankTool;
-import org.redcross.sar.map.TocTool;
+import org.redcross.sar.map.TocCommand;
 import org.redcross.sar.map.IDiskoMap;
 import org.redcross.sar.map.IDiskoTool;
 import org.redcross.sar.map.POITool;
@@ -63,7 +63,7 @@ public class NavBar extends JPanel {
 		ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND,
 		ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND,
 		MAP_TOGGLE_COMMAND,
-		TOC_TOOL
+		TOC_COMMAND
     }
 	
 	public enum ButtonPlacement {
@@ -100,7 +100,7 @@ public class NavBar extends JPanel {
 	private FlankTool flankTool = null;
 	private SplitTool splitTool = null;
 	private POITool puiTool = null;
-	private TocTool tocTool = null;
+	private TocCommand tocCommand = null;
 	private EraseCommand eraseCommand = null;
 	private SelectFeatureTool selectFeatureTool = null;
 	private ControlsMapZoomInTool zoomInTool = null;
@@ -166,7 +166,7 @@ public class NavBar extends JPanel {
 		addCommand(getMapToggleButton(), getMapToggleCommand(), 
 				ToolCommandType.MAP_TOGGLE_COMMAND, ButtonPlacement.RIGHT);
 		addCommand(getTocToggleButton(), getTocTool(), 
-				ToolCommandType.TOC_TOOL, ButtonPlacement.RIGHT);
+				ToolCommandType.TOC_COMMAND, ButtonPlacement.RIGHT);
 	}
 	
 	private JPanel getLeftPanel() {
@@ -228,16 +228,16 @@ public class NavBar extends JPanel {
 		return flankTool;
 	}
 	
-	public TocTool getTocTool() {
-		if (tocTool == null) {
+	public TocCommand getTocTool() {
+		if (tocCommand == null) {
 			try {
-				tocTool = new TocTool(app);
+				tocCommand = new TocCommand(app);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		return tocTool;
+		return tocCommand;
 	}	
 	
 	public SplitTool getSplitTool() {

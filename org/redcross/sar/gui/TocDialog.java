@@ -21,7 +21,7 @@ import org.redcross.sar.event.IDiskoMapEventListener;
 import org.redcross.sar.map.DefaultMapLayerSelectionModel;
 import org.redcross.sar.map.IDiskoMap;
 import org.redcross.sar.map.MsoLayerSelectionModel;
-import org.redcross.sar.map.TocTool;
+import org.redcross.sar.map.TocCommand;
 import org.redcross.sar.map.WMSLayerSelectionModel;
 
 import com.borland.jbcl.layout.VerticalFlowLayout;
@@ -42,7 +42,7 @@ public class TocDialog extends DiskoDialog implements IDiskoMapEventListener{
 	private JLabel labelDefMapLayers = null;
 	private IDiskoMap map = null;
 	
-	public TocDialog(IDiskoApplication app, TocTool tool) {
+	public TocDialog(IDiskoApplication app, TocCommand tool) {
 		super(app.getFrame());
 		initialize();
 	}
