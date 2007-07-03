@@ -3,6 +3,7 @@ package org.redcross.sar.wp.tactics;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.io.IOException;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -12,13 +13,20 @@ import javax.swing.JTable;
 import javax.swing.border.BevelBorder;
 
 import org.redcross.sar.app.IDiskoApplication;
+import org.redcross.sar.event.DiskoMapEvent;
+import org.redcross.sar.event.IDiskoMapEventListener;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.UnitTable;
+import org.redcross.sar.map.feature.IMsoFeature;
+import org.redcross.sar.map.feature.IMsoFeatureClass;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.mso.data.IAreaIf;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IUnitIf;
 
-public class UnitSelectionDialog extends DiskoDialog {
+import com.esri.arcgis.interop.AutomationException;
+
+public class UnitSelectionDialog extends DiskoDialog implements IDiskoMapEventListener {
 
 	private static final long serialVersionUID = 1L;
 	private IMsoModelIf msoModel = null;
@@ -65,7 +73,7 @@ public class UnitSelectionDialog extends DiskoDialog {
 				IUnitIf unit = (IUnitIf)table.getValueAt(row, col);
 				if (unit != null) {
 					List list = unit.getAssignedAssignments();
-					if (list != null && list.contains(unit)) {
+					if (list != null && list.contains(assignment)) {
 						table.setRowSelectionInterval(row, row);
 						table.setColumnSelectionInterval(col, col);
 						return;
@@ -134,6 +142,38 @@ public class UnitSelectionDialog extends DiskoDialog {
 			}
 		}
 		return unitTable;
+	}
+
+	public void editLayerChanged(DiskoMapEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onAfterScreenDraw(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onExtentUpdated(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onMapReplaced(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onSelectionChanged(DiskoMapEvent e) throws IOException, AutomationException {
+		IMsoFeatureClass msoFC = (IMsoFeatureClass)e.getSource();
+		List selection = msoFC.getSelected();
+		if (selection != null && selection.size() > 0) {
+			IMsoFeature msoFeature = (IMsoFeature)selection.get(0);
+			IAreaIf area = (IAreaIf)msoFeature.getMsoObject();
+			IAssignmentIf assignment = area.getOwningAssignment();
+			selectedAssignedUnit(assignment);
+			return;
+		}
 	}
 
 }  //  @jve:decl-index=0:visual-constraint="10,2"

@@ -12,20 +12,21 @@ import javax.swing.border.BevelBorder;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.mso.data.IAssignmentIf;
+import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
+import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.wp.tactics.IDiskoWpTactics.TacticsTaskType;
 
 public class AssignmentStatusDialog extends DiskoDialog {
 	
 	private static final long serialVersionUID = 1L;
-	private DiskoWpTacticsImpl wp = null;
 	private JPanel contentPanel = null;
 	private JButton draftButton = null;
 	private JButton readyButton = null;
 	private Dimension buttonSize = null;
+	private IAssignmentIf assignment = null;  //  @jve:decl-index=0:
 
 	public AssignmentStatusDialog(DiskoWpTacticsImpl wp) {
 		super(wp.getApplication().getFrame());
-		this.wp = wp;
 		buttonSize = wp.getApplication().getUIFactory().getSmallButtonSize();
 		initialize();
 		// TODO Auto-generated constructor stub
@@ -46,6 +47,10 @@ public class AssignmentStatusDialog extends DiskoDialog {
 		catch (java.lang.Throwable e) {
 			//  Do Something
 		}
+	}
+	
+	public void setAssignment(IAssignmentIf assignment) {
+		this.assignment = assignment;
 	}
 
 	/**
@@ -90,7 +95,12 @@ public class AssignmentStatusDialog extends DiskoDialog {
 				draftButton.setPreferredSize(buttonSize);
 				draftButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
-						wp.setAssignmentStatus(IAssignmentIf.AssignmentStatus.DRAFT);
+						try {
+							assignment.setStatus(AssignmentStatus.DRAFT);
+						} catch (IllegalOperationException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 						setVisible(false);
 					}
 				});
@@ -120,7 +130,12 @@ public class AssignmentStatusDialog extends DiskoDialog {
 				readyButton.setPreferredSize(buttonSize);
 				readyButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
-						wp.setAssignmentStatus(IAssignmentIf.AssignmentStatus.READY);
+						try {
+							assignment.setStatus(AssignmentStatus.READY);
+						} catch (IllegalOperationException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 						setVisible(false);
 					}
 				});
