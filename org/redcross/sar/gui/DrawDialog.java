@@ -146,20 +146,15 @@ public class DrawDialog extends DiskoDialog {
 		}
 	}
 	
-	private void setSnapableLayers() {
-		try {
-			ArrayList<IFeatureLayer> snapableLayers = new ArrayList<IFeatureLayer>();
-			for (int i = 0; i < checkBoxes.size(); i++) {
-				JCheckBox cb = (JCheckBox)checkBoxes.get(i);
-				if (cb.isVisible() && cb.isSelected()) {
-					snapableLayers.add(layers.get(i));
-				}
+	public List getSnapableLayers() {
+		ArrayList<IFeatureLayer> snapableLayers = new ArrayList<IFeatureLayer>();
+		for (int i = 0; i < checkBoxes.size(); i++) {
+			JCheckBox cb = (JCheckBox)checkBoxes.get(i);
+			if (cb.isVisible() && cb.isSelected()) {
+				snapableLayers.add(layers.get(i));
 			}
-			tool.setSnapableLayers(snapableLayers);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
 		}
+		return snapableLayers;
 	}
 	
 	public void updateLayerSelection(List<IFeatureLayer> updateLayers) {
@@ -176,7 +171,7 @@ public class DrawDialog extends DiskoDialog {
 					getSnapLayerPanel().add(cb);
 					cb.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(java.awt.event.ActionEvent e) {
-							setSnapableLayers();
+							tool.setIsDirty();
 						}
 					});
 				}
