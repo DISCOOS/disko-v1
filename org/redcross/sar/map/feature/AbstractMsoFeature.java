@@ -33,7 +33,9 @@ public abstract class AbstractMsoFeature implements IMsoFeature {
 
 	public void setMsoObject(IMsoObjectIf msoObject) throws IOException, AutomationException {
 		this.msoObject = msoObject;
-		msoGeometryChanged();
+		if (msoObject != null) {
+			msoGeometryChanged();
+		}
 	}
 
 	public void msoGeometryChanged() throws IOException, AutomationException {

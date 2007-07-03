@@ -174,7 +174,11 @@ public abstract class AbstractMsoFeatureClass implements IMsoFeatureClass, IGeoD
 		return null;
 	}
 	
-	protected void removeFeature(IFeature feature) {
+	protected void removeFeature(IFeature feature) throws IOException, AutomationException {
+		feature.setShapeByRef(null);
+		if (feature instanceof IMsoFeature) {
+			((IMsoFeature)feature).setMsoObject(null);
+		}
 		data.remove(feature);
 	}
 
