@@ -29,30 +29,6 @@ public interface IDiskoMap {
 	 */
 	public void setCurrentToolByRef(ITool tool) throws IOException,
 			AutomationException;
-
-	/* (non-Javadoc)
-	 * @see org.redcross.sar.map.IDiskoMap#getSnapLayerSelectionModel()
-	 */
-	public SnapLayerSelectionModel getSnapLayerSelectionModel()
-			throws IOException, AutomationException;
-	
-	/* (non-Javadoc)
-	 * @see org.redcross.sar.map.IDiskoMap#getSnapLayerSelectionModel()
-	 */
-	public void setSnapLayerSelectionModel()
-			throws IOException, AutomationException;
-
-	/* (non-Javadoc)
-	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
-	 */
-	public ClipLayerSelectionModel getClipLayerSelectionModel()
-			throws IOException, AutomationException;
-	
-	/* (non-Javadoc)
-	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
-	 */
-	public void setClipLayerSelectionModel()
-			throws IOException, AutomationException;
 	
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()

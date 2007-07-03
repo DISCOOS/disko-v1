@@ -2,7 +2,6 @@ package org.redcross.sar.map;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.gui.DiskoDialog;
@@ -14,7 +13,6 @@ import org.redcross.sar.util.mso.GeoCollection;
 import org.redcross.sar.util.mso.IGeodataIf;
 import org.redcross.sar.util.mso.Route;
 
-import com.esri.arcgis.carto.IFeatureLayer;
 import com.esri.arcgis.geodatabase.IFeature;
 import com.esri.arcgis.geometry.GeometryBag;
 import com.esri.arcgis.geometry.Point;
@@ -25,7 +23,7 @@ import com.esri.arcgis.interop.AutomationException;
  * @author geira
  *
  */
-public class FlankTool extends AbstractCommandTool {
+public class FlankTool extends AbstractTool {
 
 	private static final long serialVersionUID = 1L;
 	private Point p = null;
@@ -97,14 +95,14 @@ public class FlankTool extends AbstractCommandTool {
 		if (flankDialog.getRightCheckBox().isSelected()) {
 			layout += "RightDist="+flankDialog.getRightSpinner().getValue()+"&";
 		}
-		List clipLayers = ((FlankDialog)dialog).getClipModel().getSelected();
+		/*List clipLayers = ((FlankDialog)dialog).getClipModel().getSelected();
 		if (clipLayers.size() > 0) {
 			layout += "ClipFeatures=";
 			for (int i = 0; i < clipLayers.size(); i++) {
 				IFeatureLayer flayer = (IFeatureLayer)clipLayers.get(i);
 				layout += flayer.getFeatureClass().getAliasName()+",";
 			}
-		}
+		}*/
 		return layout;
 	}
 }

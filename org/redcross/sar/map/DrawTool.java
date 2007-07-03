@@ -2,6 +2,7 @@ package org.redcross.sar.map;
 
 import java.awt.Toolkit;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -23,6 +24,10 @@ import org.redcross.sar.mso.data.IOperationAreaIf;
 import org.redcross.sar.mso.data.ISearchAreaIf;
 import org.redcross.sar.util.mso.GeoCollection;
 
+import com.esri.arcgis.carto.IBasicMap;
+import com.esri.arcgis.carto.IFeatureLayer;
+import com.esri.arcgis.carto.ILayer;
+import com.esri.arcgis.carto.IMap;
 import com.esri.arcgis.carto.InvalidArea;
 import com.esri.arcgis.display.IScreenDisplay;
 import com.esri.arcgis.display.RgbColor;
@@ -44,7 +49,7 @@ import com.esri.arcgis.interop.AutomationException;
  * @author geira
  *
  */
-public class DrawTool extends AbstractCommandTool {
+public class DrawTool extends AbstractTool {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -69,6 +74,7 @@ public class DrawTool extends AbstractCommandTool {
 	
 	private SimpleLineSymbol drawSymbol = null;	
 	private SimpleLineSymbol flashSymbol = null;
+	private static final int SNAP_TOL_FACTOR = 200;
 	
 	/**
 	 * Constructs the DrawTool
@@ -114,9 +120,9 @@ public class DrawTool extends AbstractCommandTool {
 			DrawDialog drawDialog = (DrawDialog)dialog;
 			drawDialog.onLoad(map);
 			drawDialog.setLocationRelativeTo(map, DiskoDialog.POS_WEST, true);
-			setSnapableLayers(drawDialog.getSnapModel().getSelected());
-			setSnapTolerance(map.getActiveView().getExtent().getWidth()/100);
+			setSnapTolerance(map.getActiveView().getExtent().getWidth()/SNAP_TOL_FACTOR);
 			drawDialog.setSnapTolerance(getSnapTolerance());
+			updateSnapLayers();
 			
 			// getting operation areas
 			opAreaLayer = (OperationAreaLayer) map.getMapManager().getMsoLayer(
@@ -163,7 +169,6 @@ public class DrawTool extends AbstractCommandTool {
 					if (editFeature == null) {
 						editFeature = featureClass.createMsoFeature();
 					}
-					editFeature.setSelected(true);
 					polyline.simplify();
 					polyline.setSpatialReferenceByRef(map.getSpatialReference());
 
@@ -184,12 +189,15 @@ public class DrawTool extends AbstractCommandTool {
 						}
 					}
 					else if (featureClass instanceof AreaFeatureClass) {
+						map.setSupressDrawing(true);
 						IAreaIf area = (IAreaIf)editFeature.getMsoObject();
 						GeoCollection clone = cloneGeoCollection(area.getGeodata());
 						clone.add(MapUtil.getMsoRoute(polyline));
 						area.setGeodata(clone);
+						((AreaFeatureClass)featureClass).updateAreaPOIs(area);
+						map.setSupressDrawing(false);
+						map.partialRefresh(editLayer, null);
 					}
-					featureClass.setSelected(editFeature, true);
 					map.fireEditLayerChanged();
 				} catch (AutomationException e) {
 					// TODO Auto-generated catch block
@@ -379,7 +387,6 @@ public class DrawTool extends AbstractCommandTool {
 			invalidArea.add(snapGeometry);
 		}
 		invalidArea.setDisplayByRef(map.getActiveView().getScreenDisplay());
-		//invalidArea.invalidateEx((short) esriScreenCache.esriNoScreenCache,2);
 		invalidArea.invalidate((short) esriScreenCache.esriNoScreenCache);
 	}
 	
@@ -405,11 +412,37 @@ public class DrawTool extends AbstractCommandTool {
 		}
 		if (isDirty) {
 			if (indexedGeometry != null) {
+				updateSnapLayers();
 				Envelope extent = (Envelope)map.getActiveView().getExtent();
 				indexedGeometry.update(extent, snapLayers);
 			}
 			isDirty = false;
 		}
+	}
+	
+	private void updateSnapLayers() throws IOException, AutomationException {
+		ArrayList<IFeatureLayer> layers = new ArrayList<IFeatureLayer>();
+		IMap focusMap = map.getActiveView().getFocusMap();
+		for (int i = 0; i < focusMap.getLayerCount(); i++) {
+			ILayer layer = focusMap.getLayer(i);
+			if (layer instanceof IFeatureLayer) {
+				IFeatureLayer flayer = (IFeatureLayer) layer;
+				int shapeType = flayer.getFeatureClass().getShapeType();
+				if (shapeType == com.esri.arcgis.geometry.esriGeometryType.esriGeometryPolyline ||
+						shapeType == com.esri.arcgis.geometry.esriGeometryType.esriGeometryPolygon  ||
+						shapeType == com.esri.arcgis.geometry.esriGeometryType.esriGeometryBag) {
+					double scale = map.getScale((IBasicMap)focusMap);
+					if (flayer.isVisible() && scale > flayer.getMaximumScale() && 
+							scale < flayer.getMinimumScale()) {
+						layers.add(flayer);
+					}
+				}
+			}
+		}
+		DrawDialog drawDialog = (DrawDialog)dialog;
+		drawDialog.updateLayerSelection(layers);
+		setSnapTolerance(map.getActiveView().getExtent().getWidth()/SNAP_TOL_FACTOR);
+		drawDialog.setSnapTolerance(getSnapTolerance());
 	}
 
 	//***** DiskoMapEventListener implementations *****
@@ -420,13 +453,10 @@ public class DrawTool extends AbstractCommandTool {
 	public void onExtentUpdated(DiskoMapEvent e) throws IOException, AutomationException {
 		isDirty = true;
 		updateIndexedGeometry();
-		
 	}
 
 	public void onMapReplaced(DiskoMapEvent e) throws IOException, AutomationException {
 		isDirty = true;
 		updateIndexedGeometry();
-		setSnapTolerance(map.getActiveView().getExtent().getWidth()/50);
-		((DrawDialog)dialog).setSnapTolerance(getSnapTolerance());
 	}
 }

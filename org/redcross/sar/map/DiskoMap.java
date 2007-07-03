@@ -50,14 +50,13 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	private static final long serialVersionUID = 1L;
 	private String mxdDoc = null;
 	private IDiskoMapManager mapManager = null;
-	private SnapLayerSelectionModel snapLayerSelectionModel = null;
-	private ClipLayerSelectionModel clipLayerSelectionModel = null;
 	private MsoLayerSelectionModel msoLayerSelectionModel = null;
 	private WMSLayerSelectionModel wmsLayerSelectionModel = null;	
 	private DefaultMapLayerSelectionModel defaultMapLayerSelectionModel = null;
 	private IDiskoTool currentTool = null;
 	private ArrayList<IDiskoMapEventListener> listeners = null;
 	private DiskoMapEvent diskoMapEvent = null;
+	private boolean supressDrawing = false;
 	protected EnumSet<IMsoManagerIf.MsoClassCode> myInterests = null;
 
 	/**
@@ -113,8 +112,12 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 			IFeatureLayer layer = (IFeatureLayer)customLayers.get(i);
 			layer.setSpatialReferenceByRef(getSpatialReference());
 			focusMap.addLayer(layer);
-			
+			layer.setCached(true);
 		}
+		// reactivate
+		getActiveView().deactivate();			
+		getActiveView().activate(getHWnd());			
+		getActiveView().refresh();
 		
 		// set all featurelayers not selectabel
 		for (int i = 0; i < focusMap.getLayerCount(); i++) {
@@ -129,25 +132,31 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	}
 	
 	public void handleMsoUpdateEvent(Update e) {
-		/*try {
+		if (supressDrawing) {
+			return;
+		}
+		try {
 			IMsoObjectIf msoObj = (IMsoObjectIf)e.getSource();
-			IMsoFeatureLayer msoLayer = mapManager.getMsoLayer(msoObj.getMsoClassCode());
-			IMsoFeatureClass fc = (IMsoFeatureClass)msoLayer.getFeatureClass();
-			IMsoFeature feature = fc.getFeature(msoObj.getObjectId());
-			if (feature != null && feature.getExtent() != null) {
-				IEnvelope extent = feature.getExtent();
-				partialRefresh(extent);
+			List msoLayers = mapManager.getMsoLayers(msoObj.getMsoClassCode());
+			IFeatureLayer flayer = (IFeatureLayer)msoLayers.get(0);
+			IMsoFeatureClass fc  = (IMsoFeatureClass)flayer.getFeatureClass();
+			if (fc.getIsDirty()) {
+				partialRefresh(flayer, null);
+				fc.setIsDirty(false);
 			}
-			
 		} catch (AutomationException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}*/
+		}
 	}
-
+	
+	public void setSupressDrawing(boolean supress) {
+		supressDrawing = supress;
+	}
+	
 	public boolean hasInterestIn(IMsoObjectIf aMsoObject) {
 		return myInterests.contains(aMsoObject.getMsoClassCode());
 	}
@@ -235,45 +244,6 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 		else {
 			currentTool = null;
 		}
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
-	 */
-	public void setSnapLayerSelectionModel() 
-		throws IOException, AutomationException {
-		snapLayerSelectionModel = new SnapLayerSelectionModel(this);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.redcross.sar.map.IDiskoMap#getSnapLayerSelectionModel()
-	 */
-	public SnapLayerSelectionModel getSnapLayerSelectionModel() 
-			throws IOException, AutomationException {
-		if (snapLayerSelectionModel == null) {
-			snapLayerSelectionModel = new SnapLayerSelectionModel(this);
-		}
-		return snapLayerSelectionModel;
-	}
-	
-
-	/* (non-Javadoc)
-	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
-	 */
-	public void setClipLayerSelectionModel()  
-		throws IOException, AutomationException{
-		clipLayerSelectionModel = new ClipLayerSelectionModel(this);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
-	 */
-	public ClipLayerSelectionModel getClipLayerSelectionModel() 
-			throws IOException, AutomationException {
-		if (clipLayerSelectionModel == null) {
-			clipLayerSelectionModel = new ClipLayerSelectionModel(this);
-		}
-		return clipLayerSelectionModel;
 	}
 	
 	/* (non-Javadoc)

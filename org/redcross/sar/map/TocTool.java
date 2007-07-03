@@ -4,12 +4,11 @@ import java.io.IOException;
 
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.gui.DiskoDialog;
-import org.redcross.sar.gui.DrawDialog;
 import org.redcross.sar.gui.TocDialog;
 
 import com.esri.arcgis.interop.AutomationException;
 
-public class TocTool extends AbstractCommandTool {
+public class TocTool extends AbstractTool {
 	
 	private static final long serialVersionUID = 1L;
 	

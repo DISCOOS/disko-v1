@@ -25,7 +25,8 @@ public class OperationAreaMaskFeatureClass extends AbstractMsoFeatureClass {
 			IOperationAreaIf opArea = (IOperationAreaIf)e.getSource();
 			IMsoFeature msoFeature = getFeature(opArea.getObjectId());
 			
-			if (type == EventType.CREATED_OBJECT_EVENT.maskValue()) {
+			if (type == EventType.ADDED_REFERENCE_EVENT.maskValue() && 
+					msoFeature == null) {
 				msoFeature = new OperationAreaMaskFeature();
 				msoFeature.setSpatialReference(srs);
 				msoFeature.setMsoObject(opArea);

@@ -16,7 +16,7 @@ import com.esri.arcgis.interop.AutomationException;
  * @author geira
  *
  */
-public class SelectFeatureTool extends AbstractCommandTool {
+public class SelectFeatureTool extends AbstractTool {
 
 	private static final long serialVersionUID = 1L;
 	private Point p = null;

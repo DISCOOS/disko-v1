@@ -46,9 +46,6 @@ public class IndexedGeometry  {
 		if (extent == null || snapLayers == null) {
 			return;
 		}
-		if (Math.min(extent.getWidth(), extent.getHeight()) > 20000) {
-			return;
-		}
 		//long startTime = System.currentTimeMillis();
 		Polyline temp = new Polyline();
 		

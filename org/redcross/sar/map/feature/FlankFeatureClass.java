@@ -24,17 +24,20 @@ public class FlankFeatureClass extends AbstractMsoFeatureClass {
 			int type = e.getEventTypeMask();
 			IAreaIf area = (IAreaIf)e.getSource();
 			IMsoFeature msoFeature = getFeature(area.getObjectId());
-			if (type == EventType.CREATED_OBJECT_EVENT.maskValue()) {
+			if (type == EventType.ADDED_REFERENCE_EVENT.maskValue() && 
+					msoFeature == null) {
 				msoFeature = new FlankFeature();
 				msoFeature.setSpatialReference(srs);
 				msoFeature.setMsoObject(area);
 				data.add(msoFeature);
 			}
-			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && msoFeature != null) {
+			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && 
+					msoFeature != null) {
 				msoFeature.msoGeometryChanged();
 				isDirty = true;
 			}
-			else if (type == EventType.DELETED_OBJECT_EVENT.maskValue() && msoFeature != null) {
+			else if (type == EventType.DELETED_OBJECT_EVENT.maskValue() && 
+					msoFeature != null) {
 				removeFeature(msoFeature);
 				isDirty = true;
 			}

@@ -27,18 +27,21 @@ public class SearchAreaFeatureClass extends AbstractMsoFeatureClass {
 			ISearchAreaIf searchArea = (ISearchAreaIf)e.getSource();
 			IMsoFeature msoFeature = getFeature(searchArea.getObjectId());
 			
-			if (type == EventType.CREATED_OBJECT_EVENT.maskValue()) {
+			if (type == EventType.ADDED_REFERENCE_EVENT.maskValue() && 
+					msoFeature == null) {
 				msoFeature = new SearchAreaFeature();
 				msoFeature.setSpatialReference(srs);
 				msoFeature.setMsoObject(searchArea);
 				data.add(msoFeature);
 			}
-			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && msoFeature != null &&
+			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() &&
+					msoFeature != null && searchArea.getGeodata() != null &&
 					!searchArea.getGeodata().equals(msoFeature.getGeodata())) {
 				msoFeature.msoGeometryChanged();
 				isDirty = true;
 			}
-			else if (type == EventType.DELETED_OBJECT_EVENT.maskValue() && msoFeature != null) {
+			else if (type == EventType.DELETED_OBJECT_EVENT.maskValue() && 
+					msoFeature != null) {
 				removeFeature(msoFeature);
 				isDirty = true;
 			}

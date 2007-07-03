@@ -27,14 +27,15 @@ public class OperationAreaFeatureClass extends AbstractMsoFeatureClass {
 			IOperationAreaIf opArea = (IOperationAreaIf)e.getSource();
 			IMsoFeature msoFeature = getFeature(opArea.getObjectId());
 			
-			if (type == EventType.CREATED_OBJECT_EVENT.maskValue()) {
+			if (type == EventType.ADDED_REFERENCE_EVENT.maskValue() && 
+					msoFeature == null) {
 				msoFeature = new OperationAreaFeature();
 				msoFeature.setSpatialReference(srs);
 				msoFeature.setMsoObject(opArea);
 				data.add(msoFeature);
 			}
 			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && 
-					msoFeature != null && 
+					msoFeature != null && opArea.getGeodata() != null &&
 					!opArea.getGeodata().equals(msoFeature.getGeodata())) {
 				msoFeature.msoGeometryChanged();
 				isDirty = true;

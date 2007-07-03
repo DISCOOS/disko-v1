@@ -27,19 +27,21 @@ public class POIFeatureClass extends AbstractMsoFeatureClass {
 			IPOIIf poi = (IPOIIf)e.getSource();
 			IMsoFeature msoFeature = getFeature(poi.getObjectId());
 			
-			if (type == EventType.CREATED_OBJECT_EVENT.maskValue()) {
+			if (type == EventType.ADDED_REFERENCE_EVENT.maskValue() && 
+					msoFeature == null) {
 				msoFeature = new POIFeature();
 				msoFeature.setSpatialReference(srs);
 				msoFeature.setMsoObject(poi);
 				data.add(msoFeature);
 			}
-			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && msoFeature != null &&
+			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && 
+					msoFeature != null && poi.getPosition() != null &&
 					!poi.getPosition().equals(msoFeature.getGeodata())) {
 				msoFeature.msoGeometryChanged(); 
 				isDirty = true;
-				System.out.println(poi+" modifyed");
 			}
-			else if (type == EventType.DELETED_OBJECT_EVENT.maskValue() && msoFeature != null) {
+			else if (type == EventType.DELETED_OBJECT_EVENT.maskValue() && 
+					msoFeature != null) {
 				removeFeature(msoFeature);
 				isDirty = true;
 			}

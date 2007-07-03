@@ -23,7 +23,7 @@ import com.esri.arcgis.interop.AutomationException;
  * @author geira
  *
  */
-public class SplitTool extends AbstractCommandTool {
+public class SplitTool extends AbstractTool {
 
 	private static final long serialVersionUID = 1L;
 	private Point p = null;
