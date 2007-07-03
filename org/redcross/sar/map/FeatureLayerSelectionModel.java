@@ -83,8 +83,8 @@ public abstract class FeatureLayerSelectionModel {
 			for (int i = 0; i < layers.length; i++){
 				IFeatureLayer flayer = layers[i];			
 				flayer.setVisible(visible);
-				map.partialRefresh(flayer, null);
-			}			
+			}
+			map.getActiveView().refresh();
 	}	
 	
 	/**
@@ -101,8 +101,8 @@ public abstract class FeatureLayerSelectionModel {
 				int idx = index[i];
 				IFeatureLayer flayer = layers[idx];			
 				flayer.setVisible(visible);
-				map.partialRefresh(flayer, null);
 			}
+			map.getActiveView().refresh();
 	}	
 	
 }
