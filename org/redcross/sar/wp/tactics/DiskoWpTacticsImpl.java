@@ -303,6 +303,9 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 	public void finish() {
 		try {
 			IMsoFeature msoFeature = drawTool.getEditFeature();
+			if (msoFeature.getMsoObject() == null){
+				return;
+			}
 			Enum element = (Enum) getElementDialog().getElementList().getSelectedValue();
 			if (element == IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA) {
 				IOperationAreaIf opArea = (IOperationAreaIf) msoFeature.getMsoObject();
@@ -370,6 +373,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		isEditing = false;
 		enableFinishCancel(false);
 		poiTool.setArea(null);
+		drawTool.setEditFeature(null);
 		
 		callingWp = null;
 		//Possible to go back ?
