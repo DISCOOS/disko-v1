@@ -153,12 +153,8 @@ public class SubMenuPanel extends JPanel {
 				finishButton.setPreferredSize(size);
 				finishButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
-						/*String msg = "Dette vil lagre det du har gjort. "+
-						"Vil du avslutte nå?";
-						if (showYesNoDialog(msg) == 0) {*/
-							IDiskoWp wp = (IDiskoWp)app.getCurrentRole().getCurrentDiskoWpModule();
-							wp.finish();
-						//}
+						IDiskoWp wp = (IDiskoWp)app.getCurrentRole().getCurrentDiskoWpModule();
+						wp.finish();
 					}
 				});
 			} catch (java.lang.Throwable e) {
