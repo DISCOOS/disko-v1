@@ -104,7 +104,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
             UIManager.put("PasswordField.font",DEFAULT_PLAIN_MEDIUM_FONT);
             UIManager.put("PopupMenu.font",DEFAULT_PLAIN_MEDIUM_FONT);
             UIManager.put("ProgressBar.font",DEFAULT_PLAIN_MEDIUM_FONT);
-            UIManager.put("RadioButton.font",DEFAULT_PLAIN_MEDIUM_FONT);
+            UIManager.put("RadioButton.font",DEFAULT_PLAIN_LARGE_FONT);
             UIManager.put("RadioButtonMenuItem.acceleratorFont",DIALOG_PLAIN_MEDIUM_FONT);
             UIManager.put("RadioButtonMenuItem.font", DEFAULT_PLAIN_LARGE_FONT);
             UIManager.put("ScrollPane.font",DEFAULT_PLAIN_MEDIUM_FONT);
