@@ -3,6 +3,8 @@ package org.redcross.sar.map;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.SwingUtilities;
+
 import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.IMsoFeatureClass;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
@@ -49,26 +51,38 @@ public class SelectFeatureTool extends AbstractCommandTool {
 	}
 
 	public void onMouseDown(int button, int shift, int x, int y)
-			throws IOException, AutomationException {
+	throws IOException, AutomationException {
 		p.setX(x);
 		p.setY(y); 
 		transform(p);
-		
-		for (int i = 0; i < selectableLayers.size(); i++) {
-			IMsoFeatureLayer layer = (IMsoFeatureLayer)selectableLayers.get(i);
-			IMsoFeatureClass fc = (IMsoFeatureClass)layer.getFeatureClass();
-			fc.clearSelected();
-		}
-		for (int i = 0; i < selectableLayers.size(); i++) {
-			IMsoFeatureLayer layer = (IMsoFeatureLayer)selectableLayers.get(i);
-			IMsoFeatureClass fc = (IMsoFeatureClass)layer.getFeatureClass();
-			IFeature feature = search(fc, p);
-			if (feature != null && feature instanceof IMsoFeature) {
-				editFeature = (IMsoFeature)feature;
-				fc.setSelected(editFeature, true);
-				map.partialRefresh(layer, null);
-				break;
+		Runnable r = new Runnable() {
+			public void run() {
+				try {
+					for (int i = 0; i < selectableLayers.size(); i++) {
+						IMsoFeatureLayer layer = (IMsoFeatureLayer)selectableLayers.get(i);
+						IMsoFeatureClass fc = (IMsoFeatureClass)layer.getFeatureClass();
+						fc.clearSelected();
+					}
+					for (int i = 0; i < selectableLayers.size(); i++) {
+						IMsoFeatureLayer layer = (IMsoFeatureLayer)selectableLayers.get(i);
+						IMsoFeatureClass fc = (IMsoFeatureClass)layer.getFeatureClass();
+						IFeature feature = search(fc, p);
+						if (feature != null && feature instanceof IMsoFeature) {
+							editFeature = (IMsoFeature)feature;
+							fc.setSelected(editFeature, true);
+							map.partialRefresh(layer, null);
+							break;
+						}
+					}
+				} catch (AutomationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
-		}
+		};
+		SwingUtilities.invokeLater(r);
 	}
 }

@@ -11,15 +11,17 @@ import org.redcross.sar.mso.data.IAreaIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 
 import com.esri.arcgis.interop.AutomationException;
+import com.esri.arcgis.systemUI.ICommand;
 
 /**
  * A custom draw tool.
  * @author geira
  *
  */
-public class EraseCommand extends AbstractCommandTool {
+public class EraseCommand implements ICommand {
 
 	private static final long serialVersionUID = 1L;
+	private DiskoMap map = null;
 	
 	/**
 	 * Constructs the DrawTool
@@ -53,5 +55,55 @@ public class EraseCommand extends AbstractCommandTool {
 				}
 			}
 		}
+	}
+
+	public int getBitmap() throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public String getCaption() throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getCategory() throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public int getHelpContextID() throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public String getHelpFile() throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getMessage() throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getName() throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getTooltip() throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public boolean isChecked() throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isEnabled() throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

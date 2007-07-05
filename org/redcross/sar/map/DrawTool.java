@@ -3,6 +3,7 @@ package org.redcross.sar.map;
 import java.awt.Toolkit;
 import java.io.IOException;
 import java.util.ArrayList;
+
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -156,7 +157,9 @@ public class DrawTool extends AbstractCommandTool {
 				try {
 					map.setSupressDrawing(true);
 					IMsoFeatureClass featureClass = (IMsoFeatureClass)editLayer.getFeatureClass();
-					if (editFeature == null) {
+					if (editFeature != null) {
+						featureClass.setSelected(editFeature, false);
+					} else {
 						editFeature = featureClass.createMsoFeature();
 					}
 					polyline.simplify();
@@ -180,11 +183,14 @@ public class DrawTool extends AbstractCommandTool {
 					}
 					else if (featureClass instanceof AreaFeatureClass) {
 						IAreaIf area = (IAreaIf)editFeature.getMsoObject();
-						GeoCollection clone = cloneGeoCollection(area.getGeodata());
-						clone.add(MapUtil.getMsoRoute(polyline));
-						area.setGeodata(clone);
-						((AreaFeatureClass)featureClass).updateAreaPOIs(area);
+						if (area != null) {
+							GeoCollection clone = cloneGeoCollection(area.getGeodata());
+							clone.add(MapUtil.getMsoRoute(polyline));
+							area.setGeodata(clone);
+							((AreaFeatureClass)featureClass).updateAreaPOIs(area);
+						}
 					}
+					featureClass.setSelected(editFeature, true);
 					map.setSupressDrawing(false);
 					map.partialRefresh(editLayer, null);
 					map.fireEditLayerChanged();
@@ -204,7 +210,7 @@ public class DrawTool extends AbstractCommandTool {
 	private int showYesNo() {
 		Object[] options = {"Ja","Nei"};
 		return JOptionPane.showOptionDialog(app.getFrame(), 
-				"Erstatte eksisterende geometri ?",
+				"Overskrive det du sist tegnet ?",
 				"Draw tool", JOptionPane.YES_NO_CANCEL_OPTION,
 				JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 	}
@@ -246,10 +252,9 @@ public class DrawTool extends AbstractCommandTool {
 			rubberBand.addPoint(p2, null, null);
 			rubberBand.addPoint(p2, null, null);
 		}
-		refreshForegroundPartial();
+		refresh();
 		updatePath();
 		rubberBand.updatePoint(0,p2);
-		draw();
 		p1 = p2;
 	}
 	
@@ -265,26 +270,20 @@ public class DrawTool extends AbstractCommandTool {
 		}
 		moveCounter = 0;
 		isMoving = true;
-		refreshForegroundPartial();
+		refresh();
 		p.setX(x);
 		p.setY(y);
 		transform(p);
-		
 		searchEnvelope.centerAt(p);
 		snapGeometry = indexedGeometry.search(searchEnvelope);
 		if (rubberBand != null) {
 			rubberBand.updatePoint(1, p);
 		}
-		draw();
 		isMoving = false;
 	}
 
-	public void refresh(int arg0) throws IOException, AutomationException {
-		draw();
-	}
-
 	public void reset() throws IOException {
-		refreshForegroundPartial();
+		refresh();
 		pathGeometry = null;
 		rubberBand = null;
 		snapGeometry = null;
@@ -364,7 +363,7 @@ public class DrawTool extends AbstractCommandTool {
 		screenDisplay.finishDrawing();
 	}
 	
-	private void refreshForegroundPartial() throws IOException, AutomationException {
+	private void refresh() throws IOException, AutomationException {
 		InvalidArea invalidArea = new InvalidArea();
 		if (pathGeometry != null && !isMoving) {
 			invalidArea.add(pathGeometry);
@@ -450,7 +449,7 @@ public class DrawTool extends AbstractCommandTool {
 
 	//***** DiskoMapEventListener implementations *****
 	public void onAfterScreenDraw(DiskoMapEvent e) throws IOException, AutomationException {
-		refresh(0);
+		draw();
 	}
 
 	public void onExtentUpdated(DiskoMapEvent e) throws IOException, AutomationException {

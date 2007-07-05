@@ -30,6 +30,8 @@ public interface IDiskoMap {
 	public void setCurrentToolByRef(ITool tool) throws IOException,
 			AutomationException;
 	
+	public void setActiveTool(ITool tool) throws IOException, AutomationException;
+	
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
 	 */

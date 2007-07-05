@@ -6,7 +6,6 @@ import java.io.IOException;
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.POIDialog;
-import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.IMsoFeatureClass;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.map.layer.OperationAreaLayer;
@@ -29,6 +28,7 @@ public class POITool extends AbstractCommandTool {
 	
 	private POIDialog poiDialog = null;
 	private IAreaIf area = null;
+	private Point p = null;
 		
 	/**
 	 * Constructs the DrawTool
@@ -36,6 +36,9 @@ public class POITool extends AbstractCommandTool {
 	public POITool(IDiskoApplication app) throws IOException {
 		dialog = new POIDialog(app, this);
 		dialog.setIsToggable(false);
+		p = new Point();
+		p.setX(0);
+		p.setY(0);
 	}
 
 	public void onCreate(Object obj) throws IOException, AutomationException {
@@ -56,12 +59,38 @@ public class POITool extends AbstractCommandTool {
 	 * @param area
 	 */
 	public void setArea(IAreaIf area) {
-		this.area   = area;
+		this.area = area;
 	}
 
 	public void onMouseDown(int button, int shift, int x, int y)
 			throws IOException, AutomationException {
 	}	
+	
+	public void movePOI(double x, double y) throws IOException, AutomationException {
+		if (editFeature == null) {
+			return;
+		}
+		Point point = new Point();
+		point.setX(x);
+		point.setY(y);
+		//check if point inside operation area
+		if (!insideOpArea(point)) {
+			Toolkit.getDefaultToolkit().beep();
+			return;
+		}
+		IPOIIf poi = (IPOIIf)editFeature.getMsoObject();
+		point.setSpatialReferenceByRef(map.getSpatialReference());
+		poi.setPosition(MapUtil.getMsoPosistion(point));
+		
+		//pan to POI if not in current extent
+		Envelope extent = (Envelope)map.getActiveView().getExtent();
+		if (!extent.contains(point)) {
+			extent.centerAt(point);
+			map.setExtent(extent);
+		}
+		map.partialRefresh(editLayer, null);
+		map.fireEditLayerChanged();
+	}
 	
 	public void addPOIAt(double x, double y) throws IOException, AutomationException {
 		Point p = new Point();
@@ -74,40 +103,40 @@ public class POITool extends AbstractCommandTool {
 		addPOIAt(point, poiDialog.getSelectedType());
 	}
 	
-	public void addPOIAt(Point point, POIType poiType) throws IOException, AutomationException {
+	public void addPOIAt(Point point, final POIType poiType) 
+			throws IOException, AutomationException {
 		//check if point inside operation area
 		if (!insideOpArea(point)) {
 			Toolkit.getDefaultToolkit().beep();
 			return;
 		}
+		map.setSupressDrawing(true);
 		IMsoFeatureClass featureClass = (IMsoFeatureClass)editLayer.getFeatureClass();
+		featureClass.clearSelected();
 		editFeature = featureClass.createMsoFeature();
 		IPOIIf poi = (IPOIIf)editFeature.getMsoObject();
 		point.setSpatialReferenceByRef(map.getSpatialReference());
 		poi.setPosition(MapUtil.getMsoPosistion(point));
 		poi.setType(poiType);
-		
+
 		if (area != null) {
 			area.addAreaPOI(poi);
 		}
-		poiDialog.setMsoFeature(editFeature);
-		
 		//pan to POI if not in current extent
 		Envelope extent = (Envelope)map.getActiveView().getExtent();
 		if (!extent.contains(point)) {
 			extent.centerAt(point);
 			map.setExtent(extent);
 		}
+		featureClass.setSelected(editFeature, true);
+		map.setSupressDrawing(false);
+		map.partialRefresh(editLayer, null);
 		map.fireEditLayerChanged();
 	}
 	
 	public void onMouseUp(int button, int shift, int x, int y)
 			throws IOException, AutomationException {
-		Point p = transform(x, y);
+		p = transform(x, y);
 		addPOIAt(p);
-	}
-	
-	public IMsoFeature getCurrent() {
-		return editFeature;
 	}
 }

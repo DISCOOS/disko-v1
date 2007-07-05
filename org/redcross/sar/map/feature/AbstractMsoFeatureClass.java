@@ -117,8 +117,8 @@ public abstract class AbstractMsoFeatureClass implements IMsoFeatureClass, IGeoD
 		for (int i = 0; i < featureCount(null); i++) {
 			IMsoFeature feature = (IMsoFeature)getFeature(i);
 			feature.setSelected(false);
-			fireOnSelectionChanged();
 		}
+		fireOnSelectionChanged();
 	}
 	
 	public List getSelected() throws AutomationException, IOException {

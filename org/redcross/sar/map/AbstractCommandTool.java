@@ -59,7 +59,7 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 	
 	public void toolActivated() throws IOException, AutomationException {
 		if (dialog != null) {
-			dialog.setVisible(true);
+			dialog.setVisible(!dialog.isVisible());
 		}
 	}
 	

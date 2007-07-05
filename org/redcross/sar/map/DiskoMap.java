@@ -235,7 +235,13 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	public void setCurrentToolByRef(ITool tool) 
 			throws IOException, AutomationException {
 		super.setCurrentToolByRef(tool);
-		if (currentTool != null && currentTool instanceof IDiskoTool) {
+		setActiveTool(tool);
+	}
+	
+	public void setActiveTool(ITool tool) 
+			throws IOException, AutomationException {
+		if (currentTool instanceof IDiskoTool && 
+				currentTool != null && tool != currentTool) {
 			currentTool.toolDeactivated();
 		}
 		if (tool instanceof IDiskoTool) {
