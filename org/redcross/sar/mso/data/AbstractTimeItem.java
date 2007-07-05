@@ -108,10 +108,10 @@ public abstract class AbstractTimeItem extends AbstractMsoObject implements ITim
     {
         if (aTimeObject != null)
         {
-            if (m_calendar != null && aTimeObject.getCalendar() != null)
+            if (getCalendar() != null && aTimeObject.getCalendar() != null)
             {
-                return m_calendar.getCalendar().compareTo(aTimeObject.getCalendar());
-            } else if (m_calendar == null && aTimeObject.getCalendar() == null)
+                return getCalendar().compareTo(aTimeObject.getCalendar());
+            } else if (getCalendar() == null && aTimeObject.getCalendar() == null)
             {
                 return 0;
             } else if (aTimeObject.getCalendar() == null)

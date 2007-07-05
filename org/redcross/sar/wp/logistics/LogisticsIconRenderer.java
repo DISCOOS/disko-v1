@@ -24,11 +24,6 @@ public class LogisticsIconRenderer extends JLabel implements TableCellRenderer
         if (value instanceof IconRenderer)
         {
             IconRenderer iconValue = (IconRenderer) value;
-//            Container p = table.getParent();
-//            if (p != null)
-//            {
-//                iconValue.setBackground(p.getBackground());
-//            }
             if (isSelected && !iconValue.isSelectable())
             {
                 isSelected = false;
@@ -36,7 +31,12 @@ public class LogisticsIconRenderer extends JLabel implements TableCellRenderer
             }
             if (column == 0)
             {
-                table.setRowHeight(row, iconValue.getIconHeight() + 16);
+                int oldHeight = table.getRowHeight(row);
+                int newHeight = iconValue.getIconHeight() + 16;
+                if (oldHeight != newHeight)
+                {
+                    table.setRowHeight(row, iconValue.getIconHeight() + 16);
+                }
             }
             if (row == 0)
             {

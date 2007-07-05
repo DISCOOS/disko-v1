@@ -37,7 +37,7 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
     private static final String UNIT_PRINT = "UnitPrint";
     private static final String UNIT_CHANGE = "UnitChange";
 
-    private DiskoWpLogisticsImpl m_wpModule;
+    private IDiskoWpLogistics m_wpModule;
     private JPanel m_infoPanel;
     private LogisticsInfoPanel m_unitInfoPanel;
     private LogisticsInfoPanel m_assignmentInfoPanel;
@@ -53,7 +53,7 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
 
     private final AssignmentLabel.AssignmentLabelActionHandler m_assignmentLabelMouseListener;
 
-    public InfoPanelHandler(JPanel anInfoPanel, DiskoWpLogisticsImpl aWpModule, AssignmentLabel.AssignmentLabelActionHandler anActionHandler)
+    public InfoPanelHandler(JPanel anInfoPanel, IDiskoWpLogistics aWpModule, AssignmentLabel.AssignmentLabelActionHandler anActionHandler)
     {
         m_infoPanel = anInfoPanel;
         m_assignmentLabelMouseListener = anActionHandler;

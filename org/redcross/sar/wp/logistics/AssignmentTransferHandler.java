@@ -14,6 +14,9 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DragSource;
+import java.awt.dnd.DragSourceListener;
+import java.awt.dnd.DragSourceMotionListener;
 import java.io.IOException;
 
 /**
@@ -28,9 +31,9 @@ public class AssignmentTransferHandler extends TransferHandler
     Component m_targetComponent;
 
     boolean m_shouldRemove;
-    DiskoWpLogisticsImpl m_wpModule;
+    IDiskoWpLogistics m_wpModule;
 
-    public AssignmentTransferHandler(DiskoWpLogisticsImpl aWpModule) throws ClassNotFoundException
+    public AssignmentTransferHandler(IDiskoWpLogistics aWpModule) throws ClassNotFoundException
     {
         m_wpModule = aWpModule;
         if (m_assignmentFlavor == null)
@@ -86,7 +89,7 @@ public class AssignmentTransferHandler extends TransferHandler
                     {
                         transferredAssignment.setStatusAndOwner(targetStatus, targetUnit);
                         transferOk = true;
-                    }
+                }
                     catch (IllegalOperationException e)
                     {
                     }
@@ -181,6 +184,10 @@ public class AssignmentTransferHandler extends TransferHandler
             JTable targetTable = (JTable) m_targetComponent;
             if (trs.isDrop())
             {
+                DragSource ds = DragSource.getDefaultDragSource();
+                int dt = DragSource.getDragThreshold();
+                DragSourceMotionListener[] dsml = ds.getDragSourceMotionListeners();
+                DragSourceListener[] dsl = ds.getDragSourceListeners();
                 JTable.DropLocation dr = (JTable.DropLocation) trs.getDropLocation();
                 int dropRow = targetTable.convertRowIndexToModel(dr.getRow());
                 int dropColumn = targetTable.convertColumnIndexToModel(dr.getColumn());

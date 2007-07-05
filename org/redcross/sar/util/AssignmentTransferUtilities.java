@@ -5,7 +5,7 @@ import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IUnitIf;
-import org.redcross.sar.wp.AbstractDiskoWpModule;
+import org.redcross.sar.wp.IDiskoWpModule;
 
 import java.util.Calendar;
 import java.util.EnumSet;
@@ -23,7 +23,7 @@ public class AssignmentTransferUtilities
 {
     final static EnumSet<IAssignmentIf.AssignmentStatus> acceptedStatuses = EnumSet.range(IAssignmentIf.AssignmentStatus.ASSIGNED, IAssignmentIf.AssignmentStatus.REPORTED);
 
-    public static void createCommunicationMessage(AbstractDiskoWpModule aWpModule, IUnitIf aUnit, IAssignmentIf anAssignment)
+    public static void createCommunicationMessage(IDiskoWpModule aWpModule, IUnitIf aUnit, IAssignmentIf anAssignment)
     {
 
         IMessageLineIf.MessageLineType lineType;

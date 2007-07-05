@@ -23,15 +23,15 @@ public class MessageLogPanel
     private JPanel WorkspacePanel;
     private MessageEditPanel m_topPanel;
     private JSplitPane m_splitter1;
-    private DiskoWpMessageLogImpl m_wpModule;
+    private IDiskoWpMessageLog m_wpModule;
     private IDiskoMap m_map;
     private JTable m_logTable;
     private MessageRowSelectionListener m_rowSelectionListener;
     private JScrollPane m_scrollPane1;
-    JPanel m_logPanel;
+    private JPanel m_logPanel;
     IMessageLogIf m_messageLog;
 
-    public MessageLogPanel(DiskoWpMessageLogImpl aWp)
+    public MessageLogPanel(IDiskoWpMessageLog aWp)
     {
         m_wpModule = aWp;
         m_map = m_wpModule.getMap();

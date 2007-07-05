@@ -10,7 +10,7 @@ import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent;
 import org.redcross.sar.util.AssignmentTransferUtilities;
 import org.redcross.sar.util.mso.Selector;
-import org.redcross.sar.wp.AbstractDiskoWpModule;
+import org.redcross.sar.wp.IDiskoWpModule;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -45,7 +45,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
     private int m_selectedRow = -1;
     private int m_selectedColunm = -1;
     private EnumSet<IUnitIf.UnitType> m_unitTypeSelection;
-    DiskoWpLogisticsImpl m_wpModule;
+    IDiskoWpLogistics m_wpModule;
     IconRenderer.LogisticsIconActionHandler m_actionHandler;
 
     /**
@@ -55,7 +55,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
      * @param aUnitList Reference to the list of units.
      * @param anActionHandler The handler of icon actions.
      */
-    public UnitTableModel(JTable aTable, DiskoWpLogisticsImpl aWp, IUnitListIf aUnitList, IconRenderer.LogisticsIconActionHandler anActionHandler)
+    public UnitTableModel(JTable aTable, IDiskoWpLogistics aWp, IUnitListIf aUnitList, IconRenderer.LogisticsIconActionHandler anActionHandler)
     {
         m_table = aTable;
         m_wpModule = aWp;
@@ -173,7 +173,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         }
     }
 
-    public static String getSelectedAssignmentText(AbstractDiskoWpModule aWpModule, int aSelectorIndex)
+    public static String getSelectedAssignmentText(IDiskoWpModule aWpModule, int aSelectorIndex)
     {
         return aWpModule.getText(MessageFormat.format("UnitTable_hdr_{0}.text", aSelectorIndex + 1));
     }

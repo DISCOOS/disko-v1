@@ -11,18 +11,10 @@ import org.redcross.sar.util.mso.Selector;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import java.text.MessageFormat;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
-/**
- * Created by IntelliJ IDEA.
- * User: vinjar
- * Date: 25.jun.2007
- * To change this template use File | Settings | File Templates.
- */
-import java.util.Map;
 
 /**
  *
@@ -35,11 +27,11 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     JTable m_table;
 
     private IMsoEventManagerIf m_eventManager;
-    DiskoWpMessageLogImpl m_wpModule;
-    
+    IDiskoWpMessageLog m_wpModule;
+
     private HashMap<Integer, Boolean> m_rowSelectionMap;
 
-    public LogTableModel(JTable aTable, DiskoWpMessageLogImpl aModule, IMessageLogIf aMessageLog)
+    public LogTableModel(JTable aTable, IDiskoWpMessageLog aModule, IMessageLogIf aMessageLog)
     {
         m_table = aTable;
         m_wpModule = aModule;
@@ -62,7 +54,7 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     void buildTable()
     {
         m_messageList = m_messageLog.selectItems(m_messageSelector, m_lineNumberComparator);
-        
+
         // Update hashmap
         int numMessages = m_messageList.size();
         for(int i=0; i<numMessages; i++)
@@ -71,10 +63,10 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
         	if(!m_rowSelectionMap.containsKey(Integer.valueOf(messageNr)))
         	{
         		m_rowSelectionMap.put(Integer.valueOf(messageNr), Boolean.valueOf(false));
-        	}        	
+        	}
         }
     }
-    
+
     public Class<?> getColumnClass(int c)
     {
     	switch(c)
@@ -83,14 +75,14 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     			return JTextPane.class;
     		default:
     			return String.class;
-    			
+
     	}
     }
 
     public Object getValueAt(int rowIndex, int columnIndex)
     {
         IMessageIf message = m_messageList.get(rowIndex);
-        
+
         switch (columnIndex)
         {
             case 0:
@@ -160,7 +152,7 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
         }
     };
 
-	public HashMap getRowMap() 
+	public HashMap getRowMap()
 	{
 		return m_rowSelectionMap;
 	}
