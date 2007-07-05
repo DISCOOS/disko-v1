@@ -31,6 +31,8 @@ public class LogisticsIconRenderer extends JLabel implements TableCellRenderer
             }
             if (column == 0)
             {
+                // Only change if different heights. Otherwise the Drag and Drop Icon apperance will not work for anything (Java 1.6.0).
+                // Just try if you don't believe it.
                 int oldHeight = table.getRowHeight(row);
                 int newHeight = iconValue.getIconHeight() + 16;
                 if (oldHeight != newHeight)
