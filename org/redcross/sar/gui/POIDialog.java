@@ -10,6 +10,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -28,16 +29,21 @@ import javax.swing.text.PlainDocument;
 
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.app.Utils;
+import org.redcross.sar.event.DiskoMapEvent;
+import org.redcross.sar.event.IDiskoMapEventListener;
 import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
 import org.redcross.sar.map.POITool;
 import org.redcross.sar.map.feature.IMsoFeature;
+import org.redcross.sar.map.feature.IMsoFeatureClass;
+import org.redcross.sar.map.layer.IMsoFeatureLayer;
+import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.IPOIIf;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
 
 import com.esri.arcgis.geometry.IPoint;
 import com.esri.arcgis.interop.AutomationException;
 
-public class POIDialog extends DiskoDialog {
+public class POIDialog extends DiskoDialog implements IDiskoMapEventListener {
 
 	private static final long serialVersionUID = 1L;
 	private IDiskoApplication app = null;
@@ -58,14 +64,25 @@ public class POIDialog extends DiskoDialog {
 	private JPanel textAreaPanel = null;
 	private JPanel buttonPanel = null;
 	private JButton finishButton = null;
-	private IMsoFeature currPoiFeature = null;
-	private boolean isNew = true;
 	
-
 	public POIDialog(IDiskoApplication app, POITool tool) {
 		super(app.getFrame());
 		this.app = app;
 		this.tool = tool;
+		
+		// listener
+		try {
+			IMsoFeatureLayer msoLayer = app.getDiskoMapManager().
+				getMsoLayer(IMsoFeatureLayer.LayerCode.POI_LAYER);
+			IMsoFeatureClass msoFC = (IMsoFeatureClass)msoLayer.getFeatureClass();
+			msoFC.addDiskoMapEventListener(this);
+		} catch (AutomationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		initialize();
 		// TODO Auto-generated constructor stub
 	}
@@ -76,7 +93,7 @@ public class POIDialog extends DiskoDialog {
 	 */
 	private void initialize() {
 		try {
-            this.setPreferredSize(new Dimension(252, 350));
+            this.setPreferredSize(new Dimension(250, 375));
             this.setContentPane(getContentPanel());
             this.pack();
 		}
@@ -171,34 +188,6 @@ public class POIDialog extends DiskoDialog {
 		return yCoordTextField;
 	}
 	
-	public void setMsoFeature(IMsoFeature msoFeature) {
-		this.currPoiFeature = msoFeature;
-		this.isNew = isNew;
-		try {
-			IPOIIf poi = (IPOIIf)msoFeature.getMsoObject();
-			IPoint p = (IPoint)msoFeature.getShape();
-			setXCoordinateField(Math.round(p.getX()));
-			setYCoordinateField(Math.round(p.getY()));
-			getTxtArea().setText(poi.getRemarks());
-			POIType type = poi.getType();
-			if (type != null) {
-				getTypeComboBox().setSelectedItem(type);
-			}
-		} catch (AutomationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	public void clearFields() {
-		setXCoordinateField("");
-		setYCoordinateField("");
-		getTxtArea().setText("");
-	}
-	
 	private void setXCoordinateField(double d) {
 		setXCoordinateField(Integer.toString((int)d));
 	}
@@ -266,26 +255,27 @@ public class POIDialog extends DiskoDialog {
 				GridBagConstraints gridBagConstraints31 = new GridBagConstraints();
 				gridBagConstraints31.gridx = 0;
 				gridBagConstraints31.anchor = GridBagConstraints.WEST;
-				gridBagConstraints31.gridy = 2;
+				gridBagConstraints31.insets = new Insets(0, 5, 0, 0);
+				gridBagConstraints31.gridy = 3;
 				typeLabel = new JLabel();
 				typeLabel.setText("Type:");
 				GridBagConstraints gridBagConstraints21 = new GridBagConstraints();
 				gridBagConstraints21.gridx = 0;
 				gridBagConstraints21.anchor = GridBagConstraints.WEST;
-				gridBagConstraints21.insets = new Insets(0, 0, 10, 0);
-				gridBagConstraints21.gridy = 1;
+				gridBagConstraints21.insets = new Insets(0, 5, 10, 0);
+				gridBagConstraints21.gridy = 2;
 				yCoordLabel = new JLabel();
 				yCoordLabel.setText("Y koordinat:");
 				GridBagConstraints gridBagConstraints11 = new GridBagConstraints();
 				gridBagConstraints11.gridx = 0;
 				gridBagConstraints11.anchor = GridBagConstraints.WEST;
-				gridBagConstraints11.insets = new Insets(0, 0, 10, 0);
-				gridBagConstraints11.gridy = 0;
+				gridBagConstraints11.insets = new Insets(0, 5, 10, 0);
+				gridBagConstraints11.gridy = 1;
 				xCoordLabel = new JLabel();
 				xCoordLabel.setText("X koordinat:");
 				GridBagConstraints gridBagConstraints5 = new GridBagConstraints();
 				gridBagConstraints5.fill = GridBagConstraints.HORIZONTAL;
-				gridBagConstraints5.gridy = 2;
+				gridBagConstraints5.gridy = 3;
 				gridBagConstraints5.weightx = 1.0;
 				gridBagConstraints5.insets = new Insets(0, 5, 0, 0);
 				gridBagConstraints5.gridx = 1;
@@ -294,7 +284,7 @@ public class POIDialog extends DiskoDialog {
 				gridBagConstraints4.gridy = 2;
 				GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
 				gridBagConstraints3.fill = GridBagConstraints.HORIZONTAL;
-				gridBagConstraints3.gridy = 1;
+				gridBagConstraints3.gridy = 2;
 				gridBagConstraints3.weightx = 1.0;
 				gridBagConstraints3.insets = new Insets(0, 5, 10, 0);
 				gridBagConstraints3.gridx = 1;
@@ -303,7 +293,7 @@ public class POIDialog extends DiskoDialog {
 				gridBagConstraints2.gridy = 1;
 				GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
 				gridBagConstraints1.fill = GridBagConstraints.HORIZONTAL;
-				gridBagConstraints1.gridy = 0;
+				gridBagConstraints1.gridy = 1;
 				gridBagConstraints1.weightx = 1.0;
 				gridBagConstraints1.insets = new Insets(0, 5, 10, 0);
 				gridBagConstraints1.gridx = 1;
@@ -312,7 +302,6 @@ public class POIDialog extends DiskoDialog {
 				gridBagConstraints.gridy = 0;
 				coordPanel = new JPanel();
 				coordPanel.setLayout(new GridBagLayout());
-				coordPanel.setPreferredSize(new Dimension(0, 100));
 				coordPanel.add(getXCoordTextField(), gridBagConstraints1);
 				coordPanel.add(getYCoordTextField(), gridBagConstraints3);
 				coordPanel.add(getTypeComboBox(), gridBagConstraints5);
@@ -442,30 +431,34 @@ public class POIDialog extends DiskoDialog {
 				finishButton.setPreferredSize(size);
 				finishButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
-						if (currPoiFeature != null) {
-							IPOIIf poi = (IPOIIf)currPoiFeature.getMsoObject();
+						// coordinates
+						String xStr = getXCoordTextField().getText();
+						String yStr = getYCoordTextField().getText();
+						long x = 0, y = 0;
+						if (xStr != null && xStr.length() > 0) {
+							x = Long.parseLong(xStr);
+						}
+						if (yStr != null && yStr.length() > 0) {
+							y = Long.parseLong(yStr);
+						}
+						try {
+							if (tool.getEditFeature() == null) {
+								tool.addPOIAt(x, y);
+							} else {
+								tool.movePOI(x, y);
+							}
+						} catch (AutomationException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						if (tool.getEditFeature() != null) {
+							IPOIIf poi = (IPOIIf)tool.getEditFeature().getMsoObject();
 							poi.setRemarks(txtArea.getText());
 							poi.setType((POIType)getTypeComboBox().getSelectedItem());
-							
-							// coordinates
-							String xStr = getXCoordTextField().getText();
-							String yStr = getYCoordTextField().getText();
-							long x = 0, y = 0;
-							if (xStr != null && xStr.length() > 0) {
-								x = Long.parseLong(xStr);
-							}
-							if (yStr != null && yStr.length() > 0) {
-								y = Long.parseLong(yStr);
-							}
-							try {
-								tool.addPOIAt(x, y);
-							} catch (AutomationException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
+							fireDialogStateChanged();
 						}
 					}
 				});
@@ -476,4 +469,44 @@ public class POIDialog extends DiskoDialog {
 		return finishButton;
 	}
 
+	public void editLayerChanged(DiskoMapEvent e) {
+		// TODO Auto-generated method stub
+	}
+
+	public void onAfterScreenDraw(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+	}
+
+	public void onExtentUpdated(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+	}
+
+	public void onMapReplaced(DiskoMapEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+	}
+
+	public void onSelectionChanged(DiskoMapEvent e) throws IOException, AutomationException {
+		if (tool.getMap() == null) {
+			return;
+		}
+		IMsoFeatureClass msoFC = (IMsoFeatureClass)e.getSource();
+		List selection = msoFC.getSelected();
+		if (selection != null && selection.size() > 0) {
+			IMsoFeature msoFeature = (IMsoFeature)selection.get(0);
+			IMsoObjectIf msoObject = msoFeature.getMsoObject();
+			if (!isVisible()) {
+				tool.getMap().setActiveTool(tool);
+			}
+			tool.setEditFeature(msoFeature);
+			IPOIIf poi = (IPOIIf)msoObject;
+			IPoint p = (IPoint)msoFeature.getShape();
+			setXCoordinateField(Math.round(p.getX()));
+			setYCoordinateField(Math.round(p.getY()));
+			getTxtArea().setText(poi.getRemarks());
+			POIType type = poi.getType();
+			if (type != null) {
+				getTypeComboBox().setSelectedItem(type);
+			}
+		}
+	}
 }  //  @jve:decl-index=0:visual-constraint="10,10"

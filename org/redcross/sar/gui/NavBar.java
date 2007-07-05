@@ -793,15 +793,7 @@ public class NavBar extends JPanel {
 		
 		public void actionPerformed(java.awt.event.ActionEvent e) {
 			try {
-				AbstractButton button = (AbstractButton)e.getSource();
 				IDiskoMap map = app.getCurrentMap();
-				if (command instanceof IDiskoTool) {
-					DiskoDialog dialog = ((IDiskoTool)command).getDialog();
-					if (button.isSelected() && dialog != null && dialog.isVisible()) {
-						dialog.setVisible(false);
-						return;
-					}
-				}
 				if (command instanceof ITool && map != null) {
 					map.setCurrentToolByRef((ITool)command);
 				}

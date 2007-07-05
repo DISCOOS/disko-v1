@@ -2,18 +2,18 @@ package org.redcross.sar.gui.renderers;
 
 import java.awt.Component;
 
-import javax.swing.JCheckBox;
 import javax.swing.JList;
+import javax.swing.JRadioButton;
 import javax.swing.ListCellRenderer;
 
 import org.redcross.sar.app.Utils;
 
-public class CheckableListCellRenderer extends JCheckBox implements ListCellRenderer {
+public class RadioListCellRenderer extends JRadioButton implements ListCellRenderer {
 
 	
 	private static final long serialVersionUID = 1L;
 	
-	public CheckableListCellRenderer() {
+	public RadioListCellRenderer() {
 		super.setOpaque(true);
 	}
 
