@@ -9,7 +9,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.BevelBorder;
 import javax.swing.table.TableColumn;
@@ -20,6 +19,7 @@ import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.models.POITableModel;
 import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.IMsoFeatureClass;
+import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.mso.data.IAreaIf;
 
 import com.esri.arcgis.interop.AutomationException;
@@ -30,14 +30,25 @@ public class DescriptionDialog extends DiskoDialog implements IDiskoMapEventList
 	private JPanel contentPanel = null;
 	private JScrollPane tableScrollPane = null;
 	private JTable poiTable = null;
-	private JScrollPane descriptionScrollPane = null;
-	private JTextArea descriptionTextArea = null;
 	private DiskoWpTacticsImpl wp = null;
 	private POITableModel tableModel = null;
 
 	public DescriptionDialog(DiskoWpTacticsImpl wp) {
 		super(wp.getApplication().getFrame());
 		this.wp = wp;
+		//listener
+		try {
+			IMsoFeatureLayer msoLayer = wp.getApplication().getDiskoMapManager().
+				getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER);
+			IMsoFeatureClass msoFC = (IMsoFeatureClass)msoLayer.getFeatureClass();
+			msoFC.addDiskoMapEventListener(this);
+		} catch (AutomationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		initialize();
 		// TODO Auto-generated constructor stub
 	}
@@ -72,7 +83,6 @@ public class DescriptionDialog extends DiskoDialog implements IDiskoMapEventList
 				contentPanel = new JPanel();
 				contentPanel.setLayout(new BorderLayout());
 				contentPanel.add(getTableScrollPane(), BorderLayout.CENTER);
-				//contentPanel.add(getDescriptionScrollPane(), BorderLayout.CENTER);
 				contentPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
@@ -140,40 +150,6 @@ public class DescriptionDialog extends DiskoDialog implements IDiskoMapEventList
 					break;
 			}
 		}
-	}
-
-	/**
-	 * This method initializes descriptionScrollPane	
-	 * 	
-	 * @return javax.swing.JScrollPane	
-	 */
-	private JScrollPane getDescriptionScrollPane() {
-		if (descriptionScrollPane == null) {
-			try {
-				descriptionScrollPane = new JScrollPane();
-				descriptionScrollPane.setViewportView(getDescriptionTextArea());
-			} catch (java.lang.Throwable e) {
-				// TODO: Something
-			}
-		}
-		return descriptionScrollPane;
-	}
-
-	/**
-	 * This method initializes descriptionTextArea	
-	 * 	
-	 * @return javax.swing.JTextArea	
-	 */
-	private JTextArea getDescriptionTextArea() {
-		if (descriptionTextArea == null) {
-			try {
-				descriptionTextArea = new JTextArea();
-				descriptionTextArea.setLineWrap(true);
-			} catch (java.lang.Throwable e) {
-				// TODO: Something
-			}
-		}
-		return descriptionTextArea;
 	}
 
 	public void editLayerChanged(DiskoMapEvent e) {

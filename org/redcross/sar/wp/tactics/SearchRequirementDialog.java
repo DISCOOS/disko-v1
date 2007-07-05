@@ -25,6 +25,7 @@ import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.NumPadDialog;
 import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.IMsoFeatureClass;
+import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.mso.data.IAreaIf;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.ISearchIf;
@@ -53,6 +54,19 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 	public SearchRequirementDialog(DiskoWpTacticsImpl wp) {
 		super(wp.getApplication().getFrame());
 		this.wp = wp;
+		//listener
+		try {
+			IMsoFeatureLayer msoLayer = wp.getApplication().getDiskoMapManager().
+				getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER);
+			IMsoFeatureClass msoFC = (IMsoFeatureClass)msoLayer.getFeatureClass();
+			msoFC.addDiskoMapEventListener(this);
+		} catch (AutomationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		initialize();
 		// TODO Auto-generated constructor stub
 	}

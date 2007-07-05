@@ -1,46 +1,44 @@
 package org.redcross.sar.wp.tactics;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.io.IOException;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.border.BevelBorder;
 
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.event.IDiskoMapEventListener;
 import org.redcross.sar.gui.DiskoDialog;
-import org.redcross.sar.gui.UnitTable;
 import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.IMsoFeatureClass;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
-import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.IAreaIf;
 import org.redcross.sar.mso.data.IAssignmentIf;
-import org.redcross.sar.mso.data.IUnitIf;
+import org.redcross.sar.mso.data.IMsoObjectIf;
+import org.redcross.sar.mso.data.IOperationAreaIf;
 
 import com.esri.arcgis.interop.AutomationException;
 
-public class UnitSelectionDialog extends DiskoDialog implements IDiskoMapEventListener {
+public class TextAreaDialog extends DiskoDialog implements IDiskoMapEventListener {
 
 	private static final long serialVersionUID = 1L;
-	private IMsoModelIf msoModel = null;
 	private JPanel contentPanel = null;
-	private JScrollPane jScrollPane = null;
-	private UnitTable unitTable = null;
+	private JScrollPane textAreaScrollPane = null;
+	private JTextArea textArea = null;
+	private JLabel headerLabel = null;
 	
-	public UnitSelectionDialog(DiskoWpTacticsImpl wp) {
+	public TextAreaDialog(DiskoWpTacticsImpl wp) {
 		super(wp.getApplication().getFrame());
-		this.msoModel = wp.getMsoModel();
 		//listener
 		try {
 			IMsoFeatureLayer msoLayer = wp.getApplication().getDiskoMapManager().
-				getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER);
+				getMsoLayer(IMsoFeatureLayer.LayerCode.OPERATION_AREA_LAYER);
 			IMsoFeatureClass msoFC = (IMsoFeatureClass)msoLayer.getFeatureClass();
 			msoFC.addDiskoMapEventListener(this);
 		} catch (AutomationException e) {
@@ -60,43 +58,27 @@ public class UnitSelectionDialog extends DiskoDialog implements IDiskoMapEventLi
 	 */
 	private void initialize() {
 		try {
-            this.setPreferredSize(new Dimension(210, 225));
+            this.setPreferredSize(new Dimension(600, 125));
             this.setContentPane(getContentPanel());
-			this.pack();
+            this.pack();
 		}
 		catch (java.lang.Throwable e) {
 			//  Do Something
 		}
 	}
 	
-	public IUnitIf getSelectedUnit() {
-		JTable table = getUnitTable();
-		int row = table.getSelectedRow();
-		int col = table.getSelectedColumn();
-		if (row > -1 && col > -1) {
-			return (IUnitIf)table.getValueAt(row, col);
-		}
-		return null;
+	public String getText() {
+		return getTextArea().getText();
 	}
 	
-	public void selectedAssignedUnit(IAssignmentIf assignment) {
-		JTable table = getUnitTable();
-		for (int row = 0; row < table.getRowCount(); row++) {
-			for (int col = 0; col < table.getColumnCount(); col++) {
-				IUnitIf unit = (IUnitIf)table.getValueAt(row, col);
-				if (unit != null) {
-					List list = unit.getAssignedAssignments();
-					if (list != null && list.contains(assignment)) {
-						table.setRowSelectionInterval(row, row);
-						table.setColumnSelectionInterval(col, col);
-						return;
-					}
-				}
-			}
-		}
+	public void setText(String text) {
+		getTextArea().setText(text);
 	}
 	
-	
+	public void setHeaderText(String text) {
+		System.out.println(headerLabel.getFont());
+		headerLabel.setText(text);
+	}
 
 	/**
 	 * This method initializes contentPanel	
@@ -106,10 +88,12 @@ public class UnitSelectionDialog extends DiskoDialog implements IDiskoMapEventLi
 	private JPanel getContentPanel() {
 		if (contentPanel == null) {
 			try {
+				headerLabel = new JLabel();
 				contentPanel = new JPanel();
 				contentPanel.setLayout(new BorderLayout());
 				contentPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-				contentPanel.add(getJScrollPane(), BorderLayout.CENTER);
+				contentPanel.add(getTextAreaScrollPane(), BorderLayout.CENTER);
+				contentPanel.add(headerLabel, BorderLayout.NORTH);
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
@@ -118,35 +102,34 @@ public class UnitSelectionDialog extends DiskoDialog implements IDiskoMapEventLi
 	}
 
 	/**
-	 * This method initializes jScrollPane	
+	 * This method initializes textAreaScrollPane	
 	 * 	
 	 * @return javax.swing.JScrollPane	
 	 */
-	private JScrollPane getJScrollPane() {
-		if (jScrollPane == null) {
+	private JScrollPane getTextAreaScrollPane() {
+		if (textAreaScrollPane == null) {
 			try {
-				jScrollPane = new JScrollPane();
-				jScrollPane.getViewport().setBackground(Color.white);
-				jScrollPane.setViewportView(getUnitTable());
+				textAreaScrollPane = new JScrollPane();
+				textAreaScrollPane.setViewportView(getTextArea());
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
 		}
-		return jScrollPane;
+		return textAreaScrollPane;
 	}
 
 	/**
-	 * This method initializes unitTable	
+	 * This method initializes inputTextArea	
 	 * 	
-	 * @return javax.swing.JTable	
+	 * @return javax.swing.JTextArea	
 	 */
-	private UnitTable getUnitTable() {
-		if (unitTable == null) {
+	private JTextArea getTextArea() {
+		if (textArea == null) {
 			try {
-				unitTable = new UnitTable(msoModel, 3);
-				unitTable.addMouseListener(new java.awt.event.MouseAdapter() {
-					public void mouseReleased(java.awt.event.MouseEvent e) {
-						setVisible(false);
+				textArea = new JTextArea();
+				textArea.setLineWrap(true);
+				textArea.addKeyListener(new java.awt.event.KeyAdapter() {
+					public void keyTyped(java.awt.event.KeyEvent e) {
 						fireDialogStateChanged();
 					}
 				});
@@ -154,7 +137,7 @@ public class UnitSelectionDialog extends DiskoDialog implements IDiskoMapEventLi
 				// TODO: Something
 			}
 		}
-		return unitTable;
+		return textArea;
 	}
 
 	public void editLayerChanged(DiskoMapEvent e) {
@@ -164,17 +147,14 @@ public class UnitSelectionDialog extends DiskoDialog implements IDiskoMapEventLi
 
 	public void onAfterScreenDraw(DiskoMapEvent e) throws IOException, AutomationException {
 		// TODO Auto-generated method stub
-		
 	}
 
 	public void onExtentUpdated(DiskoMapEvent e) throws IOException, AutomationException {
 		// TODO Auto-generated method stub
-		
 	}
 
 	public void onMapReplaced(DiskoMapEvent e) throws IOException, AutomationException {
 		// TODO Auto-generated method stub
-		
 	}
 
 	public void onSelectionChanged(DiskoMapEvent e) throws IOException, AutomationException {
@@ -182,11 +162,21 @@ public class UnitSelectionDialog extends DiskoDialog implements IDiskoMapEventLi
 		List selection = msoFC.getSelected();
 		if (selection != null && selection.size() > 0) {
 			IMsoFeature msoFeature = (IMsoFeature)selection.get(0);
-			IAreaIf area = (IAreaIf)msoFeature.getMsoObject();
-			IAssignmentIf assignment = area.getOwningAssignment();
-			selectedAssignedUnit(assignment);
-			return;
+			IMsoObjectIf msoObject = msoFeature.getMsoObject();
+			if (msoObject instanceof IAreaIf) {
+				IAreaIf area = (IAreaIf)msoObject;
+				IAssignmentIf assignment = area.getOwningAssignment();
+				if (assignment != null) {
+					setText(assignment.getRemarks());
+					return;
+				}
+			}
+			else if (msoObject instanceof IOperationAreaIf) {
+				IOperationAreaIf opArea = (IOperationAreaIf)msoObject;
+				setText(opArea.getRemarks());
+				return;
+			}
 		}
+		setText(null);
 	}
-
-}  //  @jve:decl-index=0:visual-constraint="10,2"
+}

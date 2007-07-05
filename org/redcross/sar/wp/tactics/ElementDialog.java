@@ -3,7 +3,7 @@ package org.redcross.sar.wp.tactics;
 import java.awt.Dimension;
 import java.awt.Frame;
 import org.redcross.sar.gui.DiskoDialog;
-import org.redcross.sar.gui.renderers.CheckableListCellRenderer;
+import org.redcross.sar.gui.renderers.RadioListCellRenderer;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
@@ -70,7 +70,7 @@ public class ElementDialog extends DiskoDialog {
 		if (elementList == null) {
 			try {
 				elementList = new JList();
-				elementList.setCellRenderer(new CheckableListCellRenderer());
+				elementList.setCellRenderer(new RadioListCellRenderer());
 				elementList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 				elementList.addListSelectionListener(listener);
 			} catch (java.lang.Throwable e) {

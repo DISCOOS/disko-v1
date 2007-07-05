@@ -2,7 +2,6 @@ package org.redcross.sar.wp.tactics;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.io.IOException;
 import java.util.List;
 
@@ -18,9 +17,10 @@ import org.redcross.sar.app.Utils;
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.event.IDiskoMapEventListener;
 import org.redcross.sar.gui.DiskoDialog;
-import org.redcross.sar.gui.renderers.CheckableListCellRenderer;
+import org.redcross.sar.gui.renderers.RadioListCellRenderer;
 import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.IMsoFeatureClass;
+import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.ISearchAreaIf;
 
@@ -32,10 +32,22 @@ public class PriorityDialog extends DiskoDialog implements IDiskoMapEventListene
 	private JPanel contentPanel = null;
 	private JList priorityList = null;
 	
-	public PriorityDialog(Frame frame) {
-		super(frame);
+	public PriorityDialog(DiskoWpTacticsImpl wp) {
+		super(wp.getApplication().getFrame());
+		//listener
+		try {
+			IMsoFeatureLayer msoLayer = wp.getApplication().getDiskoMapManager().
+				getMsoLayer(IMsoFeatureLayer.LayerCode.SEARCH_AREA_LAYER);
+			IMsoFeatureClass msoFC = (IMsoFeatureClass)msoLayer.getFeatureClass();
+			msoFC.addDiskoMapEventListener(this);
+		} catch (AutomationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		initialize();
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -94,7 +106,7 @@ public class PriorityDialog extends DiskoDialog implements IDiskoMapEventListene
 		if (priorityList == null) {
 			try {
 				priorityList = new JList();
-				priorityList.setCellRenderer(new CheckableListCellRenderer());
+				priorityList.setCellRenderer(new RadioListCellRenderer());
 				Object[] listData = new Object[5];
 				listData[0] = Utils.translate("PRIMARY_SEARCH_AREA");
 				listData[1] = Utils.translate("SECONDARY_SEARCH_AREA");

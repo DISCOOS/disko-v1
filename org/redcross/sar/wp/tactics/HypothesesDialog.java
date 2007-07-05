@@ -1,6 +1,27 @@
 package org.redcross.sar.wp.tactics;
 
-import org.redcross.sar.app.IDiskoApplication;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.io.IOException;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.ListSelectionModel;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.event.IDiskoMapEventListener;
 import org.redcross.sar.gui.DiskoDialog;
@@ -9,6 +30,7 @@ import org.redcross.sar.gui.renderers.HypothesesListCellRenderer;
 import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
 import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.IMsoFeatureClass;
+import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IHypothesisIf;
@@ -17,30 +39,6 @@ import org.redcross.sar.mso.data.ISearchAreaIf;
 import org.redcross.sar.mso.data.IHypothesisIf.HypothesisStatus;
 
 import com.esri.arcgis.interop.AutomationException;
-
-import javax.swing.JPanel;
-import java.awt.Dimension;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Insets;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.JList;
-import javax.swing.ListSelectionModel;
-import javax.swing.border.BevelBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.io.IOException;
-import java.util.List;
-
-import javax.swing.JTextArea;
 
 public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListener {
 
@@ -62,9 +60,22 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 	
 	private IHypothesisIf selectedHypotheses = null;
 
-	public HypothesesDialog(IDiskoApplication app) {
-		super(app.getFrame());
-		this.msoModel = app.getMsoModel();
+	public HypothesesDialog(DiskoWpTacticsImpl wp) {
+		super(wp.getApplication().getFrame());
+		this.msoModel = wp.getMsoModel();
+		//listener
+		try {
+			IMsoFeatureLayer msoLayer = wp.getApplication().getDiskoMapManager().
+				getMsoLayer(IMsoFeatureLayer.LayerCode.SEARCH_AREA_LAYER);
+			IMsoFeatureClass msoFC = (IMsoFeatureClass)msoLayer.getFeatureClass();
+			msoFC.addDiskoMapEventListener(this);
+		} catch (AutomationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		initialize();
 		// TODO Auto-generated constructor stub
 	}
