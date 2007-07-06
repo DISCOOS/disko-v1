@@ -153,17 +153,16 @@ public class DiskoRoleImpl implements IDiskoRole, IDiskoWpEventListener {
 			SubMenuPanel subMenu   = app.getUIFactory().getSubMenuPanel();
 			NavBar navBar = app.getUIFactory().getMainPanel().getNavBar();
 			MainPanel mainPanel = app.getUIFactory().getMainPanel();
-			navBar.setVisible(false);
-			subMenu.setVisible(false);
 			mainPanel.showComponent(id);
 		
 			if (module.hasSubMenu()) {
 				subMenu.setVisible(true);
 				subMenu.showMenu(id);
 			}
-			if (mainMenu.getNavToggleButton().isSelected()) {
-				navBar.setVisible(true);
+			else {
+				subMenu.setVisible(false);
 			}
+			navBar.hideDialogs();
 			currentModule = module;
 			module.activated();
 			navBar.taskChanged();
