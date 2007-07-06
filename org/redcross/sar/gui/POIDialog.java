@@ -8,7 +8,6 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Point;
 import java.io.IOException;
 import java.util.List;
 
@@ -17,15 +16,13 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.PlainDocument;
 
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.app.Utils;
@@ -40,7 +37,7 @@ import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.IPOIIf;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
 
-import com.esri.arcgis.geometry.IPoint;
+import com.esri.arcgis.geometry.esriMGRSModeEnum;
 import com.esri.arcgis.interop.AutomationException;
 
 public class POIDialog extends DiskoDialog implements IDiskoMapEventListener {
@@ -50,14 +47,12 @@ public class POIDialog extends DiskoDialog implements IDiskoMapEventListener {
 	private POITool tool = null;
 	private JPanel contentPanel = null;
 	private NumPadDialog numPadDialog = null;
-	private JTextField xCoordTextField = null;
-	private JTextField yCoordTextField = null;
+	private JTextField mgrsTextField = null;
 	private JComboBox typeComboBox = null;
 	private JLabel txtAreaLabel = null;
 	private JTextArea txtArea = null;
 	private JPanel coordPanel = null;
-	private JLabel xCoordLabel = null;
-	private JLabel yCoordLabel = null;
+	private JLabel mgrsLabel = null;
 	private JLabel typeLabel = null;
 	private JScrollPane textAreaScrollPane = null;
 	private JPanel northPanel = null;
@@ -104,8 +99,7 @@ public class POIDialog extends DiskoDialog implements IDiskoMapEventListener {
 	
 	public void reset() {
 		getTxtArea().setText(null);
-		getXCoordTextField().setText(null);
-		getYCoordTextField().setText(null);
+		getMGRSTextField().setText(null);
 		getTypeComboBox().setSelectedIndex(0);
 	}
 	
@@ -140,68 +134,23 @@ public class POIDialog extends DiskoDialog implements IDiskoMapEventListener {
 	 * 	
 	 * @return javax.swing.JTextField	
 	 */
-	private JTextField getXCoordTextField() {
-		if (xCoordTextField == null) {
-			xCoordTextField = new JTextField();
-			xCoordTextField.addMouseListener(new java.awt.event.MouseAdapter() {
+	private JTextField getMGRSTextField() {
+		if (mgrsTextField == null) {
+			mgrsTextField = new JTextField();
+			mgrsTextField.addMouseListener(new java.awt.event.MouseAdapter() {
 				public void mouseClicked(java.awt.event.MouseEvent e) {					
 					if (e.getClickCount() == 2){
 						numPadDialog = app.getUIFactory().getNumPadDialog();
-						Point p = xCoordTextField.getLocationOnScreen();
-						p.setLocation(p.x + (xCoordTextField.getWidth()+7), p.y);
+						java.awt.Point p = mgrsTextField.getLocationOnScreen();
+						p.setLocation(p.x + (mgrsTextField.getWidth()+7), p.y);
 						numPadDialog.setLocation(p);					
-						numPadDialog.setTextField(xCoordTextField);
+						numPadDialog.setTextField(mgrsTextField);
 						numPadDialog.setVisible(true);	
 					}
 				}
 			});	
-			CoordinateDocument doc = new CoordinateDocument(6);
-			xCoordTextField.setDocument(doc);
 		}
-		return xCoordTextField;
-	}
-	
-	/**
-	 * This method initializes yCoordTextField	
-	 * 	
-	 * @return javax.swing.JTextField	
-	 */
-	private JTextField getYCoordTextField() {
-		if (yCoordTextField == null) {
-			yCoordTextField = new JTextField();
-			
-			yCoordTextField.addMouseListener(new java.awt.event.MouseAdapter() {
-				public void mouseClicked(java.awt.event.MouseEvent e) {
-					if (e.getClickCount() == 2){										
-						numPadDialog = app.getUIFactory().getNumPadDialog();
-						Point p = yCoordTextField.getLocationOnScreen();
-						p.setLocation(p.x + (yCoordTextField.getWidth()+7), p.y);
-						numPadDialog.setLocation(p);
-						numPadDialog.setTextField(yCoordTextField);
-						numPadDialog.setVisible(true);
-					}
-				}
-			});
-			CoordinateDocument doc = new CoordinateDocument(7);
-			yCoordTextField.setDocument(doc);
-		}
-		return yCoordTextField;
-	}
-	
-	private void setXCoordinateField(double d) {
-		setXCoordinateField(Integer.toString((int)d));
-	}
-	
-	private void setYCoordinateField(double d) {
-		setYCoordinateField(Integer.toString((int)d));
-	}
-	
-	private void setXCoordinateField(String str) {
-		getXCoordTextField().setText(str);
-	}
-	
-	private void setYCoordinateField(String str) {
-		getYCoordTextField().setText(str);
+		return mgrsTextField;
 	}
 	
 	public void setTypes(POIType[] poiTypes) {
@@ -264,15 +213,13 @@ public class POIDialog extends DiskoDialog implements IDiskoMapEventListener {
 				gridBagConstraints21.anchor = GridBagConstraints.WEST;
 				gridBagConstraints21.insets = new Insets(0, 5, 10, 0);
 				gridBagConstraints21.gridy = 2;
-				yCoordLabel = new JLabel();
-				yCoordLabel.setText("Y koordinat:");
 				GridBagConstraints gridBagConstraints11 = new GridBagConstraints();
 				gridBagConstraints11.gridx = 0;
 				gridBagConstraints11.anchor = GridBagConstraints.WEST;
 				gridBagConstraints11.insets = new Insets(0, 5, 10, 0);
 				gridBagConstraints11.gridy = 1;
-				xCoordLabel = new JLabel();
-				xCoordLabel.setText("X koordinat:");
+				mgrsLabel = new JLabel();
+				mgrsLabel.setText("MGRS:");
 				GridBagConstraints gridBagConstraints5 = new GridBagConstraints();
 				gridBagConstraints5.fill = GridBagConstraints.HORIZONTAL;
 				gridBagConstraints5.gridy = 3;
@@ -302,11 +249,9 @@ public class POIDialog extends DiskoDialog implements IDiskoMapEventListener {
 				gridBagConstraints.gridy = 0;
 				coordPanel = new JPanel();
 				coordPanel.setLayout(new GridBagLayout());
-				coordPanel.add(getXCoordTextField(), gridBagConstraints1);
-				coordPanel.add(getYCoordTextField(), gridBagConstraints3);
+				coordPanel.add(getMGRSTextField(), gridBagConstraints1);
 				coordPanel.add(getTypeComboBox(), gridBagConstraints5);
-				coordPanel.add(xCoordLabel, gridBagConstraints11);
-				coordPanel.add(yCoordLabel, gridBagConstraints21);
+				coordPanel.add(mgrsLabel, gridBagConstraints11);
 				coordPanel.add(typeLabel, gridBagConstraints31);
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
@@ -331,33 +276,6 @@ public class POIDialog extends DiskoDialog implements IDiskoMapEventListener {
 		}
 		return textAreaScrollPane;
 	}	
-
-	 
-	class CoordinateDocument extends PlainDocument {
-	 
-		private static final long serialVersionUID = 1L;
-		
-		private int maxLength;
-		
-		CoordinateDocument(int maxLength) {
-			this.maxLength = maxLength;
-		}
-
-		public void insertString(int offs, String str, AttributeSet a) 
-	            throws BadLocationException {
-			if (str == null) {
-				return;
-	        }
-			try {
-				Integer.parseInt(str);
-			} catch (NumberFormatException e) {
-				return;
-			}
-			if (super.getLength()+1 <= maxLength) {
-				super.insertString(offs, str, a);
-			}
-	     }
-	 }
 
 	/**
 	 * This method initializes northPanel	
@@ -432,20 +350,23 @@ public class POIDialog extends DiskoDialog implements IDiskoMapEventListener {
 				finishButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
 						// coordinates
-						String xStr = getXCoordTextField().getText();
-						String yStr = getYCoordTextField().getText();
-						long x = 0, y = 0;
-						if (xStr != null && xStr.length() > 0) {
-							x = Long.parseLong(xStr);
-						}
-						if (yStr != null && yStr.length() > 0) {
-							y = Long.parseLong(yStr);
+						com.esri.arcgis.geometry.Point point = null;
+						try {
+							point = new com.esri.arcgis.geometry.Point();
+							point.setSpatialReferenceByRef(tool.getMap().getSpatialReference());
+							point.putCoordsFromMGRS(getMGRSTextField().getText(), 
+									esriMGRSModeEnum.esriMGRSMode_NewStyle);
+						} catch (Exception ex) {
+							JOptionPane.showMessageDialog(app.getFrame(),
+			                        "Ugyldig MGRS koordinat", null, 
+			                        JOptionPane.WARNING_MESSAGE);
+							ex.printStackTrace();
 						}
 						try {
 							if (tool.getEditFeature() == null) {
-								tool.addPOIAt(x, y);
+								tool.addPOIAt(point);
 							} else {
-								tool.movePOI(x, y);
+								tool.movePOI(point);
 							}
 						} catch (AutomationException e1) {
 							// TODO Auto-generated catch block
@@ -499,9 +420,10 @@ public class POIDialog extends DiskoDialog implements IDiskoMapEventListener {
 			}
 			tool.setEditFeature(msoFeature);
 			IPOIIf poi = (IPOIIf)msoObject;
-			IPoint p = (IPoint)msoFeature.getShape();
-			setXCoordinateField(Math.round(p.getX()));
-			setYCoordinateField(Math.round(p.getY()));
+			com.esri.arcgis.geometry.Point point = 
+				(com.esri.arcgis.geometry.Point)msoFeature.getShape();
+			String mgrs = point.createMGRS(5, true, esriMGRSModeEnum.esriMGRSMode_NewStyle);
+			getMGRSTextField().setText(mgrs);
 			getTxtArea().setText(poi.getRemarks());
 			POIType type = poi.getType();
 			if (type != null) {

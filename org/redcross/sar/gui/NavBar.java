@@ -708,6 +708,19 @@ public class NavBar extends JPanel {
 		);
 	}
 	
+	public void hideDialogs() {
+		Iterator commandIter = commands.values().iterator();
+		while (commandIter.hasNext()) {
+			ICommand command = (ICommand)commandIter.next();
+			if (command instanceof IDiskoTool) {
+				IDiskoTool diskoTool = (IDiskoTool)command;
+				if (diskoTool.getDialog() != null) {
+					diskoTool.getDialog().setVisible(false);
+				}
+			}
+		}
+	}
+	
 	public void unselectAll() {
 		getDummyToggleButton().doClick(); // HACK: unselect all toggle buttons
 	}
