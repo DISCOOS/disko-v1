@@ -22,11 +22,11 @@ import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.geometry.esriGeometryType;
 import com.esri.arcgis.interop.AutomationException;
 
-public class AreaFeatureClass extends AbstractMsoFeatureClass {
+public class PlannedAreaFeatureClass extends AbstractMsoFeatureClass {
 
 	private static final long serialVersionUID = 1L;
 	
-	public AreaFeatureClass(IMsoManagerIf.MsoClassCode classCode, IMsoModelIf msoModel) {
+	public PlannedAreaFeatureClass(IMsoManagerIf.MsoClassCode classCode, IMsoModelIf msoModel) {
 		super(classCode, msoModel);
 	}
 	
@@ -38,15 +38,17 @@ public class AreaFeatureClass extends AbstractMsoFeatureClass {
 			
 			if (type == EventType.ADDED_REFERENCE_EVENT.maskValue() && 
 					msoFeature == null) {
-				msoFeature = new AreaFeature();
+				msoFeature = new PlannedAreaFeature();
 				msoFeature.setSpatialReference(srs);
 				msoFeature.setMsoObject(area);
 				data.add(msoFeature);
 			}
 			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && 
-					msoFeature != null && area.getGeodata() != null &&
-					!area.getGeodata().equals(msoFeature.getGeodata())) {
-				msoFeature.msoGeometryChanged();
+					msoFeature != null) {
+				if (area.getGeodata() != null &&
+						!area.getGeodata().equals(msoFeature.getGeodata())) {
+					msoFeature.msoGeometryChanged();
+				}
 				isDirty = true;
 			}
 			else if (type == EventType.DELETED_OBJECT_EVENT.maskValue() && 

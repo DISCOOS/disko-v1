@@ -66,20 +66,16 @@ public class POITool extends AbstractCommandTool {
 			throws IOException, AutomationException {
 	}	
 	
-	public void movePOI(double x, double y) throws IOException, AutomationException {
+	public void movePOI(Point point) throws IOException, AutomationException {
 		if (editFeature == null) {
 			return;
 		}
-		Point point = new Point();
-		point.setX(x);
-		point.setY(y);
 		//check if point inside operation area
 		if (!insideOpArea(point)) {
 			Toolkit.getDefaultToolkit().beep();
 			return;
 		}
 		IPOIIf poi = (IPOIIf)editFeature.getMsoObject();
-		point.setSpatialReferenceByRef(map.getSpatialReference());
 		poi.setPosition(MapUtil.getMsoPosistion(point));
 		
 		//pan to POI if not in current extent
@@ -115,7 +111,6 @@ public class POITool extends AbstractCommandTool {
 		featureClass.clearSelected();
 		editFeature = featureClass.createMsoFeature();
 		IPOIIf poi = (IPOIIf)editFeature.getMsoObject();
-		point.setSpatialReferenceByRef(map.getSpatialReference());
 		poi.setPosition(MapUtil.getMsoPosistion(point));
 		poi.setType(poiType);
 
@@ -137,6 +132,7 @@ public class POITool extends AbstractCommandTool {
 	public void onMouseUp(int button, int shift, int x, int y)
 			throws IOException, AutomationException {
 		p = transform(x, y);
+		p.setSpatialReferenceByRef(map.getSpatialReference());
 		addPOIAt(p);
 	}
 }

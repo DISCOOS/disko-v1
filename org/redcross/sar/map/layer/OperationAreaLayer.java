@@ -68,7 +68,7 @@ public class OperationAreaLayer extends AbstractMsoFeatureLayer {
 		c.setBlue(255);
 		
 		SimpleLineSymbol outlineSymbol = new SimpleLineSymbol();	
-		outlineSymbol.setWidth(4);
+		outlineSymbol.setWidth(1.5);
 		outlineSymbol.setColor(c);
 		symbol.setOutline(outlineSymbol);
 			
@@ -79,7 +79,7 @@ public class OperationAreaLayer extends AbstractMsoFeatureLayer {
 		c.setGreen(255);
 		
 		SimpleLineSymbol selectedOutlineSymbol = new SimpleLineSymbol();	
-		selectedOutlineSymbol.setWidth(4);
+		selectedOutlineSymbol.setWidth(1.5);
 		selectedOutlineSymbol.setColor(c);
 		selectionSymbol.setOutline(selectedOutlineSymbol);
 	}

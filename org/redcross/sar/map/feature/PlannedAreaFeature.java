@@ -13,7 +13,7 @@ import com.esri.arcgis.geometry.GeometryBag;
 import com.esri.arcgis.geometry.Polyline;
 import com.esri.arcgis.interop.AutomationException;
 
-public class AreaFeature extends AbstractMsoFeature {
+public class PlannedAreaFeature extends AbstractMsoFeature {
 
 	private static final long serialVersionUID = 1L;
 	private GeoCollection geoColl = null;

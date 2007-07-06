@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
+import javax.swing.SwingUtilities;
 import javax.swing.border.SoftBevelBorder;
 
 import org.redcross.sar.event.DiskoMapEvent;
@@ -469,7 +470,21 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#partialRefresh(com.esri.arcgis.geometry.IEnvelope)
 	 */
-	public void partialRefresh(Object obj, IEnvelope env) throws IOException, AutomationException {
-		getActiveView().partialRefresh(esriViewDrawPhase.esriViewGeography, obj, env);
+	public void partialRefresh(final Object obj, final IEnvelope env) throws IOException, AutomationException {
+		Runnable r = new Runnable() {
+			public void run() {
+				try {
+					getActiveView().partialRefresh(
+							esriViewDrawPhase.esriViewGeography, obj, env);
+				} catch (AutomationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+		SwingUtilities.invokeLater(r);
 	}
 }

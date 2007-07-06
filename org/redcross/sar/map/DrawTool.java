@@ -11,7 +11,7 @@ import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.DrawDialog;
-import org.redcross.sar.map.feature.AreaFeatureClass;
+import org.redcross.sar.map.feature.PlannedAreaFeatureClass;
 import org.redcross.sar.map.feature.IMsoFeatureClass;
 import org.redcross.sar.map.feature.OperationAreaFeatureClass;
 import org.redcross.sar.map.feature.SearchAreaFeatureClass;
@@ -181,19 +181,19 @@ public class DrawTool extends AbstractCommandTool {
 							searchArea.setGeodata(MapUtil.getMsoPolygon(polygon));
 						}
 					}
-					else if (featureClass instanceof AreaFeatureClass) {
+					else if (featureClass instanceof PlannedAreaFeatureClass) {
 						IAreaIf area = (IAreaIf)editFeature.getMsoObject();
 						if (area != null) {
 							GeoCollection clone = cloneGeoCollection(area.getGeodata());
 							clone.add(MapUtil.getMsoRoute(polyline));
 							area.setGeodata(clone);
-							((AreaFeatureClass)featureClass).updateAreaPOIs(area);
+							((PlannedAreaFeatureClass)featureClass).updateAreaPOIs(area);
 						}
 					}
 					featureClass.setSelected(editFeature, true);
 					map.setSupressDrawing(false);
-					map.partialRefresh(editLayer, null);
 					map.fireEditLayerChanged();
+					map.partialRefresh(editLayer, null);
 				} catch (AutomationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

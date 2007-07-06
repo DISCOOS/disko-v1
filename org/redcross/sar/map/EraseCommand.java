@@ -3,7 +3,7 @@ package org.redcross.sar.map;
 import java.io.IOException;
 import java.util.List;
 
-import org.redcross.sar.map.feature.AreaFeatureClass;
+import org.redcross.sar.map.feature.PlannedAreaFeatureClass;
 import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.IMsoFeatureClass;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
@@ -47,7 +47,7 @@ public class EraseCommand implements ICommand {
 					IMsoObjectIf msoObject = msoFeature.getMsoObject();
 					if (msoObject instanceof IAreaIf) {
 						IAreaIf area = (IAreaIf)msoObject;
-						((AreaFeatureClass)msoFC).deleteAreaPOIs(area);
+						((PlannedAreaFeatureClass)msoFC).deleteAreaPOIs(area);
 					}
 					msoFeature.getMsoObject().deleteObject();
 					map.fireEditLayerChanged();

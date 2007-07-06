@@ -33,7 +33,7 @@ public class OperationAreaMaskFeatureClass extends AbstractMsoFeatureClass {
 				data.add(msoFeature);
 			}
 			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && 
-					msoFeature != null && 
+					msoFeature != null && opArea.getGeodata() != null &&
 					!opArea.getGeodata().equals(msoFeature.getGeodata())) {
 				msoFeature.msoGeometryChanged();
 				isDirty = true;

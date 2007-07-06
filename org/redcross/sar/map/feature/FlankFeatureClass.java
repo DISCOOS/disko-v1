@@ -32,7 +32,8 @@ public class FlankFeatureClass extends AbstractMsoFeatureClass {
 				data.add(msoFeature);
 			}
 			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && 
-					msoFeature != null) {
+					msoFeature != null && area.getGeodata() != null &&
+					!area.getGeodata().equals(msoFeature.getGeodata())) {
 				msoFeature.msoGeometryChanged();
 				isDirty = true;
 			}

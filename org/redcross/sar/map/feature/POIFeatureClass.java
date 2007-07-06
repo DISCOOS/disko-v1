@@ -35,9 +35,11 @@ public class POIFeatureClass extends AbstractMsoFeatureClass {
 				data.add(msoFeature);
 			}
 			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && 
-					msoFeature != null && poi.getPosition() != null &&
-					!poi.getPosition().equals(msoFeature.getGeodata())) {
-				msoFeature.msoGeometryChanged(); 
+					msoFeature != null) {
+				if(poi.getPosition() != null &&
+						!poi.getPosition().equals(msoFeature.getGeodata())) {
+					msoFeature.msoGeometryChanged(); 
+				}
 				isDirty = true;
 			}
 			else if (type == EventType.DELETED_OBJECT_EVENT.maskValue() && 

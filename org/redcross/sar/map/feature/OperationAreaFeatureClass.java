@@ -35,9 +35,11 @@ public class OperationAreaFeatureClass extends AbstractMsoFeatureClass {
 				data.add(msoFeature);
 			}
 			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && 
-					msoFeature != null && opArea.getGeodata() != null &&
-					!opArea.getGeodata().equals(msoFeature.getGeodata())) {
-				msoFeature.msoGeometryChanged();
+					msoFeature != null) {
+				if (opArea.getGeodata() != null &&
+						!opArea.getGeodata().equals(msoFeature.getGeodata())) {
+					msoFeature.msoGeometryChanged();
+				}
 				isDirty = true;
 			}
 			else if (type == EventType.DELETED_OBJECT_EVENT.maskValue() && 

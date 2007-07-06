@@ -34,6 +34,7 @@ public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoD
 	protected IFeatureClass featureClass = null;
 	protected boolean isCached = false;
 	protected boolean isValid, isVisible = true;
+	protected boolean isSelectable = true;
 	protected double maximumScale, minimumScale = 0;
 	protected boolean showTips = false;
 
@@ -198,8 +199,7 @@ public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoD
 	}
 
 	public boolean isSelectable() throws IOException, AutomationException {
-		// TODO Auto-generated method stub
-		return false;
+		return isSelectable;
 	}
 
 	public IFeatureCursor search(IQueryFilter filter, boolean b) throws IOException, AutomationException {
@@ -226,8 +226,7 @@ public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoD
 		
 	}
 
-	public void setSelectable(boolean arg0) throws IOException, AutomationException {
-		// TODO Auto-generated method stub
-		
+	public void setSelectable(boolean isSelectable) throws IOException, AutomationException {
+		this.isSelectable = isSelectable;
 	}
 }
