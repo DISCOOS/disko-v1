@@ -31,13 +31,13 @@ import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.DrawTool;
 import org.redcross.sar.map.IDiskoMapManager;
 import org.redcross.sar.map.POITool;
-import org.redcross.sar.map.SelectFeatureTool;
-import org.redcross.sar.map.feature.AreaFeatureClass;
+import org.redcross.sar.map.feature.PlannedAreaFeature;
+import org.redcross.sar.map.feature.PlannedAreaFeatureClass;
 import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.IMsoFeatureClass;
 import org.redcross.sar.map.feature.OperationAreaFeatureClass;
 import org.redcross.sar.map.feature.SearchAreaFeatureClass;
-import org.redcross.sar.map.layer.AreaLayer;
+import org.redcross.sar.map.layer.PlannedAreaLayer;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.map.layer.OperationAreaLayer;
 import org.redcross.sar.map.layer.POILayer;
@@ -84,7 +84,6 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 	private POITool poiTool = null;
 	private DrawTool drawTool = null;
 	private POIDialog poiDialog = null;
-	private SelectFeatureTool selectFeatureTool = null;
 	private ArrayList<DiskoDialog> dialogs = null;
 	private TextAreaDialog textAreaDialog = null;
 	private HypothesesDialog hypothesesDialog = null;
@@ -99,9 +98,10 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 	private SearchAreaLayer searchAreaLayer = null;
 	private DescriptionDialog descriptionDialog = null;
 	private POILayer poiLayer = null;
-	private AreaLayer areaLayer = null;
+	private PlannedAreaLayer plannedAreaLayer = null;
 	private IMsoFeatureLayer currentLayer = null;
 	private boolean isInitializing = true;
+	private IMsoFeature currentMsoFeature = null;
 
 	/**
 	 * Constructs a DiskoApTaktikkImpl
@@ -113,20 +113,19 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		elementListSelectionListener = new ElementListSelectionListener();
 
 		BuildTestData.createCmdPost(getMsoModel());
-	    BuildTestData.createUnitsAndAssignments(getMsoModel());
-        BuildTestData.createMessages(getMsoModel());
-        buttonSize = getApplication().getUIFactory().getLargeButtonSize();
+	    /*BuildTestData.createUnitsAndAssignments(getMsoModel());
+        BuildTestData.createMessages(getMsoModel());*/
         
+        buttonSize = getApplication().getUIFactory().getLargeButtonSize();
         IDiskoMapManager mapManager = getMap().getMapManager();
 		opAreaLayer = (OperationAreaLayer) mapManager.getMsoLayer(IMsoFeatureLayer.LayerCode.OPERATION_AREA_LAYER);
 		searchAreaLayer = (SearchAreaLayer) mapManager.getMsoLayer(IMsoFeatureLayer.LayerCode.SEARCH_AREA_LAYER);
 		poiLayer = (POILayer) mapManager.getMsoLayer(IMsoFeatureLayer.LayerCode.POI_LAYER);
-		areaLayer = (AreaLayer) mapManager.getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER);
-
+		plannedAreaLayer = (PlannedAreaLayer) mapManager.getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER);
+		
 		NavBar navBar = getApplication().getNavBar();
 		drawTool = navBar.getDrawTool();
 		poiTool = navBar.getPOITool();
-		selectFeatureTool = navBar.getSelectFeatureTool();
 		poiDialog = (POIDialog) poiTool.getDialog();
 		poiDialog.addDialogListener(this);
 		
@@ -134,7 +133,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		try {
 			OperationAreaFeatureClass opAreaFC  = (OperationAreaFeatureClass)opAreaLayer.getFeatureClass();
 			SearchAreaFeatureClass searchAreaFC = (SearchAreaFeatureClass)searchAreaLayer.getFeatureClass();
-			AreaFeatureClass areaFC = (AreaFeatureClass)areaLayer.getFeatureClass();
+			PlannedAreaFeatureClass areaFC = (PlannedAreaFeatureClass)plannedAreaLayer.getFeatureClass();
 			
 			opAreaFC.addDiskoMapEventListener(this);
 			searchAreaFC.addDiskoMapEventListener(this);
@@ -192,13 +191,8 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		myTools.add(NavBar.ToolCommandType.MAP_TOGGLE_COMMAND);
 		myTools.add(NavBar.ToolCommandType.TOC_COMMAND);
 		navBar.showButtons(myTools);
-		
-		selectFeatureTool.addSelectableLayer(poiLayer);
-		selectFeatureTool.addSelectableLayer(areaLayer);
-		selectFeatureTool.addSelectableLayer(searchAreaLayer);
-		selectFeatureTool.addSelectableLayer(opAreaLayer);
 
-		//this will show the Nav bar
+		//this will show the Navbar
 		UIFactory uiFactory = getApplication().getUIFactory();
 		JToggleButton navToggle = uiFactory.getMainMenuPanel().getNavToggleButton();
 		if (!navToggle.isSelected()) {
@@ -211,8 +205,9 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 
 	public void deactivated() {
 		super.deactivated();
-		selectFeatureTool.removeAll();
 		hideDialogs(null);
+		NavBar navBar = getApplication().getNavBar();
+		navBar.hideDialogs();
 	}
 	
 	private void selectElement() {
@@ -247,6 +242,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 			if (element == null) {
 				return;
 			}
+			hideDialogs(null);
 			ICmdPostIf cmdPost = getMsoManager().getCmdPost();
 			if (element == IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA) {
 				showOperationAreaButtons();
@@ -277,9 +273,9 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 					return;
 				}
 				showSearchButtons();
-				POIType[] poiTypes = { POIType.VIA };
+				POIType[] poiTypes = { POIType.VIA, POIType.START, POIType.STOP };
 				poiDialog.setTypes(poiTypes);
-				currentLayer = areaLayer;
+				currentLayer = plannedAreaLayer;
 			}
 			drawTool.setEditLayer(currentLayer);
 			poiTool.setEditLayer(poiLayer);
@@ -309,8 +305,8 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 			List selection = msoFC.getSelected();
 			if (selection != null && selection.size() > 0) {
 				JList elementList = getElementDialog().getElementList();
-				IMsoFeature msoFeature = (IMsoFeature)selection.get(0);
-				IMsoObjectIf msoObject = msoFeature.getMsoObject();
+				currentMsoFeature = (IMsoFeature)selection.get(0);
+				IMsoObjectIf msoObject = currentMsoFeature.getMsoObject();
 				if (msoObject == null) {
 					return;
 				}
@@ -322,12 +318,12 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 						ISearchIf search = (ISearchIf)area.getOwningAssignment();
 						elementList.setSelectedValue(search.getSubType(), false);
 					}
-					drawTool.setEditFeature(msoFeature);
+					drawTool.setEditFeature(currentMsoFeature);
 					NavBar navBar = getApplication().getNavBar();
 					navBar.getPOIToggleButton().setEnabled(true);
 				}
 				else {
-					drawTool.setEditFeature(msoFeature);
+					drawTool.setEditFeature(currentMsoFeature);
 					elementList.setSelectedValue(msoObject.getMsoClassCode(), false);
 				}
 			}
@@ -340,6 +336,29 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 	public void editLayerChanged(DiskoMapEvent e) {
 		fireTaskStarted();
 		isEditing = true;
+		setLayersSelectable(false);
+
+		if (currentMsoFeature != null && 
+				currentMsoFeature instanceof PlannedAreaFeature) {
+			try {
+				IAreaIf area = (IAreaIf)currentMsoFeature.getMsoObject();
+				if (area != null) {
+					ISearchIf search = (ISearchIf)area.getOwningAssignment();
+					if (area.getOwningAssignment() == null) {
+						ICmdPostIf cmdPost = getMsoManager().getCmdPost();
+						IAssignmentListIf assignmentList = cmdPost.getAssignmentList();
+						search = assignmentList.createSearch();
+						search.setPlannedArea(area);
+					}
+					JList elementList = getElementDialog().getElementList();
+					SearchSubType type = (SearchSubType)elementList.getSelectedValue();
+					search.setSubType(type);
+				}
+			} catch (IllegalOperationException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
 	}
 
 	public void dialogCanceled(DialogEvent e) {
@@ -361,19 +380,14 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 	 * @see com.geodata.engine.disko.task.DiskoAp#finish()
 	 */
 	public void finish() {
-		try {
-			IMsoFeature msoFeature = drawTool.getEditFeature();
-			if (msoFeature == null || msoFeature.getMsoObject() == null) {
-				reset();
-				return;
-			}
-			Enum element = (Enum) getElementDialog().getElementList().getSelectedValue();
-			if (element == IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA) {
-				IOperationAreaIf opArea = (IOperationAreaIf) msoFeature.getMsoObject();
+		if (currentMsoFeature != null && currentMsoFeature.getMsoObject() != null) {
+			IMsoObjectIf msoObject = currentMsoFeature.getMsoObject();
+			if (msoObject instanceof IOperationAreaIf) {
+				IOperationAreaIf opArea = (IOperationAreaIf) msoObject;
 				opArea.setRemarks(getTextAreaDialog().getText());
 			}
-			else if (element == IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA) {
-				ISearchAreaIf searchArea = (ISearchAreaIf) msoFeature.getMsoObject();
+			else if (msoObject instanceof ISearchAreaIf) {
+				ISearchAreaIf searchArea = (ISearchAreaIf) msoObject;
 				IHypothesisIf hypo = getHypothesesDialog().getSelectedHypotheses();
 				if (hypo == null) {
 					showWarning("Må tilordne en hypotese til søksområde");
@@ -384,23 +398,16 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 				searchArea.setPriority(getPriorityDialog().getPriority());
 			}
 			else {
-				IAreaIf area = (IAreaIf) msoFeature.getMsoObject();
+				IAreaIf area = (IAreaIf) msoObject;
 				ISearchIf search = (ISearchIf)area.getOwningAssignment();
-				if (area.getOwningAssignment() == null) {
-					ICmdPostIf cmdPost = getMsoManager().getCmdPost();
-					IAssignmentListIf assignmentList = cmdPost.getAssignmentList();
-					search = assignmentList.createSearch();
-					search.setPlannedArea(area);
-				}
 				SearchRequirementDialog dialog = getSearchRequirementDialog();
 				search.setPriority(dialog.getPriority());
 				search.setRemarks(dialog.getRemarks());
 				search.setPriority(dialog.getPriority());
-				search.setSubType((SearchSubType) element);
 				search.setPlannedAccuracy(dialog.getAccuracy());
 				search.setPlannedPersonnel(dialog.getPersonelNeed());
 				search.setPlannedProgress(getEstimateDialog().getEstimatedTime());
-					
+
 				// dialog for setting status
 				if (search.getStatus() != AssignmentStatus.READY) {
 					IUnitIf unit = getUnitSelectionDialog().getSelectedUnit();
@@ -413,15 +420,8 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 				}
 			}
 		}
-		catch (IllegalOperationException e) {
-			getMsoModel().rollback();
-			fireTaskCanceled();
-			e.printStackTrace();
-		}
-		finally {
-			getMsoModel().commit();
-			fireTaskFinished();
-		}
+		getMsoModel().commit();
+		fireTaskFinished();
 		reset();
 	}
 	
@@ -438,9 +438,10 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 	private void reset() {
 		hideDialogs(null);
 		isEditing = false;
+		currentMsoFeature = null;
 		poiTool.setArea(null);
 		drawTool.setEditFeature(null);
-		getElementToggleButton().setEnabled(true);
+		setLayersSelectable(true);
 		
 		callingWp = null;
 		//Possible to go back ?
@@ -606,6 +607,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		navBar.getSelectFeatureToggleButton().setVisible(true);
 		navBar.getEraseButton().setVisible(true);
 		navBar.getPOIToggleButton().setVisible(true);
+		navBar.getPOIToggleButton().setEnabled(true);
 	}
 
 	private void showSearchAreaButtons() {
@@ -620,6 +622,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 
 		NavBar navBar = getApplication().getNavBar();
 		navBar.getPOIToggleButton().setVisible(true);
+		navBar.getPOIToggleButton().setEnabled(true);
 		navBar.getSelectFeatureToggleButton().setVisible(true);
 		navBar.getEraseButton().setVisible(true);
 	}
@@ -647,6 +650,20 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 				cmdPost.getOperationAreaListItems().size() > 0
 				&& cmdPost.getSearchAreaListItems().size() > 0);
 
+	}
+	
+	private void setLayersSelectable(boolean isSelectable) {
+		try {
+			opAreaLayer.setSelectable(isSelectable);
+			searchAreaLayer.setSelectable(isSelectable);
+			plannedAreaLayer.setSelectable(isSelectable);
+		} catch (AutomationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 
 	private JToggleButton getElementToggleButton() {

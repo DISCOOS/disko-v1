@@ -110,6 +110,10 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 		getAccuracyTextField().setText(null);
 		getPriorityTextField().setText(null);
 		getRemarksTextArea().setText(null);
+		getPersonelTextField().setText(null);
+		
+		getPrioritySlider().setValue(3);
+		getAccuracySlider().setValue(50);
 	}
 	
 	public int getAccuracy() {
@@ -265,6 +269,9 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 				accuracySlider.setMinorTickSpacing(10);
 				accuracySlider.setSnapToTicks(true);
 				accuracySlider.setPaintTicks(true);
+				accuracySlider.setMinimum(0);
+				accuracySlider.setMaximum(100);
+				accuracySlider.setValue(50);
 				accuracySlider.addChangeListener(new javax.swing.event.ChangeListener() {
 					public void stateChanged(javax.swing.event.ChangeEvent e) {
 						getAccuracyTextField().setText(accuracySlider.getValue()+"%");

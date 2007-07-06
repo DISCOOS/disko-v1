@@ -31,6 +31,7 @@ public class PriorityDialog extends DiskoDialog implements IDiskoMapEventListene
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPanel = null;
 	private JList priorityList = null;
+	private IMsoFeature currentMsoFeature = null;
 	
 	public PriorityDialog(DiskoWpTacticsImpl wp) {
 		super(wp.getApplication().getFrame());
@@ -119,6 +120,14 @@ public class PriorityDialog extends DiskoDialog implements IDiskoMapEventListene
 				priorityList.setSelectedIndex(0);
 				priorityList.addListSelectionListener(new ListSelectionListener() {
 					public void valueChanged(ListSelectionEvent e) {
+						if(e.getValueIsAdjusting()) {
+							return;
+						}
+						if (currentMsoFeature != null) {
+							IMsoObjectIf msoObject = currentMsoFeature.getMsoObject();
+							ISearchAreaIf searchArea = (ISearchAreaIf)msoObject;
+							searchArea.setPriority(getPriority());
+						}
 						setVisible(false);
 						fireDialogStateChanged();
 					}
@@ -154,15 +163,13 @@ public class PriorityDialog extends DiskoDialog implements IDiskoMapEventListene
 		IMsoFeatureClass msoFC = (IMsoFeatureClass)e.getSource();
 		List selection = msoFC.getSelected();
 		if (selection != null && selection.size() > 0) {
-			IMsoFeature msoFeature = (IMsoFeature)selection.get(0);
-			IMsoObjectIf msoObject = msoFeature.getMsoObject();
+			currentMsoFeature = (IMsoFeature)selection.get(0);
+			IMsoObjectIf msoObject = currentMsoFeature.getMsoObject();
 			if (msoObject instanceof ISearchAreaIf) {
 				ISearchAreaIf searchArea = (ISearchAreaIf)msoObject;
 				setPriority(searchArea.getPriority());
-				return;
 			}
 		}
-		setPriority(1);
 	}
 
 }  //  @jve:decl-index=0:visual-constraint="10,10"
