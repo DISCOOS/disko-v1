@@ -45,8 +45,8 @@ public class StateBar extends JPanel {
         	    Random rnd = new Random();
         		// update properties
         	    m_max = java.lang.Math.max(rnd.nextInt(100),1);
-        	    m_step = getWidth() / m_max;
-        	    m_marginal = getWidth() / (2 * m_step);
+        	    m_step = (getWidth() - m_gap * 2 - 30) / m_max;
+        	    m_marginal = m_max/2;
         	    m_optimal = java.lang.Math.max(m_marginal + rnd.nextInt(m_max - m_marginal),1);
         	    m_count = rnd.nextInt(m_max);
         	    // force a redraw
@@ -62,9 +62,12 @@ public class StateBar extends JPanel {
 	 */
 	public void setLimits(int max, int marginal, int optimal) 
 	{
+		// set states
 	    m_max = max;
 	    m_marginal = marginal;
 	    m_optimal = optimal;
+	    // force repaint
+	    repaint();
 	}
 	
 	/**
@@ -106,13 +109,20 @@ public class StateBar extends JPanel {
 	    g2d.setFont(font);
 	    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	    g2d.setColor(Color.BLACK);
+	    int w = getWidth() - m_gap * 2 - 30;
+	    m_step = w / m_max;
 	    int m = m_marginal*m_step;
 	    int o = m_optimal*m_step;
+	    // get heigth
 	    int h = 0;
 	    if (m_top > m_gap)
 	    	h = getHeight() - m_top - m_gap - 3;
 	    else
 	    	h = getHeight() - m_gap*2;
+	    // limit
+	    if (m > w) m = w;
+	    if (o > w) o = w;
+	    if (m > o) o = m;
 	    // draw the rectangle
 	    g2d.setColor(Color.GRAY);
 	    g2d.drawRect(m_gap, m_top + 7, getWidth() - m_gap * 2 - 2, h - 1);
@@ -120,10 +130,10 @@ public class StateBar extends JPanel {
 	    if(m_count > 0) {
 	    	// draw limits
 		    g2d.setColor(Color.BLACK);
-		    g2d.drawString("Marginalt", m - 20, m_top + 3);
-		    g2d.drawString("Optimalt", o - 20, m_top + 3);
-		    g2d.drawLine(m, m_top + 7, m, m_top + h + 6);
-		    g2d.drawLine(o, m_top + 7, o, m_top + h + 6);
+		    g2d.drawString("Marginalt", m + m_gap + 5, m_top + 3);
+		    g2d.drawString("Optimalt", o + m_gap + 5, m_top + 3);
+		    g2d.drawLine(m + m_gap + 15, m_top + 7, m + m_gap + 15, m_top + h + 6);
+		    g2d.drawLine(o + m_gap + 15, m_top + 7, o + m_gap + 15, m_top + h + 6);
 		    int i = m_count*m_step;
 		    if (i<m) {
 		    	g2d.setColor(co);
@@ -140,8 +150,10 @@ public class StateBar extends JPanel {
 		    	tasks = "+ 0 oppgaver";
 		    else
 		    	tasks = "- " + java.lang.Math.abs(m_count - m_marginal) + " oppgaver";
+		    // limit 
+		    if (i > w) i = w;
 		    // fill state rectangle
-		    g2d.fillRect(m_gap + 15, m_top + 20, i - m_gap + 30, h - 25);
+		    g2d.fillRect(m_gap + 15, m_top + 20, i + 1, h - 25);
 		    // set text color
 		    g2d.setColor(Color.BLACK);
 		    // get left text position
