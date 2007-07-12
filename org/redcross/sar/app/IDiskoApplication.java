@@ -51,6 +51,15 @@ public interface IDiskoApplication {
 	 */
 	public String getProperty(String key);
 	
+   /**
+    * Get a property whith the given name.
+    * @param key The name of the property
+    * @param defaultValue The given defaultvalue
+    * @return A property with the given name
+    *
+    */
+
+   public String getProperty(String key,String defaultValue);
 	/**
 	 * Return a reference to the UIFactory class. This class contains
 	 * methods to create GUI component for this application
@@ -90,4 +99,14 @@ public interface IDiskoApplication {
      */
     public IMsoModelIf getMsoModel();
 
+   void chooseActiveOperation();
+
+   void finishOperation();
+
+    /**
+     * For cleanup and module handling when active operation has been finished
+     */
+    void operationFinished();
+
+   void mergeOperations();
 }

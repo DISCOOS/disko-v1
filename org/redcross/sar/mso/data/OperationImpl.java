@@ -134,4 +134,11 @@ public class OperationImpl extends AbstractMsoObject implements IOperationIf
     {
         return null; /*todo*/
     }
+
+
+    public boolean deleteObject()
+    {
+        m_cmdPostList.deleteAll();
+        return true;
+    }
 }

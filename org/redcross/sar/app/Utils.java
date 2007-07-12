@@ -72,7 +72,7 @@ public class Utils {
 		}
       else
       {
-         BufferedImage defaultImage = new BufferedImage(30, 30, BufferedImage.TYPE_INT_RGB);
+         BufferedImage defaultImage = new BufferedImage(40, 40, BufferedImage.TYPE_INT_RGB);
 
          java.awt.Graphics2D g2 = defaultImage.createGraphics();
          java.awt.Color col = new java.awt.Color(255, 0, 0);

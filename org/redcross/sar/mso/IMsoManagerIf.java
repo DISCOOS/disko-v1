@@ -58,6 +58,17 @@ public interface IMsoManagerIf
     public IOperationIf createOperation(String aNumberPrefix, String aNumber);
 
     /**
+     * Create a new {@link org.redcross.sar.mso.data.IOperationIf} object.
+     * The Big Bang that creates the Universe of MSO Structures (Galaxes) and Objects (stars).
+     *
+     * @param aNumberPrefix Number prefix types with format yyyy-[text], where yyyy = current year. List of prefix types is given in config file.
+     * @param aNumber Variable part of operation number. The readable operation number is a concatenation of Number and NumberPrefix.
+     * @param aId the id of the operation
+     * @return The created object.
+     */
+    public IOperationIf createOperation(String aNumberPrefix, String aNumber,IMsoObjectIf.IObjectIdIf aId);
+
+    /**
      * Get the {@link org.redcross.sar.mso.data.IOperationIf} object
      *
      * @return The Operation object, null if no object is defined

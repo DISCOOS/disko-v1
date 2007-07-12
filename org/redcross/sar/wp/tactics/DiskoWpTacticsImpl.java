@@ -112,7 +112,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		dialogs = new ArrayList<DiskoDialog>();
 		elementListSelectionListener = new ElementListSelectionListener();
 
-		BuildTestData.createCmdPost(getMsoModel());
+		//BuildTestData.createCmdPost(getMsoModel());
 	    /*BuildTestData.createUnitsAndAssignments(getMsoModel());
         BuildTestData.createMessages(getMsoModel());*/
         

@@ -1,27 +1,30 @@
 package org.redcross.sar.gui;
 
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import javax.swing.AbstractButton;
-import javax.swing.ButtonGroup;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JToggleButton;
-
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.app.Utils;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.ResourceBundle;
 
 
 public class SysBar extends JPanel {
 
-	private static final long serialVersionUID = 1L;
+private static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.gui.properties.SysBar");
+   private static final long serialVersionUID = 1L;
 	private IDiskoApplication app = null;
 	private ButtonGroup bgroup = null;
 	private JButton changeRolleButton = null;
 	private JButton mapOptionButton = null;
+   private JButton finishOperationButton=null;
+   private JButton mergeButton=null;
+   private JButton chooseOperationButton=null;
+   private static final String MERGETEXT = "MERGE.TEXT";
+   private static final String FINISHTEXT = "FINISH.TEXT";
+   private static final String CHOOSETEXT = "CHOOSE.OP.TEXT";
 
-	/**
+
+   /**
 	 * This is the default constructor
 	 */
 	public SysBar() {
@@ -48,9 +51,96 @@ public class SysBar extends JPanel {
 		this.setLayout(flowLayout);
 		addButton(getChangeRolleButton());
 		addButton(getMapOptionButton());
-	}
-	
-	private JButton getChangeRolleButton() {
+      addButton(getFinishOperationButton());
+      addButton(getMergeButton());
+      addButton(getChooseOperationButton());
+   }
+
+   private JButton getMergeButton()
+   {
+      if (mergeButton == null) {
+         try {
+            mergeButton = new JButton();
+            String iconName = "Merge.icon";
+            Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
+            mergeButton.setIcon(icon);
+            Dimension size = app.getUIFactory().getSmallButtonSize();
+            mergeButton.setPreferredSize(size);
+            mergeButton.setMaximumSize(size);
+            mergeButton.setIcon(icon);
+            mergeButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+            mergeButton.setHorizontalTextPosition(SwingConstants.CENTER);
+            mergeButton.setToolTipText(bundle.getString(MERGETEXT));
+            mergeButton.setText(bundle.getString(MERGETEXT));
+            mergeButton.addActionListener(new java.awt.event.ActionListener() {
+               public void actionPerformed(java.awt.event.ActionEvent e) {
+                  app.mergeOperations();
+               }
+            });
+         } catch (java.lang.Throwable e) {
+            // TODO: Something
+         }
+      }
+      return mergeButton;
+   }
+
+   private JButton getFinishOperationButton()
+   {
+      if (finishOperationButton == null) {
+         try {
+            finishOperationButton = new JButton();
+            String iconName = "FinishOperation.icon";
+            Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
+            finishOperationButton.setIcon(icon);
+            Dimension size = app.getUIFactory().getSmallButtonSize();
+            finishOperationButton.setPreferredSize(size);
+            finishOperationButton.setMaximumSize(size);
+            finishOperationButton.setIcon(icon);
+            finishOperationButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+            finishOperationButton.setHorizontalTextPosition(SwingConstants.CENTER);
+            finishOperationButton.setToolTipText(bundle.getString(FINISHTEXT));
+            finishOperationButton.setText(bundle.getString(FINISHTEXT));
+            finishOperationButton.addActionListener(new java.awt.event.ActionListener() {
+               public void actionPerformed(java.awt.event.ActionEvent e) {
+                  app.finishOperation();
+               }
+            });
+         } catch (java.lang.Throwable e) {
+            // TODO: Something
+         }
+      }
+      return finishOperationButton;
+   }
+
+   private JButton getChooseOperationButton()
+   {
+      if (chooseOperationButton == null) {
+         try {
+            chooseOperationButton = new JButton();
+            String iconName = "SelectOperation.icon";
+            Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
+            chooseOperationButton.setIcon(icon);
+            Dimension size = app.getUIFactory().getSmallButtonSize();
+            chooseOperationButton.setPreferredSize(size);
+            chooseOperationButton.setMaximumSize(size);
+            chooseOperationButton.setIcon(icon);
+            chooseOperationButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+            chooseOperationButton.setHorizontalTextPosition(SwingConstants.CENTER);
+            chooseOperationButton.setToolTipText(bundle.getString(CHOOSETEXT));
+            chooseOperationButton.setText(bundle.getString(CHOOSETEXT));
+            chooseOperationButton.addActionListener(new java.awt.event.ActionListener() {
+               public void actionPerformed(java.awt.event.ActionEvent e) {
+                  app.chooseActiveOperation();
+               }
+            });
+         } catch (java.lang.Throwable e) {
+            // TODO: Something
+         }
+      }
+      return chooseOperationButton;
+   }
+
+   private JButton getChangeRolleButton() {
 		if (changeRolleButton == null) {
 			try {
 				changeRolleButton = new JButton();

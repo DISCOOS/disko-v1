@@ -24,6 +24,8 @@ import java.util.Collection;
 public class SarMsoMapper {
 
     public static void mapMsoAttrToSarFact(SarFact sarFact, IAttributeIf msoAttr, boolean distribute) {
+        try
+        {
         if (msoAttr instanceof AttributeImpl.MsoBoolean) {
             AttributeImpl.MsoBoolean lAttr = (AttributeImpl.MsoBoolean) msoAttr;
             ((SarFactNumerical) sarFact).setNumValue(lAttr.booleanValue() ? 1 : 0, distribute);
@@ -48,14 +50,14 @@ public class SarMsoMapper {
 
             AttributeImpl.MsoPosition lAttr = (AttributeImpl.MsoPosition) msoAttr;
 
-            ((SarFactLocation) sarFact).updateLocation((float) lAttr.getPosition().getPosition().getY(),
-                    (float) lAttr.getPosition().getPosition().getX(), null, null, null, "", distribute);
+            ((SarFactLocation) sarFact).updateLocation( lAttr.getPosition().getPosition().getY(),
+                     lAttr.getPosition().getPosition().getX(), null, null, null, "", distribute);
 
         }
         if (msoAttr instanceof AttributeImpl.MsoTimePos) {
             AttributeImpl.MsoTimePos lAttr = (AttributeImpl.MsoTimePos) msoAttr;
-            ((SarFactLocation) sarFact).updateLocation((float) lAttr.getTimePos().getPosition().getY(),
-                    (float) lAttr.getTimePos().getPosition().getX(), lAttr.getTimePos().getTime(), null, null, "", distribute);
+            ((SarFactLocation) sarFact).updateLocation( lAttr.getTimePos().getPosition().getY(),
+                     lAttr.getTimePos().getPosition().getX(), lAttr.getTimePos().getTime(), null, null, "", distribute);
         }
         if (msoAttr instanceof AttributeImpl.MsoPolygon) {
             AttributeImpl.MsoPolygon lAttr = (AttributeImpl.MsoPolygon) msoAttr;
@@ -78,6 +80,12 @@ public class SarMsoMapper {
         if (msoAttr instanceof AttributeImpl.MsoEnum) {
             AttributeImpl.MsoEnum lAttr = (AttributeImpl.MsoEnum) msoAttr;
             ((SarFactString) sarFact).setStringValue(lAttr.getValueName(), distribute);
+        }
+        }
+        catch(Exception e)
+        {
+           if(!sarFact.getLabel().equalsIgnoreCase("Objektnavn"))
+            Log.warning("Unable to map msoattr "+msoAttr.getName()+" to fact"+ sarFact.getLabel());
         }
     }
 

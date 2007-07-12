@@ -19,10 +19,22 @@ import org.rescuenorway.saraccess.model.SarOperation;
 import org.rescuenorway.saraccess.model.SarObject;
 import org.rescuenorway.saraccess.model.SarBaseObject;
 import org.rescuenorway.saraccess.except.SaraException;
+import org.w3c.dom.Document;
 import no.cmr.tools.Log;
-import no.cmr.hrs.sar.model.Operation;
+import no.cmr.tools.FileUtils;
+import no.cmr.tools.XmlTool;
+import no.cmr.hrs.sar.model.*;
+import no.cmr.hrs.sar.tools.SARparse;
+import no.cmr.hrs.sar.tools.ElementDispatcher;
+import no.cmr.hrs.sar.tools.ChangeObject;
+import no.cmr.search.SearchResults;
 
 import java.util.Calendar;
+import java.util.List;
+import java.util.Iterator;
+import java.io.File;
+
+import com.sun.xml.internal.ws.util.xml.XmlUtil;
 
 /**
  * ModelDriver Tester.
@@ -133,6 +145,27 @@ public class ModelDriverTest
       assertEquals(true,true);
 
   }
+
+    @Test
+    public void testLoadOperation()
+    {
+        final Operation oper;
+        OperationDispatcher od=new OperationDispatcher();
+        SARparse parser=new SARparse(od,true,"test");
+        List docs= FileUtils.getXmlDocsForFile(new File("c://temp//msoLoadTest.xml"));
+        for (Iterator iterator = docs.iterator(); iterator.hasNext();)
+        {
+            String document = (String) iterator.next();
+
+            parser.myParse(XmlTool.getXmlDocFromString(document));
+        }
+        IMsoModelIf imm= MsoModelImpl.getInstance();
+        SarModelDriver smd=new SarModelDriver();
+
+//        SarSession sarSess=smd.getSarSvc().getSession();
+//          smd.initiate();
+            smd.setActiveOperation(od.getOperation());
+    }
 
 
 }

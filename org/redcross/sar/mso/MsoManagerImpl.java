@@ -69,9 +69,19 @@ public class MsoManagerImpl implements IMsoManagerIf
             throw new DuplicateIdException("An operation already exists");
         }
         IMsoObjectIf.IObjectIdIf operationId = MsoModelImpl.getInstance().getModelDriver().makeObjectId();
-        m_operation = new OperationImpl(operationId, aNumberPrefix, aNumber);
-        return m_operation;
+       return createOperation(aNumberPrefix ,aNumber, operationId);
     }
+
+    public IOperationIf createOperation(String aNumberPrefix, String aNumber,IMsoObjectIf.IObjectIdIf operationId)
+     {
+         if (m_operation != null)
+         {
+             throw new DuplicateIdException("An operation already exists");
+         }
+         m_operation = new OperationImpl(operationId, aNumberPrefix, aNumber);
+         return m_operation;
+     }
+
 
     public IOperationIf getOperation()
     {
@@ -109,7 +119,21 @@ public class MsoManagerImpl implements IMsoManagerIf
         {
             throw new MsoNullPointerException("Try to delete a null object");
         }
-        return aMsoObject.deleteObject();
+
+        if( aMsoObject instanceof OperationImpl)
+        {
+            if(aMsoObject==m_operation)
+            {
+                boolean ret=m_operation.deleteObject();
+                m_operation=null;
+                return ret;
+            }
+            return false;
+        }
+        else
+        {
+            return aMsoObject.deleteObject();
+        }
     }
 
     public OperationImpl getOperation(String anId)

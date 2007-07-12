@@ -1,16 +1,18 @@
 package org.redcross.sar.modelDriver;
 
+import org.redcross.sar.mso.CommitManager;
+import org.redcross.sar.mso.committer.ICommitWrapperIf;
+import org.redcross.sar.mso.committer.ICommittableIf;
 import org.redcross.sar.mso.data.AbstractMsoObject;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.event.IMsoCommitListenerIf;
 import org.redcross.sar.mso.event.MsoEvent;
-import org.redcross.sar.mso.committer.ICommitWrapperIf;
-import org.redcross.sar.mso.committer.ICommittableIf;
-import org.redcross.sar.mso.CommitManager;
+import org.redcross.sar.app.IDiskoApplication;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Random;
 import java.util.List;
+import java.util.Random;
 
 /**
  *   For documentation, see {@link  org.redcross.sar.modelDriver.IModelDriverIf}
@@ -32,7 +34,49 @@ public class ModelDriver implements IModelDriverIf, IMsoCommitListenerIf
       //To change body of implemented methods use File | Settings | File Templates.
    }
 
-   public void handleMsoCommitEvent(MsoEvent.Commit e)
+   public boolean isInitiated()
+   {
+      return true;
+   }
+
+   public List<String[]> getActiveOperations()
+   {
+      java.util.List<String[]> list=new ArrayList();
+      list.add(new String[]{"2","2"});
+      return list;
+   }
+
+   public boolean setActiveOperation(String operationid)
+   {
+      return true;
+   }
+
+   public void finishActiveOperation()
+   {
+      //To change body of implemented methods use File | Settings | File Templates.
+   }
+
+   public void createNewOperation()
+   {
+      //To change body of implemented methods use File | Settings | File Templates.
+   }
+
+   public void merge()
+   {
+      //To change body of implemented methods use File | Settings | File Templates.
+   }
+
+    public void setDiskoApplication(IDiskoApplication diskoApp)
+    {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void shutDown()
+    {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void handleMsoCommitEvent(MsoEvent.Commit e)
    {
       //Iterer gjennom objektene
         ICommitWrapperIf wrapper = (ICommitWrapperIf) e.getSource();
