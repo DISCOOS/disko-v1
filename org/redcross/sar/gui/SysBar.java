@@ -16,12 +16,14 @@ private static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcr
 	private ButtonGroup bgroup = null;
 	private JButton changeRolleButton = null;
 	private JButton mapOptionButton = null;
+    private JButton newOpButton = null;
    private JButton finishOperationButton=null;
    private JButton mergeButton=null;
    private JButton chooseOperationButton=null;
    private static final String MERGETEXT = "MERGE.TEXT";
    private static final String FINISHTEXT = "FINISH.TEXT";
    private static final String CHOOSETEXT = "CHOOSE.OP.TEXT";
+   private static final String NEWOPTEXT = "NEW.OP.TEXT";
 
 
    /**
@@ -52,8 +54,37 @@ private static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcr
 		addButton(getChangeRolleButton());
 		addButton(getMapOptionButton());
       addButton(getFinishOperationButton());
+        addButton(getNewOpButton());
       addButton(getMergeButton());
       addButton(getChooseOperationButton());
+   }
+
+   private JButton getNewOpButton()
+   {
+      if (newOpButton == null) {
+         try {
+            newOpButton = new JButton();
+            String iconName = "NewOperation.icon";
+            Icon icon = Utils.createImageIcon(app.getProperty(iconName),iconName);
+            newOpButton.setIcon(icon);
+            Dimension size = app.getUIFactory().getSmallButtonSize();
+            newOpButton.setPreferredSize(size);
+            newOpButton.setMaximumSize(size);
+            newOpButton.setIcon(icon);
+            newOpButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+            newOpButton.setHorizontalTextPosition(SwingConstants.CENTER);
+            newOpButton.setToolTipText(bundle.getString(NEWOPTEXT));
+            newOpButton.setText(bundle.getString(NEWOPTEXT));
+            newOpButton.addActionListener(new java.awt.event.ActionListener() {
+               public void actionPerformed(java.awt.event.ActionEvent e) {
+                  app.newOperation();
+               }
+            });
+         } catch (java.lang.Throwable e) {
+            // TODO: Something
+         }
+      }
+      return newOpButton;
    }
 
    private JButton getMergeButton()

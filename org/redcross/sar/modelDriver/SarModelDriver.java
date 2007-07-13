@@ -192,6 +192,7 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
 
    public void createNewOperation()
    {
+       loadingOperation=true;
       sarSvc.getSession().createNewOperation("MSO", true);
    }
 
@@ -450,11 +451,12 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
    //---------------SaraChangeListener-----------------------------
    public void saraChanged(SaraChangeEvent change)
    {
-      if(sarOperation==null && loadingOperation && change.getSource() instanceof SarOperation)
+      if(loadingOperation && change.getSource() instanceof SarOperation)
       {
             if (change.getChangeType() == SaraChangeEvent.TYPE_ADD)
             {
                 loadingOperation=false;
+                diskoApp.operationAdded(((SarOperation)change.getSource()).getID());
             }
       }
       if (sarOperation !=null && change.getSarOp() == sarOperation)

@@ -37,7 +37,10 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
    private static final String INIT_ERROR_TEXT = "INIT.ERROR.TEXT";
    private static final String INIT_ERROR_SHUTDOWN_TEXT = "INIT.ERROR.SHUTDOWN.TEXT";
    private static final String OPERATION_FINISHED_TITLE ="OPERATION.FINISHED.TITLE";
-    private static final String OPERATION_FINISHED_TEXT ="OPERATION.FINISHED.TEXT";
+   private static final String OPERATION_FINISHED_TEXT ="OPERATION.FINISHED.TEXT";
+    private static final String OPERATION_CREATED_TEXT = "OPERATION.CREATED.TEXT";
+    private static final String OPERATION_CREATED_TITLE = "OPERATION.CREATED.TITLE";
+    
    private static final long serialVersionUID = 1L;
    private IDiskoRole currentRole = null;
    private Hashtable<String, IDiskoRole> roles = null;
@@ -46,6 +49,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
    private UIFactory uiFactory = null;
    private IDiskoMapManager mapManager = null;
    private MsoModelImpl m_msoModel = null;
+    private boolean vaitingForNewOp=false;
     ;
 
     /**
@@ -287,16 +291,21 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
           opId = opList.get(0)[1];
       }
 
-       if(opId!=null)
+       setActiveOp(opId);
+   }
+
+    private void setActiveOp(String opId)
+    {
+        if(opId!=null)
        {
             getMsoModel().getModelDriver().setActiveOperation(opId);
             loadModules();
        }
-   }
+    }
 
-   /* (non-Javadoc)
-   * @see org.redcross.sar.app.IDiskoApplication#finishOperation()
-   */
+    /* (non-Javadoc)
+    * @see org.redcross.sar.app.IDiskoApplication#finishOperation()
+    */
    public void finishOperation()
    {
       getMsoModel().getModelDriver().finishActiveOperation();
@@ -396,9 +405,27 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
       JOptionPane.showMessageDialog(null, "Merge not implemented yet", "Not implemented", JOptionPane.WARNING_MESSAGE);
    }
 
-   /* (non-Javadoc)
-     * @see org.redcross.sar.app.IDiskoApplication#login(java.lang.String, java.lang.String, char[])
-     */
+    public void newOperation()
+    {
+        vaitingForNewOp=true;
+         getMsoModel().getModelDriver().createNewOperation();
+    }
+
+    public void operationAdded(String id)
+    {
+        if(vaitingForNewOp)
+        {
+            vaitingForNewOp=false;
+            JOptionPane.showMessageDialog(uiFactory.getContentPanel(), bundle.getString(OPERATION_CREATED_TEXT),
+                   bundle.getString(OPERATION_CREATED_TITLE), JOptionPane.INFORMATION_MESSAGE);
+
+            setActiveOp(id);
+        }
+    }
+
+    /* (non-Javadoc)
+    * @see org.redcross.sar.app.IDiskoApplication#login(java.lang.String, java.lang.String, char[])
+    */
    public void login(String roleName, String user, char[] password)
    {
        loggedin[0]=roleName;

@@ -109,4 +109,11 @@ public interface IDiskoApplication {
     void operationFinished();
 
    void mergeOperations();
+
+    /**
+     * Method for initiating av new rescueoperation
+     */
+    void newOperation();
+
+    void operationAdded(String id);
 }

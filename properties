@@ -27,6 +27,7 @@ ManUnit.icon=icons/60x60/man.gif
 FinishOperation.icon=icons/closeOperation.gif
 SelectOperation.icon=icons/chooseOperation.gif
 Merge.icon=icons/merge.gif
+NewOperation.icon=icons/newOperation.gif
 OnionSearch.icon=icons/60x60/onion.gif
 PointSearch.icon=icons/60x60/point.gif
 PathSearch.icon=icons/path.gif
