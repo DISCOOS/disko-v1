@@ -79,5 +79,31 @@
 </fact>
     <fact comp="n" edit="y" id="00000000000000003" label="First alert RCC" pos1="3" pos2="0" relTo="" version="0">
         <date_fact/>
-    </fact>
+</fact>
+<object id="00000000048" name="CmdPost" objectType="test" pos="8">
+<fact comp="n" edit="y" id="00000000009" label="Status" pos1="999" pos2="999" relTo="00000000048" version="1">
+<str_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000018" label="CallSign" pos1="999" pos2="999" relTo="00000000048" version="1">
+<str_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000049" label="Established" pos1="999" pos2="999" relTo="00000000048" version="1">
+<date_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000050" label="Released" pos1="999" pos2="999" relTo="00000000048" version="1">
+<date_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000051" label="Shift" pos1="999" pos2="999" relTo="00000000048" version="1">
+<num_fact antdec="0" max="1.0E8" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000052" label="Telephone1" pos1="999" pos2="999" relTo="00000000048" version="1">
+<str_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000053" label="Telephone2" pos1="999" pos2="999" relTo="00000000048" version="1">
+<str_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000054" label="Telephone3" pos1="999" pos2="999" relTo="00000000048" version="1">
+<str_fact/>
+</fact>
+</object>
  </rot>
