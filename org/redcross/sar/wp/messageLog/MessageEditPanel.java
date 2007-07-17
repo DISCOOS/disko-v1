@@ -23,6 +23,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.border.Border;
 
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.util.mso.DTG;
@@ -106,9 +107,14 @@ public class MessageEditPanel extends JPanel
     	
     	// Top row label
         JLabel label = new JLabel(labelString);
+        //label.setPreferredSize(new Dimension(width, 20));
+        //label.setMinimumSize(new Dimension(width, 20));
         //label.setBorder(BorderFactory.createLineBorder(Color.black));
-        label.setAlignmentY(Component.TOP_ALIGNMENT);
+        //label.setAlignmentY(Component.TOP_ALIGNMENT);
+        //label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        //panel.add(Box.createHorizontalGlue());
         panel.add(label);
+        //panel.add(Box.createHorizontalGlue());
         
     	this.add(panel, gbc);
     	return panel;
@@ -153,7 +159,7 @@ public class MessageEditPanel extends JPanel
     	gbc.gridy = 0;
         m_nrPanel = createPanel(SMALL_PANEL_WIDTH/2, PANEL_HEIGHT, "Nr", gbc);
         m_nrLabel = new JLabel();
-        m_nrLabel.setAlignmentY(Component.TOP_ALIGNMENT);
+        m_nrLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         m_nrPanel.add(m_nrLabel);
         m_nrPanel.add(Box.createVerticalGlue());
        
@@ -161,7 +167,7 @@ public class MessageEditPanel extends JPanel
         gbc.gridx = 1;
         m_dtgPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT, "DTG", gbc);
         m_dtgLabel = new JLabel();
-        m_dtgLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
+        //m_dtgLabel.setAlignmentY(Component.TOP_ALIGNMENT);
         m_dtgPanel.add(m_dtgLabel);
         m_changeDTGButton = createChangeButton();
         m_dtgPanel.add(Box.createVerticalGlue());
@@ -171,6 +177,7 @@ public class MessageEditPanel extends JPanel
         gbc.gridx = 2;
         m_fromPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT, "Fra", gbc);
         m_fromLabel = new JLabel();
+        //m_fromLabel.setAlignmentY(Component.TOP_ALIGNMENT);
         m_fromPanel.add(m_fromLabel);
         m_changeFromButton = createChangeButton();
         m_fromPanel.add(Box.createVerticalGlue());
@@ -190,6 +197,7 @@ public class MessageEditPanel extends JPanel
         gbc.gridx = 4;
         m_messagePanel = new MessageEditStatusPanel();
         this.add(m_messagePanel, gbc);
+        m_messagePanel.setBorder(BorderFactory.createLineBorder(Color.black));
         
         // Task panel
         gbc.weightx = 0.0;
@@ -209,21 +217,22 @@ public class MessageEditPanel extends JPanel
         m_statusPanel.setMinimumSize(new Dimension(SMALL_PANEL_WIDTH, PANEL_HEIGHT));
         m_statusPanel.setPreferredSize(new Dimension(SMALL_PANEL_WIDTH, PANEL_HEIGHT));
         m_statusPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+        //m_statusPanel.add(Box.createVerticalGlue(), FlowLayout.LEADING);
         m_cancelStatusButton = new JButton();
         m_cancelStatusButton.setIcon(createImageIcon("icons/60x60/abort.gif"));
         m_cancelStatusButton.setMinimumSize(BUTTON_DIMENSION);
         m_cancelStatusButton.setPreferredSize(BUTTON_DIMENSION);
-        m_statusPanel.add(m_cancelStatusButton, BorderLayout.NORTH);
+        m_statusPanel.add(m_cancelStatusButton);
         m_waitEndStatusButton = new JButton("Vent \nSlutt");
         m_waitEndStatusButton.setMaximumSize(BUTTON_DIMENSION);
         m_waitEndStatusButton.setMinimumSize(BUTTON_DIMENSION);
         m_waitEndStatusButton.setPreferredSize(BUTTON_DIMENSION);
-        m_statusPanel.add(m_waitEndStatusButton, BorderLayout.CENTER);
+        m_statusPanel.add(m_waitEndStatusButton);
         m_finishedStatusButton = new JButton();
         m_finishedStatusButton.setIcon(createImageIcon("icons/60x60/finish.gif"));
         m_finishedStatusButton.setMinimumSize(BUTTON_DIMENSION);
         m_finishedStatusButton.setPreferredSize(BUTTON_DIMENSION);
-        m_statusPanel.add(m_finishedStatusButton, BorderLayout.SOUTH);
+        m_statusPanel.add(m_finishedStatusButton);
         this.add(m_statusPanel, gbc);
     }
 }

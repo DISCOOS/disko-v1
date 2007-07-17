@@ -1,7 +1,8 @@
-/*
- * Author: Thomas Landvik
- * Created: 27.06.07
+/**
+ * @author Thomas Landvik
+ * This class define the edit panel GUI for the message log
  */
+
 package org.redcross.sar.wp.messageLog;
 
 import java.awt.BorderLayout;
@@ -46,7 +47,7 @@ public class MessageEditStatusPanel extends JPanel
 		super(new BorderLayout());
 		setMinimumSize(new Dimension(480, 180));
 		setPreferredSize(new Dimension(480, 180));
-		setBorder(BorderFactory.createLineBorder(Color.black));
+		//setBorder(BorderFactory.createLineBorder(Color.black));
 		initLabel();
 		initTextPane();
 		initButtons();
