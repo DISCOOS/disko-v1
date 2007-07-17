@@ -6,6 +6,11 @@ import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+/**
+ * @author Thomas Landvik
+ *	This class listens for row selections in {@link MessageLogPanel#m_logTable} and updates the GUI accordingly
+ */
+
 public class MessageRowSelectionListener implements ListSelectionListener
 {
 
