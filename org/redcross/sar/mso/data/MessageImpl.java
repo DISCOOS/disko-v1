@@ -508,7 +508,7 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
         String[] lineArray = new String[numLines];
         for(int i=0; i<numLines; i++)
         {
-        	lineArray[i] = lines.get(i).getText();
+        	lineArray[i] = lines.get(i).toString();
         }
         return lineArray;        
     }
