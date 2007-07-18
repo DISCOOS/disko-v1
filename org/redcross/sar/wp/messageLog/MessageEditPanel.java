@@ -51,7 +51,7 @@ public class MessageEditPanel extends JPanel
     private JLabel m_toLabel;
     private JButton m_changeToButton;
     
-    private MessageEditStatusPanel m_messagePanel;
+    private MessagePanel m_messagePanel;
     
     private JPanel m_taskPanel;
     private JLabel m_taskLabel;
@@ -107,15 +107,10 @@ public class MessageEditPanel extends JPanel
     	
     	// Top row label
         JLabel label = new JLabel(labelString);
-        //label.setPreferredSize(new Dimension(width, 20));
-        //label.setMinimumSize(new Dimension(width, 20));
-        //label.setBorder(BorderFactory.createLineBorder(Color.black));
-        //label.setAlignmentY(Component.TOP_ALIGNMENT);
-        //label.setAlignmentX(Component.CENTER_ALIGNMENT);
-        //panel.add(Box.createHorizontalGlue());
+        label.setHorizontalAlignment(JLabel.CENTER);
+        label.setHorizontalTextPosition(JLabel.CENTER);
+    
         panel.add(label);
-        //panel.add(Box.createHorizontalGlue());
-        
     	this.add(panel, gbc);
     	return panel;
     }
@@ -159,7 +154,6 @@ public class MessageEditPanel extends JPanel
     	gbc.gridy = 0;
         m_nrPanel = createPanel(SMALL_PANEL_WIDTH/2, PANEL_HEIGHT, "Nr", gbc);
         m_nrLabel = new JLabel();
-        m_nrLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         m_nrPanel.add(m_nrLabel);
         m_nrPanel.add(Box.createVerticalGlue());
        
@@ -167,7 +161,6 @@ public class MessageEditPanel extends JPanel
         gbc.gridx = 1;
         m_dtgPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT, "DTG", gbc);
         m_dtgLabel = new JLabel();
-        //m_dtgLabel.setAlignmentY(Component.TOP_ALIGNMENT);
         m_dtgPanel.add(m_dtgLabel);
         m_changeDTGButton = createChangeButton();
         m_dtgPanel.add(Box.createVerticalGlue());
@@ -177,7 +170,6 @@ public class MessageEditPanel extends JPanel
         gbc.gridx = 2;
         m_fromPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT, "Fra", gbc);
         m_fromLabel = new JLabel();
-        //m_fromLabel.setAlignmentY(Component.TOP_ALIGNMENT);
         m_fromPanel.add(m_fromLabel);
         m_changeFromButton = createChangeButton();
         m_fromPanel.add(Box.createVerticalGlue());
@@ -195,7 +187,7 @@ public class MessageEditPanel extends JPanel
         // Message panel
         gbc.weightx = 1.0;
         gbc.gridx = 4;
-        m_messagePanel = new MessageEditStatusPanel();
+        m_messagePanel = new MessagePanel();
         this.add(m_messagePanel, gbc);
         m_messagePanel.setBorder(BorderFactory.createLineBorder(Color.black));
         

@@ -70,7 +70,7 @@ public class MessageRowSelectionListener implements ListSelectionListener
 			int columnWidth = m_messageTable.getColumnModel().getColumn(4).getWidth();
 			FontMetrics metrics = m_messageTable.getFontMetrics(font);
 			int stringWidth = metrics.stringWidth(stringBuilder.toString());
-			int numRows = stringWidth / columnWidth + 1;
+			int numRows = Math.max(strings.length, stringWidth / columnWidth + 1);
 			rowHeight = defaultRowHeight * numRows;
 		}
 		else

@@ -19,6 +19,7 @@ public class MessageTableRenderer extends JTextArea implements TableCellRenderer
         for (int i = 0; i < messageLines.length; i++)
         {
             messageString.append(messageLines[i]);
+            messageString.append("\n");
         }
         setText(messageString.toString());
         setSize(table.getColumnModel().getColumn(column).getWidth(),
