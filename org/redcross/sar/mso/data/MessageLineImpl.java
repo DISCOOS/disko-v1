@@ -169,6 +169,6 @@ public class MessageLineImpl extends AbstractMsoObject implements IMessageLineIf
 
     public String toString()
     {
-        return  getLineNumber() + " " + getLineType().name() + "" + getText();
+        return  getLineNumber() + " " + getLineType().name() + " " + getText();
     }
 }
