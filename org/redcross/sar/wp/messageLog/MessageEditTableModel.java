@@ -13,6 +13,7 @@ public class MessageEditTableModel extends AbstractTableModel
 	public void setMessageLines(String[] messageLines)
 	{
 		m_messageLines = messageLines;
+		fireTableDataChanged();
 	}
 	
 	@Override
@@ -20,11 +21,24 @@ public class MessageEditTableModel extends AbstractTableModel
 	{
 		return 1;
 	}
+	
+	@Override
+	public String getColumnName(int column)
+	{
+		return null;
+	}
 
 	@Override
 	public int getRowCount() 
 	{
-		return m_messageLines.length;
+		if(m_messageLines == null)
+		{
+			return 0;
+		}
+		else
+		{
+			return m_messageLines.length;
+		}
 	}
 
 	@Override

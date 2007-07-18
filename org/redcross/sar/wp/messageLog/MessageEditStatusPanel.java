@@ -30,6 +30,7 @@ public class MessageEditStatusPanel extends JPanel
 	private JLabel m_messageLabel;
 	
 	private JTable m_messageTextTable;
+	private MessageEditTableModel m_messageTableModel;
 	private JScrollPane m_textScrollPane;
 	
 	private JPanel m_buttonRow;
@@ -61,9 +62,13 @@ public class MessageEditStatusPanel extends JPanel
 	
 	private void initTextPane()
 	{
-		m_messageTextTable = new JTable();
+		m_messageTableModel = new MessageEditTableModel();
+		m_messageTextTable = new JTable(m_messageTableModel);
 		m_messageTextTable.setBorder(BorderFactory.createLineBorder(Color.black));
 		m_textScrollPane = new JScrollPane(m_messageTextTable);
+		m_messageTextTable.setFillsViewportHeight(true);
+		m_messageTextTable.setColumnSelectionAllowed(false);
+		m_messageTextTable.setRowSelectionAllowed(false);
 		this.add(m_textScrollPane, BorderLayout.CENTER);
 	}
 	
@@ -115,12 +120,6 @@ public class MessageEditStatusPanel extends JPanel
 
 	public void setText(String[] messageString) 
 	{
-		String[] columnNames = {""};
-		Object data[][] = new Object[messageString.length][1];
-		for(int i=0; i<messageString.length; i++)
-		{
-			data[i][0] = messageString[i];
-		}
-		m_messageTextTable = new JTable(data, columnNames);
+		m_messageTableModel.setMessageLines(messageString);
 	}
 }
