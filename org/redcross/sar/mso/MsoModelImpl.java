@@ -57,7 +57,6 @@ public class MsoModelImpl implements IMsoModelIf {
         m_modelDriver = System.getProperty("integrate.sara", "false").equalsIgnoreCase("true") ||
                 Utils.getProperties().getProperty("integrate.sara", "false").equalsIgnoreCase("true") ?
                 new SarModelDriver() : new ModelDriver();
-
     }
 
     public IMsoManagerIf getMsoManager() {
