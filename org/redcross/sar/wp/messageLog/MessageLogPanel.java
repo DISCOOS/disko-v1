@@ -21,7 +21,7 @@ import java.awt.*;
 public class MessageLogPanel
 {
     private JPanel WorkspacePanel;
-    private MessageEditPanel m_topPanel;
+    private MessageLogTopPanel m_topPanel;
     private JSplitPane m_splitter1;
     private IDiskoWpMessageLog m_wpModule;
     private IDiskoMap m_map;
@@ -71,7 +71,7 @@ public class MessageLogPanel
 
     private void initTopPanel()
     {
-        m_topPanel = new MessageEditPanel();
+        m_topPanel = new MessageLogTopPanel();
         m_topPanel.setMinimumSize(new Dimension(800, 188));
         m_splitter1.setContinuousLayout(true);
         m_splitter1.setDividerLocation(188);
@@ -95,18 +95,18 @@ public class MessageLogPanel
 
         // Set column widths
         TableColumn column = m_logTable.getColumnModel().getColumn(0);
-        column.setMaxWidth(MessageEditPanel.SMALL_PANEL_WIDTH/2);
+        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH/2);
         column = m_logTable.getColumnModel().getColumn(1);
-        column.setMaxWidth(MessageEditPanel.SMALL_PANEL_WIDTH);
+        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH);
         column = m_logTable.getColumnModel().getColumn(2);
-        column.setMaxWidth(MessageEditPanel.SMALL_PANEL_WIDTH);
+        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH);
         column = m_logTable.getColumnModel().getColumn(3);
-        column.setMaxWidth(MessageEditPanel.SMALL_PANEL_WIDTH);
+        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH);
         column = m_logTable.getColumnModel().getColumn(5);
-        column.setMaxWidth(MessageEditPanel.SMALL_PANEL_WIDTH*2);
-        column.setMinWidth(MessageEditPanel.SMALL_PANEL_WIDTH*2);
+        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH*2);
+        column.setMinWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH*2);
         column = m_logTable.getColumnModel().getColumn(6);
-        column.setMaxWidth(MessageEditPanel.SMALL_PANEL_WIDTH);
+        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH);
 
         // Init custom renderer
         column = m_logTable.getColumnModel().getColumn(4);

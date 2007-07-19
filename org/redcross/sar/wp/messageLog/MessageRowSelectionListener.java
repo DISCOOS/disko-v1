@@ -16,12 +16,12 @@ import javax.swing.event.ListSelectionListener;
  */
 public class MessageRowSelectionListener implements ListSelectionListener
 {
-	protected MessageEditPanel m_editPanel;
+	protected MessageLogTopPanel m_editPanel;
 	protected JTable m_messageTable;
 	protected LogTableModel m_tableMode;
 	protected HashMap<Integer, Boolean> m_rowMap;
 	
-	public MessageRowSelectionListener(MessageEditPanel panel) 
+	public MessageRowSelectionListener(MessageLogTopPanel panel) 
 	{
 		m_editPanel = panel;
 	}

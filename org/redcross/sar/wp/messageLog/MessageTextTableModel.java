@@ -6,7 +6,7 @@ import javax.swing.table.AbstractTableModel;
  * @author thomasl
  * Table model for displaying message lines at top level edit panel
  */
-public class MessageEditTableModel extends AbstractTableModel
+public class MessageTextTableModel extends AbstractTableModel
 {
 	protected String[] m_messageLines = null;
 	
