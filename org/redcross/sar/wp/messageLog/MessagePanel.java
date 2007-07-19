@@ -9,6 +9,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -26,30 +28,19 @@ import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
 import org.redcross.sar.app.Utils;
+import org.redcross.sar.mso.data.IMessageIf;
 
 public class MessagePanel extends JPanel implements ActionListener
 {
 	private final static Dimension BUTTON_DIMENSION = new Dimension(60, 60);
-	
-	private final static int PANEL_WIDTH = 480;
-	private final static int PANEL_HEIGHT = 180;
+	private final static int PANEL_WIDTH = BUTTON_DIMENSION.width * 8 + 22;
 	
 	private JLabel m_topLabel;
 	
+	// Panels
 	private JPanel m_currentContentsPanel;
-	
-	// Text panel
-	private JTable m_messageTextTable;
-	private MessageTextTableModel m_messageTableModel;
-	private JScrollPane m_textScrollPane;
-	
-	// Position panel
-	// Finding panel
-	// Assigned panel
-	// Started panel
-	// Completed panel
-	// List panel
-	// Delete panel
+	private MessageTextPanel m_messageTextPanel;
+	private MessagePositionPanel m_messagePositionPanel;
 	
 	// Action buttons
 	private JPanel m_buttonRow;
@@ -64,40 +55,43 @@ public class MessagePanel extends JPanel implements ActionListener
 	
 	public MessagePanel()
 	{
-		super(new BorderLayout());
-		setMinimumSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
-		setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
-		//setBorder(BorderFactory.createLineBorder(Color.black));
-		initLabel();
-		initCurrentContents();
-		initTextPane();
-		initButtons();
+		super(new GridBagLayout());
+		setMinimumSize(new Dimension(PANEL_WIDTH, MessageLogTopPanel.PANEL_HEIGHT));
+		setPreferredSize(new Dimension(PANEL_WIDTH, MessageLogTopPanel.PANEL_HEIGHT));
+		
+		// Init panels
+		m_messageTextPanel = new MessageTextPanel();
+		
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.weightx = 0;
+		gbc.gridy = 0;
+		gbc.gridx = 0;
+		gbc.fill = GridBagConstraints.BOTH;
+		initLabel(gbc);
+		
+		gbc.gridy++;
+		this.add(new JSeparator(JSeparator.HORIZONTAL), gbc);
+		
+		gbc.gridy++;
+		gbc.weighty = 1.0;
+		initCurrentContents(gbc);
+		
+		gbc.gridy++;
+		gbc.weighty = 0;
+		initButtons(gbc);
 	}
 	
-	private void initCurrentContents()
+	private void initCurrentContents(GridBagConstraints gbc)
 	{
 		m_currentContentsPanel = new JPanel(new BorderLayout());
-		//m_currentContentsPanel.setBorder(BorderFactory.createLineBorder(Color.red));
-		this.add(m_currentContentsPanel, BorderLayout.CENTER);
+		m_currentContentsPanel.add(m_messageTextPanel, BorderLayout.CENTER);
+		this.add(m_currentContentsPanel, gbc);
 	}
 	
-	private void initLabel()
+	private void initLabel(GridBagConstraints gbc)
 	{
 		m_topLabel = new JLabel("Melding");
-		this.add(m_topLabel, BorderLayout.NORTH);
-		this.add(new JSeparator(SwingConstants.HORIZONTAL));
-	}
-	
-	private void initTextPane()
-	{
-		m_messageTableModel = new MessageTextTableModel();
-		m_messageTextTable = new JTable(m_messageTableModel);
-		m_messageTextTable.setBorder(BorderFactory.createLineBorder(Color.black));
-		m_textScrollPane = new JScrollPane(m_messageTextTable);
-		m_messageTextTable.setFillsViewportHeight(true);
-		m_messageTextTable.setColumnSelectionAllowed(false);
-		m_messageTextTable.setRowSelectionAllowed(false);
-		m_currentContentsPanel.add(m_textScrollPane, BorderLayout.CENTER);
+		this.add(m_topLabel, gbc);
 	}
 	
 	protected static ImageIcon createImageIcon(String path)
@@ -132,7 +126,7 @@ public class MessagePanel extends JPanel implements ActionListener
 		button.setActionCommand(text);
 		m_buttonRow.add(button);
 	}
-	private void initButtons()
+	private void initButtons(GridBagConstraints gbc)
 	{
 		m_buttonRow = new JPanel(new FlowLayout(FlowLayout.LEADING, 4, 0));
 		
@@ -145,17 +139,12 @@ public class MessagePanel extends JPanel implements ActionListener
 		initButton(m_listButton, "LIST", "icons/60x60/list.gif");
 		initButton(m_deleteButton, "DELETE", "icons/60x60/delete.gif");
 		
-		this.add(m_buttonRow, BorderLayout.SOUTH);
-	}
-
-	public void setText(String[] messageString) 
-	{
-		m_messageTableModel.setMessageLines(messageString);
+		this.add(m_buttonRow, gbc);
 	}
 
 	/**
 	 * Update message panel based on which buttons are pressed
-	 * TODO: "internasjonaliser"
+	 * TODO "multi language"
 	 */
 	@Override
 	public void actionPerformed(ActionEvent ae) 
@@ -168,7 +157,7 @@ public class MessagePanel extends JPanel implements ActionListener
 		if(command.equals("TEXT"))
 		{
 			m_topLabel.setText("Melding");
-			m_currentContentsPanel.add(m_textScrollPane);
+			m_currentContentsPanel.add(m_messageTextPanel, BorderLayout.CENTER);
 		}
 		else if(command.equals("POI"))
 		{
@@ -201,5 +190,10 @@ public class MessagePanel extends JPanel implements ActionListener
 		
 		// Update panel
 		m_currentContentsPanel.repaint();
+	}
+
+	public void newMessageSelected(IMessageIf message) 
+	{
+		m_messageTextPanel.updateContents(message);
 	}
 }

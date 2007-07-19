@@ -20,6 +20,8 @@ import java.awt.*;
  */
 public class MessageLogPanel
 {
+	public static final int PANEL_WIDTH = 800;
+	
     private JPanel WorkspacePanel;
     private MessageLogTopPanel m_topPanel;
     private JSplitPane m_splitter1;
@@ -71,10 +73,10 @@ public class MessageLogPanel
 
     private void initTopPanel()
     {
-        m_topPanel = new MessageLogTopPanel();
-        m_topPanel.setMinimumSize(new Dimension(800, 188));
+        m_topPanel = new MessageLogTopPanel(m_messageLog);
+        m_topPanel.setMinimumSize(new Dimension(PANEL_WIDTH, MessageLogTopPanel.PANEL_HEIGHT));
         m_splitter1.setContinuousLayout(true);
-        m_splitter1.setDividerLocation(188);
+        m_splitter1.setDividerLocation(MessageLogTopPanel.PANEL_HEIGHT);
         m_splitter1.setResizeWeight(0.0);
         m_splitter1.setLeftComponent(m_topPanel);
     }

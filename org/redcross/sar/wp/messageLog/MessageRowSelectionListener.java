@@ -16,14 +16,14 @@ import javax.swing.event.ListSelectionListener;
  */
 public class MessageRowSelectionListener implements ListSelectionListener
 {
-	protected MessageLogTopPanel m_editPanel;
+	protected MessageLogTopPanel m_topPanel;
 	protected JTable m_messageTable;
 	protected LogTableModel m_tableMode;
 	protected HashMap<Integer, Boolean> m_rowMap;
 	
 	public MessageRowSelectionListener(MessageLogTopPanel panel) 
 	{
-		m_editPanel = panel;
+		m_topPanel = panel;
 	}
 
 	public void valueChanged(ListSelectionEvent event) 
@@ -79,13 +79,8 @@ public class MessageRowSelectionListener implements ListSelectionListener
 		}
 		m_messageTable.setRowHeight(rowIndex, rowHeight);
 		
-		// Fill values in edit panel
-		m_editPanel.setNr(messageNr);
-		m_editPanel.setDTG((String)m_messageTable.getValueAt(rowIndex, 1));
-		m_editPanel.setFrom((String)m_messageTable.getValueAt(rowIndex, 2));
-		m_editPanel.setTo((String)m_messageTable.getValueAt(rowIndex, 3));
-		m_editPanel.setMessage((String[])m_messageTable.getValueAt(rowIndex, 4));
-		m_editPanel.setTask((String)m_messageTable.getValueAt(rowIndex, 5));
+		// Update top message panel
+		m_topPanel.newMessageSelected(messageNr);
 	}
 
 	public void setTable(JTable table) 
