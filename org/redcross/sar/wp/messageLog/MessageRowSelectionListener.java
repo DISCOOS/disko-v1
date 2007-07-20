@@ -12,7 +12,7 @@ import javax.swing.event.ListSelectionListener;
 
 /**
  * @author Thomas
- *	This class listens for row selections in {@link MessageLogPanel#m_logTable} and updates the GUI accordingly
+ *	This class listens for row selections in {@link MessageLogPanel#m_logTable} and updates the top panel GUI accordingly
  */
 public class MessageRowSelectionListener implements ListSelectionListener
 {

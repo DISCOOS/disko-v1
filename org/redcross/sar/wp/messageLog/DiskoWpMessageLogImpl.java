@@ -36,6 +36,8 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
         }
 
         m_logPanel = new MessageLogPanel(this);
+        m_logPanel.setSmallButtonSize(getApplication().getUIFactory().getSmallButtonSize());
+        m_logPanel.setWpMessageLog(this);
         layoutComponent(m_logPanel.getPanel());
     }
 

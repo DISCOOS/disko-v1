@@ -30,7 +30,7 @@ import javax.swing.SwingConstants;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.mso.data.IMessageIf;
 
-public class MessagePanel extends JPanel implements ActionListener
+public class MessagePanel extends JPanel
 {
 	private final static Dimension BUTTON_DIMENSION = new Dimension(60, 60);
 	private final static int PANEL_WIDTH = BUTTON_DIMENSION.width * 8 + 22;
@@ -109,9 +109,9 @@ public class MessagePanel extends JPanel implements ActionListener
 		return icon;
 	}
 	
-	private void initButton(JButton button, String text, String iconPath)
+	private JButton createButton(String text, String iconPath)
 	{
-		button = new JButton();
+		JButton button = new JButton();
 		if(iconPath != null)
 		{
 			button.setIcon(createImageIcon(iconPath));
@@ -122,74 +122,118 @@ public class MessagePanel extends JPanel implements ActionListener
 		}
 		button.setMinimumSize(BUTTON_DIMENSION);
 		button.setPreferredSize(BUTTON_DIMENSION);
-		button.addActionListener(this);
 		button.setActionCommand(text);
-		m_buttonRow.add(button);
+		return button;
 	}
+	
 	private void initButtons(GridBagConstraints gbc)
 	{
 		m_buttonRow = new JPanel(new FlowLayout(FlowLayout.LEADING, 4, 0));
 		
-		initButton(m_textButton, "TEXT", "icons/60x60/text.gif");
-		initButton(m_positionButton, "POI", null);
-		initButton(m_findingButton, "FINDING", "icons/60x60/discovery.gif");
-		initButton(m_assignedButton, "ASSIGNED", null);
-		initButton(m_startedButton, "STARTED", null);
-		initButton(m_completedButton, "COMPLETED", null);
-		initButton(m_listButton, "LIST", "icons/60x60/list.gif");
-		initButton(m_deleteButton, "DELETE", "icons/60x60/delete.gif");
+		m_textButton = createButton("TEXT", "icons/60x60/text.gif");
+		m_textButton.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				m_topLabel.setText("Melding");
+				m_currentContentsPanel.removeAll();
+				m_currentContentsPanel.add(m_messageTextPanel);
+				//m_currentContentsPanel.repaint();
+			}	
+		});
+		m_buttonRow.add(m_textButton);
+		
+		m_positionButton = createButton("POI", null);
+		m_positionButton.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				m_topLabel.setText("Posisjon");
+				m_currentContentsPanel.removeAll();
+			}	
+		});
+		m_buttonRow.add(m_positionButton);
+		
+		m_findingButton = createButton("FINDING", "icons/60x60/discovery.gif");
+		m_findingButton.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				m_topLabel.setText("Funn");
+			}	
+		});
+		m_buttonRow.add(m_findingButton);
+		
+		m_assignedButton = createButton("ASSIGNED", null);
+		m_assignedButton.addActionListener(new ActionListener()
+		{
+
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				m_topLabel.setText("Tildelt");
+			}
+			
+		});
+		m_buttonRow.add(m_assignedButton);
+		
+		m_startedButton = createButton("STARTED", null);
+		m_startedButton.addActionListener(new ActionListener()
+		{
+
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				m_topLabel.setText("Startet");
+			}
+			
+		});
+		m_buttonRow.add(m_startedButton);
+		
+		m_completedButton = createButton("COMPLETED", null);
+		m_completedButton.addActionListener(new ActionListener()
+		{
+
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				m_topLabel.setText("Ferdig");
+				
+			}
+			
+		});
+		m_buttonRow.add(m_completedButton);
+		
+		m_listButton = createButton("LIST", "icons/60x60/list.gif");
+		m_listButton.addActionListener(new ActionListener()
+		{
+
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				m_topLabel.setText("Liste");
+			}
+			
+		});
+		m_buttonRow.add(m_listButton);
+		
+		m_deleteButton = createButton("DELETE", "icons/60x60/delete.gif");
+		m_deleteButton.addActionListener(new ActionListener()
+		{
+
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				m_topLabel.setText("Slett");
+			}
+			
+		});
+		m_buttonRow.add(m_deleteButton);
 		
 		this.add(m_buttonRow, gbc);
-	}
-
-	/**
-	 * Update message panel based on which buttons are pressed
-	 * TODO "multi language"
-	 */
-	@Override
-	public void actionPerformed(ActionEvent ae) 
-	{
-		String command = ae.getActionCommand();
-		
-		// Remove panels from message panel
-		m_currentContentsPanel.removeAll();
-	
-		if(command.equals("TEXT"))
-		{
-			m_topLabel.setText("Melding");
-			m_currentContentsPanel.add(m_messageTextPanel, BorderLayout.CENTER);
-		}
-		else if(command.equals("POI"))
-		{
-			m_topLabel.setText("Posisjon");
-		}
-		else if(command.equals("FINDING"))
-		{
-			m_topLabel.setText("Funn");
-		}
-		else if(command.equals("ASSIGNED"))
-		{
-			m_topLabel.setText("Tildelt");
-		}
-		else if(command.equals("STARTED"))
-		{
-			m_topLabel.setText("Startet");
-		}
-		else if(command.equals("COMPLETED"))
-		{
-			m_topLabel.setText("Utført");
-		}
-		else if(command.equals("LIST"))
-		{
-			m_topLabel.setText("Liste");
-		}
-		else if(command.equals("DELETE"))
-		{
-			m_topLabel.setText("Slett");
-		}
-		
-		// Update panel
-		m_currentContentsPanel.repaint();
 	}
 
 	public void newMessageSelected(IMessageIf message) 

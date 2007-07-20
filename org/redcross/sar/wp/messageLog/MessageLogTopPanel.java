@@ -13,6 +13,7 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Comparator;
@@ -24,6 +25,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
@@ -31,6 +33,9 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
 import org.redcross.sar.app.Utils;
+import org.redcross.sar.event.DialogEvent;
+import org.redcross.sar.event.IDialogEventListener;
+import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLogIf;
 import org.redcross.sar.util.mso.DTG;
@@ -38,27 +43,29 @@ import org.redcross.sar.util.mso.Selector;
 
 import com.sun.corba.se.impl.javax.rmi.CORBA.Util;
 
-public class MessageLogTopPanel extends JPanel implements ActionListener
+public class MessageLogTopPanel extends JPanel
 {
-	private final static Dimension BUTTON_DIMENSION = new Dimension(60, 60);
-	public final static int PANEL_HEIGHT = (BUTTON_DIMENSION.height) * 3 + 42;
+	public final static int PANEL_HEIGHT = (MessageLogPanel.SMALL_BUTTON_SIZE.height) * 3 + 42;
 	public final static int SMALL_PANEL_WIDTH = 64;
 	
 	IMessageLogIf m_messageLog;
 	private int m_currentMessage;
+	private IDiskoWpMessageLog m_wpMessageLog;
 	
 	private JPanel m_nrPanel;
 	private JLabel m_nrLabel;
 	
 	private JPanel m_dtgPanel;
 	private JLabel m_dtgLabel;
+	private ChangeDTGDialog m_changeDTGDialog;
     private JButton m_changeDTGButton;
     
     private JPanel m_fromPanel;
     private JLabel m_fromLabel;
+    private ChangeFromDialog m_changeFromDialog;
     private JButton m_changeFromButton;
     
-    private JPanel m_toPanel; 
+    private JPanel m_toPanel;
     private JLabel m_toLabel;
     private JButton m_changeToButton;
     
@@ -76,7 +83,6 @@ public class MessageLogTopPanel extends JPanel implements ActionListener
     public MessageLogTopPanel(IMessageLogIf messageLog)
     {
     	m_messageLog = messageLog;
-    	initPanels();
     }
     
     private JPanel createPanel(int width, int height, String labelString, GridBagConstraints gbc)
@@ -99,11 +105,135 @@ public class MessageLogTopPanel extends JPanel implements ActionListener
     {
     	JButton button = new JButton();
     	button.setIcon(createImageIcon("icons/60x60/change.gif"));
-    	button.setMaximumSize(BUTTON_DIMENSION);
-        button.setMinimumSize(BUTTON_DIMENSION);
-        button.setPreferredSize(BUTTON_DIMENSION);
+    	button.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
+        button.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
+        button.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
         button.setAlignmentY(Component.BOTTOM_ALIGNMENT);
         return button;
+    }
+    
+    private JButton createChangeDtgButton()
+    {
+    	m_changeDTGButton = createChangeButton();
+    	m_changeDTGButton.addActionListener(new ActionListener()
+    	{
+    		@Override
+    		// Display the change DTG dialog when button is pressed
+    		public void actionPerformed(ActionEvent e)
+    		{
+    			getChangeDTGDialog();
+    			m_changeDTGDialog.setVisible(true);
+    		}
+    	});
+    	return m_changeDTGButton;
+    }
+    
+    private ChangeDTGDialog getChangeDTGDialog()
+    {
+    	if(m_changeDTGDialog == null)
+    	{
+    		m_changeDTGDialog = new ChangeDTGDialog(m_wpMessageLog);
+    		//m_changeDTGDialog.setPreferredSize(new Dimension(3*MessageLogPanel.SMALL_BUTTON_SIZE.width, MessageLogPanel.SMALL_BUTTON_SIZE.height));
+    		m_changeDTGDialog.setLocationRelativeTo(m_dtgPanel, DiskoDialog.POS_NORTH, false);    		
+    	}
+    	return m_changeDTGDialog;
+    }
+    
+    private JButton createChangeFromButton()
+    {
+    	if(m_changeFromButton == null)
+    	{
+    		m_changeFromButton = createChangeButton();
+    		m_changeFromButton.addActionListener(new ActionListener()
+    		{
+
+				@Override
+				public void actionPerformed(ActionEvent arg0)
+				{
+					// TODO Auto-generated method stub
+					
+				}
+    			
+    		});
+    	}
+    	return m_changeFromButton;
+    }
+    
+    private ChangeFromDialog getChangeFromDialog()
+    {
+    	if(m_changeFromDialog == null)
+    	{
+    		m_changeFromDialog = new ChangeFromDialog(m_wpMessageLog);
+    	}
+    	
+    	return m_changeFromDialog;
+    }
+    
+    private JButton createChangeToButton()
+    {
+    	if(m_changeToButton == null)
+    	{
+    		m_changeToButton = createChangeButton();
+    		m_changeToButton.addActionListener(new ActionListener()
+    		{
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					// TODO Auto-generated method stub
+					
+				}
+    		});
+    	}
+    	return m_changeToButton;
+    }
+    
+    private JButton createChangeTaskButton()
+    {
+    	if(m_changeTaskButton == null)
+    	{
+    		m_changeTaskButton = createChangeButton();
+    		m_changeTaskButton.addActionListener(new ActionListener()
+    		{
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					// TODO Auto-generated method stub
+					
+				}	
+    		});
+    	}
+    	return m_changeTaskButton;
+    }
+    
+    private JButton createCancleButton()
+    {
+    	if(m_cancelStatusButton == null)
+    	{
+    		m_cancelStatusButton = new JButton();
+    		m_cancelStatusButton.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
+    		m_cancelStatusButton.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
+    	}
+    	return m_cancelStatusButton;
+    }
+    
+    private JButton createWaitEndButton()
+    {
+    	if(m_waitEndStatusButton == null)
+    	{
+    		m_waitEndStatusButton = new JButton();
+    		m_waitEndStatusButton.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
+    	}
+    	return m_waitEndStatusButton;
+    }
+    
+    private JButton createFinishedButton()
+    {
+    	if(m_finishedStatusButton == null)
+    	{
+    		m_finishedStatusButton = new JButton();
+    		m_finishedStatusButton.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
+    	}
+    	return m_finishedStatusButton;
     }
     
     protected static ImageIcon createImageIcon(String path)
@@ -121,7 +251,7 @@ public class MessageLogTopPanel extends JPanel implements ActionListener
 		return icon;
 	}
     
-    private void initPanels()
+    public void initPanels()
     {
     	this.setLayout(new GridBagLayout());
     	GridBagConstraints gbc = new GridBagConstraints();
@@ -135,7 +265,7 @@ public class MessageLogTopPanel extends JPanel implements ActionListener
         m_nrLabel = new JLabel();
         m_nrPanel.add(m_nrLabel);
         m_nrPanel.add(Box.createVerticalGlue());
-        m_nrPanel.add(Box.createRigidArea(BUTTON_DIMENSION));
+        m_nrPanel.add(Box.createRigidArea(MessageLogPanel.SMALL_BUTTON_SIZE));
         gbc.gridx++;
         this.add(new JSeparator(SwingConstants.VERTICAL), gbc);
        
@@ -145,10 +275,8 @@ public class MessageLogTopPanel extends JPanel implements ActionListener
         m_dtgPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
         m_dtgLabel = new JLabel();
         m_dtgPanel.add(m_dtgLabel);
-        m_changeDTGButton = createChangeButton();
-        m_changeDTGButton.addActionListener(this);
-        m_changeDTGButton.setActionCommand("CHANGE_DTG");
         m_dtgPanel.add(Box.createVerticalGlue());
+        createChangeDtgButton();
         m_dtgPanel.add(m_changeDTGButton);
         gbc.gridx++;
         this.add(new JSeparator(SwingConstants.VERTICAL), gbc);
@@ -159,10 +287,8 @@ public class MessageLogTopPanel extends JPanel implements ActionListener
         m_fromPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
         m_fromLabel = new JLabel();
         m_fromPanel.add(m_fromLabel);
-        m_changeFromButton = createChangeButton();
-        m_changeFromButton.addActionListener(this);
-        m_changeFromButton.setActionCommand("CHANGE_FROM");
         m_fromPanel.add(Box.createVerticalGlue());
+        createChangeFromButton();
         m_fromPanel.add(m_changeFromButton);
         gbc.gridx++;
         this.add(new JSeparator(SwingConstants.VERTICAL), gbc);
@@ -173,10 +299,8 @@ public class MessageLogTopPanel extends JPanel implements ActionListener
         m_toPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
         m_toLabel = new JLabel();
         m_toPanel.add(m_toLabel);
-        m_changeToButton = createChangeButton();
-        m_changeToButton.addActionListener(this);
-        m_changeToButton.setActionCommand("CHANGE_TO");
         m_toPanel.add(Box.createVerticalGlue());
+        createChangeToButton();
         m_toPanel.add(m_changeToButton);
         gbc.gridx++;
         this.add(new JSeparator(SwingConstants.VERTICAL), gbc);
@@ -196,9 +320,7 @@ public class MessageLogTopPanel extends JPanel implements ActionListener
         m_taskPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
         m_taskLabel = new JLabel();
         m_taskPanel.add(m_taskLabel);
-        m_changeTaskButton = createChangeButton();
-        m_changeTaskButton.addActionListener(this);
-        m_changeTaskButton.setActionCommand("CHANGE_TASK");
+        createChangeTaskButton();
         m_taskPanel.add(m_changeTaskButton);
         gbc.gridx++;
         this.add(new JSeparator(SwingConstants.VERTICAL), gbc);
@@ -206,29 +328,27 @@ public class MessageLogTopPanel extends JPanel implements ActionListener
         // Status panel
         gbc.gridx++;
         m_statusPanel = new JPanel();
+        m_statusPanel.setLayout(new BoxLayout(m_statusPanel, BoxLayout.Y_AXIS));
         m_statusPanel.setMinimumSize(new Dimension(SMALL_PANEL_WIDTH, PANEL_HEIGHT));
         m_statusPanel.setPreferredSize(new Dimension(SMALL_PANEL_WIDTH, PANEL_HEIGHT));
         m_statusPanel.setMaximumSize(new Dimension(SMALL_PANEL_WIDTH, PANEL_HEIGHT));
         m_statusPanel.add(new JLabel(" "));
         m_statusPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
         m_statusPanel.add(Box.createVerticalGlue());
-        
-        m_cancelStatusButton = new JButton();
-        m_cancelStatusButton.setIcon(createImageIcon("icons/60x60/abort.gif"));
-        m_cancelStatusButton.setMinimumSize(BUTTON_DIMENSION);
-        m_cancelStatusButton.setPreferredSize(BUTTON_DIMENSION);
+        createCancleButton();
         m_statusPanel.add(m_cancelStatusButton);
-        m_waitEndStatusButton = new JButton("Vent \nSlutt");
-        m_waitEndStatusButton.setMaximumSize(BUTTON_DIMENSION);
-        m_waitEndStatusButton.setMinimumSize(BUTTON_DIMENSION);
-        m_waitEndStatusButton.setPreferredSize(BUTTON_DIMENSION);
+        createWaitEndButton();
         m_statusPanel.add(m_waitEndStatusButton);
-        m_finishedStatusButton = new JButton();
-        m_finishedStatusButton.setIcon(createImageIcon("icons/60x60/finish.gif"));
-        m_finishedStatusButton.setMinimumSize(BUTTON_DIMENSION);
-        m_finishedStatusButton.setPreferredSize(BUTTON_DIMENSION);
+        createFinishedButton();
         m_statusPanel.add(m_finishedStatusButton);
+        
         this.add(m_statusPanel, gbc);
+    }
+    
+    public void initDialogs()
+    {
+    	m_changeDTGDialog = getChangeDTGDialog();
+    	m_changeFromDialog = getChangeFromDialog();
     }
 
 	public void newMessageSelected(int messageNr) 
@@ -242,6 +362,10 @@ public class MessageLogTopPanel extends JPanel implements ActionListener
 		// Update contents
 		m_nrLabel.setText(Integer.toString(message.getNumber()));
 		m_dtgLabel.setText(message.getDTG());
+		if(m_changeDTGDialog != null)
+		{
+			m_changeDTGDialog.newMessage(message);
+		}
 		//m_fromLabel.setText(message.get); 
 		//m_toLabel.setText(message.get); //
 		m_messagePanel.newMessageSelected(message);
@@ -262,6 +386,7 @@ public class MessageLogTopPanel extends JPanel implements ActionListener
         	}
         }
     };
+	
     private final static Comparator<IMessageIf> m_lineNumberComparator = new Comparator<IMessageIf>()
     {
         public int compare(IMessageIf m1, IMessageIf m2)
@@ -270,10 +395,8 @@ public class MessageLogTopPanel extends JPanel implements ActionListener
         }
     };
 
-	@Override
-	public void actionPerformed(ActionEvent e) 
+	public void setWp(IDiskoWpMessageLog wp)
 	{
-		// TODO Auto-generated method stub
-		
+		m_wpMessageLog = wp;
 	}
 }

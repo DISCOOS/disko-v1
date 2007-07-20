@@ -32,6 +32,7 @@ public class MessageLogPanel
     private JScrollPane m_scrollPane1;
     private JPanel m_logPanel;
     IMessageLogIf m_messageLog;
+	public static Dimension SMALL_BUTTON_SIZE = new Dimension(60, 60);
 
     public MessageLogPanel(IDiskoWpMessageLog aWp)
     {
@@ -49,7 +50,7 @@ public class MessageLogPanel
 
         WorkspacePanel.add(m_splitter1, BorderLayout.CENTER);
 
-        initTopPanel();
+        initTopPanel(aWp);
 
         // Init log panel
         m_logPanel = new JPanel();
@@ -71,9 +72,12 @@ public class MessageLogPanel
         m_rowSelectionListener.setTable(m_logTable);
     }
 
-    private void initTopPanel()
+    private void initTopPanel(IDiskoWpMessageLog wp)
     {
         m_topPanel = new MessageLogTopPanel(m_messageLog);
+        m_topPanel.setWp(wp);
+        m_topPanel.initPanels();
+        m_topPanel.initDialogs();
         m_topPanel.setMinimumSize(new Dimension(PANEL_WIDTH, MessageLogTopPanel.PANEL_HEIGHT));
         m_splitter1.setContinuousLayout(true);
         m_splitter1.setDividerLocation(MessageLogTopPanel.PANEL_HEIGHT);
@@ -131,5 +135,13 @@ public class MessageLogPanel
         ltm.buildTable();
     }
 
+	public void setSmallButtonSize(Dimension smallButtonSize)
+	{
+		SMALL_BUTTON_SIZE = smallButtonSize;
+	}
 
+	public void setWpMessageLog(DiskoWpMessageLogImpl diskoWpMessageLogImpl)
+	{
+		m_wpModule = diskoWpMessageLogImpl;
+	}
 }
