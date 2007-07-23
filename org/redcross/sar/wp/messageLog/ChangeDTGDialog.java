@@ -22,7 +22,11 @@ import javax.swing.border.BevelBorder;
 
 import org.redcross.sar.event.IDialogEventListener;
 import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.mso.data.IMessageIf;
+import org.redcross.sar.mso.data.AttributeImpl.MsoCalendar;
+import org.redcross.sar.util.except.IllegalMsoArgumentException;
+import org.redcross.sar.util.except.MsoCastException;
 
 /**
  * 
@@ -49,7 +53,6 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 	{
 		try 
 		{
-            //this.setPreferredSize(new Dimension(800, 150));
             this.setContentPane(getContentPanel());
 			this.pack();
 			m_timeTextField.requestFocus();
@@ -96,6 +99,20 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 		if(ke.getKeyCode() == KeyEvent.VK_ENTER)
 		{
 			this.setVisible(false);
+			
+			/*
+			// Update message
+			try
+			{
+				MsoCalendar dtg = null;
+				dtg.setDTG(m_timeTextField.getText());
+			}
+			catch(IllegalMsoArgumentException e)
+			{
+				// ErrorDialog
+				System.err.println("Error parsing DTG");
+			}
+			*/
 			
 			fireDialogFinished();
 		}

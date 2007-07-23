@@ -46,7 +46,7 @@ import com.sun.corba.se.impl.javax.rmi.CORBA.Util;
 
 public class MessageLogTopPanel extends JPanel
 {
-	public final static int PANEL_HEIGHT = (MessageLogPanel.SMALL_BUTTON_SIZE.height) * 3 + 42;
+	public final static int PANEL_HEIGHT = (MessageLogPanel.SMALL_BUTTON_SIZE.height) * 3 + 20;
 	public final static int SMALL_PANEL_WIDTH = 64;
 	
 	IMessageLogIf m_messageLog;

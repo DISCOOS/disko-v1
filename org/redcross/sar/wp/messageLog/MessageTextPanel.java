@@ -2,13 +2,23 @@ package org.redcross.sar.wp.messageLog;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 
 import org.redcross.sar.mso.data.IMessageIf;
+import org.redcross.sar.mso.data.IMessageLineIf;
+import org.redcross.sar.mso.data.IMessageLineListIf;
 
 /**
  * @author thomasl
@@ -17,25 +27,72 @@ import org.redcross.sar.mso.data.IMessageIf;
  */
 public class MessageTextPanel extends AbstractMessagePanelContets
 {
-	private JTable m_messageTextTable;
-	private MessageTextTableModel m_messageTableModel;
-	private JScrollPane m_textScrollPane;
+	private JScrollPane m_textScroll;
+	private JTextArea m_textArea;
+	private JButton m_cancelButton;
+	private JButton m_okButton;
 	
 	public MessageTextPanel() 
 	{
-		setLayout(new BorderLayout());
-		m_messageTableModel = new MessageTextTableModel();
-		m_messageTextTable = new JTable(m_messageTableModel);
-		m_textScrollPane = new JScrollPane(m_messageTextTable);
-		m_messageTextTable.setFillsViewportHeight(true);
-		m_messageTextTable.setColumnSelectionAllowed(false);
-		m_messageTextTable.setRowSelectionAllowed(false);
-		this.add(m_textScrollPane, BorderLayout.CENTER);
+		this.setLayout(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.weighty = 1.0;
+		gbc.fill = GridBagConstraints.BOTH;
+		initTextArea(gbc);
+		initButtons(gbc);
+	}
+	
+	private void initTextArea(GridBagConstraints gbc)
+	{
+		gbc.gridheight = 2;
+		gbc.weightx = 1.0;
+		m_textArea = new JTextArea();
+		m_textScroll = new JScrollPane(m_textArea);
+		this.add(m_textScroll, gbc);
+	}
+	
+	private void initButtons(GridBagConstraints gbc)
+	{
+		gbc.gridheight = 1;
+		gbc.gridx++;
+		gbc.weightx = 0.0;
+		m_cancelButton = new JButton("Cancel");
+		m_cancelButton.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
+		m_cancelButton.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
+		m_cancelButton.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
+		m_cancelButton.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		this.add(m_cancelButton, gbc);
+		
+		gbc.gridy = 1;
+		m_okButton = new JButton("OK");
+		m_okButton.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
+		m_okButton.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
+		m_okButton.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
+		m_okButton.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				// TODO Auto-generated method stub
+				
+			}	
+		});
+		this.add(m_okButton, gbc);
 	}
 
+	// TODO finish
 	@Override
 	public void updateContents(IMessageIf message) 
 	{
-		m_messageTableModel.setMessageLines(message.getLines());
 	}
 }

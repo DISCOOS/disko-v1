@@ -41,6 +41,7 @@ public class MessagePanel extends JPanel
 	private JPanel m_currentContentsPanel;
 	private MessageTextPanel m_messageTextPanel;
 	private MessagePositionPanel m_messagePositionPanel;
+	private MessageListPanel m_messageListPanel;
 	
 	// Action buttons
 	private JPanel m_buttonRow;
@@ -64,6 +65,8 @@ public class MessagePanel extends JPanel
 		setPreferredSize(new Dimension(PANEL_WIDTH, MessageLogTopPanel.PANEL_HEIGHT));
 		
 		m_messageTextPanel = new MessageTextPanel();
+		m_messageListPanel = new MessageListPanel();
+		m_messagePositionPanel = new MessagePositionPanel();
 		
 		this.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -221,6 +224,8 @@ public class MessagePanel extends JPanel
 			public void actionPerformed(ActionEvent e)
 			{
 				m_topLabel.setText("Liste");
+				m_currentContentsPanel.removeAll();
+				m_currentContentsPanel.add(m_messageListPanel);
 			}
 			
 		});
@@ -243,5 +248,6 @@ public class MessagePanel extends JPanel
 	public void newMessageSelected(IMessageIf message) 
 	{
 		m_messageTextPanel.updateContents(message);
+		m_messageListPanel.updateContents(message);
 	}
 }
