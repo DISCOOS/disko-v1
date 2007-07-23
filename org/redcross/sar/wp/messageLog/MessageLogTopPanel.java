@@ -16,6 +16,7 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentListener;
 import java.util.Comparator;
 import java.util.List;
 
@@ -85,19 +86,18 @@ public class MessageLogTopPanel extends JPanel
     	m_messageLog = messageLog;
     }
     
-    private JPanel createPanel(int width, int height, String labelString, GridBagConstraints gbc)
+    private JPanel createPanel(int width, int height, String labelString)
     {
     	JPanel panel = new JPanel();
     	panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-    	panel.setMinimumSize(new Dimension(width-1, height-1));
+    	panel.setMinimumSize(new Dimension(width, height));
     	panel.setPreferredSize(new Dimension(width, height));
-    	panel.setMaximumSize(new Dimension(width+1, height+1));
+    	panel.setMaximumSize(new Dimension(width, height));
     	
     	// Top row label
         JLabel label = new JLabel(labelString);
 
         panel.add(label);
-    	this.add(panel, gbc);
     	return panel;
     }
     
@@ -122,6 +122,9 @@ public class MessageLogTopPanel extends JPanel
     		public void actionPerformed(ActionEvent e)
     		{
     			getChangeDTGDialog();
+    			Point location = m_changeDTGButton.getLocationOnScreen();
+    			location.y -= m_changeDTGDialog.getHeight();
+    			m_changeDTGDialog.setLocation(location);
     			m_changeDTGDialog.setVisible(true);
     		}
     	});
@@ -133,8 +136,6 @@ public class MessageLogTopPanel extends JPanel
     	if(m_changeDTGDialog == null)
     	{
     		m_changeDTGDialog = new ChangeDTGDialog(m_wpMessageLog);
-    		//m_changeDTGDialog.setPreferredSize(new Dimension(3*MessageLogPanel.SMALL_BUTTON_SIZE.width, MessageLogPanel.SMALL_BUTTON_SIZE.height));
-    		m_changeDTGDialog.setLocationRelativeTo(m_dtgPanel, DiskoDialog.POS_NORTH, false);    		
     	}
     	return m_changeDTGDialog;
     }
@@ -210,8 +211,11 @@ public class MessageLogTopPanel extends JPanel
     	if(m_cancelStatusButton == null)
     	{
     		m_cancelStatusButton = new JButton();
+    		String iconPath = "icons/60x60/abort.gif";
+    		m_cancelStatusButton.setIcon(createImageIcon(iconPath));
     		m_cancelStatusButton.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
     		m_cancelStatusButton.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
+    		m_cancelStatusButton.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
     	}
     	return m_cancelStatusButton;
     }
@@ -221,7 +225,11 @@ public class MessageLogTopPanel extends JPanel
     	if(m_waitEndStatusButton == null)
     	{
     		m_waitEndStatusButton = new JButton();
+    		//String iconPath = "icons/60x60/waitend.gif";
+    		//m_waitEndStatusButton.setIcon(createImageIcon(iconPath));
+    		m_waitEndStatusButton.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
     		m_waitEndStatusButton.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
+    		m_waitEndStatusButton.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
     	}
     	return m_waitEndStatusButton;
     }
@@ -231,7 +239,10 @@ public class MessageLogTopPanel extends JPanel
     	if(m_finishedStatusButton == null)
     	{
     		m_finishedStatusButton = new JButton();
+    		String iconPath = "icons/60x60/finish.gif";
+    		m_finishedStatusButton.setIcon(createImageIcon(iconPath));
     		m_finishedStatusButton.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
+    		m_finishedStatusButton.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
     	}
     	return m_finishedStatusButton;
     }
@@ -258,20 +269,22 @@ public class MessageLogTopPanel extends JPanel
     	gbc.fill = GridBagConstraints.BOTH;
     	gbc.weightx = 0.0;
     	gbc.weighty = 1.0;
+    	gbc.gridx = 0;
+    	gbc.gridy = 0;
     	
     	// Nr panel
-        m_nrPanel = createPanel(SMALL_PANEL_WIDTH/2, PANEL_HEIGHT, "Nr", gbc);
+        m_nrPanel = createPanel(SMALL_PANEL_WIDTH/2, PANEL_HEIGHT, "Nr");
         m_nrPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
         m_nrLabel = new JLabel();
         m_nrPanel.add(m_nrLabel);
         m_nrPanel.add(Box.createVerticalGlue());
         m_nrPanel.add(Box.createRigidArea(MessageLogPanel.SMALL_BUTTON_SIZE));
+        this.add(m_nrPanel, gbc);
         gbc.gridx++;
         this.add(new JSeparator(SwingConstants.VERTICAL), gbc);
        
         // DTG panel
-        gbc.gridx++;
-        m_dtgPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT, "DTG", gbc);
+        m_dtgPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT, "DTG");
         m_dtgPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
         m_dtgLabel = new JLabel();
         m_dtgPanel.add(m_dtgLabel);
@@ -279,11 +292,13 @@ public class MessageLogTopPanel extends JPanel
         createChangeDtgButton();
         m_dtgPanel.add(m_changeDTGButton);
         gbc.gridx++;
+        this.add(m_dtgPanel, gbc);
+        gbc.gridx++;
         this.add(new JSeparator(SwingConstants.VERTICAL), gbc);
         
         // From panel
         gbc.gridx++;
-        m_fromPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT, "Fra", gbc);
+        m_fromPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT, "Fra");
         m_fromPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
         m_fromLabel = new JLabel();
         m_fromPanel.add(m_fromLabel);
@@ -291,11 +306,12 @@ public class MessageLogTopPanel extends JPanel
         createChangeFromButton();
         m_fromPanel.add(m_changeFromButton);
         gbc.gridx++;
+        this.add(m_fromPanel, gbc);
+        gbc.gridx++;
         this.add(new JSeparator(SwingConstants.VERTICAL), gbc);
 
         // To panel
-        gbc.gridx++;
-        m_toPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT, "Til", gbc);
+        m_toPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT, "Til");
         m_toPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
         m_toLabel = new JLabel();
         m_toPanel.add(m_toLabel);
@@ -303,30 +319,33 @@ public class MessageLogTopPanel extends JPanel
         createChangeToButton();
         m_toPanel.add(m_changeToButton);
         gbc.gridx++;
+        this.add(m_toPanel, gbc);
+        gbc.gridx++;
         this.add(new JSeparator(SwingConstants.VERTICAL), gbc);
         
         // Message panel
-        gbc.gridx++;
         gbc.weightx = 1.0;
         m_messagePanel = new MessagePanel();
+        gbc.gridx++;
         this.add(m_messagePanel, gbc);
+        gbc.weightx = 0.0;
         gbc.gridx++;
         this.add(new JSeparator(SwingConstants.VERTICAL), gbc);
         
         // Task panel
-        gbc.gridx++;
         gbc.weightx = 0.0;
-        m_taskPanel = createPanel(2*SMALL_PANEL_WIDTH, PANEL_HEIGHT, "Oppgave", gbc);
+        m_taskPanel = createPanel(2*SMALL_PANEL_WIDTH, PANEL_HEIGHT, "Oppgave");
         m_taskPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
         m_taskLabel = new JLabel();
         m_taskPanel.add(m_taskLabel);
         createChangeTaskButton();
         m_taskPanel.add(m_changeTaskButton);
         gbc.gridx++;
+        this.add(m_taskPanel, gbc);
+        gbc.gridx++;
         this.add(new JSeparator(SwingConstants.VERTICAL), gbc);
         
         // Status panel
-        gbc.gridx++;
         m_statusPanel = new JPanel();
         m_statusPanel.setLayout(new BoxLayout(m_statusPanel, BoxLayout.Y_AXIS));
         m_statusPanel.setMinimumSize(new Dimension(SMALL_PANEL_WIDTH, PANEL_HEIGHT));
@@ -341,7 +360,7 @@ public class MessageLogTopPanel extends JPanel
         m_statusPanel.add(m_waitEndStatusButton);
         createFinishedButton();
         m_statusPanel.add(m_finishedStatusButton);
-        
+        gbc.gridx++;
         this.add(m_statusPanel, gbc);
     }
     

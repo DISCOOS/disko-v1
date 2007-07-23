@@ -55,43 +55,49 @@ public class MessagePanel extends JPanel
 	
 	public MessagePanel()
 	{
-		super(new GridBagLayout());
+		initPanels();
+	}
+	
+	private void initPanels()
+	{
 		setMinimumSize(new Dimension(PANEL_WIDTH, MessageLogTopPanel.PANEL_HEIGHT));
 		setPreferredSize(new Dimension(PANEL_WIDTH, MessageLogTopPanel.PANEL_HEIGHT));
 		
-		// Init panels
 		m_messageTextPanel = new MessageTextPanel();
 		
+		this.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.weightx = 0;
+		gbc.weightx = 0.5;
 		gbc.gridy = 0;
 		gbc.gridx = 0;
 		gbc.fill = GridBagConstraints.BOTH;
-		initLabel(gbc);
+		
+		initLabel();
+		this.add(m_topLabel, gbc);
 		
 		gbc.gridy++;
 		this.add(new JSeparator(JSeparator.HORIZONTAL), gbc);
 		
+		initCurrentContents();
 		gbc.gridy++;
 		gbc.weighty = 1.0;
-		initCurrentContents(gbc);
+		this.add(m_currentContentsPanel, gbc);
 		
 		gbc.gridy++;
 		gbc.weighty = 0;
-		initButtons(gbc);
+		initButtons();
+		this.add(m_buttonRow, gbc);
 	}
 	
-	private void initCurrentContents(GridBagConstraints gbc)
+	private void initCurrentContents()
 	{
 		m_currentContentsPanel = new JPanel(new BorderLayout());
 		m_currentContentsPanel.add(m_messageTextPanel, BorderLayout.CENTER);
-		this.add(m_currentContentsPanel, gbc);
 	}
 	
-	private void initLabel(GridBagConstraints gbc)
+	private void initLabel()
 	{
 		m_topLabel = new JLabel("Melding");
-		this.add(m_topLabel, gbc);
 	}
 	
 	protected static ImageIcon createImageIcon(String path)
@@ -126,7 +132,7 @@ public class MessagePanel extends JPanel
 		return button;
 	}
 	
-	private void initButtons(GridBagConstraints gbc)
+	private void initButtons()
 	{
 		m_buttonRow = new JPanel(new FlowLayout(FlowLayout.LEADING, 4, 0));
 		
@@ -232,8 +238,6 @@ public class MessagePanel extends JPanel
 			
 		});
 		m_buttonRow.add(m_deleteButton);
-		
-		this.add(m_buttonRow, gbc);
 	}
 
 	public void newMessageSelected(IMessageIf message) 
