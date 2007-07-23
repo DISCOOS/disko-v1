@@ -68,12 +68,14 @@ public class MessageLogTopPanel extends JPanel
     
     private JPanel m_toPanel;
     private JLabel m_toLabel;
+    private ChangeToDialog m_changeToDialog;
     private JButton m_changeToButton;
     
     private MessagePanel m_messagePanel;
     
     private JPanel m_taskPanel;
     private JLabel m_taskLabel;
+    private ChangeTaskDialog m_changeTaskDialog;
     private JButton m_changeTaskButton;
     
     private JPanel m_statusPanel;
@@ -104,7 +106,15 @@ public class MessageLogTopPanel extends JPanel
     private JButton createChangeButton()
     {
     	JButton button = new JButton();
-    	button.setIcon(createImageIcon("icons/60x60/change.gif"));
+    	try
+		{
+			button.setIcon(Utils.createImageIcon("icons/60x60/change.gif", "Change"));
+		} 
+    	catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	button.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
         button.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
         button.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
@@ -126,6 +136,8 @@ public class MessageLogTopPanel extends JPanel
     			location.y -= m_changeDTGDialog.getHeight();
     			m_changeDTGDialog.setLocation(location);
     			m_changeDTGDialog.setVisible(true);
+    			
+    			// TODO check for notebook mode, show numpad
     		}
     	});
     	return m_changeDTGButton;
@@ -188,6 +200,15 @@ public class MessageLogTopPanel extends JPanel
     	return m_changeToButton;
     }
     
+    private ChangeToDialog getChangeToDialog()
+	{
+		if(m_changeToDialog == null)
+		{
+			m_changeToDialog = new ChangeToDialog(m_wpMessageLog);
+		}
+		return m_changeToDialog;
+	}
+    
     private JButton createChangeTaskButton()
     {
     	if(m_changeTaskButton == null)
@@ -206,13 +227,30 @@ public class MessageLogTopPanel extends JPanel
     	return m_changeTaskButton;
     }
     
+    private ChangeTaskDialog getChangeTaskDialog()
+	{
+		if(m_changeTaskDialog == null)
+		{
+			m_changeTaskDialog = new ChangeTaskDialog(m_wpMessageLog);
+		}
+		return m_changeTaskDialog;
+	}
+    
     private JButton createCancleButton()
     {
     	if(m_cancelStatusButton == null)
     	{
     		m_cancelStatusButton = new JButton();
     		String iconPath = "icons/60x60/abort.gif";
-    		m_cancelStatusButton.setIcon(createImageIcon(iconPath));
+    		try
+			{
+				m_cancelStatusButton.setIcon(Utils.createImageIcon(iconPath, "Cancel status"));
+			} 
+    		catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
     		m_cancelStatusButton.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
     		m_cancelStatusButton.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
     		m_cancelStatusButton.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
@@ -240,27 +278,20 @@ public class MessageLogTopPanel extends JPanel
     	{
     		m_finishedStatusButton = new JButton();
     		String iconPath = "icons/60x60/finish.gif";
-    		m_finishedStatusButton.setIcon(createImageIcon(iconPath));
+    		try
+			{
+				m_finishedStatusButton.setIcon(Utils.createImageIcon(iconPath, "Finished"));
+			} 
+    		catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
     		m_finishedStatusButton.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
     		m_finishedStatusButton.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
     	}
     	return m_finishedStatusButton;
     }
-    
-    protected static ImageIcon createImageIcon(String path)
-	{
-		ImageIcon icon = null;
-		try
-		{
-			icon = Utils.createImageIcon(path, null);
-		}
-		catch(Exception e)
-		{
-			System.err.println("Error loading icon: " + path);
-		}
-		
-		return icon;
-	}
     
     public void initPanels()
     {
@@ -368,7 +399,11 @@ public class MessageLogTopPanel extends JPanel
     {
     	m_changeDTGDialog = getChangeDTGDialog();
     	m_changeFromDialog = getChangeFromDialog();
+    	m_changeToDialog = getChangeToDialog();
+    	m_changeTaskDialog = getChangeTaskDialog();
     }
+
+	
 
 	public void newMessageSelected(int messageNr) 
 	{

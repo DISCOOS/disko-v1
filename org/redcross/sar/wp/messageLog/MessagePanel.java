@@ -103,27 +103,20 @@ public class MessagePanel extends JPanel
 		m_topLabel = new JLabel("Melding");
 	}
 	
-	protected static ImageIcon createImageIcon(String path)
-	{
-		ImageIcon icon = null;
-		try
-		{
-			icon = Utils.createImageIcon(path, null);
-		}
-		catch(Exception e)
-		{
-			System.err.println("Error loading icon: " + path);
-		}
-		
-		return icon;
-	}
-	
 	private JButton createButton(String text, String iconPath)
 	{
 		JButton button = new JButton();
 		if(iconPath != null)
 		{
-			button.setIcon(createImageIcon(iconPath));
+			try
+			{
+				button.setIcon(Utils.createImageIcon(iconPath, text));
+			} 
+			catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		else
 		{
