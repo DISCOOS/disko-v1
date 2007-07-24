@@ -44,7 +44,14 @@ public class MessageListTableModel extends AbstractTableModel
 	@Override
 	public Object getValueAt(int rowIndex, int coulumnIndex) 
 	{
-		return m_messageLines[rowIndex];
+		if(m_messageLines == null)
+		{
+			return "";
+		}
+		else
+		{
+			return m_messageLines[rowIndex];
+		}
 	}
 	
 }

@@ -6,16 +6,18 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
+import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.mso.data.IMessageIf;
 
-public class MessageListPanel extends AbstractMessagePanelContets
+public class MessageListDialog extends DiskoDialog
 {
 	private JTable m_messageListTable;
 	private MessageListTableModel m_messageTableModel;
 	private JScrollPane m_textScrollPane;
 	
-	public MessageListPanel()
+	public MessageListDialog(IDiskoWpMessageLog wp)
 	{
+		super(wp.getApplication().getFrame());
 		setLayout(new BorderLayout());
 		m_messageTableModel = new MessageListTableModel();
 		m_messageListTable = new JTable(m_messageTableModel);
@@ -26,9 +28,20 @@ public class MessageListPanel extends AbstractMessagePanelContets
 		this.add(m_textScrollPane, BorderLayout.CENTER);
 	}
 
-	@Override
+	/*
 	public void updateContents(IMessageIf message)
 	{
 		m_messageTableModel.setMessageLines(message.getLines());
+	}
+
+	public void clearPanelContents()
+	{
+		m_messageTableModel.setMessageLines(null);
+	}
+	*/
+
+	public void setMessageLines(String[] lines)
+	{
+		m_messageTableModel.setMessageLines(lines);
 	}
 }

@@ -4,5 +4,5 @@ import org.redcross.sar.mso.data.IMessageIf;
 
 public interface IEditMessageDialogIf
 {
-	public void newMessage(IMessageIf message);
+	public void newMessageSelected(IMessageIf message);
 }

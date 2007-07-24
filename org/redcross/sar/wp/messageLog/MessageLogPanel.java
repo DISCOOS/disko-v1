@@ -76,9 +76,11 @@ public class MessageLogPanel
     {
         m_topPanel = new MessageLogTopPanel(m_messageLog);
         m_topPanel.setWp(wp);
-        m_topPanel.initPanels();
-        m_topPanel.initDialogs();
+        m_topPanel.initialize();
         m_topPanel.setMinimumSize(new Dimension(PANEL_WIDTH, MessageLogTopPanel.PANEL_HEIGHT));
+        // Top panel should be informed of updates to mso model
+        m_wpModule.getMmsoEventManager().addClientUpdateListener(m_topPanel);
+        
         m_splitter1.setContinuousLayout(true);
         m_splitter1.setDividerLocation(MessageLogTopPanel.PANEL_HEIGHT);
         m_splitter1.setResizeWeight(0.0);
@@ -103,16 +105,16 @@ public class MessageLogPanel
         TableColumn column = m_logTable.getColumnModel().getColumn(0);
         column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH/2);
         column = m_logTable.getColumnModel().getColumn(1);
-        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH);
+        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH+1);
         column = m_logTable.getColumnModel().getColumn(2);
-        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH);
+        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH+1);
         column = m_logTable.getColumnModel().getColumn(3);
-        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH);
+        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH+1);
         column = m_logTable.getColumnModel().getColumn(5);
         column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH*2);
         column.setMinWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH*2);
         column = m_logTable.getColumnModel().getColumn(6);
-        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH);
+        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH-1);
 
         // Init custom renderer
         column = m_logTable.getColumnModel().getColumn(4);

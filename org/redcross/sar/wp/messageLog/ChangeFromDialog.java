@@ -22,7 +22,7 @@ public class ChangeFromDialog extends DiskoDialog implements IEditMessageDialogI
 	}
 
 	@Override
-	public void newMessage(IMessageIf message)
+	public void newMessageSelected(IMessageIf message)
 	{
 		// TODO Auto-generated method stub
 		

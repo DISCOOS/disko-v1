@@ -11,6 +11,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Calendar;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -27,6 +28,7 @@ import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.AttributeImpl.MsoCalendar;
 import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.except.MsoCastException;
+import org.redcross.sar.util.mso.DTG;
 
 /**
  * 
@@ -36,6 +38,7 @@ import org.redcross.sar.util.except.MsoCastException;
  */
 public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMessageDialogIf
 {
+	private IMessageIf m_currentMessage;
 	private JPanel m_contentsPanel = null;
 	private JLabel m_createdLabel;
 	private JTextField m_createdTextField;
@@ -91,6 +94,11 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 		}
 		return m_contentsPanel;
 	}
+	
+	public String getTime()
+	{
+		return m_timeTextField.getText();
+	}
 
 	@Override
 	public void keyPressed(KeyEvent ke)
@@ -99,20 +107,6 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 		if(ke.getKeyCode() == KeyEvent.VK_ENTER)
 		{
 			this.setVisible(false);
-			
-			/*
-			// Update message
-			try
-			{
-				MsoCalendar dtg = null;
-				dtg.setDTG(m_timeTextField.getText());
-			}
-			catch(IllegalMsoArgumentException e)
-			{
-				// ErrorDialog
-				System.err.println("Error parsing DTG");
-			}
-			*/
 			
 			fireDialogFinished();
 		}
@@ -139,9 +133,20 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 	}
 
 	@Override
-	public void newMessage(IMessageIf message)
+	public void newMessageSelected(IMessageIf message)
 	{
+		m_currentMessage = message;
 		m_createdTextField.setText(message.getCreated().toString());
 		m_timeTextField.setText(message.getDTG());
+	}
+
+	public void setCreated(Calendar created)
+	{
+		m_createdTextField.setText(DTG.CalToDTG(created));
+	}
+
+	public void setTime(Calendar calendar)
+	{
+		m_timeTextField.setText(DTG.CalToDTG(calendar));
 	}
 }
