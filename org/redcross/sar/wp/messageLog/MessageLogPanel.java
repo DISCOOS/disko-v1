@@ -50,7 +50,7 @@ public class MessageLogPanel
 
         WorkspacePanel.add(m_splitter1, BorderLayout.CENTER);
 
-        initTopPanel(aWp);
+        initTopPanel();
 
         // Init log panel
         m_logPanel = new JPanel();
@@ -72,10 +72,10 @@ public class MessageLogPanel
         m_rowSelectionListener.setTable(m_logTable);
     }
 
-    private void initTopPanel(IDiskoWpMessageLog wp)
+    private void initTopPanel()
     {
         m_topPanel = new MessageLogTopPanel(m_messageLog);
-        m_topPanel.setWp(wp);
+        m_topPanel.setWp(m_wpModule);
         m_topPanel.initialize();
         m_topPanel.setMinimumSize(new Dimension(PANEL_WIDTH, MessageLogTopPanel.PANEL_HEIGHT));
         // Top panel should be informed of updates to mso model

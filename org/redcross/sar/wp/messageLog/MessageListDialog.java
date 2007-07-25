@@ -9,7 +9,7 @@ import javax.swing.JTable;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.mso.data.IMessageIf;
 
-public class MessageListDialog extends DiskoDialog
+public class MessageListDialog extends DiskoDialog implements IEditMessageDialogIf
 {
 	private JTable m_messageListTable;
 	private MessageListTableModel m_messageTableModel;
@@ -43,5 +43,24 @@ public class MessageListDialog extends DiskoDialog
 	public void setMessageLines(String[] lines)
 	{
 		m_messageTableModel.setMessageLines(lines);
+	}
+
+	@Override
+	public void hideDialog()
+	{
+		this.setVisible(false);
+	}
+
+	@Override
+	public void newMessageSelected(IMessageIf message)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void showDialog()
+	{
+		this.setVisible(true);
 	}
 }

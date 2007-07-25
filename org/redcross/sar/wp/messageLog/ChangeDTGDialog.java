@@ -3,6 +3,7 @@ package org.redcross.sar.wp.messageLog;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -40,14 +41,21 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 {
 	private IMessageIf m_currentMessage;
 	private JPanel m_contentsPanel = null;
+	
+	private JPanel m_createdPanel;
 	private JLabel m_createdLabel;
 	private JTextField m_createdTextField;
+	
+	private JPanel m_timePanel;
 	private JLabel m_timeLabel;
 	private JTextField m_timeTextField;
+	private IDiskoWpMessageLog m_wp;
 
 	public ChangeDTGDialog(IDiskoWpMessageLog wp) 
 	{
-		super(wp.getApplication().getFrame());		
+		super(wp.getApplication().getFrame());	
+		m_wp = wp;
+		
 		// Init this
 		initialize();
 	}
@@ -58,6 +66,8 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 		{
             this.setContentPane(getContentPanel());
 			this.pack();
+			this.setMinimumSize(new Dimension((int)(MessageLogPanel.SMALL_BUTTON_SIZE.getWidth()*3.5),
+					(int)(MessageLogPanel.SMALL_BUTTON_SIZE.getHeight()*1.5)));
 			m_timeTextField.requestFocus();
 		}
 		catch (java.lang.Throwable e) 
@@ -74,18 +84,23 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 				m_contentsPanel.setLayout(new GridLayout(2, 2));
 				m_contentsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 				
-				m_createdLabel = new JLabel("Opprettet:");
-				m_contentsPanel.add(m_createdLabel);
-				m_createdTextField = new JTextField();
+				m_createdPanel = new JPanel();
+				m_createdLabel = new JLabel(m_wp.getText("ChangeDTGDialogCreated.text"));
+				m_createdLabel.setHorizontalAlignment(JLabel.CENTER);
+				m_createdPanel.add(m_createdLabel);
+				m_createdTextField = new JTextField(6);
 				m_createdTextField.setEditable(false);
-				m_contentsPanel.add(m_createdTextField);
+				m_createdPanel.add(m_createdTextField);
+				m_contentsPanel.add(m_createdPanel);
 				
-				
-				m_timeLabel = new JLabel("Tidspunkt:");
-				m_contentsPanel.add(m_timeLabel);
-				m_timeTextField = new JTextField();
+				m_timePanel = new JPanel();
+				m_timeLabel = new JLabel(m_wp.getText("ChangeDTGDialogTime.text"));
+				m_timeLabel.setHorizontalAlignment(JLabel.CENTER);
+				m_timePanel.add(m_timeLabel);
+				m_timeTextField = new JTextField(6);
 				m_timeTextField.addKeyListener(this);
-				m_contentsPanel.add(m_timeTextField);
+				m_timePanel.add(m_timeTextField);
+				m_contentsPanel.add(m_timePanel);
 				m_contentsPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 			} 
 			catch (java.lang.Throwable e) 
@@ -148,5 +163,17 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 	public void setTime(Calendar calendar)
 	{
 		m_timeTextField.setText(DTG.CalToDTG(calendar));
+	}
+
+	@Override
+	public void hideDialog()
+	{
+		this.setVisible(false);
+	}
+
+	@Override
+	public void showDialog()
+	{
+		this.setVisible(true);
 	}
 }

@@ -18,6 +18,7 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentListener;
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.LinkedList;
@@ -44,6 +45,7 @@ import org.redcross.sar.app.Utils;
 import org.redcross.sar.event.DialogEvent;
 import org.redcross.sar.event.IDialogEventListener;
 import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.map.POITool;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLogIf;
@@ -70,7 +72,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	
 	private boolean m_messageDirty = false;
 	
-	List<DiskoDialog> m_dialogs;
+	List<IEditMessageDialogIf> m_dialogs;
 	
 	private JPanel m_nrPanel;
 	private JLabel m_nrLabel;
@@ -128,7 +130,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     	m_newMessage = true;
     	m_currentMessageNr = 0;
     	
-    	m_dialogs = new LinkedList<DiskoDialog>();
+    	m_dialogs = new LinkedList<IEditMessageDialogIf>();
     }
     
     /**
@@ -223,7 +225,17 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     {
     	if(m_messagePositionDialog == null)
     	{
-    		m_messagePositionDialog = new MessagePositionDialog(m_wpMessageLog);
+    		POITool tool = null;
+			try
+			{
+				tool = new POITool(m_wpMessageLog.getApplication());
+			} 
+			catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    		m_messagePositionDialog = new MessagePositionDialog(m_wpMessageLog, tool);
     		m_messagePositionDialog.addDialogListener(this);
     		m_dialogs.add(m_messagePositionDialog);
     	}
@@ -274,7 +286,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     	gbc.gridy = 0;
     	
     	// Nr panel
-        m_nrPanel = createPanel(SMALL_PANEL_WIDTH/2, PANEL_HEIGHT, "Nr");
+        m_nrPanel = createPanel(SMALL_PANEL_WIDTH/2, PANEL_HEIGHT, m_wpMessageLog.getText("MessagePanelNrLabel.text"));
         m_nrPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
         m_nrLabel = new JLabel();
         m_nrPanel.add(m_nrLabel);
@@ -285,7 +297,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
         this.add(new JSeparator(SwingConstants.VERTICAL), gbc);
        
         // DTG panel
-        m_dtgPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT, "DTG");
+        m_dtgPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT, m_wpMessageLog.getText("MessagePanelDTGLabel.text"));
         m_dtgPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
         m_dtgLabel = new JLabel();
         m_dtgPanel.add(m_dtgLabel);
@@ -298,7 +310,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
         
         // From panel
         gbc.gridx++;
-        m_fromPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT, "Fra");
+        m_fromPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT, m_wpMessageLog.getText("MessagePanelFromLabel.text"));
         m_fromPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
         m_fromLabel = new JLabel();
         m_fromPanel.add(m_fromLabel);
@@ -310,7 +322,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
         this.add(new JSeparator(SwingConstants.VERTICAL), gbc);
 
         // To panel
-        m_toPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT, "Til");
+        m_toPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT, m_wpMessageLog.getText("MessagePanelToLabel.text"));
         m_toPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
         m_toLabel = new JLabel();
         m_toPanel.add(m_toLabel);
@@ -323,9 +335,9 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
         
         // Message panel
         gbc.weightx = 1.0;
-        m_messagePanel = new JPanel();
+        m_messagePanel = new JPanel(new GridBagLayout());
         m_messagePanel.setLayout(new BoxLayout(m_messagePanel, BoxLayout.Y_AXIS));
-        m_messagePanelTopLabel = new JLabel("Tekst");
+        m_messagePanelTopLabel = new JLabel(m_wpMessageLog.getText("MessagePanelTextLabel.text"));
         m_messagePanel.add(m_messagePanelTopLabel);
         m_messagePanel.add(new JSeparator(JSeparator.HORIZONTAL));
         m_dialogArea = (JComponent)Box.createGlue();
@@ -342,7 +354,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
         
         // Task panel
         gbc.weightx = 0.0;
-        m_taskPanel = createPanel(2*SMALL_PANEL_WIDTH, PANEL_HEIGHT, "Oppgave");
+        m_taskPanel = createPanel(2*SMALL_PANEL_WIDTH, PANEL_HEIGHT, m_wpMessageLog.getText("MessagePanelTaskLabel.text"));
         m_taskPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
         m_taskLabel = new JLabel();
         m_taskPanel.add(m_taskLabel);
@@ -408,10 +420,11 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
      */
 	public void newMessageSelected(int messageNr) 
 	{
+		// Have user confirm message overwrite
 		if(m_messageDirty)
 		{
-			int n = JOptionPaneExt.showConfirmDialog(this, "Du er i ferd med å avbryte nåværende melding. Vil du fortsette?",
-					"Melding ikkje lagra", true, JOptionPane.YES_NO_OPTION);
+			int n = JOptionPaneExt.showConfirmDialog(this, m_wpMessageLog.getText("MessageDirtySaveWarning.text"),
+					m_wpMessageLog.getText("MessageDirtySaveHeader.text"), true, JOptionPane.YES_NO_OPTION);
 			if(n == JOptionPane.NO_OPTION)
 			{
 				return;
@@ -437,19 +450,15 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			// Update panel contents
 			m_nrLabel.setText(Integer.toString(m_currentMessage.getNumber()));
 			m_dtgLabel.setText(m_currentMessage.getDTG());
-			if(m_changeDTGDialog != null)
-			{
-				m_changeDTGDialog.newMessageSelected(m_currentMessage);
-			}
 			//m_fromLabel.setText(message.get); 
 			//m_toLabel.setText(message.get); //
 			//m_taskLabel.setText(message.get);
 			
 			// Update dialogs
-			m_changeDTGDialog.setCreated(m_currentMessage.getCreated());
-			m_changeDTGDialog.setTime(m_currentMessage.getCalendar());
-			//m_messageTextDialog.setText(m_currentMessage.get);
-			m_messageListDialog.setMessageLines(m_currentMessage.getLines());
+			for(int i=0; i<m_dialogs.size(); i++)
+			{
+				m_dialogs.get(i).newMessageSelected(m_currentMessage);
+			}
 		}
 	}
 	
@@ -510,7 +519,16 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		{
 			if(m_newMessage)
 			{
-				m_dtgLabel.setText(m_changeDTGDialog.getTime());
+				// Check validity of DTG
+				try
+				{
+					DTG.DTGToCal(m_changeDTGDialog.getTime());
+					m_dtgLabel.setText(m_changeDTGDialog.getTime());
+				} 
+				catch (IllegalMsoArgumentException e1)
+				{
+					System.err.println("Not a valid DTG format");
+				}
 			}
 			else
 			{
@@ -524,6 +542,11 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					//e1.printStackTrace();
 				}
 			}
+		}
+		else if(e.getSource().getClass() == ChangeFromDialog.class)
+		{
+			m_changeFromDialog.setVisible(false);
+			m_fromLabel.setText(m_changeFromDialog.getText());
 		}
 	}
 
@@ -578,13 +601,12 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     		// Display the change DTG dialog when button is pressed
     		public void actionPerformed(ActionEvent e)
     		{
+    			hideDialogs();
     			getChangeDTGDialog();
     			Point location = m_changeDTGButton.getLocationOnScreen();
     			location.y -= m_changeDTGDialog.getHeight();
     			m_changeDTGDialog.setLocation(location);
     			m_changeDTGDialog.setVisible(true);
-    			
-    			// TODO check for notebook mode, show numpad
     		}
     	});
     	return m_changeDTGButton;
@@ -622,7 +644,10 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				{
 					getChangeFromDialog();
 					hideDialogs();
-					m_changeFromDialog.setVisible(true);
+					Point location = m_changeDTGButton.getLocationOnScreen();
+	    			location.y -= m_changeFromDialog.getHeight();
+	    			m_changeFromDialog.setLocation(location);
+					m_changeFromDialog.showDialog();
 				}
     			
     		});
@@ -690,13 +715,11 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     	m_deleteButton = createButton("DELETE", "icons/60x60/delete.gif");
 		m_deleteButton.addActionListener(new ActionListener()
 		{
-
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				m_messagePanelTopLabel.setText("Slett");
-			}
-			
+				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelDeleteLabel.text"));
+			}	
 		});
 		m_buttonRow.add(m_deleteButton);
 	}
@@ -710,7 +733,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				m_messagePanelTopLabel.setText("Liste");
+				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelListLabel.text"));
 				getMessageListDialog();
 				
 				hideDialogs();
@@ -727,14 +750,12 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		m_completedButton = createButton("COMPLETED", null);
 		m_completedButton.addActionListener(new ActionListener()
 		{
-
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				m_messagePanelTopLabel.setText("Ferdig");
+				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelCompletedLabel.text"));
 				
-			}
-			
+			}	
 		});
 		m_buttonRow.add(m_completedButton);
 	}
@@ -744,13 +765,11 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		m_startedButton = createButton("STARTED", null);
 		m_startedButton.addActionListener(new ActionListener()
 		{
-
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				m_messagePanelTopLabel.setText("Startet");
+				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelStartedLabel.text"));
 			}
-			
 		});
 		m_buttonRow.add(m_startedButton);
 	}
@@ -760,13 +779,11 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		m_assignedButton = createButton("ASSIGNED", null);
 		m_assignedButton.addActionListener(new ActionListener()
 		{
-
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				m_messagePanelTopLabel.setText("Tildelt");
+				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelAssignedLabel.text"));
 			}
-			
 		});
 		m_buttonRow.add(m_assignedButton);
 	}
@@ -779,7 +796,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				m_messagePanelTopLabel.setText("Funn");
+				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelFindingLabel.text"));
 			}	
 		});
 		m_buttonRow.add(m_findingButton);
@@ -793,7 +810,11 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				m_messagePanelTopLabel.setText("Posisjon");
+				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelPositionLabel.text"));
+				getMessagePositionDialog();
+				hideDialogs();
+				m_messagePositionDialog.setVisible(true);
+				positionDialogInArea(m_messagePositionDialog);
 			}	
 		});
 		m_buttonRow.add(m_positionButton);
@@ -807,7 +828,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				m_messagePanelTopLabel.setText("Tekst");
+				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelTextLabel.text"));
 				getMessageTextDialog();
 				hideDialogs();
     			m_messageTextDialog.setVisible(true);
@@ -832,7 +853,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	{
 		for(int i=0; i<m_dialogs.size(); i++)
 		{
-			m_dialogs.get(i).setVisible(false);
+			m_dialogs.get(i).hideDialog();
 		}
 	}
 

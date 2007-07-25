@@ -30,7 +30,7 @@ import org.redcross.sar.util.mso.Selector;
  *
  * Displays the message text in the top panel in the message log
  */
-public class MessageTextDialog extends DiskoDialog
+public class MessageTextDialog extends DiskoDialog implements IEditMessageDialogIf
 {
 	private JScrollPane m_textScroll;
 	private JTextArea m_textArea;
@@ -159,4 +159,23 @@ public class MessageTextDialog extends DiskoDialog
 			}
 		}	
 	};
+
+	@Override
+	public void hideDialog()
+	{
+		this.setVisible(false);
+	}
+
+	@Override
+	public void newMessageSelected(IMessageIf message)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void showDialog()
+	{
+		this.setVisible(true);
+	}
 }
