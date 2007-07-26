@@ -319,7 +319,7 @@ public class NumPadDialog extends JDialog {
 	 * 	
 	 * @return javax.swing.JButton	
 	 */
-	private JButton getOkButton() {
+	public JButton getOkButton() {
 		if (okButton == null) {
 			okButton = new JButton();
 			okButton.setPreferredSize(size);
