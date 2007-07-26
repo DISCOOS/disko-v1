@@ -4,13 +4,24 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
+import org.redcross.sar.app.Utils;
 import org.redcross.sar.gui.DiskoDialog;
 
+/**
+ * 
+ * @author thomasl
+ *
+ * Dialog for selecting unit type
+ */
 public class UnitTypeDialog extends DiskoDialog
 {
 	private IDiskoWpMessageLog m_wp;
@@ -23,14 +34,16 @@ public class UnitTypeDialog extends DiskoDialog
 	private JButton m_carButton = null;
 	private JButton m_manButton = null;
 	private JButton m_koButton = null;
+	private JTextField m_textField = null;
 	
-	public UnitTypeDialog(IDiskoWpMessageLog wp)
+	public UnitTypeDialog(IDiskoWpMessageLog wp, JTextField textField)
 	{
 		super(wp.getApplication().getFrame());
 		m_wp = wp;
+	
+		m_textField = textField;
 		
-		m_contentsPanel = new JPanel(new BorderLayout(3, 2));
-		m_contentsPanel.setBorder(BorderFactory.createLineBorder(Color.blue));
+		m_contentsPanel = new JPanel(new GridLayout(3, 2));
 		
 		initButtons();
 		
@@ -40,29 +53,51 @@ public class UnitTypeDialog extends DiskoDialog
 	
 	private void initButtons()
 	{
-		m_planeButton = new JButton("Plane");
-		m_planeButton.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-		m_contentsPanel.add(m_planeButton);
+		m_planeButton = addButton("Plane", "P", "");
+		m_boatButton = addButton("Boat", "B", "");
+		m_dogButton = addButton("Dog", "D", m_wp.getText("DogUnit.icon"));
+		m_carButton = addButton("Car", "C", m_wp.getText("CarUnit.icon"));
+		m_manButton = addButton("Man", "M", m_wp.getText("ManUnit.icon"));
+		m_koButton = addButton("KO", "KO", "");
+	}
+	
+	private JButton addButton(String name, final String unitType, String iconPath)
+	{
+		JButton button = new JButton(name);
+		try
+		{
+			button.setIcon(Utils.createImageIcon(iconPath, name));
+		} 
+		catch (Exception e)
+		{
+			System.err.println("Error getting icon: " + iconPath + " in UnitTypeDialog");
+		}
 		
-		m_boatButton = new JButton("Boat");
-		m_boatButton.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-		m_contentsPanel.add(m_boatButton);
+		// Let the buttons manipulate the text field, setting the contents to the unit type code
+		button.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent arg0)
+			{
+				if(m_textField != null)
+				{
+					m_textField.setText(unitType);
+				}
+				else
+				{
+					System.err.println("Text-field not set, unable to add listeners");
+				}
+			}	
+		});
 		
-		m_dogButton = new JButton("Dog");
-		m_dogButton.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-		m_contentsPanel.add(m_dogButton);
+		// Button layout
+		button.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
+		button.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
+		button.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
 		
-		m_carButton = new JButton("Car");
-		m_carButton.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-		m_contentsPanel.add(m_carButton);
+		m_contentsPanel.add(button);
 		
-		m_manButton = new JButton("Man");
-		m_manButton.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-		m_contentsPanel.add(m_manButton);
-		
-		m_koButton = new JButton("KO");
-		m_koButton.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-		m_contentsPanel.add(m_koButton);
+		return button;
 	}
 
 }

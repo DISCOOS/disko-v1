@@ -45,11 +45,16 @@ import org.redcross.sar.app.Utils;
 import org.redcross.sar.event.DialogEvent;
 import org.redcross.sar.event.IDialogEventListener;
 import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.map.POITool;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.IMessageIf;
+import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IMessageLogIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
+import org.redcross.sar.mso.data.MessageLineImpl;
+import org.redcross.sar.mso.data.IMessageIf.MessageStatus;
+import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
 import org.redcross.sar.util.except.IllegalMsoArgumentException;
@@ -147,12 +152,14 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     {
     	JPanel panel = new JPanel();
     	panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+    	
     	panel.setMinimumSize(new Dimension(width, height));
     	panel.setPreferredSize(new Dimension(width, height));
     	panel.setMaximumSize(new Dimension(width, height));
     	
     	// Top row label
         JLabel label = new JLabel(labelString);
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         panel.add(label);
     	return panel;
@@ -273,7 +280,13 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		m_taskLabel.setText("");
 	}
 
-	
+	protected void clearDialogContents()
+	{
+		for(IEditMessageDialogIf dialog : m_dialogs)
+		{
+			dialog.clearContents();
+		}
+	}
     
     public void initPanels()
     {
@@ -289,9 +302,14 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
         m_nrPanel = createPanel(SMALL_PANEL_WIDTH/2, PANEL_HEIGHT, m_wpMessageLog.getText("MessagePanelNrLabel.text"));
         m_nrPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
         m_nrLabel = new JLabel();
+        m_nrLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         m_nrPanel.add(m_nrLabel);
         m_nrPanel.add(Box.createVerticalGlue());
-        m_nrPanel.add(Box.createRigidArea(MessageLogPanel.SMALL_BUTTON_SIZE));
+        Dimension nrBoxDimension = new Dimension(MessageLogPanel.SMALL_BUTTON_SIZE);
+        nrBoxDimension.width = SMALL_PANEL_WIDTH/2;
+        JComponent nrButtonBox = (JComponent)Box.createRigidArea(nrBoxDimension);
+        nrButtonBox.setAlignmentX(Component.LEFT_ALIGNMENT);
+        m_nrPanel.add(nrButtonBox);
         this.add(m_nrPanel, gbc);
         gbc.gridx++;
         this.add(new JSeparator(SwingConstants.VERTICAL), gbc);
@@ -335,16 +353,20 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
         
         // Message panel
         gbc.weightx = 1.0;
-        m_messagePanel = new JPanel(new GridBagLayout());
-        m_messagePanel.setLayout(new BoxLayout(m_messagePanel, BoxLayout.Y_AXIS));
+        m_messagePanel = new JPanel();
+        BoxLayout boxLayout = new BoxLayout(m_messagePanel, BoxLayout.Y_AXIS);
+        m_messagePanel.setLayout(boxLayout);
         m_messagePanelTopLabel = new JLabel(m_wpMessageLog.getText("MessagePanelTextLabel.text"));
+        m_messagePanelTopLabel.setAlignmentX(0.0f);
         m_messagePanel.add(m_messagePanelTopLabel);
         m_messagePanel.add(new JSeparator(JSeparator.HORIZONTAL));
         m_dialogArea = (JComponent)Box.createGlue();
         m_dialogArea.setPreferredSize(new Dimension(600, 120));
-        m_messagePanel.add(m_dialogArea, Component.CENTER_ALIGNMENT);
+        m_dialogArea.setAlignmentX(0.0f);
+        m_messagePanel.add(m_dialogArea);
         m_buttonRow.setAlignmentY(Component.BOTTOM_ALIGNMENT);
         m_buttonRow.setMaximumSize(new Dimension(SMALL_PANEL_WIDTH*9, (int)MessageLogPanel.SMALL_BUTTON_SIZE.getHeight()));
+        m_buttonRow.setAlignmentX(0.0f);
         m_messagePanel.add(m_buttonRow);
         gbc.gridx++;
         this.add(m_messagePanel, gbc);
@@ -429,7 +451,14 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			{
 				return;
 			}
+			else
+			{
+				// Roll back any changes made to the message
+				
+			}
 		}
+		
+		m_messageDirty = false;
 		
 		m_currentMessageNr = messageNr;
 		
@@ -450,9 +479,9 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			// Update panel contents
 			m_nrLabel.setText(Integer.toString(m_currentMessage.getNumber()));
 			m_dtgLabel.setText(m_currentMessage.getDTG());
-			//m_fromLabel.setText(message.get); 
-			//m_toLabel.setText(message.get); //
-			//m_taskLabel.setText(message.get);
+			// TODO m_fromLabel.setText(m_currentMessage.getSender().getCallSign()); 
+			//TODO m_toLabel.setText(message.get); //
+			//TODO m_taskLabel.setText(message.get);
 			
 			// Update dialogs
 			for(int i=0; i<m_dialogs.size(); i++)
@@ -511,7 +540,55 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		// TODO Auto-generated method stub
 		
 	}
+	
+	/**
+	 * Updates currently selected message (or creates a new) with the contents of the dialogs
+	 * 
+	 */
+	private void updateCurrentMessage()
+	{
+		if(m_newMessage)
+		{
+			m_currentMessage = m_wpMessageLog.getMsoManager().createMessage();
+		}
+		
+		try
+		{
+			m_currentMessage.setDTG(m_dtgLabel.getText());
+		} 
+		catch (IllegalMsoArgumentException e)
+		{
+			System.err.println("Error parsing DTG when updating message");
+			//e.printStackTrace();
+		}
+		
+		// TODO m_currentMessage.setSender(aCommunicator);
+		// TODO m_currentMessage.addConfirmedReceiver(anICommunicatorIf);
+		
+		// Add text message line
+		String text = m_messageTextDialog.getText();
+		if(text.length()>0)
+		{
+			IMessageLineIf textMessageLine = m_currentMessage.findMessageLine(MessageLineType.TEXT, true);
+			textMessageLine.setText(text);
+		}
+		
+		// Add POI message line
+		
+		
+		m_messageDirty = false;
 
+	}
+
+	private boolean validMessage()
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/**
+	 * Gets new data from a dialog once a dialog finishes
+	 */
 	@Override
 	public void dialogFinished(DialogEvent e)
 	{
@@ -534,6 +611,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			{
 				try
 				{
+					// Send to mso, don't commit anything
 					m_currentMessage.setCalendar(DTG.DTGToCal(m_changeDTGDialog.getTime()));
 				} 
 				catch (IllegalMsoArgumentException e1)
@@ -545,9 +623,11 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		}
 		else if(e.getSource().getClass() == ChangeFromDialog.class)
 		{
-			m_changeFromDialog.setVisible(false);
+			m_changeFromDialog.hideDialog();
 			m_fromLabel.setText(m_changeFromDialog.getText());
 		}
+		
+		m_messageDirty = true;
 	}
 
 	@Override
@@ -564,6 +644,17 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     		m_waitEndStatusButton = new JButton();
     		//String iconPath = "icons/60x60/waitend.gif";
     		//m_waitEndStatusButton.setIcon(createImageIcon(iconPath));
+    		m_waitEndStatusButton.addActionListener(new ActionListener()
+    		{
+				@Override
+				public void actionPerformed(ActionEvent arg0)
+				{
+					// Commit message, set status to postponed
+					updateCurrentMessage();
+					m_currentMessage.setStatus(MessageStatus.POSTPONED);
+					m_wpMessageLog.getMsoManager().commit();
+				}	
+    		});
     		m_waitEndStatusButton.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
     		m_waitEndStatusButton.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
     		m_waitEndStatusButton.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
@@ -586,6 +677,36 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+    		m_finishedStatusButton.addActionListener(new ActionListener()
+    		{
+				@Override
+				public void actionPerformed(ActionEvent arg0)
+				{
+					if(validMessage())
+					{
+						updateCurrentMessage();
+						// Set message status
+						if(m_currentMessage.isBroadcast())
+						{
+							//TODO check all units have confirmed
+						}
+						else
+						{
+							m_currentMessage.setStatus(MessageStatus.CONFIRMED);
+						}
+						
+						m_wpMessageLog.getMsoManager().commit();
+						
+						clearPanelContents();
+						clearDialogContents();
+					}
+					else
+					{
+						ErrorDialog error = new ErrorDialog(m_wpMessageLog.getApplication().getFrame());
+						error.showError("Message not valid", "");
+					}
+				}	
+    		});
     		m_finishedStatusButton.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
     		m_finishedStatusButton.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
     	}
@@ -699,8 +820,9 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				{
 					// Remove current message from panel
 					clearPanelContents();
+					clearDialogContents();
 					
-					// TODO Roll-back changes made to existing messages in log
+					m_wpMessageLog.getMsoManager().rollback(); // TODO correct?
 					
 					// Current empty message has not been sent to mso model
 					m_newMessage = true;

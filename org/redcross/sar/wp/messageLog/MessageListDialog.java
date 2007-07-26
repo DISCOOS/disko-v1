@@ -63,4 +63,10 @@ public class MessageListDialog extends DiskoDialog implements IEditMessageDialog
 	{
 		this.setVisible(true);
 	}
+
+	@Override
+	public void clearContents()
+	{
+		setMessageLines(null);
+	}
 }

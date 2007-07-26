@@ -28,4 +28,11 @@ public class ChangeTaskDialog extends DiskoDialog implements IEditMessageDialogI
 	{
 		this.setVisible(true);
 	}
+
+	@Override
+	public void clearContents()
+	{
+		// TODO Auto-generated method stub
+		
+	}
 }

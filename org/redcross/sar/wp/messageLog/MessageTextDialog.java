@@ -23,6 +23,7 @@ import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IMessageLineListIf;
+import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 import org.redcross.sar.util.mso.Selector;
 
 /**
@@ -114,20 +115,6 @@ public class MessageTextDialog extends DiskoDialog implements IEditMessageDialog
 		});
 		this.add(m_okButton, gbc);
 	}
-
-	// TODO finish
-	public void updateContents(IMessageIf message) 
-	{
-		IMessageLineListIf messages = message.getMessageLines();
-		List<IMessageLineIf> textMessages = messages.selectItems(m_textLineSelector, m_lineComparator);
-		IMessageLineIf textMessage = textMessages.get(0);
-		m_textArea.setText(textMessage.getText());
-	}
-
-	public void clearDialogContents()
-	{
-		m_textArea.setText("");
-	}
 	
 	private void closeDialog()
 	{
@@ -169,13 +156,27 @@ public class MessageTextDialog extends DiskoDialog implements IEditMessageDialog
 	@Override
 	public void newMessageSelected(IMessageIf message)
 	{
-		// TODO Auto-generated method stub
-		
+		IMessageLineIf textMessageLine = message.findMessageLine(MessageLineType.TEXT, false);
+		if(textMessageLine != null)
+		{
+			m_textArea.setText(textMessageLine.getText());
+		}
 	}
 
 	@Override
 	public void showDialog()
 	{
 		this.setVisible(true);
+	}
+
+	@Override
+	public void clearContents()
+	{
+		m_textArea.setText("");
+	}
+
+	public String getText()
+	{
+		return m_textArea.getText();
 	}
 }

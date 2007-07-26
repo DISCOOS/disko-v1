@@ -15,8 +15,6 @@ public class MessagePositionDialog extends POIDialog implements IEditMessageDial
 		super(wp.getApplication(), tool);
 		m_application = wp.getApplication();
 		m_tool = tool;
-		
-		//super(wp.getApplication().getFrame());
 	}
 
 	public void updateContents(IMessageIf message) 
@@ -47,6 +45,13 @@ public class MessagePositionDialog extends POIDialog implements IEditMessageDial
 	public void showDialog()
 	{
 		this.setVisible(true);
+	}
+
+	@Override
+	public void clearContents()
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 }

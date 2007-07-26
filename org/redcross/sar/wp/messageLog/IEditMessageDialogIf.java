@@ -9,4 +9,6 @@ public interface IEditMessageDialogIf
 	public void showDialog();
 	
 	public void hideDialog();
+	
+	public void clearContents();
 }

@@ -1,34 +1,20 @@
 package org.redcross.sar.wp.messageLog;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Frame;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Calendar;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 
-import org.redcross.sar.event.IDialogEventListener;
 import org.redcross.sar.gui.DiskoDialog;
-import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.mso.data.IMessageIf;
-import org.redcross.sar.mso.data.AttributeImpl.MsoCalendar;
-import org.redcross.sar.util.except.IllegalMsoArgumentException;
-import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.mso.DTG;
 
 /**
@@ -39,7 +25,6 @@ import org.redcross.sar.util.mso.DTG;
  */
 public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMessageDialogIf
 {
-	private IMessageIf m_currentMessage;
 	private JPanel m_contentsPanel = null;
 	
 	private JPanel m_createdPanel;
@@ -56,7 +41,6 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 		super(wp.getApplication().getFrame());	
 		m_wp = wp;
 		
-		// Init this
 		initialize();
 	}
 	
@@ -86,7 +70,7 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 				
 				m_createdPanel = new JPanel();
 				m_createdLabel = new JLabel(m_wp.getText("ChangeDTGDialogCreated.text"));
-				m_createdLabel.setHorizontalAlignment(JLabel.CENTER);
+				m_createdLabel.setHorizontalAlignment(SwingConstants.CENTER);
 				m_createdPanel.add(m_createdLabel);
 				m_createdTextField = new JTextField(6);
 				m_createdTextField.setEditable(false);
@@ -95,7 +79,7 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 				
 				m_timePanel = new JPanel();
 				m_timeLabel = new JLabel(m_wp.getText("ChangeDTGDialogTime.text"));
-				m_timeLabel.setHorizontalAlignment(JLabel.CENTER);
+				m_timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 				m_timePanel.add(m_timeLabel);
 				m_timeTextField = new JTextField(6);
 				m_timeTextField.addKeyListener(this);
@@ -136,23 +120,18 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 	@Override
 	public void keyReleased(KeyEvent arg0)
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void keyTyped(KeyEvent arg0)
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void newMessageSelected(IMessageIf message)
 	{
-		m_currentMessage = message;
-		m_createdTextField.setText(message.getCreated().toString());
-		m_timeTextField.setText(message.getDTG());
+		setCreated(message.getCreated());
+		m_timeTextField.setText(DTG.CalToDTG(message.getCalendar()));
 	}
 
 	public void setCreated(Calendar created)
@@ -175,5 +154,12 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 	public void showDialog()
 	{
 		this.setVisible(true);
+	}
+
+	@Override
+	public void clearContents()
+	{
+		m_createdTextField.setText("");
+		m_timeTextField.setText("");
 	}
 }

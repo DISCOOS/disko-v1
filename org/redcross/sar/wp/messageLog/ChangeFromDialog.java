@@ -4,8 +4,12 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -17,7 +21,9 @@ import javax.swing.JTextField;
 
 import org.redcross.sar.gui.DiskoBorder;
 import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.gui.NumPadDialog;
+import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IMessageIf;
 
 /**
@@ -43,7 +49,7 @@ public class ChangeFromDialog extends DiskoDialog implements IEditMessageDialogI
 	
 	private IDiskoWpMessageLog m_wp;
 	
-	private boolean m_notebookMode = false;
+	private boolean m_notebookMode = true;
 	
 	public ChangeFromDialog(IDiskoWpMessageLog messageLog)
 	{
@@ -51,12 +57,22 @@ public class ChangeFromDialog extends DiskoDialog implements IEditMessageDialogI
 		
 		m_wp = messageLog;
 		
-		m_contentsPanel = new JPanel(new GridLayout(1, 2));
+		m_contentsPanel = new JPanel(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.fill = GridBagConstraints.BOTH;
 		
 		initUnitTypePanel();
 		initUnitNumberPanel();
-		m_contentsPanel.add(m_unitTypePanel);
-		m_contentsPanel.add(m_unitNumberPanel);
+		m_contentsPanel.add(m_unitTypePanel, gbc);
+		gbc.gridx++;
+		m_contentsPanel.add(m_unitNumberPanel, gbc);
+		gbc.gridx--;
+		gbc.gridy++;
+		m_contentsPanel.add(Box.createVerticalGlue(), gbc);
+		gbc.gridx++;
+		m_contentsPanel.add(Box.createVerticalGlue(), gbc);
 		
 		this.add(m_contentsPanel);
 		this.pack();
@@ -65,8 +81,7 @@ public class ChangeFromDialog extends DiskoDialog implements IEditMessageDialogI
 	private void initUnitTypePanel()
 	{
 		m_unitTypePanel = new JPanel(new BorderLayout());
-		
-		m_unitTypeField = new JTextField(10);
+		m_unitTypeField = new JTextField(8);
 		m_unitTypeField.addKeyListener(this);
 		m_unitTypePanel.add(m_unitTypeField, BorderLayout.NORTH);
 		
@@ -76,15 +91,14 @@ public class ChangeFromDialog extends DiskoDialog implements IEditMessageDialogI
 			getUnitTypePad();
 			m_unitTypePadArea = (JComponent)Box.createRigidArea(m_unitTypePad.getSize());
 			m_unitTypePanel.add(m_unitTypePadArea, BorderLayout.CENTER);
-			m_unitTypePadArea.setBorder(BorderFactory.createLineBorder(Color.green));
-		}	
+		}
 	}
 	
 	private void getUnitTypePad()
 	{
 		if(m_notebookMode && m_unitTypePad == null)
 		{
-			m_unitTypePad = new UnitTypeDialog(m_wp);
+			m_unitTypePad = new UnitTypeDialog(m_wp, m_unitTypeField);
 			m_unitTypePad.setVisible(false);
 		}
 	}
@@ -93,7 +107,7 @@ public class ChangeFromDialog extends DiskoDialog implements IEditMessageDialogI
 	{
 		m_unitNumberPanel = new JPanel(new BorderLayout());
 		
-		m_unitNumberField = new JTextField(10);
+		m_unitNumberField = new JTextField(8);
 		m_unitNumberField.addKeyListener(this);
 		m_unitNumberPanel.add(m_unitNumberField, BorderLayout.NORTH);
 		
@@ -103,7 +117,6 @@ public class ChangeFromDialog extends DiskoDialog implements IEditMessageDialogI
 			m_unitNumberPad.setTextField(m_unitNumberField);
 			m_unitNumberPadArea = (JComponent)Box.createRigidArea(m_unitNumberPad.getSize());
 			m_unitNumberPanel.add(m_unitNumberPadArea, BorderLayout.CENTER);
-			m_unitNumberPadArea.setBorder(BorderFactory.createLineBorder(Color.magenta));
 		}
 	}
 
@@ -113,9 +126,34 @@ public class ChangeFromDialog extends DiskoDialog implements IEditMessageDialogI
 		{
 			m_unitNumberPad = new NumPadDialog(m_wp.getApplication().getFrame());
 			m_unitNumberPad.setVisible(false);
+			// Add action listener to ok button. Check that unit exists, give error message if not
+			m_unitNumberPad.getOkButton().addActionListener(new ActionListener()
+			{
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					if(unitExists())
+					{
+						fireDialogFinished();
+					}
+					else
+					{
+						ErrorDialog error = new ErrorDialog(m_wp.getApplication().getFrame());
+						error.showError(m_wp.getText("NonexistingUnitErrorMessage.text"),
+								m_unitTypeField.getText() + " " + m_unitNumberField.getText() +
+								" " + m_wp.getText("NonexistingUnitErrorDetails.text"));
+					}
+				}	
+			});
 		}
 	}
 	
+	protected boolean unitExists()
+	{
+		// TODO Auto-generated method stub
+		return true;
+	}
+
 	@Override
 	public void showDialog()
 	{
@@ -133,9 +171,9 @@ public class ChangeFromDialog extends DiskoDialog implements IEditMessageDialogI
 			m_unitTypePad.setVisible(true);
 			
 			m_unitTypeField.setFocusable(false);
-			m_unitTypeField.setEditable(false);
+			//m_unitTypeField.setEditable(false);
 			m_unitNumberField.setFocusable(false);
-			m_unitNumberField.setEditable(false);
+			//m_unitNumberField.setEditable(false);
 		}
 	}
 	
@@ -154,7 +192,16 @@ public class ChangeFromDialog extends DiskoDialog implements IEditMessageDialogI
 	@Override
 	public void newMessageSelected(IMessageIf message)
 	{
-		// TODO Auto-generated method stub
+		ICmdPostIf sender = message.getSender();
+		if(sender != null)
+		{
+			// TODO implement
+			m_unitTypeField.setText(message.getSender().getCallSign());
+		}
+		else
+		{
+			m_unitTypeField.setText("");
+		}
 	}
 
 	@Override
@@ -175,7 +222,7 @@ public class ChangeFromDialog extends DiskoDialog implements IEditMessageDialogI
 
 	private boolean isValidUnitNumber()
 	{
-		String field = m_unitTypeField.getText();
+		String field = m_unitNumberField.getText();
 		
 		// Check for empty string
 		if(field.length()==0)
@@ -198,21 +245,20 @@ public class ChangeFromDialog extends DiskoDialog implements IEditMessageDialogI
 
 	private boolean isValidUnitType()
 	{	
-		boolean valid = false;
 		String unitType = m_unitTypeField.getText();
 		
-		// TODO get list of valid types from mso?
+		// TODO get list of valid types from?
 		String[] validUnitTypes = {"KO", "L", "B", "M"};
 		
 		for(int i=0; i<validUnitTypes.length; i++)
 		{
 			if(unitType.equals(validUnitTypes[i]))
 			{
-				valid = true;
+				return true;
 			}
 		}
 		
-		return valid;
+		return false;
 	}
 
 	@Override
@@ -232,6 +278,13 @@ public class ChangeFromDialog extends DiskoDialog implements IEditMessageDialogI
 	public String getText()
 	{
 		return m_unitTypeField.getText() + " " + m_unitNumberField.getText();
+	}
+
+	@Override
+	public void clearContents()
+	{
+		m_unitNumberField.setText("");
+		m_unitTypeField.setText("");
 	}
 	
 }
