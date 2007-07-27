@@ -48,10 +48,13 @@ import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.map.POITool;
 import org.redcross.sar.mso.IMsoManagerIf;
+import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IMessageLogIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
+import org.redcross.sar.mso.data.ITaskIf;
+import org.redcross.sar.mso.data.ITaskListIf;
 import org.redcross.sar.mso.data.MessageLineImpl;
 import org.redcross.sar.mso.data.IMessageIf.MessageStatus;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
@@ -89,7 +92,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     
     private JPanel m_fromPanel;
     private JLabel m_fromLabel;
-    private ChangeFromDialog m_changeFromDialog;
+    private UnitFieldSelectionDialog m_changeFromDialog;
     private JButton m_changeFromButton;
     
     private JPanel m_toPanel;
@@ -194,11 +197,11 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     	return m_changeDTGDialog;
     }
     
-    private ChangeFromDialog getChangeFromDialog()
+    private UnitFieldSelectionDialog getChangeFromDialog()
     {
     	if(m_changeFromDialog == null)
     	{
-    		m_changeFromDialog = new ChangeFromDialog(m_wpMessageLog);
+    		m_changeFromDialog = new UnitFieldSelectionDialog(m_wpMessageLog);
     		m_changeFromDialog.addDialogListener(this);
     		m_dialogs.add(m_changeFromDialog);
     	}
@@ -445,6 +448,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		// Have user confirm message overwrite
 		if(m_messageDirty)
 		{
+			
 			int n = JOptionPaneExt.showConfirmDialog(this, m_wpMessageLog.getText("MessageDirtySaveWarning.text"),
 					m_wpMessageLog.getText("MessageDirtySaveHeader.text"), true, JOptionPane.YES_NO_OPTION);
 			if(n == JOptionPane.NO_OPTION)
@@ -454,10 +458,10 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			else
 			{
 				// Roll back any changes made to the message
-				
+				// TODO sjekk med vinjar/stian
+				m_wpMessageLog.getMsoManager().rollback();
 			}
 		}
-		
 		m_messageDirty = false;
 		
 		m_currentMessageNr = messageNr;
@@ -466,7 +470,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		m_newMessage = false;
 		
 		// Get the message
-		List<IMessageIf> messages = m_messageLog.selectItems(m_messageSelector, m_lineNumberComparator);
+		List<IMessageIf> messages = m_messageLog.selectItems(m_currentMessageSelector, m_lineNumberComparator);
 		m_currentMessage = messages.get(0);
 		
 		updateMessageGUI();
@@ -479,9 +483,28 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			// Update panel contents
 			m_nrLabel.setText(Integer.toString(m_currentMessage.getNumber()));
 			m_dtgLabel.setText(m_currentMessage.getDTG());
-			// TODO m_fromLabel.setText(m_currentMessage.getSender().getCallSign()); 
+			
+			ICmdPostIf sender = m_currentMessage.getSender();
+			if(sender != null)
+			{
+				// TODO m_fromLabel.setText(m_currentMessage.getSender().getCallSign());
+			}
+			else
+			{
+				m_fromLabel.setText("");
+			}
+			 
+			// ? m_currentMessage.getConfirmedReceivers();
 			//TODO m_toLabel.setText(message.get); //
-			//TODO m_taskLabel.setText(message.get);
+			m_toLabel.setText("");
+			
+			ITaskListIf tasks = m_currentMessage.getMessageTasks();
+			StringBuilder tasksString = new StringBuilder();
+			for(ITaskIf task : tasks.getItems())
+			{
+				tasksString.append(task.toString() + "\n");
+			}
+			m_taskLabel.setText(tasksString.toString());
 			
 			// Update dialogs
 			for(int i=0; i<m_dialogs.size(); i++)
@@ -491,7 +514,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		}
 	}
 	
-	private final Selector<IMessageIf> m_messageSelector = new Selector<IMessageIf>()
+	private final Selector<IMessageIf> m_currentMessageSelector = new Selector<IMessageIf>()
     {
         public boolean select(IMessageIf aMessage)
         {
@@ -621,10 +644,15 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				}
 			}
 		}
-		else if(e.getSource().getClass() == ChangeFromDialog.class)
+		else if(e.getSource().getClass() == UnitFieldSelectionDialog.class)
 		{
 			m_changeFromDialog.hideDialog();
 			m_fromLabel.setText(m_changeFromDialog.getText());
+		}
+		else if(e.getSource().getClass() == MessageTextDialog.class)
+		{
+			IMessageLineIf textLine = m_currentMessage.findMessageLine(MessageLineType.TEXT, false);
+			textLine.setText(m_messageTextDialog.getText());
 		}
 		
 		m_messageDirty = true;
@@ -695,6 +723,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 							m_currentMessage.setStatus(MessageStatus.CONFIRMED);
 						}
 						
+						// TODO sjekk med vinja/stian
 						m_wpMessageLog.getMsoManager().commit();
 						
 						clearPanelContents();

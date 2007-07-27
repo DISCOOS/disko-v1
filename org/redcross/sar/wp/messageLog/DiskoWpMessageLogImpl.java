@@ -1,6 +1,7 @@
 package org.redcross.sar.wp.messageLog;
 
 import java.util.EnumSet;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 import org.redcross.sar.app.IDiskoRole;

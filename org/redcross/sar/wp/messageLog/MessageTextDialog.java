@@ -86,6 +86,7 @@ public class MessageTextDialog extends DiskoDialog implements IEditMessageDialog
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
+				fireDialogCanceled();
 				closeDialog();
 			}
 		});
@@ -110,7 +111,8 @@ public class MessageTextDialog extends DiskoDialog implements IEditMessageDialog
 			public void actionPerformed(ActionEvent e)
 			{
 				// TODO Auto-generated method stub
-				
+				fireDialogFinished();
+				closeDialog();
 			}	
 		});
 		this.add(m_okButton, gbc);

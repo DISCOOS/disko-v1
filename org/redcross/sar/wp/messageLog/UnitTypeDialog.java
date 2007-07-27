@@ -7,9 +7,13 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -32,7 +36,7 @@ public class UnitTypeDialog extends DiskoDialog
 	private JButton m_boatButton = null;
 	private JButton m_dogButton = null;
 	private JButton m_carButton = null;
-	private JButton m_manButton = null;
+	private JButton m_teamButton = null;
 	private JButton m_koButton = null;
 	private JTextField m_textField = null;
 	
@@ -51,22 +55,52 @@ public class UnitTypeDialog extends DiskoDialog
 		this.pack();
 	}
 	
+	/**
+	 * TODO move dependencies to resource file, global
+	 */
 	private void initButtons()
 	{
-		m_planeButton = addButton("Plane", "P", "");
-		m_boatButton = addButton("Boat", "B", "");
-		m_dogButton = addButton("Dog", "D", m_wp.getText("DogUnit.icon"));
-		m_carButton = addButton("Car", "C", m_wp.getText("CarUnit.icon"));
-		m_manButton = addButton("Man", "M", m_wp.getText("ManUnit.icon"));
-		m_koButton = addButton("KO", "KO", "");
+		try
+		{
+			ResourceBundle resources = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Unit");
+			
+			m_planeButton = addButton(resources.getString("UnitType.AIRCRAFT.text"), 
+					resources.getString("UnitType.AIRCRAFT.letter"),
+					resources.getString("UnitType.AIRCRAFT.icon"));
+			
+			m_boatButton = addButton(resources.getString("UnitType.BOAT.text"), 
+					resources.getString("UnitType.BOAT.letter"), 
+					resources.getString("UnitType.BOAT.icon"));
+			
+			m_dogButton = addButton(resources.getString("UnitType.DOG.text"),
+					resources.getString("UnitType.DOG.letter"), 
+					resources.getString("UnitType.DOG.icon"));
+			
+			m_carButton = addButton(resources.getString("UnitType.VEHICLE.text"),
+					resources.getString("UnitType.VEHICLE.letter"),
+					resources.getString("UnitType.VEHICLE.icon"));
+			
+			m_teamButton = addButton(resources.getString("UnitType.TEAM.text"),
+					resources.getString("UnitType.TEAM.letter"),
+					resources.getString("UnitType.TEAM.icon"));
+			
+			m_koButton = addButton(resources.getString("UnitType.COMMAND_POST.text"), 
+					resources.getString("UnitType.COMMAND_POST.letter"),
+					resources.getString("UnitType.COMMAND_POST.icon"));
+		}
+		catch(MissingResourceException e)
+		{
+			System.err.println("Could not find unit resource file");
+		}
 	}
 	
 	private JButton addButton(String name, final String unitType, String iconPath)
 	{
-		JButton button = new JButton(name);
+		JButton button = new JButton();
 		try
 		{
-			button.setIcon(Utils.createImageIcon(iconPath, name));
+			Icon buttonIcon = Utils.createImageIcon(iconPath, name);
+			button.setIcon(buttonIcon);
 		} 
 		catch (Exception e)
 		{
@@ -85,7 +119,7 @@ public class UnitTypeDialog extends DiskoDialog
 				}
 				else
 				{
-					System.err.println("Text-field not set, unable to add listeners");
+					System.err.println("Text-field not set");
 				}
 			}	
 		});

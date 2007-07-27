@@ -10,8 +10,12 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -19,21 +23,28 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.redcross.sar.app.Utils;
 import org.redcross.sar.gui.DiskoBorder;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.gui.NumPadDialog;
 import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IMessageIf;
+import org.redcross.sar.mso.data.IUnitIf;
+import org.redcross.sar.mso.data.IUnitListIf;
+import org.redcross.sar.mso.data.IUnitIf.UnitType;
+
+import com.esri.arcgis.geometry.IUnit;
 
 /**
  * 
  * @author thomasl
  *
- * The dialog for changing the from field of a message in the message log wp
+ * The dialog for selecting unit type and number.
+ * Dialog loads unit information from resource file {@link org.redcross.sar.mso.data.properties.Unit.properties}
  */
 
-public class ChangeFromDialog extends DiskoDialog implements IEditMessageDialogIf, KeyListener
+public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessageDialogIf, KeyListener
 {
 	private JPanel m_contentsPanel = null;
 	
@@ -51,7 +62,9 @@ public class ChangeFromDialog extends DiskoDialog implements IEditMessageDialogI
 	
 	private boolean m_notebookMode = true;
 	
-	public ChangeFromDialog(IDiskoWpMessageLog messageLog)
+	protected ResourceBundle m_unitResources;
+	
+	public UnitFieldSelectionDialog(IDiskoWpMessageLog messageLog)
 	{
 		super(messageLog.getApplication().getFrame());
 		
@@ -74,6 +87,16 @@ public class ChangeFromDialog extends DiskoDialog implements IEditMessageDialogI
 		gbc.gridx++;
 		m_contentsPanel.add(Box.createVerticalGlue(), gbc);
 		
+		try
+		{
+			m_unitResources = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Unit");
+		}
+		catch(MissingResourceException e)
+		{
+			System.err.println("Unable to load unit resources in UnitSelectionDialog");
+		}
+		
+		this.setModalityType(ModalityType.MODELESS);
 		this.add(m_contentsPanel);
 		this.pack();
 	}
@@ -82,6 +105,7 @@ public class ChangeFromDialog extends DiskoDialog implements IEditMessageDialogI
 	{
 		m_unitTypePanel = new JPanel(new BorderLayout());
 		m_unitTypeField = new JTextField(8);
+		
 		m_unitTypeField.addKeyListener(this);
 		m_unitTypePanel.add(m_unitTypeField, BorderLayout.NORTH);
 		
@@ -100,14 +124,18 @@ public class ChangeFromDialog extends DiskoDialog implements IEditMessageDialogI
 		{
 			m_unitTypePad = new UnitTypeDialog(m_wp, m_unitTypeField);
 			m_unitTypePad.setVisible(false);
+			m_unitTypePad.setAlwaysOnTop(true);
+			//m_unitTypePad.setModalityType(ModalityType.MODELESS);
 		}
 	}
+	
 
 	private void initUnitNumberPanel()
 	{
 		m_unitNumberPanel = new JPanel(new BorderLayout());
-		
+	
 		m_unitNumberField = new JTextField(8);
+		
 		m_unitNumberField.addKeyListener(this);
 		m_unitNumberPanel.add(m_unitNumberField, BorderLayout.NORTH);
 		
@@ -125,7 +153,13 @@ public class ChangeFromDialog extends DiskoDialog implements IEditMessageDialogI
 		if(m_notebookMode && m_unitNumberPad == null)
 		{
 			m_unitNumberPad = new NumPadDialog(m_wp.getApplication().getFrame());
+			m_unitNumberPad.setAlwaysOnTop(true);
 			m_unitNumberPad.setVisible(false);
+			
+			// Remove previous action listeners for the ok button, this sets the visibility of the pad to false, which is
+			// not always desirable
+			ActionListener[] actionListeners = m_unitNumberPad.getOkButton().getActionListeners();
+			m_unitNumberPad.getOkButton().removeActionListener(actionListeners[0]);
 			// Add action listener to ok button. Check that unit exists, give error message if not
 			m_unitNumberPad.getOkButton().addActionListener(new ActionListener()
 			{
@@ -138,7 +172,8 @@ public class ChangeFromDialog extends DiskoDialog implements IEditMessageDialogI
 					}
 					else
 					{
-						ErrorDialog error = new ErrorDialog(m_wp.getApplication().getFrame());
+						ErrorDialog error = Utils.getErrorDialog();
+						error.setAlwaysOnTop(true);
 						error.showError(m_wp.getText("NonexistingUnitErrorMessage.text"),
 								m_unitTypeField.getText() + " " + m_unitNumberField.getText() +
 								" " + m_wp.getText("NonexistingUnitErrorDetails.text"));
@@ -150,8 +185,80 @@ public class ChangeFromDialog extends DiskoDialog implements IEditMessageDialogI
 	
 	protected boolean unitExists()
 	{
-		// TODO Auto-generated method stub
+		// Empty fields, use standard value
+		if(m_unitNumberField.getText().length()==0 && m_unitTypeField.getText().length()==0)
+		{
+			return true;
+		}
+		
+		// TODO vinjar/stian sjekk om dette er korrekt
+		IUnitListIf units = m_wp.getMsoManager().getCmdPost().getUnitList();
+		
+		IUnitIf unit = null;
+		try
+		{
+			unit = units.getUnit(Integer.valueOf(m_unitNumberField.getText()));
+		}
+		catch(Exception e)
+		{
+			return false;
+		}
+		
+		// If unit number does not exist the unit can not exist
+		if(unit == null)
+		{
+			return false;
+		}
+
+		// Check unit type for match
+		if(! (unit.getType() == getUnitType(m_unitTypeField.getText())))
+		{
+			return false;
+		}
+		
 		return true;
+	}
+	
+	/**
+	 * @param unitTypeString The text string containing the unit type code 
+	 * @return
+	 */
+	protected UnitType getUnitType(String unitTypeString)
+	{
+		try
+		{
+			if(unitTypeString.equals(m_unitResources.getString("UnitType.VEHICLE.letter")))
+			{
+				return UnitType.VEHICLE;
+			}
+			else if(unitTypeString.equals(m_unitResources.getString("UnitType.BOAT.letter")))
+			{
+				return UnitType.BOAT;
+			}
+			else if(unitTypeString.equals(m_unitResources.getString("UnitType.COMMAND_POST.letter")))
+			{
+				return UnitType.COMMAND_POST;
+			}
+			else if(unitTypeString.equals(m_unitResources.getString("UnitType.TEAM.letter")))
+			{
+				return UnitType.TEAM;
+			}
+			else if(unitTypeString.equals(m_unitResources.getString("UnitType.AIRCRAFT.letter")))
+			{
+				return UnitType.AIRCRAFT;
+			}
+			else if(unitTypeString.equals(m_unitResources.getString("UnitType.DOG.letter")))
+			{
+				return UnitType.DOG;
+			}
+		}
+		catch(MissingResourceException e)
+		{
+			System.err.println("Error getting unit resource");
+		}
+		
+		
+		return null;
 	}
 
 	@Override
@@ -165,15 +272,12 @@ public class ChangeFromDialog extends DiskoDialog implements IEditMessageDialogI
 			m_unitNumberPadArea.setSize(m_unitNumberPad.getSize());
 			m_unitNumberPad.setLocation(m_unitNumberPadArea.getLocationOnScreen());
 			m_unitNumberPad.setVisible(true);
+			m_unitNumberPad.setAlwaysOnTop(true);
 			
 			m_unitTypePadArea.setSize(m_unitTypePad.getSize());
 			m_unitTypePad.setLocation(m_unitTypePadArea.getLocationOnScreen());
 			m_unitTypePad.setVisible(true);
-			
-			m_unitTypeField.setFocusable(false);
-			//m_unitTypeField.setEditable(false);
-			m_unitNumberField.setFocusable(false);
-			//m_unitNumberField.setEditable(false);
+			m_unitNumberPad.setAlwaysOnTop(true);
 		}
 	}
 	
@@ -196,12 +300,16 @@ public class ChangeFromDialog extends DiskoDialog implements IEditMessageDialogI
 		if(sender != null)
 		{
 			// TODO implement
-			m_unitTypeField.setText(message.getSender().getCallSign());
+			//String senderString = sender.toString();
+			m_unitTypeField.setText(sender.getCallSign());
+			m_unitNumberField.setText("");
 		}
 		else
 		{
 			m_unitTypeField.setText("");
+			m_unitNumberField.setText("");
 		}
+		
 	}
 
 	@Override
@@ -247,8 +355,13 @@ public class ChangeFromDialog extends DiskoDialog implements IEditMessageDialogI
 	{	
 		String unitType = m_unitTypeField.getText();
 		
-		// TODO get list of valid types from?
-		String[] validUnitTypes = {"KO", "L", "B", "M"};
+		String[] validUnitTypes = {
+				m_unitResources.getString("UnitType.COMMAND_POST.letter"),
+				m_unitResources.getString("UnitType.BOAT.letter"), 
+				m_unitResources.getString("UnitType.AIRCRAFT.letter"), 
+				m_unitResources.getString("UnitType.TEAM.letter"),
+				m_unitResources.getString("UnitType.VEHICLE.letter"),
+				m_unitResources.getString("UnitType.DOG.letter")};
 		
 		for(int i=0; i<validUnitTypes.length; i++)
 		{
@@ -262,22 +375,31 @@ public class ChangeFromDialog extends DiskoDialog implements IEditMessageDialogI
 	}
 
 	@Override
-	public void keyReleased(KeyEvent arg0)
-	{
-		// TODO Auto-generated method stub
-		
-	}
+	public void keyReleased(KeyEvent arg0){}
 
 	@Override
-	public void keyTyped(KeyEvent arg0)
-	{
-		// TODO Auto-generated method stub
-		
-	}
+	public void keyTyped(KeyEvent arg0){}
 
 	public String getText()
 	{
 		return m_unitTypeField.getText() + " " + m_unitNumberField.getText();
+	}
+	
+	public UnitType getUnitType()
+	{
+		return getUnitType(m_unitTypeField.getText());
+	}
+	
+	public int getUnitNumber()
+	{
+		try
+		{
+			return Integer.valueOf(m_unitNumberField.getText());
+		}
+		catch(Exception e)
+		{
+			return 0;
+		}
 	}
 
 	@Override

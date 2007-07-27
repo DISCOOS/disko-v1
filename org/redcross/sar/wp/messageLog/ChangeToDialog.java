@@ -5,6 +5,7 @@ import org.redcross.sar.mso.data.IMessageIf;
 
 public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf
 {
+	
 	public ChangeToDialog(IDiskoWpMessageLog wp)
 	{
 		super(wp.getApplication().getFrame());
@@ -20,7 +21,6 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf
 	public void newMessageSelected(IMessageIf message)
 	{
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
