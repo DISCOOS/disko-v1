@@ -807,6 +807,9 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					location.y += MessageLogPanel.SMALL_BUTTON_SIZE.height + 5;
 					m_listFromDialog.setLocation(location);
 					m_listFromDialog.showDialog();
+					
+					// Register listeners
+					m_fieldFromDialog.addActionListener(m_listFromDialog);
 				}
     			
     		});

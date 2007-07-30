@@ -1,30 +1,23 @@
 package org.redcross.sar.wp.messageLog;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.LinkedList;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.redcross.sar.app.Utils;
-import org.redcross.sar.gui.DiskoBorder;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.gui.NumPadDialog;
@@ -33,8 +26,6 @@ import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IUnitListIf;
 import org.redcross.sar.mso.data.IUnitIf.UnitType;
-
-import com.esri.arcgis.geometry.IUnit;
 
 /**
  * 
@@ -409,4 +400,17 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		m_unitTypeField.setText("");
 	}
 	
+	public JButton getOKButton()
+	{
+		return m_unitNumberPad.getOkButton();
+	}
+
+	public void addActionListener(UnitListSelectionDialog fromDialog)
+	{
+		LinkedList<JButton> buttons = m_unitTypePad.getButtons();
+		for(JButton button : buttons)
+		{
+			button.addActionListener(fromDialog);
+		}
+	}
 }

@@ -7,6 +7,7 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.LinkedList;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -39,6 +40,7 @@ public class UnitTypeDialog extends DiskoDialog
 	private JButton m_teamButton = null;
 	private JButton m_koButton = null;
 	private JTextField m_textField = null;
+	private LinkedList<JButton> m_buttons;
 	
 	public UnitTypeDialog(IDiskoWpMessageLog wp, JTextField textField)
 	{
@@ -56,10 +58,12 @@ public class UnitTypeDialog extends DiskoDialog
 	}
 	
 	/**
-	 * TODO move dependencies to resource file, global
+	 * 
 	 */
 	private void initButtons()
 	{
+		m_buttons = new LinkedList<JButton>();
+		
 		try
 		{
 			ResourceBundle resources = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Unit");
@@ -67,26 +71,32 @@ public class UnitTypeDialog extends DiskoDialog
 			m_planeButton = addButton(resources.getString("UnitType.AIRCRAFT.text"), 
 					resources.getString("UnitType.AIRCRAFT.letter"),
 					resources.getString("UnitType.AIRCRAFT.icon"));
+			m_buttons.add(m_planeButton);
 			
 			m_boatButton = addButton(resources.getString("UnitType.BOAT.text"), 
 					resources.getString("UnitType.BOAT.letter"), 
 					resources.getString("UnitType.BOAT.icon"));
+			m_buttons.add(m_boatButton);
 			
 			m_dogButton = addButton(resources.getString("UnitType.DOG.text"),
 					resources.getString("UnitType.DOG.letter"), 
 					resources.getString("UnitType.DOG.icon"));
+			m_buttons.add(m_dogButton);
 			
 			m_carButton = addButton(resources.getString("UnitType.VEHICLE.text"),
 					resources.getString("UnitType.VEHICLE.letter"),
 					resources.getString("UnitType.VEHICLE.icon"));
+			m_buttons.add(m_carButton);
 			
 			m_teamButton = addButton(resources.getString("UnitType.TEAM.text"),
 					resources.getString("UnitType.TEAM.letter"),
 					resources.getString("UnitType.TEAM.icon"));
+			m_buttons.add(m_teamButton);
 			
 			m_koButton = addButton(resources.getString("UnitType.COMMAND_POST.text"), 
 					resources.getString("UnitType.COMMAND_POST.letter"),
 					resources.getString("UnitType.COMMAND_POST.icon"));
+			m_buttons.add(m_koButton);
 		}
 		catch(MissingResourceException e)
 		{
@@ -132,6 +142,11 @@ public class UnitTypeDialog extends DiskoDialog
 		m_contentsPanel.add(button);
 		
 		return button;
+	}
+
+	public LinkedList<JButton> getButtons()
+	{
+		return m_buttons;
 	}
 
 }
