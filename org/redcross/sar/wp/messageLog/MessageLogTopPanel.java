@@ -4,41 +4,29 @@
  */
 package org.redcross.sar.wp.messageLog;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
-import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentListener;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
-import javax.swing.border.Border;
-
 import no.cmr.view.JOptionPaneExt;
 
 import org.redcross.sar.app.Utils;
@@ -55,7 +43,6 @@ import org.redcross.sar.mso.data.IMessageLogIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.ITaskIf;
 import org.redcross.sar.mso.data.ITaskListIf;
-import org.redcross.sar.mso.data.MessageLineImpl;
 import org.redcross.sar.mso.data.IMessageIf.MessageStatus;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
@@ -63,9 +50,6 @@ import org.redcross.sar.mso.event.MsoEvent.Update;
 import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.mso.DTG;
 import org.redcross.sar.util.mso.Selector;
-
-import com.sun.corba.se.impl.javax.rmi.CORBA.Util;
-import com.sun.xml.internal.messaging.saaj.soap.MessageImpl;
 
 public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, IDialogEventListener
 {
@@ -92,7 +76,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     
     private JPanel m_fromPanel;
     private JLabel m_fromLabel;
-    private UnitFieldSelectionDialog m_changeFromDialog;
+    private UnitFieldSelectionDialog m_fieldFromDialog;
+    private UnitListSelectionDialog m_listFromDialog;
     private JButton m_changeFromButton;
     
     private JPanel m_toPanel;
@@ -197,16 +182,37 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     	return m_changeDTGDialog;
     }
     
-    private UnitFieldSelectionDialog getChangeFromDialog()
+    private UnitFieldSelectionDialog getFieldChangeFromDialog()
     {
-    	if(m_changeFromDialog == null)
+    	if(m_fieldFromDialog == null)
     	{
-    		m_changeFromDialog = new UnitFieldSelectionDialog(m_wpMessageLog);
-    		m_changeFromDialog.addDialogListener(this);
-    		m_dialogs.add(m_changeFromDialog);
+    		m_fieldFromDialog = new UnitFieldSelectionDialog(m_wpMessageLog);
+    		m_fieldFromDialog.addDialogListener(this);
+    		m_dialogs.add(m_fieldFromDialog);
     	}
     	
-    	return m_changeFromDialog;
+    	return m_fieldFromDialog;
+    }
+    
+    private UnitListSelectionDialog getListChangeFromDialog()
+    {
+    	if(m_listFromDialog == null)
+    	{
+    		m_listFromDialog = new UnitListSelectionDialog(m_wpMessageLog);
+    		m_listFromDialog.addDialogListener(this);
+    		m_dialogs.add(m_listFromDialog);
+    		
+    		// Hide unit list when ok is pressed in unit numpad
+    		m_fieldFromDialog.getOKButton().addActionListener(new ActionListener()
+    		{
+				@Override
+				public void actionPerformed(ActionEvent arg0)
+				{
+					m_listFromDialog.hideDialog();
+				}
+    		});
+    	}
+    	return m_listFromDialog;
     }
     
     private ChangeToDialog getChangeToDialog()
@@ -235,6 +241,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     {
     	if(m_messagePositionDialog == null)
     	{
+    		//TODO
     		POITool tool = null;
 			try
 			{
@@ -362,7 +369,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
         m_messagePanelTopLabel = new JLabel(m_wpMessageLog.getText("MessagePanelTextLabel.text"));
         m_messagePanelTopLabel.setAlignmentX(0.0f);
         m_messagePanel.add(m_messagePanelTopLabel);
-        m_messagePanel.add(new JSeparator(JSeparator.HORIZONTAL));
+        m_messagePanel.add(new JSeparator(SwingConstants.HORIZONTAL));
         m_dialogArea = (JComponent)Box.createGlue();
         m_dialogArea.setPreferredSize(new Dimension(600, 120));
         m_dialogArea.setAlignmentX(0.0f);
@@ -408,7 +415,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     public void initDialogs()
     {
     	getChangeDTGDialog();
-    	getChangeFromDialog();
+    	getFieldChangeFromDialog();
+    	getListChangeFromDialog();
     	getChangeToDialog();
     	getChangeTaskDialog();
     	getMessageTextDialog();
@@ -542,7 +550,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		m_wpMessageLog = wp;
 	}
 
-	@Override
 	public void handleMsoUpdateEvent(Update e)
 	{
 		// TODO update dialogs or warnings?
@@ -551,13 +558,11 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 	private final EnumSet<IMsoManagerIf.MsoClassCode> myInterests = EnumSet.of(IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGE);
 	
-	@Override
 	public boolean hasInterestIn(IMsoObjectIf msoObject)
 	{
 		 return myInterests.contains(msoObject.getMsoClassCode());
 	}
 
-	@Override
 	public void dialogCanceled(DialogEvent e)
 	{
 		// TODO Auto-generated method stub
@@ -612,7 +617,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	/**
 	 * Gets new data from a dialog once a dialog finishes
 	 */
-	@Override
 	public void dialogFinished(DialogEvent e)
 	{
 		if(e.getSource().getClass() == ChangeDTGDialog.class)
@@ -646,8 +650,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		}
 		else if(e.getSource().getClass() == UnitFieldSelectionDialog.class)
 		{
-			m_changeFromDialog.hideDialog();
-			m_fromLabel.setText(m_changeFromDialog.getText());
+			m_fieldFromDialog.hideDialog();
+			m_fromLabel.setText(m_fieldFromDialog.getText());
 		}
 		else if(e.getSource().getClass() == MessageTextDialog.class)
 		{
@@ -658,7 +662,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		m_messageDirty = true;
 	}
 
-	@Override
 	public void dialogStateChanged(DialogEvent e)
 	{
 		// TODO Auto-generated method stub
@@ -792,12 +795,18 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				@Override
 				public void actionPerformed(ActionEvent arg0)
 				{
-					getChangeFromDialog();
+					getFieldChangeFromDialog();
 					hideDialogs();
 					Point location = m_changeDTGButton.getLocationOnScreen();
-	    			location.y -= m_changeFromDialog.getHeight();
-	    			m_changeFromDialog.setLocation(location);
-					m_changeFromDialog.showDialog();
+	    			location.y -= m_fieldFromDialog.getHeight();
+	    			m_fieldFromDialog.setLocation(location);
+					m_fieldFromDialog.showDialog();
+					
+					getListChangeFromDialog();
+					location = m_changeDTGButton.getLocationOnScreen();
+					location.y += MessageLogPanel.SMALL_BUTTON_SIZE.height + 5;
+					m_listFromDialog.setLocation(location);
+					m_listFromDialog.showDialog();
 				}
     			
     		});
