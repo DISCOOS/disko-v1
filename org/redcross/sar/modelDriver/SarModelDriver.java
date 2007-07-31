@@ -751,7 +751,14 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
 //               }
             catch (Exception npe)
             {
-               Log.warning("Attr not found " + ((SarFact) fact).getLabel() + " for msoobj " + msoObj.getMsoClassCode() + "\n" + npe.getMessage());
+                try
+                {
+                    Log.warning("Attr not found " + ((SarFact) fact).getLabel() + " for msoobj " + msoObj.getMsoClassCode() + "\n" + npe.getMessage());
+                }
+                catch (Exception e)
+                {
+                    Log.printStackTrace(e);
+                }
             }
             //TODO implementer
          }

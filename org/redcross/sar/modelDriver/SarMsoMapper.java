@@ -96,8 +96,11 @@ public class SarMsoMapper {
             lAttr.setValue(factVal == 1 ? true : false);
         } else if (msoAttr instanceof AttributeImpl.MsoInteger) {
             AttributeImpl.MsoInteger lAttr = (AttributeImpl.MsoInteger) msoAttr;
-            int factVal = (int) ((SarFactNumerical) sarFact).getIntegerValue();
-            lAttr.setValue(factVal);
+            Integer factVal = ((SarFactNumerical) sarFact).getIntegerValue();
+            if(factVal!=null)
+            {
+                lAttr.setValue(factVal);
+            }
 
         } else if (msoAttr instanceof AttributeImpl.MsoDouble) {
             AttributeImpl.MsoDouble lAttr = (AttributeImpl.MsoDouble) msoAttr;
@@ -156,7 +159,10 @@ public class SarMsoMapper {
             throw new ClassCastException("MsoGeoCollection not supported by mapper");
         } else if (msoAttr instanceof AttributeImpl.MsoEnum) {
             AttributeImpl.MsoEnum lAttr = (AttributeImpl.MsoEnum) msoAttr;
+            if(((SarFactString) sarFact).getStringValue().length()>0)
+            {
             lAttr.setValue(((SarFactString) sarFact).getStringValue());
+            }
         } else {
             Log.warning("Unknown mapping type" + msoAttr.getClass().getName());
         }
