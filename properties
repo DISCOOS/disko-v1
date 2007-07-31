@@ -6,6 +6,8 @@ BasicLine.featureClass.Name=basislinje
 BufferPath.featureClass.Name=soek
 PUI.featureClass.Name=pui
 
+integrate.sara=true
+
 LargeButton.width=64
 LargeButton.height=64
 SmallButton.width=64
