@@ -1,2 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<object id="00000000099" name="Subject" objectType="test" pos="29"/>
+<object id="00000000110" name="Subject" objectType="test" pos="23">
+<fact comp="n" edit="y" id="00000000081" label="Photo" pos1="999" pos2="999" relTo="00000000110" version="1">
+<num_fact antdec="0" max="1.0E8" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000082" label="Birthdate" pos1="999" pos2="999" relTo="00000000110" version="1">
+<date_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000083" label="Firstname" pos1="999" pos2="999" relTo="00000000110" version="1">
+<str_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000084" label="Lastname" pos1="999" pos2="999" relTo="00000000110" version="1">
+<str_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000085" label="Residence" pos1="999" pos2="999" relTo="00000000110" version="1">
+<loc_fact lat_value="" locationType="1" long_value=""/>
+</fact>
+<fact comp="n" edit="y" id="00000000046" label="Telephone1" pos1="999" pos2="999" relTo="00000000110" version="1">
+<str_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000047" label="Telephone2" pos1="999" pos2="999" relTo="00000000110" version="1">
+<str_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000048" label="Telephone3" pos1="999" pos2="999" relTo="00000000110" version="1">
+<str_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000086" label="Gender" pos1="999" pos2="999" relTo="00000000110" version="1">
+<str_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000087" label="ID" pos1="999" pos2="999" relTo="00000000110" version="1">
+<str_fact/>
+</fact>
+</object>
