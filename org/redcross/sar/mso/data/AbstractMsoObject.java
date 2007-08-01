@@ -657,6 +657,8 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         IMsoModelIf.UpdateMode anUpdateMode = MsoModelImpl.getInstance().getUpdateMode();
         int clientEventTypeMask = anEventType.maskValue();
         int serverEventTypeMask = (updateServer && anUpdateMode == IMsoModelIf.UpdateMode.LOCAL_UPDATE_MODE) ? clientEventTypeMask : 0;
+        System.out.println("RegisterUpdate:  " + getObjectId() + " " + getMsoClassCode() + " Mask: " + clientEventTypeMask + " " + anUpdateMode);
+
         if (!m_suspendNotify)
         {
             notifyUpdate(clientEventTypeMask, serverEventTypeMask);

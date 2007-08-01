@@ -88,13 +88,13 @@ public interface IMessageIf extends ITimeItemIf, ISerialNumberedIf
     * Methods for references
     *-------------------------------------------------------------------------------------------*/
 
-    public void setSender(ICmdPostIf aCommunicator);
+    public void setSender(ICommunicatorIf aCommunicator);
 
-    public ICmdPostIf getSender();
+    public ICommunicatorIf getSender();
 
     public IMsoModelIf.ModificationState getSenderState();
 
-    public IMsoReferenceIf<ICmdPostIf> getSenderAttribute();
+    public IMsoReferenceIf<ICommunicatorIf> getSenderAttribute();
 
     /*-------------------------------------------------------------------------------------------
     * Other specified methods

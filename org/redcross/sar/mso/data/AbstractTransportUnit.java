@@ -2,8 +2,7 @@ package org.redcross.sar.mso.data;
 
 public abstract class AbstractTransportUnit extends AbstractUnit implements ITransportIf
 {
-    protected AttributeImpl.MsoString m_identifier = new AttributeImpl.MsoString(this, "identifier");
-    protected AttributeImpl.MsoInteger m_speed = new AttributeImpl.MsoInteger(this, "speed");
+    private AttributeImpl.MsoString m_identifier = new AttributeImpl.MsoString(this, "Identifier");
 
 
     public AbstractTransportUnit(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
@@ -21,7 +20,6 @@ public abstract class AbstractTransportUnit extends AbstractUnit implements ITra
     {
         super.defineAttributes();
         addAttribute(m_identifier);
-        addAttribute(m_speed);
     }
 
     protected void defineLists()
@@ -36,6 +34,6 @@ public abstract class AbstractTransportUnit extends AbstractUnit implements ITra
 
     public String toString()
     {
-        return super.toString() + " " + m_identifier.getString() + " " + m_speed.intValue();
+        return super.toString() + " " + m_identifier.getString();
     }
 }

@@ -30,7 +30,7 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
 
     private final MessageLineListImpl m_messageLines = new MessageLineListImpl(this, "MessageLines", false);
 
-    private final MsoReferenceImpl<ICmdPostIf> m_sender = new MsoReferenceImpl<ICmdPostIf>(this, "Sender", true);
+    private final MsoReferenceImpl<ICommunicatorIf> m_sender = new MsoReferenceImpl<ICommunicatorIf>(this, "Sender", true);
 
     public MessageImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
     {
@@ -330,12 +330,12 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
     * Methods for references
     *-------------------------------------------------------------------------------------------*/
 
-    public void setSender(ICmdPostIf aCommunicator)
+    public void setSender(ICommunicatorIf aCommunicator)
     {
         m_sender.setReference(aCommunicator);
     }
 
-    public ICmdPostIf getSender()
+    public ICommunicatorIf getSender()
     {
         return m_sender.getReference();
     }
@@ -345,7 +345,7 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
         return m_sender.getState();
     }
 
-    public IMsoReferenceIf<ICmdPostIf> getSenderAttribute()
+    public IMsoReferenceIf<ICommunicatorIf> getSenderAttribute()
     {
         return m_sender;
     }
@@ -510,7 +510,7 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
         {
         	lineArray[i] = lines.get(i).toString();
         }
-        return lineArray;        
+        return lineArray;
     }
 
     private final Selector<IMessageLineIf> m_messageLineSelector = new Selector<IMessageLineIf>()

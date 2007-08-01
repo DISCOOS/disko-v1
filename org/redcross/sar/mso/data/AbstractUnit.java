@@ -16,7 +16,6 @@ import java.util.ResourceBundle;
  */
 public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
 {
-
     private final AttributeImpl.MsoInteger m_averageSpeed = new AttributeImpl.MsoInteger(this, "AverageSpeed");
     private final AttributeImpl.MsoInteger m_bearing = new AttributeImpl.MsoInteger(this, "Bearing");
     private final AttributeImpl.MsoString m_callSign = new AttributeImpl.MsoString(this, "CallSign");
