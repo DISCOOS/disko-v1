@@ -2,6 +2,11 @@ package org.redcross.sar.mso.data;
 
 public abstract class AbstractTransportUnit extends AbstractUnit implements ITransportIf
 {
+    public void setIdentifier(String aIdentifier)
+    {
+        m_identifier.setValue(aIdentifier);
+    }
+
     private AttributeImpl.MsoString m_identifier = new AttributeImpl.MsoString(this, "Identifier");
 
 

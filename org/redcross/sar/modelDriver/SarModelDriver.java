@@ -21,6 +21,7 @@ import org.rescuenorway.saraccess.api.*;
 import org.rescuenorway.saraccess.except.SaraException;
 import org.rescuenorway.saraccess.model.*;
 
+import javax.swing.*;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -445,7 +446,7 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
     }
 
     //---------------SaraChangeListener-----------------------------
-    public void saraChanged(SaraChangeEvent change)
+    public void saraChanged(final SaraChangeEvent change)
     {
         if (loadingOperation && change.getSource() instanceof SarOperation)
         {
@@ -457,6 +458,12 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
         }
         if (sarOperation != null && change.getSarOp() == sarOperation)
         {
+            SwingUtilities.invokeLater(new Runnable()
+            {
+
+                public void run()
+                {
+                    //To change body of implemented methods use File | Settings | File Templates.
             System.out.println("saraChanged");
 
             MsoModelImpl.getInstance().setRemoteUpdateMode();
@@ -490,6 +497,8 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
                 Log.printStackTrace("Unable to update msomodel " + e.getMessage(), e);
             }
             MsoModelImpl.getInstance().restoreUpdateMode();
+                }
+            });
         }
     }
 
@@ -721,7 +730,7 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
     public static void setMsoObjectValues(SarObject sarObject, IMsoObjectIf msoObj)
     {
         System.out.println("setMsoObjectValues");
-        MsoModelImpl.getInstance().setRemoteUpdateMode();
+        //MsoModelImpl.getInstance().setRemoteUpdateMode();
 
         for (SarBaseObject fact : sarObject.getObjects())
         {
@@ -759,7 +768,7 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
             }
         }
         //       MsoModelImpl.getInstance().commit();
-        MsoModelImpl.getInstance().restoreUpdateMode();
+        //MsoModelImpl.getInstance().restoreUpdateMode();
     }
 
 
