@@ -24,6 +24,7 @@ import org.redcross.sar.app.Utils;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.gui.NumPadDialog;
+import org.redcross.sar.mso.data.AbstractDerivedList;
 import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.ICommunicatorIf;
 import org.redcross.sar.mso.data.IMessageIf;
@@ -92,7 +93,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 			System.err.println("Unable to load unit resources in UnitSelectionDialog");
 		}
 		
-		this.setModalityType(ModalityType.MODELESS);
+		//this.setModalityType(ModalityType.MODELESS);
 		this.add(m_contentsPanel);
 		this.pack();
 	}
@@ -209,19 +210,33 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 			return true;
 		}
 		
-		IUnitListIf unitList = m_wp.getMsoManager().getCmdPost().getUnitList();
+		// TODO remove hard-coded value
+		if(typeText.equals("C") && numberText.isEmpty())
+		{
+			return true;
+		}
+		
+		AbstractDerivedList<ICommunicatorIf> communicatorList = m_wp.getMsoManager().getCmdPost().getCommunicatorList();
 		try
 		{
-			// Select the unit matching number and letter, if no items are selected, unit does not exist
-			List<IUnitIf> units = unitList.selectItems(
-					new Selector<IUnitIf>()
+			// Select the communicator matching number and letter, if no items are selected, unit does not exist
+			List<ICommunicatorIf> communicators = communicatorList.selectItems(
+					new Selector<ICommunicatorIf>()
 					{
-						public boolean select(IUnitIf anObject)
+						public boolean select(ICommunicatorIf communicator)
 						{
-							// Select 
-							if(anObject.getNumber() == Integer.valueOf(numberText) && anObject.getType() == getUnitType())
+							if(communicator instanceof IUnitIf)
 							{
-								return true;
+								IUnitIf unit = (IUnitIf)communicator;
+								if((unit.getNumber() == Integer.valueOf(numberText)) 
+										&& (typeText.charAt(0) == unit.getUnitNumberPrefix()))
+								{
+									return true;
+								}
+								else
+								{
+									return false;
+								}
 							}
 							else
 							{
@@ -229,14 +244,17 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 							}
 						}
 					}, 
-					new Comparator<IUnitIf>()
+					new Comparator<ICommunicatorIf>()
 					{
-						public int compare(IUnitIf o1, IUnitIf o2)
+						public int compare(ICommunicatorIf arg0,
+								ICommunicatorIf arg1)
 						{
-							return o1.getNumber() - o2.getNumber();
-						}	
+							return 0;
+						}
 					});
-			if(units.size() == 0)
+			
+			// If communicators is empty no units exist that match the current selection
+			if(communicators.isEmpty())
 			{
 				return false;
 			}
@@ -365,13 +383,21 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 
 	public void newMessageSelected(IMessageIf message)
 	{
-		ICmdPostIf sender = message.getSender();
+		ICommunicatorIf sender = message.getSender();
 		if(sender != null)
 		{
-			// TODO implement
-			//String senderString = sender.toString();
-			m_unitTypeField.setText(sender.getCallSign());
-			//m_unitNumberField.setText(sender.get);
+			if(sender instanceof IUnitIf)
+			{
+				IUnitIf unit = (IUnitIf)sender;
+				m_unitTypeField.setText(unit.getTypeText());
+				m_unitNumberField.setText(Integer.toString(unit.getNumber()));
+			}
+			else if(sender instanceof ICmdPostIf)
+			{
+				// TODO remove hard-coding
+				m_unitTypeField.setText("C");
+				m_unitNumberField.setText("");
+			}
 		}
 		else
 		{
@@ -502,6 +528,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		else if(command.length == 1)
 		{
 			m_unitTypeField.setText(getUnitTypeString(UnitType.valueOf(command[0])));
+			m_unitNumberField.setText("");
 		}
 		
 	}

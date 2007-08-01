@@ -56,6 +56,12 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
         myInterests.add(NavBar.ToolCommandType.MAP_TOGGLE_COMMAND);
         navBar.showButtons(myInterests);
     }
+    
+    public void deactivated()
+    {
+    	super.deactivated();
+    	m_logPanel.hideDialogs();
+    }
 
     /* (non-Javadoc)
     * @see com.geodata.engine.disko.task.DiskoAp#getName()

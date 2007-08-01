@@ -4,18 +4,30 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import javax.swing.AbstractButton;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JToggleButton;
 import javax.swing.ScrollPaneConstants;
 
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.mso.data.AbstractDerivedList;
+import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.ICommunicatorIf;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
@@ -39,58 +51,119 @@ public class UnitListSelectionDialog extends DiskoDialog implements IEditMessage
 	protected IDiskoWpMessageLog m_wpMessageLog;
 	protected UnitType m_unitTypeFilter = null;
 	protected IUnitListIf m_unitList = null;
+	protected AbstractDerivedList<ICommunicatorIf> m_communicatorList;
+	protected List<ActionListener> m_actionListeners;
+	protected ButtonGroup m_buttonGroup = null;
+	protected JToggleButton m_currentButton = null;
+	
+	protected MouseListener m_buttonMouseListener = new MouseListener()
+	{
+		public void mouseClicked(MouseEvent me)
+		{
+			JToggleButton button = (JToggleButton)me.getSource();
+			if(button == m_currentButton)
+			{
+				// If a selected unit is de-selected in the list, standard sender should be set
+				m_buttonGroup.clearSelection();
+				ActionEvent ae = new ActionEvent(button, 1, "COMMAND_POST");
+				ActionListener[] listeners = button.getActionListeners();
+				for(ActionListener actionListener : listeners)
+				{
+					actionListener.actionPerformed(ae);
+				}
+				m_currentButton = null;
+			}
+			else
+			{
+				m_currentButton = button;
+			}
+			fireDialogFinished();
+		}
+
+		public void mouseEntered(MouseEvent arg0)
+		{}
+		public void mouseExited(MouseEvent arg0)
+		{}
+		public void mousePressed(MouseEvent arg0)
+		{}
+		public void mouseReleased(MouseEvent arg0)
+		{}		
+	};
 	
 	private final Dimension BUTTON_SIZE = new Dimension(MessageLogPanel.SMALL_BUTTON_SIZE.width*3, 
 			MessageLogPanel.SMALL_BUTTON_SIZE.height);
 	private final int NUMBER_OF_ROWS = 7;
 	
 	/**
+	 * Constructor
+	 * @param wp
+	 */
+	public UnitListSelectionDialog(IDiskoWpMessageLog wp)
+	{
+		super(wp.getApplication().getFrame());
+		m_wpMessageLog = wp;
+		m_wpMessageLog.getMmsoEventManager().addClientUpdateListener(this);
+		m_unitList = wp.getMsoManager().getCmdPost().getUnitList();
+		m_communicatorList = wp.getMsoManager().getCmdPost().getCommunicatorList();
+		
+		m_actionListeners = new LinkedList<ActionListener>();
+		
+		initContentsPanel();
+		this.pack();
+	}
+	
+	/**
 	 * Sorts units based on  number
 	 */
-	private Comparator<IUnitIf> m_unitComparator = new Comparator<IUnitIf>()
+	private Comparator<ICommunicatorIf> m_communicatorComparator = new Comparator<ICommunicatorIf>()
 	{
-		public int compare(IUnitIf o1, IUnitIf o2)
+		@Override
+		public int compare(ICommunicatorIf arg0, ICommunicatorIf arg1)
 		{
-			return o1.getNumber() - o2.getNumber();
-		}	
+			if(arg0 instanceof IUnitIf)
+			{
+				if(arg1 instanceof IUnitIf)
+				{
+					return ((IUnitIf)arg0).getNumber() - ((IUnitIf)arg1).getNumber();
+				}
+				else
+				{
+					return 1;
+				}
+			}
+			else
+			{
+				return -1;
+			}
+		}
 	};
 	
 	/**
 	 * Selects unit based on the unit type filter
 	 */
-	private Selector<IUnitIf> m_unitSelector = new Selector<IUnitIf>()
+	private Selector<ICommunicatorIf> m_communicatorSelector = new Selector<ICommunicatorIf>()
 	{
-		public boolean select(IUnitIf anObject)
+		public boolean select(ICommunicatorIf communicator)
 		{
 			if(m_unitTypeFilter == null)
 			{
 				return true;
 			}
+			else if(communicator instanceof ICmdPostIf )
+			{
+				return (m_unitTypeFilter == UnitType.COMMAND_POST);
+			}
+			else if(communicator instanceof IUnitIf)
+			{
+				IUnitIf unit = (IUnitIf)communicator;
+				return unit.getType() == m_unitTypeFilter;
+			}
 			else
 			{
-				if(anObject.getType() == m_unitTypeFilter)
-				{
-					return true;
-				}
-				else
-				{
-					return false;
-				}
+				return false;
 			}
-		}	
+		}
 	};
-	
-	public UnitListSelectionDialog(IDiskoWpMessageLog wp)
-	{
-		super(wp.getApplication().getFrame());
-		
-		m_wpMessageLog = wp;
-		m_wpMessageLog.getMmsoEventManager().addClientUpdateListener(this);
-		m_unitList = wp.getMsoManager().getCmdPost().getUnitList();
-		
-		initContentsPanel();
-		this.pack();
-	}
 	
 	private Icon getUnitIcon(UnitType unitType)
 	{
@@ -123,7 +196,6 @@ public class UnitListSelectionDialog extends DiskoDialog implements IEditMessage
 
 	public void clearContents()
 	{
-		// TODO Auto-generated method stub	
 	}
 
 	public void hideDialog()
@@ -131,8 +203,51 @@ public class UnitListSelectionDialog extends DiskoDialog implements IEditMessage
 		this.setVisible(false);
 	}
 
+	/**
+	 * Search communicator list and mark unit as selected
+	 */
 	public void newMessageSelected(IMessageIf message)
 	{
+		ICommunicatorIf sender = message.getSender();
+		if(sender != null)
+		{
+			m_buttonGroup.clearSelection();
+			Enumeration<AbstractButton> buttons = m_buttonGroup.getElements();
+			AbstractButton button = null;
+			if(sender instanceof ICmdPostIf)
+			{
+				while(buttons.hasMoreElements())
+				{
+					button = buttons.nextElement();
+					String command = button.getActionCommand();
+					
+					if(command.equals(UnitType.COMMAND_POST.name()))
+					{
+						m_currentButton = (JToggleButton)button;
+						button.setSelected(true);
+					}
+				}
+			}
+			else if(sender instanceof IUnitIf)
+			{
+				IUnitIf unit = (IUnitIf)sender;
+				while(buttons.hasMoreElements())
+				{
+					button = buttons.nextElement();
+					String[] command = button.getActionCommand().split(" ");
+					if(command.length == 2)
+					{
+						if(command[0].equals(unit.getType().name()) && command[1].equals(unit.getNumber()))
+						{
+							m_currentButton = (JToggleButton)button;
+							button.setSelected(true);
+						}
+					}
+				}
+			}
+			
+			
+		}
 		// TODO Auto-generated method stub
 	}
 
@@ -177,8 +292,10 @@ public class UnitListSelectionDialog extends DiskoDialog implements IEditMessage
 		// Clear previous list, brute force maintenance
 		m_contentsPanel.removeAll();
 		
+		m_buttonGroup = new ButtonGroup();
+		
 		// Set contents panel size in order to enable scroll pane
-		int numberOfColumns = m_unitList.getItems().size() / NUMBER_OF_ROWS + 1;
+		int numberOfColumns = m_communicatorList.getItems().size() / NUMBER_OF_ROWS + 1;
 		m_contentsPanel.setMinimumSize(new Dimension(numberOfColumns * BUTTON_SIZE.width, 
 				NUMBER_OF_ROWS * BUTTON_SIZE.height));
 		m_contentsPanel.setPreferredSize(new Dimension(numberOfColumns * BUTTON_SIZE.width, 
@@ -188,7 +305,7 @@ public class UnitListSelectionDialog extends DiskoDialog implements IEditMessage
 		
 		JPanel panel = null;
 		int i = 0;
-		for(IUnitIf unit : m_unitList.selectItems(m_unitSelector , m_unitComparator))
+		for(ICommunicatorIf commnicator: m_communicatorList.selectItems(m_communicatorSelector , m_communicatorComparator))
 		{
 			if(i%NUMBER_OF_ROWS == 0)
 			{
@@ -200,31 +317,79 @@ public class UnitListSelectionDialog extends DiskoDialog implements IEditMessage
 				panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 				m_contentsPanel.add(panel);
 			}
-			addUnitButton(unit, panel);
+			addUnitButton(commnicator, panel);
 			i++;
 		}
 	}
 
-	private void addUnitButton(IUnitIf unit, JPanel buttonPanel)
+	private void addUnitButton(ICommunicatorIf communicator, JPanel buttonPanel)
 	{
-		JButton button = new JButton();
+		JToggleButton button = new JToggleButton();
 		
 		button.setMinimumSize(BUTTON_SIZE);
 		button.setPreferredSize(BUTTON_SIZE);
 		button.setMaximumSize(BUTTON_SIZE);
 		
-		button.setIcon(getUnitIcon(unit.getType()));
-		button.setText(unit.getNumber() + " " + unit.getCallSign());
+		if(communicator instanceof IUnitIf)
+		{
+			IUnitIf unit = (IUnitIf)communicator;
+			button.setIcon(getUnitIcon(unit.getType()));
+			button.setText(unit.getNumber() + " " + unit.getCallSign());
+			button.setActionCommand(unit.getType().name() + " " + unit.getNumber());
+		}
+		else if(communicator instanceof ICmdPostIf)
+		{
+			button.setIcon(getUnitIcon(IUnitIf.UnitType.COMMAND_POST));
+			button.setText(((ICmdPostIf)communicator).getCallSign());
+			button.setActionCommand(UnitType.COMMAND_POST.name());
+			// TODO add CP number
+		}
 		
-		// TODO add action listener
+		// Add action listeners to button
+		for(ActionListener listener : m_actionListeners)
+		{
+			button.addActionListener(listener);
+		}
+		
+		// De-selecting a button should result in standard sender value being used
+		button.addMouseListener(m_buttonMouseListener);
 		
 		buttonPanel.add(button);
+		m_buttonGroup.add(button);
 	}
 
 	
+	/**
+	 * Updates the type filter based on which buttons are pressed in the unit type selection pad
+	 */
 	public void actionPerformed(ActionEvent e)
 	{
-		// TODO Auto-generated method stub
-		
+		try
+		{
+			String command = e.getActionCommand();
+			UnitType type = UnitType.valueOf(command);
+			setUnitTypeFilter(type);
+			this.validate();
+			this.repaint();
+		}
+		catch(Exception exc)
+		{}
+	}
+	
+	public Enumeration<AbstractButton> getButtons()
+	{
+		return m_buttonGroup.getElements();
+	}
+
+	public void addActionListener(UnitFieldSelectionDialog fromDialog)
+	{
+		m_actionListeners.add(fromDialog);
+		Enumeration<AbstractButton> buttons = m_buttonGroup.getElements();
+		AbstractButton button = null;
+		while(buttons.hasMoreElements())
+		{
+			button = buttons.nextElement();
+			button.addActionListener(fromDialog);
+		}
 	}
 }

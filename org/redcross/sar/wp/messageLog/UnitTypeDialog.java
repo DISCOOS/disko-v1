@@ -20,6 +20,7 @@ import javax.swing.JTextField;
 
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.mso.data.IUnitIf.UnitType;
 
 /**
  * 
@@ -33,12 +34,12 @@ public class UnitTypeDialog extends DiskoDialog
 	private JPanel m_contentsPanel = null;
 	
 	
-	private JButton m_planeButton = null;
+	private JButton m_aircraftButton = null;
 	private JButton m_boatButton = null;
 	private JButton m_dogButton = null;
-	private JButton m_carButton = null;
+	private JButton m_vehicleButton = null;
 	private JButton m_teamButton = null;
-	private JButton m_koButton = null;
+	private JButton m_commandPostButton = null;
 	private JTextField m_textField = null;
 	private LinkedList<JButton> m_buttons;
 	
@@ -68,35 +69,41 @@ public class UnitTypeDialog extends DiskoDialog
 		{
 			ResourceBundle resources = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Unit");
 			
-			m_planeButton = addButton(resources.getString("UnitType.AIRCRAFT.text"), 
+			m_aircraftButton = addButton(resources.getString("UnitType.AIRCRAFT.text"), 
 					resources.getString("UnitType.AIRCRAFT.letter"),
-					resources.getString("UnitType.AIRCRAFT.icon"));
-			m_buttons.add(m_planeButton);
+					resources.getString("UnitType.AIRCRAFT.icon"),
+					UnitType.AIRCRAFT);
+			m_buttons.add(m_aircraftButton);
 			
 			m_boatButton = addButton(resources.getString("UnitType.BOAT.text"), 
 					resources.getString("UnitType.BOAT.letter"), 
-					resources.getString("UnitType.BOAT.icon"));
+					resources.getString("UnitType.BOAT.icon"),
+					UnitType.BOAT);
 			m_buttons.add(m_boatButton);
 			
 			m_dogButton = addButton(resources.getString("UnitType.DOG.text"),
 					resources.getString("UnitType.DOG.letter"), 
-					resources.getString("UnitType.DOG.icon"));
+					resources.getString("UnitType.DOG.icon"),
+					UnitType.DOG);
 			m_buttons.add(m_dogButton);
 			
-			m_carButton = addButton(resources.getString("UnitType.VEHICLE.text"),
+			m_vehicleButton = addButton(resources.getString("UnitType.VEHICLE.text"),
 					resources.getString("UnitType.VEHICLE.letter"),
-					resources.getString("UnitType.VEHICLE.icon"));
-			m_buttons.add(m_carButton);
+					resources.getString("UnitType.VEHICLE.icon"),
+					UnitType.VEHICLE);
+			m_buttons.add(m_vehicleButton);
 			
 			m_teamButton = addButton(resources.getString("UnitType.TEAM.text"),
 					resources.getString("UnitType.TEAM.letter"),
-					resources.getString("UnitType.TEAM.icon"));
+					resources.getString("UnitType.TEAM.icon"),
+					UnitType.TEAM);
 			m_buttons.add(m_teamButton);
 			
-			m_koButton = addButton(resources.getString("UnitType.COMMAND_POST.text"), 
+			m_commandPostButton = addButton(resources.getString("UnitType.COMMAND_POST.text"), 
 					resources.getString("UnitType.COMMAND_POST.letter"),
-					resources.getString("UnitType.COMMAND_POST.icon"));
-			m_buttons.add(m_koButton);
+					resources.getString("UnitType.COMMAND_POST.icon"),
+					UnitType.COMMAND_POST);
+			m_buttons.add(m_commandPostButton);
 		}
 		catch(MissingResourceException e)
 		{
@@ -104,9 +111,10 @@ public class UnitTypeDialog extends DiskoDialog
 		}
 	}
 	
-	private JButton addButton(String name, final String unitType, String iconPath)
+	private JButton addButton(String name, final String unitTypeLetter, String iconPath, UnitType unitType)
 	{
 		JButton button = new JButton();
+		button.setActionCommand(unitType.name());
 		try
 		{
 			Icon buttonIcon = Utils.createImageIcon(iconPath, name);
@@ -120,12 +128,11 @@ public class UnitTypeDialog extends DiskoDialog
 		// Let the buttons manipulate the text field, setting the contents to the unit type code
 		button.addActionListener(new ActionListener()
 		{
-			@Override
 			public void actionPerformed(ActionEvent arg0)
 			{
 				if(m_textField != null)
 				{
-					m_textField.setText(unitType);
+					m_textField.setText(unitTypeLetter);
 				}
 				else
 				{

@@ -15,9 +15,11 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -37,12 +39,14 @@ import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.map.POITool;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.ICmdPostIf;
+import org.redcross.sar.mso.data.ICommunicatorIf;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IMessageLogIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.ITaskIf;
 import org.redcross.sar.mso.data.ITaskListIf;
+import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IMessageIf.MessageStatus;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
@@ -201,16 +205,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     		m_listFromDialog = new UnitListSelectionDialog(m_wpMessageLog);
     		m_listFromDialog.addDialogListener(this);
     		m_dialogs.add(m_listFromDialog);
-    		
-    		// Hide unit list when ok is pressed in unit numpad
-    		m_fieldFromDialog.getOKButton().addActionListener(new ActionListener()
-    		{
-				@Override
-				public void actionPerformed(ActionEvent arg0)
-				{
-					m_listFromDialog.hideDialog();
-				}
-    		});
     	}
     	return m_listFromDialog;
     }
@@ -492,19 +486,28 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			m_nrLabel.setText(Integer.toString(m_currentMessage.getNumber()));
 			m_dtgLabel.setText(m_currentMessage.getDTG());
 			
-			ICmdPostIf sender = m_currentMessage.getSender();
+			// Update from 
+			ICommunicatorIf sender = m_currentMessage.getSender();
 			if(sender != null)
 			{
-				// TODO m_fromLabel.setText(m_currentMessage.getSender().getCallSign());
+				if(sender instanceof ICmdPostIf)
+				{
+					// TODO update when multiple command post are used
+					m_fromLabel.setText("C");
+				}
+				else if(sender instanceof IUnitIf)
+				{
+					IUnitIf unit = (IUnitIf)sender;
+					m_fromLabel.setText(unit.getTypeText() + " " + unit.getNumber());
+				}
 			}
 			else
 			{
-				m_fromLabel.setText("");
+				// TODO remove hard-coded value
+				m_fromLabel.setText("C");
 			}
 			 
-			// ? m_currentMessage.getConfirmedReceivers();
-			//TODO m_toLabel.setText(message.get); //
-			m_toLabel.setText("");
+			//m_toLabel.setText("");
 			
 			ITaskListIf tasks = m_currentMessage.getMessageTasks();
 			StringBuilder tasksString = new StringBuilder();
@@ -565,8 +568,11 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 	public void dialogCanceled(DialogEvent e)
 	{
-		// TODO Auto-generated method stub
+		Object sender = e.getSource();
 		
+		if(sender.getClass() == UnitListSelectionDialog.class)
+		{
+		}
 	}
 	
 	/**
@@ -648,9 +654,11 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				}
 			}
 		}
-		else if(e.getSource().getClass() == UnitFieldSelectionDialog.class)
+		else if(e.getSource().getClass() == UnitFieldSelectionDialog.class || 
+				e.getSource().getClass() == UnitListSelectionDialog.class)
 		{
 			m_fieldFromDialog.hideDialog();
+			m_listFromDialog.hideDialog();
 			m_fromLabel.setText(m_fieldFromDialog.getText());
 		}
 		else if(e.getSource().getClass() == MessageTextDialog.class)
@@ -791,8 +799,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     		m_changeFromButton = createChangeButton();
     		m_changeFromButton.addActionListener(new ActionListener()
     		{
-
-				@Override
 				public void actionPerformed(ActionEvent arg0)
 				{
 					getFieldChangeFromDialog();
@@ -804,14 +810,14 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					
 					getListChangeFromDialog();
 					location = m_changeDTGButton.getLocationOnScreen();
-					location.y += MessageLogPanel.SMALL_BUTTON_SIZE.height + 5;
+					location.y += MessageLogPanel.SMALL_BUTTON_SIZE.height;
 					m_listFromDialog.setLocation(location);
 					m_listFromDialog.showDialog();
 					
 					// Register listeners
 					m_fieldFromDialog.addActionListener(m_listFromDialog);
+					m_listFromDialog.addActionListener(m_fieldFromDialog);
 				}
-    			
     		});
     	}
     	return m_changeFromButton;
@@ -1012,7 +1018,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	/**
 	 * Hides all dialogs in panel
 	 */
-	private void hideDialogs()
+	public void hideDialogs()
 	{
 		for(int i=0; i<m_dialogs.size(); i++)
 		{

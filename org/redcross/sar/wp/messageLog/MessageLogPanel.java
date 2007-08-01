@@ -146,4 +146,9 @@ public class MessageLogPanel
 	{
 		m_wpModule = diskoWpMessageLogImpl;
 	}
+
+	public void hideDialogs()
+	{
+		m_topPanel.hideDialogs();
+	}
 }
