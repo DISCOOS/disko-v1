@@ -7,5 +7,7 @@ public interface ICommunicatorIf extends IMsoObjectIf
 {
     public void setCallSign(String aCallsign);
 
-    public String getCallSign(); 
+    public String getCallSign();
+    
+    public char getCommunicatorNumberPrefix();
 }

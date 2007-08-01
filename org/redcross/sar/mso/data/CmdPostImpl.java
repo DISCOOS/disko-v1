@@ -7,6 +7,8 @@ import org.redcross.sar.util.except.MsoCastException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 /**
  * Command, control and communication center (command post)
@@ -124,6 +126,27 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     {
     }
 
+    public char getCommunicatorNumberPrefix()
+    {
+    	try
+    	{
+    		// Get unit resources 
+    		ResourceBundle unitResource = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Unit");
+    		String letter = unitResource.getString("UnitType.COMMAND_POST.letter");
+    		if(letter.length() == 1)
+    		{
+    			return letter.charAt(0);
+    		}
+    		else
+    		{
+    			return 'C';
+    		}
+    	}
+    	catch(MissingResourceException e)
+    	{}
+    	
+    	return 'C';
+    }
 
     public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
