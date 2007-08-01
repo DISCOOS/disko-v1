@@ -7,7 +7,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -16,16 +18,19 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.gui.NumPadDialog;
 import org.redcross.sar.mso.data.ICmdPostIf;
+import org.redcross.sar.mso.data.ICommunicatorIf;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IUnitListIf;
 import org.redcross.sar.mso.data.IUnitIf.UnitType;
+import org.redcross.sar.util.mso.Selector;
 
 /**
  * 
@@ -35,7 +40,7 @@ import org.redcross.sar.mso.data.IUnitIf.UnitType;
  * Dialog loads unit information from resource file {@link org.redcross.sar.mso.data.properties.Unit.properties}
  */
 
-public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessageDialogIf, KeyListener
+public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessageDialogIf, KeyListener, ActionListener
 {
 	private JPanel m_contentsPanel = null;
 	
@@ -116,7 +121,20 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 			m_unitTypePad = new UnitTypeDialog(m_wp, m_unitTypeField);
 			m_unitTypePad.setVisible(false);
 			m_unitTypePad.setAlwaysOnTop(true);
-			//m_unitTypePad.setModalityType(ModalityType.MODELESS);
+		}
+		
+		// Pressing unit type should clear unit number text field
+		ActionListener numberFieldClear = new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent arg0)
+			{
+				m_unitNumberField.setText("");
+			}	
+		};
+		for(JButton button : m_unitTypePad.getButtons())
+		{
+			button.addActionListener(numberFieldClear);
 		}
 	}
 	
@@ -144,6 +162,8 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		if(m_notebookMode && m_unitNumberPad == null)
 		{
 			m_unitNumberPad = new NumPadDialog(m_wp.getApplication().getFrame());
+			// TODO endre eigenskapar til NumPad? Kva med sjekk av data? Ikkje alltid ønskeleg å lukke dialog sjølv om OK
+			//m_unitNumberPad = m_wp.getApplication().getUIFactory().getNumPadDialog();
 			m_unitNumberPad.setAlwaysOnTop(true);
 			m_unitNumberPad.setVisible(false);
 			
@@ -174,45 +194,66 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		}
 	}
 	
+	/**
+	 * Checks to see whether the selected unit actually exists in the unit list or not
+	 * @return true if unit in type and numpad exists, false otherwise
+	 */
 	protected boolean unitExists()
 	{
+		final String numberText = m_unitNumberField.getText();
+		final String typeText = m_unitTypeField.getText();
+		
 		// Empty fields, use standard value
-		if(m_unitNumberField.getText().length()==0 && m_unitTypeField.getText().length()==0)
+		if(numberText.length()==0 && typeText.length()==0)
 		{
 			return true;
 		}
 		
-		// TODO vinjar/stian sjekk om dette er korrekt
-		IUnitListIf units = m_wp.getMsoManager().getCmdPost().getUnitList();
-		
-		IUnitIf unit = null;
+		IUnitListIf unitList = m_wp.getMsoManager().getCmdPost().getUnitList();
 		try
 		{
-			unit = units.getUnit(Integer.valueOf(m_unitNumberField.getText()));
+			// Select the unit matching number and letter, if no items are selected, unit does not exist
+			List<IUnitIf> units = unitList.selectItems(
+					new Selector<IUnitIf>()
+					{
+						public boolean select(IUnitIf anObject)
+						{
+							// Select 
+							if(anObject.getNumber() == Integer.valueOf(numberText) && anObject.getType() == getUnitType())
+							{
+								return true;
+							}
+							else
+							{
+								return false;
+							}
+						}
+					}, 
+					new Comparator<IUnitIf>()
+					{
+						public int compare(IUnitIf o1, IUnitIf o2)
+						{
+							return o1.getNumber() - o2.getNumber();
+						}	
+					});
+			if(units.size() == 0)
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
 		}
 		catch(Exception e)
 		{
 			return false;
 		}
-		
-		// If unit number does not exist the unit can not exist
-		if(unit == null)
-		{
-			return false;
-		}
-
-		// Check unit type for match
-		if(! (unit.getType() == getUnitType(m_unitTypeField.getText())))
-		{
-			return false;
-		}
-		
-		return true;
 	}
 	
 	/**
 	 * @param unitTypeString The text string containing the unit type code 
-	 * @return
+	 * @return The unit type
 	 */
 	protected UnitType getUnitType(String unitTypeString)
 	{
@@ -251,8 +292,47 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		
 		return null;
 	}
+	
+	protected String getUnitTypeString(UnitType unitType)
+	{
+		try
+		{
+			if(unitType == UnitType.AIRCRAFT)
+			{
+				return m_unitResources.getString("UnitType.AIRCRAFT.letter");
+			}
+			else if(unitType == UnitType.BOAT)
+			{
+				return m_unitResources.getString("UnitType.BOAT.letter");
+			}
+			else if(unitType == UnitType.COMMAND_POST)
+			{
+				return m_unitResources.getString("UnitType.COMMAND_POST.letter");
+			}
+			else if(unitType == UnitType.DOG)
+			{
+				return m_unitResources.getString("UnitType.DOG.letter");
+			}
+			else if(unitType == UnitType.TEAM)
+			{
+				return m_unitResources.getString("UnitType.TEAM.letter");
+			}
+			else if(unitType == UnitType.VEHICLE)
+			{
+				return m_unitResources.getString("UnitType.VEHICLE.letter");
+			}
+			else
+			{
+				return null;
+			}
+		}
+		catch(MissingResourceException e)
+		{
+			System.err.println("Missing unit resource file");
+			return null;
+		}
+	}
 
-	@Override
 	public void showDialog()
 	{
 		this.setVisible(true);
@@ -263,16 +343,15 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 			m_unitNumberPadArea.setSize(m_unitNumberPad.getSize());
 			m_unitNumberPad.setLocation(m_unitNumberPadArea.getLocationOnScreen());
 			m_unitNumberPad.setVisible(true);
-			m_unitNumberPad.setAlwaysOnTop(true);
+			//m_unitNumberPad.setAlwaysOnTop(true);
 			
 			m_unitTypePadArea.setSize(m_unitTypePad.getSize());
 			m_unitTypePad.setLocation(m_unitTypePadArea.getLocationOnScreen());
 			m_unitTypePad.setVisible(true);
-			m_unitNumberPad.setAlwaysOnTop(true);
+			//m_unitNumberPad.setAlwaysOnTop(true);
 		}
 	}
 	
-	@Override
 	public void hideDialog()
 	{
 		this.setVisible(false);
@@ -284,7 +363,6 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		}
 	}
 
-	@Override
 	public void newMessageSelected(IMessageIf message)
 	{
 		ICmdPostIf sender = message.getSender();
@@ -293,7 +371,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 			// TODO implement
 			//String senderString = sender.toString();
 			m_unitTypeField.setText(sender.getCallSign());
-			m_unitNumberField.setText("");
+			//m_unitNumberField.setText(sender.get);
 		}
 		else
 		{
@@ -303,7 +381,6 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		
 	}
 
-	@Override
 	public void keyPressed(KeyEvent ke)
 	{
 		if(ke.getKeyCode() == KeyEvent.VK_ENTER)
@@ -365,10 +442,8 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		return false;
 	}
 
-	@Override
-	public void keyReleased(KeyEvent arg0){}
 
-	@Override
+	public void keyReleased(KeyEvent arg0){}
 	public void keyTyped(KeyEvent arg0){}
 
 	public String getText()
@@ -393,7 +468,6 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		}
 	}
 
-	@Override
 	public void clearContents()
 	{
 		m_unitNumberField.setText("");
@@ -412,5 +486,23 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		{
 			button.addActionListener(fromDialog);
 		}
+	}
+
+	/**
+	 * Handle selections in unit list dialog
+	 */
+	public void actionPerformed(ActionEvent arg0)
+	{
+		String[] command = arg0.getActionCommand().split(" ");
+		if(command.length == 2)
+		{
+			m_unitTypeField.setText(getUnitTypeString(UnitType.valueOf(command[0])));
+			m_unitNumberField.setText(command[1]);
+		}
+		else if(command.length == 1)
+		{
+			m_unitTypeField.setText(getUnitTypeString(UnitType.valueOf(command[0])));
+		}
+		
 	}
 }
