@@ -9,8 +9,8 @@
  */
 package org.redcross.sar.mso;
 
-import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.modelDriver.IModelDriverIf;
+import org.redcross.sar.mso.event.IMsoEventManagerIf;
 
 
 /**
@@ -34,8 +34,8 @@ public interface IMsoModelIf
     enum ModificationState
     {
         STATE_UNDEFINED,
-        STATE_SERVER_ORIGINAL,
-        STATE_SERVER_MODIFIED,
+        STATE_SERVER,
+//        STATE_SERVER_MODIFIED,
         STATE_CONFLICTING,
         STATE_LOCAL
     }

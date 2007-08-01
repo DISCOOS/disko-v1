@@ -739,16 +739,16 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     }
 
     /**
-     * Commit local changes.
+     * Postprocess commit of local changes.
      * Generates client update event.
      */
-    public void commitLocal()
+    public void postProcessCommit()
     {
         suspendNotify();
         boolean dataModified = false;
         for (AttributeImpl attr : m_attributeList)
         {
-            dataModified |= attr.commitLocal();
+            dataModified |= attr.postProcessCommit();
         }
         if (dataModified)
         {
@@ -757,12 +757,12 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
 
         for (MsoListImpl list : m_referenceLists.values())
         {
-            list.commitLocal();
+            list.postProcessCommit();
         }
 
         for (MsoReferenceImpl reference : m_referenceObjects.values())
         {
-            reference.commitLocal();
+            reference.postProcessCommit();
         }
         resumeNotify();
     }

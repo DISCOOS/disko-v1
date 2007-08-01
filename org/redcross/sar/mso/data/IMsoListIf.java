@@ -8,7 +8,6 @@ import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.DuplicateIdException;
 import org.redcross.sar.util.mso.Selector;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -75,7 +74,7 @@ public interface IMsoListIf<M extends IMsoObjectIf>
      * Get the {@link org.redcross.sar.mso.IMsoModelIf.ModificationState ModificationState} of the reference
      *
      * @param aReference The tested reference.
-     * @return The state, possible values are: {@link org.redcross.sar.mso.IMsoModelIf.ModificationState#STATE_SERVER_ORIGINAL},
+     * @return The state, possible values are: {@link org.redcross.sar.mso.IMsoModelIf.ModificationState#STATE_SERVER},
      *         {@link org.redcross.sar.mso.IMsoModelIf.ModificationState#STATE_LOCAL} and, if the object doesn't exist in the list, {@link org.redcross.sar.mso.IMsoModelIf.ModificationState#STATE_UNDEFINED}
      */
     public IMsoModelIf.ModificationState getState(M aReference);

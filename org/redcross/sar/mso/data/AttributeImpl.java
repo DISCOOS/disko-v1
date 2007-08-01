@@ -95,7 +95,7 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
         {
             case LOOPBACK_UPDATE_MODE:
             {
-                newState = IMsoModelIf.ModificationState.STATE_SERVER_ORIGINAL;
+                newState = IMsoModelIf.ModificationState.STATE_SERVER;
                 if (!equal(m_serverValue, aValue))
                 {
                     m_serverValue = aValue;
@@ -105,7 +105,7 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
             }
             case REMOTE_UPDATE_MODE:
             {
-                newState = m_state == IMsoModelIf.ModificationState.STATE_LOCAL ? IMsoModelIf.ModificationState.STATE_CONFLICTING : IMsoModelIf.ModificationState.STATE_SERVER_MODIFIED;
+                newState = m_state == IMsoModelIf.ModificationState.STATE_LOCAL ? IMsoModelIf.ModificationState.STATE_CONFLICTING : IMsoModelIf.ModificationState.STATE_SERVER;
                 if (!equal(m_serverValue, aValue))
                 {
                     m_serverValue = aValue;
@@ -117,7 +117,7 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
             {
                 if (equal(m_serverValue, aValue))
                 {
-                    newState = IMsoModelIf.ModificationState.STATE_SERVER_ORIGINAL;
+                    newState = IMsoModelIf.ModificationState.STATE_SERVER;
                     valueChanged = true;
                 } else
                 {
@@ -177,18 +177,18 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
     {
         m_localValue = null;
         boolean isChanged = m_state == IMsoModelIf.ModificationState.STATE_LOCAL || m_state == IMsoModelIf.ModificationState.STATE_CONFLICTING;
-        m_state = IMsoModelIf.ModificationState.STATE_SERVER_ORIGINAL;
+        m_state = IMsoModelIf.ModificationState.STATE_SERVER;
         return isChanged;
     }
 
-    public boolean commitLocal()
+    public boolean postProcessCommit()
     {
         boolean isChanged = m_state == IMsoModelIf.ModificationState.STATE_LOCAL || m_state == IMsoModelIf.ModificationState.STATE_CONFLICTING;
         if (isChanged)
         {
             m_serverValue = m_localValue;
             m_localValue = null;
-            m_state = IMsoModelIf.ModificationState.STATE_SERVER_ORIGINAL;
+            m_state = IMsoModelIf.ModificationState.STATE_SERVER;
         }
         return isChanged;
     }
@@ -216,7 +216,7 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
     public boolean acceptServer()
     {
         MsoModelImpl.getInstance().setRemoteUpdateMode();
-        boolean retVal = acceptConflicting(IMsoModelIf.ModificationState.STATE_SERVER_ORIGINAL);
+        boolean retVal = acceptConflicting(IMsoModelIf.ModificationState.STATE_SERVER);
         MsoModelImpl.getInstance().restoreUpdateMode();
         return retVal;
     }

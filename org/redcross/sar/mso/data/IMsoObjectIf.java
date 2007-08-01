@@ -151,7 +151,7 @@ public interface IMsoObjectIf
     /**
      * Commit local changes.
      */
-//    public void commitLocal();
+//    public void postProcessCommit();
 
     /**
      * Get a Boolean attribute with the given index.

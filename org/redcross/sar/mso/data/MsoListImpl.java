@@ -300,7 +300,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
     {
         if (m_items.containsKey(aReference.getObjectId()))
         {
-            return IMsoModelIf.ModificationState.STATE_SERVER_ORIGINAL;
+            return IMsoModelIf.ModificationState.STATE_SERVER;
         }
         if (m_added.containsKey(aReference.getObjectId()))
         {
@@ -333,7 +333,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         m_added.clear();
     }
 
-    public boolean commitLocal()
+    public boolean postProcessCommit()
     {
         boolean retVal = m_added.size() > 0;
         clearDeleted(m_deleted);
@@ -342,7 +342,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         {
             for (M object : m_items.values())
             {
-                ((AbstractMsoObject) object).commitLocal();
+                ((AbstractMsoObject) object).postProcessCommit();
             }
         }
         return retVal;

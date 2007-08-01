@@ -122,7 +122,7 @@ public interface IMsoManagerIf
     /**
      * Perform local commit on all objects in the model.
      */
-    public void commitLocal();
+    public void postProcessCommit();
 
     /**
      * Perform rollback on all objects in the model.

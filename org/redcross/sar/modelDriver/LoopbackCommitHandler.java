@@ -12,7 +12,7 @@ import java.util.List;
  * A commit handler is handling {@link org.redcross.sar.mso.event.MsoEvent.Commit} events in order to perform commits against a server.
  * <p/>
  * The loopback commit handler merely generates server feedbacks, without transmitting to server, and is used for test purposes.
- * At the moment, it is not implemented, commit is provided by temporary functionality in the MSO model (commitLocal()).
+ * At the moment, it is not implemented, commit is provided by temporary functionality in the MSO model (postProcessCommit()).
  */
 public class LoopbackCommitHandler implements IMsoCommitListenerIf
 {

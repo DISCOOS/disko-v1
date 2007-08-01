@@ -135,6 +135,7 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
 
     boolean setActiveOperation(SarOperation soper)
     {
+        MsoModelImpl.getInstance().setRemoteUpdateMode();
         //CREATE MSO operation
         createMsoOperation(soper);
         // ADD ALL CO
@@ -177,6 +178,7 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
             }
 
         }
+        MsoModelImpl.getInstance().restoreUpdateMode();
 
         return true;
     }
@@ -239,7 +241,7 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
                 IMsoObjectIf.IObjectIdIf operid = new AbstractMsoObject.ObjectId(oper.getID());
                 testOperation = msoManager.createOperation(prefix, number, operid);
                 sarOperation = oper;
-                MsoModelImpl.getInstance().restoreUpdateMode();
+//                MsoModelImpl.getInstance().restoreUpdateMode();
                 //TODO Opprett of map inn data
 
             }
@@ -266,6 +268,7 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
         List<ICommittableIf.ICommitObjectIf> objectList = wrapper.getObjects();
         for (ICommittableIf.ICommitObjectIf ico : objectList)
         {
+            System.out.println("Commit Object " + ico.getType() + " " + ico.getObject());
             //IF created, create SARA object
             if (ico.getType().equals(CommitManager.CommitType.COMMIT_CREATED))
             {
@@ -285,12 +288,14 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
         List<ICommittableIf.ICommitReferenceIf> attrList = wrapper.getListReferences();
         for (ICommittableIf.ICommitReferenceIf ico : attrList)
         {
+            System.out.println("Commit Attr " + ico.getType() + " " + ico.getReferenceName());
             msoReferenceChanged(ico, false);
         }
 
         List<ICommittableIf.ICommitReferenceIf> listList = wrapper.getAttributeReferences();
         for (ICommittableIf.ICommitReferenceIf ico : listList)
         {
+            System.out.println("Commit List " + ico.getType() + " " + ico.getReferenceName());
             msoReferenceChanged(ico, true);
         }
         sarSvc.getSession().commit(sarOperation.getID());
@@ -464,39 +469,39 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
                 public void run()
                 {
                     //To change body of implemented methods use File | Settings | File Templates.
-            System.out.println("saraChanged");
+                    System.out.println("saraChanged");
 
-            MsoModelImpl.getInstance().setRemoteUpdateMode();
-            try
-            {
-                if (change.getChangeType() == SaraChangeEvent.TYPE_ADD)
-                {
-                    if (change.getSource() instanceof SarOperation)
+                    MsoModelImpl.getInstance().setRemoteUpdateMode();
+                    try
                     {
-                        createMsoOperation((SarOperation) change.getSource());
-                    } else if (change.getSource() instanceof SarObject)
-                    {
-                        addMsoObject((SarObject) change.getSource());
-                    } else
-                    {
-                        Log.warning("SaraChange not handled for objectType " + change.getSource().getClass().getName());
+                        if (change.getChangeType() == SaraChangeEvent.TYPE_ADD)
+                        {
+                            if (change.getSource() instanceof SarOperation)
+                            {
+                                createMsoOperation((SarOperation) change.getSource());
+                            } else if (change.getSource() instanceof SarObject)
+                            {
+                                addMsoObject((SarObject) change.getSource());
+                            } else
+                            {
+                                Log.warning("SaraChange not handled for objectType " + change.getSource().getClass().getName());
+                            }
+
+                            //TODO implementer for de andre objekttypene fact og object
+                        } else if (change.getChangeType() == SaraChangeEvent.TYPE_CHANGE)
+                        {
+                            changeMsoFromSara(change);
+
+                        } else if (change.getChangeType() == SaraChangeEvent.TYPE_REMOVE)
+                        {
+                            removeInMsoFromSara(change);
+                        }
                     }
-
-                    //TODO implementer for de andre objekttypene fact og object
-                } else if (change.getChangeType() == SaraChangeEvent.TYPE_CHANGE)
-                {
-                    changeMsoFromSara(change);
-
-                } else if (change.getChangeType() == SaraChangeEvent.TYPE_REMOVE)
-                {
-                    removeInMsoFromSara(change);
-                }
-            }
-            catch (Exception e)
-            {
-                Log.printStackTrace("Unable to update msomodel " + e.getMessage(), e);
-            }
-            MsoModelImpl.getInstance().restoreUpdateMode();
+                    catch (Exception e)
+                    {
+                        Log.printStackTrace("Unable to update msomodel " + e.getMessage(), e);
+                    }
+                    MsoModelImpl.getInstance().restoreUpdateMode();
                 }
             });
         }
@@ -636,6 +641,10 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
         {
 
             IMsoReferenceIf refObj = (IMsoReferenceIf) source.getReferenceObjects().get(relName);
+            if (refObj == null)
+            {
+                System.out.println(relName);
+            }
             refObj.setReference(relObj);
 
         }
@@ -752,19 +761,19 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
 //               }
                 catch (Exception npe)
                 {
-                try
-                {
-                    Log.warning("Attr not found " + ((SarFact) fact).getLabel() + " for msoobj " + msoObj.getMsoClassCode() + "\n" + npe.getMessage());
+                    try
+                    {
+                        Log.warning("Attr not found " + ((SarFact) fact).getLabel() + " for msoobj " + msoObj.getMsoClassCode() + "\n" + npe.getMessage());
+                    }
+                    catch (Exception e)
+                    {
+                        Log.printStackTrace(e);
+                    }
                 }
-                catch (Exception e)
-                {
-                    Log.printStackTrace(e);
-                }
-            }
                 //TODO implementer
             } else
             {
-            //TODO handle internal object attributes
+                //TODO handle internal object attributes
             }
         }
         //       MsoModelImpl.getInstance().commit();

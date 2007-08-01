@@ -96,7 +96,7 @@ public class MsoReferenceImpl<T extends IMsoObjectIf> implements IMsoReferenceIf
         {
             case LOOPBACK_UPDATE_MODE:
             {
-                newState = IMsoModelIf.ModificationState.STATE_SERVER_ORIGINAL;
+                newState = IMsoModelIf.ModificationState.STATE_SERVER;
                 m_serverValue = aReference;
                 if (m_serverValue != null)
                 {
@@ -108,7 +108,7 @@ public class MsoReferenceImpl<T extends IMsoObjectIf> implements IMsoReferenceIf
             }
             case REMOTE_UPDATE_MODE:
             {
-                newState = m_state == IMsoModelIf.ModificationState.STATE_LOCAL ? IMsoModelIf.ModificationState.STATE_CONFLICTING : IMsoModelIf.ModificationState.STATE_SERVER_MODIFIED;
+                newState = m_state == IMsoModelIf.ModificationState.STATE_LOCAL ? IMsoModelIf.ModificationState.STATE_CONFLICTING : IMsoModelIf.ModificationState.STATE_SERVER;
                 m_serverValue = aReference;
                 if (m_serverValue != null)
                 {
@@ -160,7 +160,7 @@ public class MsoReferenceImpl<T extends IMsoObjectIf> implements IMsoReferenceIf
         T oldLocalValue = m_localValue;
         m_localValue = null;
         boolean isChanged = m_state == IMsoModelIf.ModificationState.STATE_LOCAL || m_state == IMsoModelIf.ModificationState.STATE_CONFLICTING;
-        m_state = IMsoModelIf.ModificationState.STATE_SERVER_ORIGINAL;
+        m_state = IMsoModelIf.ModificationState.STATE_SERVER;
         if (isChanged)
         {
             if (m_serverValue != null)
@@ -183,10 +183,10 @@ public class MsoReferenceImpl<T extends IMsoObjectIf> implements IMsoReferenceIf
      * Perform local commit
      * Change values without changing listeners etc.
      */
-    public void commitLocal()
+    public void postProcessCommit()
     {
         boolean isChanged = m_state == IMsoModelIf.ModificationState.STATE_LOCAL || m_state == IMsoModelIf.ModificationState.STATE_CONFLICTING;
-        m_state = IMsoModelIf.ModificationState.STATE_SERVER_ORIGINAL;
+        m_state = IMsoModelIf.ModificationState.STATE_SERVER;
         if (isChanged)
         {
             m_serverValue = m_localValue;
@@ -247,7 +247,7 @@ public class MsoReferenceImpl<T extends IMsoObjectIf> implements IMsoReferenceIf
     public boolean acceptServer()
     {
         MsoModelImpl.getInstance().setRemoteUpdateMode();
-        boolean retVal = acceptConflicting(IMsoModelIf.ModificationState.STATE_SERVER_ORIGINAL);
+        boolean retVal = acceptConflicting(IMsoModelIf.ModificationState.STATE_SERVER);
         MsoModelImpl.getInstance().restoreUpdateMode();
         return retVal;
     }

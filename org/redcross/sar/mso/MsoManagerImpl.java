@@ -150,9 +150,9 @@ public class MsoManagerImpl implements IMsoManagerIf
     {
     }
 
-    public void commitLocal()
+    public void postProcessCommit()
     {
-        getCmdPostImpl().commitLocal();
+        getCmdPostImpl().postProcessCommit();
     }
 
     public void rollback()

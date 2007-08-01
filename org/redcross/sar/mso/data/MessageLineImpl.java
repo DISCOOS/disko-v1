@@ -57,7 +57,7 @@ public class MessageLineImpl extends AbstractMsoObject implements IMessageLineIf
 
     public IMsoManagerIf.MsoClassCode getMsoClassCode()
     {
-        return IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGE;
+        return IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGELINE;
     }
 
     public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)

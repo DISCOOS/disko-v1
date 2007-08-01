@@ -60,6 +60,7 @@ public class MsoModelImpl implements IMsoModelIf
         m_modelDriver = System.getProperty("integrate.sara", "false").equalsIgnoreCase("true") ||
                 Utils.getProperties().getProperty("integrate.sara", "false").equalsIgnoreCase("true") ?
                 new SarModelDriver() : new ModelDriver();
+//        m_modelDriver =  new ModelDriver(); when testing;
     }
 
     public IMsoManagerIf getMsoManager()
@@ -144,11 +145,12 @@ public class MsoModelImpl implements IMsoModelIf
 
     public void commit()
     {
+        System.out.println("Committing.........");
         m_commitManager.commit();
-//        setLoopbackUpdateMode();
+        setLoopbackUpdateMode();
 //        m_IMsoManager.commit();
-//        m_IMsoManager.commitLocal();
-//        restoreUpdateMode();
+        m_IMsoManager.postProcessCommit();
+        restoreUpdateMode();
     }
 
 
