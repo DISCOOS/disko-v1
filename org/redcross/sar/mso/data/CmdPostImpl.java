@@ -147,6 +147,12 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     	
     	return 'C';
     }
+    
+    public int getCommunicatorNumber()
+    {
+    	// TODO update when multiple command posts
+    	return 1;
+    }
 
     public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {

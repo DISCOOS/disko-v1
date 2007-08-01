@@ -10,4 +10,6 @@ public interface ICommunicatorIf extends IMsoObjectIf
     public String getCallSign();
     
     public char getCommunicatorNumberPrefix();
+    
+    public int getCommunicatorNumber();
 }

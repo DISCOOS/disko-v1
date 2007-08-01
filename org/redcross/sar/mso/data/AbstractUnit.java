@@ -129,6 +129,11 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
     {
     	return getUnitNumberPrefix();
     }
+    
+    public int getCommunicatorNumber()
+    {
+    	return getNumber();
+    }
 
     public char getUnitNumberPrefix()
     {
