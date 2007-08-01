@@ -99,35 +99,44 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 		return m_timeTextField.getText();
 	}
 
-	@Override
 	public void keyPressed(KeyEvent ke)
 	{
 		// Changes should be checked, and if found correct, sent to mso, not commited 
 		if(ke.getKeyCode() == KeyEvent.VK_ENTER)
 		{
 			this.setVisible(false);
-			
-			fireDialogFinished();
+			if(validDTG())
+			{
+				fireDialogFinished();
+			}
+			else
+			{
+				fireDialogCanceled();
+			}
 		}
 	}
 	
-	@Override
+	private boolean validDTG()
+	{
+		try
+		{
+			DTG.DTGToCal(m_timeTextField.getText());
+			return true;
+		}
+		catch(Exception e)
+		{
+			return false;
+		}
+	}
+
 	public boolean isFocusable()
 	{
 		return true;
 	}
 
-	@Override
-	public void keyReleased(KeyEvent arg0)
-	{
-	}
+	public void keyReleased(KeyEvent arg0){}
+	public void keyTyped(KeyEvent arg0){}
 
-	@Override
-	public void keyTyped(KeyEvent arg0)
-	{
-	}
-
-	@Override
 	public void newMessageSelected(IMessageIf message)
 	{
 		setCreated(message.getCreated());
@@ -144,19 +153,16 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 		m_timeTextField.setText(DTG.CalToDTG(calendar));
 	}
 
-	@Override
 	public void hideDialog()
 	{
 		this.setVisible(false);
 	}
 
-	@Override
 	public void showDialog()
 	{
 		this.setVisible(true);
 	}
 
-	@Override
 	public void clearContents()
 	{
 		m_createdTextField.setText("");

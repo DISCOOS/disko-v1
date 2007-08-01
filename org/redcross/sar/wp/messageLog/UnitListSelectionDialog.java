@@ -65,7 +65,8 @@ public class UnitListSelectionDialog extends DiskoDialog implements IEditMessage
 			{
 				// If a selected unit is de-selected in the list, standard sender should be set
 				m_buttonGroup.clearSelection();
-				ActionEvent ae = new ActionEvent(button, 1, "COMMAND_POST");
+				// TODO change default value when multiple command posts are possible
+				ActionEvent ae = new ActionEvent(button, 1, "C 1");
 				ActionListener[] listeners = button.getActionListeners();
 				for(ActionListener actionListener : listeners)
 				{
@@ -80,14 +81,10 @@ public class UnitListSelectionDialog extends DiskoDialog implements IEditMessage
 			fireDialogFinished();
 		}
 
-		public void mouseEntered(MouseEvent arg0)
-		{}
-		public void mouseExited(MouseEvent arg0)
-		{}
-		public void mousePressed(MouseEvent arg0)
-		{}
-		public void mouseReleased(MouseEvent arg0)
-		{}		
+		public void mouseEntered(MouseEvent arg0){}
+		public void mouseExited(MouseEvent arg0){}
+		public void mousePressed(MouseEvent arg0){}
+		public void mouseReleased(MouseEvent arg0){}		
 	};
 	
 	private final Dimension BUTTON_SIZE = new Dimension(MessageLogPanel.SMALL_BUTTON_SIZE.width*3, 
@@ -208,47 +205,27 @@ public class UnitListSelectionDialog extends DiskoDialog implements IEditMessage
 	 */
 	public void newMessageSelected(IMessageIf message)
 	{
+		m_buttonGroup.clearSelection();
 		ICommunicatorIf sender = message.getSender();
-		if(sender != null)
+		if(sender == null)
 		{
-			m_buttonGroup.clearSelection();
-			Enumeration<AbstractButton> buttons = m_buttonGroup.getElements();
-			AbstractButton button = null;
-			if(sender instanceof ICmdPostIf)
-			{
-				while(buttons.hasMoreElements())
-				{
-					button = buttons.nextElement();
-					String command = button.getActionCommand();
-					
-					if(command.equals(UnitType.COMMAND_POST.name()))
-					{
-						m_currentButton = (JToggleButton)button;
-						button.setSelected(true);
-					}
-				}
-			}
-			else if(sender instanceof IUnitIf)
-			{
-				IUnitIf unit = (IUnitIf)sender;
-				while(buttons.hasMoreElements())
-				{
-					button = buttons.nextElement();
-					String[] command = button.getActionCommand().split(" ");
-					if(command.length == 2)
-					{
-						if(command[0].equals(unit.getType().name()) && command[1].equals(unit.getNumber()))
-						{
-							m_currentButton = (JToggleButton)button;
-							button.setSelected(true);
-						}
-					}
-				}
-			}
-			
-			
+			sender = (ICommunicatorIf)m_wpMessageLog.getMsoManager().getCmdPost();
 		}
-		// TODO Auto-generated method stub
+		
+		// Get sender button and mark it
+		Enumeration<AbstractButton> buttons = m_buttonGroup.getElements();
+		AbstractButton button = null;
+		while(buttons.hasMoreElements())
+		{
+			button = buttons.nextElement();
+			String[] command = button.getActionCommand().split(" ");
+			if(command[0].charAt(0) == sender.getCommunicatorNumberPrefix() && 
+					Integer.valueOf(command[1]) == sender.getCommunicatorNumber())
+			{
+				m_currentButton = (JToggleButton)button;
+				button.setSelected(true);
+			}
+		}
 	}
 
 	public void showDialog()
@@ -334,16 +311,14 @@ public class UnitListSelectionDialog extends DiskoDialog implements IEditMessage
 		{
 			IUnitIf unit = (IUnitIf)communicator;
 			button.setIcon(getUnitIcon(unit.getType()));
-			button.setText(unit.getNumber() + " " + unit.getCallSign());
-			button.setActionCommand(unit.getType().name() + " " + unit.getNumber());
 		}
 		else if(communicator instanceof ICmdPostIf)
 		{
 			button.setIcon(getUnitIcon(IUnitIf.UnitType.COMMAND_POST));
-			button.setText(((ICmdPostIf)communicator).getCallSign());
-			button.setActionCommand(UnitType.COMMAND_POST.name());
-			// TODO add CP number
 		}
+		
+		button.setText(communicator.getCommunicatorNumber() + " " + communicator.getCallSign());
+		button.setActionCommand(communicator.getCommunicatorNumberPrefix() + " " + communicator.getCommunicatorNumber());
 		
 		// Add action listeners to button
 		for(ActionListener listener : m_actionListeners)

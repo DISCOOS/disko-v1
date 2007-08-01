@@ -164,7 +164,6 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		{
 			m_unitNumberPad = new NumPadDialog(m_wp.getApplication().getFrame());
 			// TODO endre eigenskapar til NumPad? Kva med sjekk av data? Ikkje alltid ønskeleg å lukke dialog sjølv om OK
-			//m_unitNumberPad = m_wp.getApplication().getUIFactory().getNumPadDialog();
 			m_unitNumberPad.setAlwaysOnTop(true);
 			m_unitNumberPad.setVisible(false);
 			
@@ -225,18 +224,10 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 					{
 						public boolean select(ICommunicatorIf communicator)
 						{
-							if(communicator instanceof IUnitIf)
+							if((communicator.getCommunicatorNumber() == Integer.valueOf(numberText)) 
+									&& (typeText.charAt(0) == communicator.getCommunicatorNumberPrefix()))
 							{
-								IUnitIf unit = (IUnitIf)communicator;
-								if((unit.getNumber() == Integer.valueOf(numberText)) 
-										&& (typeText.charAt(0) == unit.getUnitNumberPrefix()))
-								{
-									return true;
-								}
-								else
-								{
-									return false;
-								}
+								return true;
 							}
 							else
 							{
@@ -386,18 +377,8 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		ICommunicatorIf sender = message.getSender();
 		if(sender != null)
 		{
-			if(sender instanceof IUnitIf)
-			{
-				IUnitIf unit = (IUnitIf)sender;
-				m_unitTypeField.setText(unit.getTypeText());
-				m_unitNumberField.setText(Integer.toString(unit.getNumber()));
-			}
-			else if(sender instanceof ICmdPostIf)
-			{
-				// TODO remove hard-coding
-				m_unitTypeField.setText("C");
-				m_unitNumberField.setText("");
-			}
+			m_unitNumberField.setText(String.valueOf(sender.getCommunicatorNumber()));
+			m_unitTypeField.setText(String.valueOf(sender.getCommunicatorNumberPrefix()));
 		}
 		else
 		{
@@ -417,7 +398,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 			}
 			else
 			{
-				System.err.println("Unit type or unit number is not valid");
+				System.err.println("Unit type or unit number is invalid");
 			}
 		}
 	}
@@ -427,9 +408,9 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		String field = m_unitNumberField.getText();
 		
 		// Check for empty string
-		if(field.length()==0)
+		if(field.isEmpty())
 		{
-			return false;
+			return true;
 		}
 		
 		// Check that field is a number
@@ -448,6 +429,10 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 	private boolean isValidUnitType()
 	{	
 		String unitType = m_unitTypeField.getText();
+		if(unitType.isEmpty())
+		{
+			return true;
+		}
 		
 		String[] validUnitTypes = {
 				m_unitResources.getString("UnitType.COMMAND_POST.letter"),
@@ -520,16 +505,17 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 	public void actionPerformed(ActionEvent arg0)
 	{
 		String[] command = arg0.getActionCommand().split(" ");
-		if(command.length == 2)
-		{
-			m_unitTypeField.setText(getUnitTypeString(UnitType.valueOf(command[0])));
-			m_unitNumberField.setText(command[1]);
-		}
-		else if(command.length == 1)
-		{
-			m_unitTypeField.setText(getUnitTypeString(UnitType.valueOf(command[0])));
-			m_unitNumberField.setText("");
-		}
-		
+		m_unitTypeField.setText(command[0]);
+		m_unitNumberField.setText(command[1]);
+	}
+
+	public void setCommunicatorNumberPrefix(char communicatorNumberPrefix)
+	{
+		m_unitTypeField.setText(String.valueOf(communicatorNumberPrefix));
+	}
+
+	public void setCommunicatorNumber(int communicatorNumber)
+	{
+		m_unitNumberField.setText(String.valueOf(communicatorNumber));
 	}
 }

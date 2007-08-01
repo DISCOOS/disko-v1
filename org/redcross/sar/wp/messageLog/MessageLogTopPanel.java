@@ -43,6 +43,7 @@ import org.redcross.sar.mso.data.ICommunicatorIf;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IMessageLogIf;
+import org.redcross.sar.mso.data.IMsoListIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.ITaskIf;
 import org.redcross.sar.mso.data.ITaskListIf;
@@ -488,26 +489,24 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			
 			// Update from 
 			ICommunicatorIf sender = m_currentMessage.getSender();
-			if(sender != null)
+			if(sender == null)
 			{
-				if(sender instanceof ICmdPostIf)
-				{
-					// TODO update when multiple command post are used
-					m_fromLabel.setText("C");
-				}
-				else if(sender instanceof IUnitIf)
-				{
-					IUnitIf unit = (IUnitIf)sender;
-					m_fromLabel.setText(unit.getTypeText() + " " + unit.getNumber());
-				}
+				sender = (ICommunicatorIf)m_wpMessageLog.getMsoManager().getCmdPost();
+			}
+			m_fromLabel.setText(sender.getCommunicatorNumberPrefix() + " " + sender.getCommunicatorNumber());
+			
+			// Update to
+			IMsoListIf<ICommunicatorIf> recievers = m_currentMessage.getConfirmedReceivers();
+			if(recievers.size() == 0)
+			{
+				ICommunicatorIf defaultReciever = (ICommunicatorIf)m_wpMessageLog.getMsoManager().getCmdPost();
+				m_toLabel.setText(defaultReciever.getCommunicatorNumberPrefix() + " " +
+						defaultReciever.getCommunicatorNumber());
 			}
 			else
 			{
-				// TODO remove hard-coded value
-				m_fromLabel.setText("C");
+				// TODO ?
 			}
-			 
-			//m_toLabel.setText("");
 			
 			ITaskListIf tasks = m_currentMessage.getMessageTasks();
 			StringBuilder tasksString = new StringBuilder();
@@ -572,6 +571,10 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		
 		if(sender.getClass() == UnitListSelectionDialog.class)
 		{
+		}
+		if(sender.getClass() == ChangeDTGDialog.class)
+		{
+			m_changeDTGDialog.hideDialog();
 		}
 	}
 	
@@ -659,6 +662,12 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		{
 			m_fieldFromDialog.hideDialog();
 			m_listFromDialog.hideDialog();
+			if(m_fieldFromDialog.getText().isEmpty())
+			{
+				ICommunicatorIf cp = (ICommunicatorIf)m_wpMessageLog.getMsoManager().getCmdPost();
+				m_fieldFromDialog.setCommunicatorNumberPrefix(cp.getCommunicatorNumberPrefix());
+				m_fieldFromDialog.setCommunicatorNumber(cp.getCommunicatorNumber());
+			}
 			m_fromLabel.setText(m_fieldFromDialog.getText());
 		}
 		else if(e.getSource().getClass() == MessageTextDialog.class)
@@ -830,12 +839,11 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     		m_changeToButton = createChangeButton();
     		m_changeToButton.addActionListener(new ActionListener()
     		{
-				@Override
 				public void actionPerformed(ActionEvent e)
 				{
 					getChangeToDialog();
 					hideDialogs();
-					m_changeToDialog.setVisible(true);
+					m_changeToDialog.showDialog();
 				}
     		});
     	}
@@ -869,7 +877,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					clearPanelContents();
 					clearDialogContents();
 					
-					m_wpMessageLog.getMsoManager().rollback(); // TODO correct?
+					m_wpMessageLog.getMsoManager().rollback(); // TODO sjekk om korrekt?
 					
 					// Current empty message has not been sent to mso model
 					m_newMessage = true;

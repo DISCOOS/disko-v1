@@ -20,6 +20,7 @@ import javax.swing.JTextField;
 
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IUnitIf.UnitType;
 
 /**
@@ -28,7 +29,7 @@ import org.redcross.sar.mso.data.IUnitIf.UnitType;
  *
  * Dialog for selecting unit type
  */
-public class UnitTypeDialog extends DiskoDialog
+public class UnitTypeDialog extends DiskoDialog implements IEditMessageDialogIf
 {
 	private IDiskoWpMessageLog m_wp;
 	private JPanel m_contentsPanel = null;
@@ -154,6 +155,25 @@ public class UnitTypeDialog extends DiskoDialog
 	public LinkedList<JButton> getButtons()
 	{
 		return m_buttons;
+	}
+
+	public void clearContents()
+	{
+	}
+	public void hideDialog()
+	{
+		this.setVisible(false);
+	}
+
+	public void newMessageSelected(IMessageIf message)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void showDialog()
+	{
+		this.setVisible(true);
 	}
 
 }
