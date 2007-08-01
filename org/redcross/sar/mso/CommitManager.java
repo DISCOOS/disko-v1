@@ -76,10 +76,10 @@ public class CommitManager
 
     private void registerUpdate(AbstractMsoObject anObject, int aMask)
     {
-//        System.out.println("CommitManager registerUpdate:  " + anObject.getMsoClassCode() + " Mask: " + aMask);
+        System.out.println("CommitManager registerUpdate:  " + anObject.getObjectId() + " " + anObject.getMsoClassCode() + " Mask: " + aMask);
         for (UpdateHolder updateItem : m_updates)
         {
-            if (updateItem.m_object == anObject)
+            if (updateItem.m_object.getObjectId().equals(anObject.getObjectId()))
             {
                 updateItem.applyMask(aMask);
                 return;
