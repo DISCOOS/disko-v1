@@ -6,7 +6,6 @@ import org.redcross.sar.mso.data.AssignmentImpl;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
-import org.redcross.sar.wp.TestData.BuildTestData;
 
 import javax.swing.*;
 import java.text.MessageFormat;
@@ -127,12 +126,11 @@ public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDisk
         question = getText(question);
 
         int n = JOptionPane.showOptionDialog(m_logisticsPanel.getPanel(),
-                MessageFormat.format(question, anAssignment.getNumber(), AssignmentImpl.getEnumText(aTargetStatus),unitNumber),
+                MessageFormat.format(question, anAssignment.getNumber(), AssignmentImpl.getEnumText(aTargetStatus), unitNumber),
                 getText("confirm_assignmentTransfer_title.text"),
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
                 null, options, options[0]);
-        System.out.println(n);
         return n == 0;
     }
 
