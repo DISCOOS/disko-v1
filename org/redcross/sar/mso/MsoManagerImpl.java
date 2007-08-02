@@ -301,15 +301,24 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getIntelligenceList().createIntelligence(anObjectId);
     }
 
-    public IMessageIf createMessage()
-    {
-        return getExistingCmdPost().getMessageLog().createMessage();
-    }
+       public IMessageIf createMessage()
+       {
+           return getExistingCmdPost().getMessageLog().createMessage();
+       }
 
-    public IMessageIf createMessage(IMsoObjectIf.IObjectIdIf anObjectId)
-    {
-        return getExistingCmdPost().getMessageLog().createMessage(anObjectId);
-    }
+       public IMessageIf createMessage(IMsoObjectIf.IObjectIdIf anObjectId)
+       {
+           return getExistingCmdPost().getMessageLog().createMessage(anObjectId);
+       }
+    public IMessageLineIf createMessageLine()
+       {
+           return getExistingCmdPost().getMessageLines().createMessageLine();
+       }
+
+       public IMessageLineIf createMessageLine(IMsoObjectIf.IObjectIdIf anObjectId)
+       {
+           return getExistingCmdPost().getMessageLines().createMessageLine(anObjectId);
+       }
 
     public IOperationAreaIf createOperationArea()
     {

@@ -343,6 +343,21 @@ public interface IMsoManagerIf
     public IMessageIf createMessage(IMsoObjectIf.IObjectIdIf anObjectId);
 
     /**
+     * Create a new {@link org.redcross.sar.mso.data.IMessageLineIf} object and add it to the collection of Message objects.
+     *
+     * @return The created object.
+     */
+    public IMessageLineIf createMessageLine();
+
+    /**
+     * Create a new {@link org.redcross.sar.mso.data.IMessageLineIf} object and add it to the collection of Message objects.
+     *
+     * @param anObjectId The Object id
+     * @return The created object.
+     */
+       public IMessageLineIf createMessageLine(IMsoObjectIf.IObjectIdIf anObjectId);
+
+    /**
      * Create a new {@link org.redcross.sar.mso.data.IOperationAreaIf} object and add it to the collection of OperationArea objects.
      *
      * @return The created object.
