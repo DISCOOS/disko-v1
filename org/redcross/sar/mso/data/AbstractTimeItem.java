@@ -48,7 +48,7 @@ public abstract class AbstractTimeItem extends AbstractMsoObject implements ITim
     {
     }
 
-    public void setCalendar(Calendar aDTG)
+    protected void setCalendar(Calendar aDTG)
     {
         m_calendar.setValue(aDTG);
     }
@@ -58,12 +58,12 @@ public abstract class AbstractTimeItem extends AbstractMsoObject implements ITim
         return m_calendar.getCalendar();
     }
 
-    public IMsoModelIf.ModificationState getCalendarState()
+    protected IMsoModelIf.ModificationState getCalendarState()
     {
         return m_calendar.getState();
     }
 
-    public IAttributeIf.IMsoCalendarIf getCalendarAttribute()
+    protected IAttributeIf.IMsoCalendarIf getCalendarAttribute()
     {
         return m_calendar;
     }

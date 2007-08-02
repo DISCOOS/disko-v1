@@ -46,7 +46,7 @@ public class AssignmentTransferUtilities
         IMsoManagerIf manager = aWpModule.getMsoManager();
         IMessageIf message = manager.createMessage();
         message.setCreated(Calendar.getInstance());
-        message.setCalendar(Calendar.getInstance());
+        message.setOccuredTime(Calendar.getInstance());
         message.setStatus(IMessageIf.MessageStatus.UNCONFIRMED);
         IMessageLineIf l0 = message.findMessageLine(lineType, true);
         IMessageLineIf l1 = message.findMessageLine(IMessageLineIf.MessageLineType.TEXT, true);

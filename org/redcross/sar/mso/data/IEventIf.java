@@ -30,4 +30,6 @@ public interface IEventIf extends ITimeItemIf, ISerialNumberedIf
     public Calendar getEventTime();
 
     public void setEventTime(Calendar aCalendar);
+
+    public IMsoModelIf.ModificationState getEventTimeState();    
 }

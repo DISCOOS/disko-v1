@@ -8,11 +8,11 @@ public interface ITimeItemIf extends Comparable<ITimeItemIf>, IMsoObjectIf
 {
     public Calendar getCalendar();
 
-    public void setCalendar(Calendar aDTG);
-
-    public IMsoModelIf.ModificationState getCalendarState();
-
-    public IAttributeIf.IMsoCalendarIf getCalendarAttribute();
+//    public void setCalendar(Calendar aDTG);
+//
+//    public IMsoModelIf.ModificationState getCalendarState();
+//
+//    public IAttributeIf.IMsoCalendarIf getCalendarAttribute();
 
     public String toString();
 

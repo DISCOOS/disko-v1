@@ -566,32 +566,32 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	public void dialogFinished(DialogEvent e)
 	{
 		Object source = e.getSource();
-		
+
 		// If no message is selected a new one should be created once a field is edited
 		if(m_currentMessage == null)
 		{
 			m_currentMessage = m_wpMessageLog.getMsoManager().createMessage();
 		}
-		
+
 		if(source instanceof ChangeDTGDialog)
 		{
 			// Check validity of DTG
 			try
 			{
-				m_currentMessage.setCalendar(DTG.DTGToCal(m_changeDTGDialog.getTime()));
+				m_currentMessage.setOccuredTime(DTG.DTGToCal(m_changeDTGDialog.getTime()));
 				//m_dtgLabel.setText(m_changeDTGDialog.getTime());
 			}
 			catch (IllegalMsoArgumentException e1)
 			{
 				System.err.println("Not a valid DTG format");
-			}
+				}
 		}
 		else if(source instanceof UnitFieldSelectionDialog ||
 				source instanceof SingleUnitListSelectionDialog)
 		{
 			m_fieldFromDialog.hideDialog();
 			m_listFromDialog.hideDialog();
-			
+
 			ICommunicatorIf sender = null;
 			if(m_fieldFromDialog.getText().isEmpty())
 			{
@@ -682,10 +682,10 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 						{
 							m_currentMessage.setStatus(MessageStatus.CONFIRMED);
 						}
-						
+
 						clearPanelContents();
 						clearDialogContents();
-						
+
 						// Commit changes
 						m_wpMessageLog.getMsoManager().commit();
 
@@ -823,7 +823,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					clearDialogContents();
 
 					m_wpMessageLog.getMsoManager().rollback(); // TODO sjekk om korrekt?
-					
+
 					m_currentMessage = null;
 					m_messageDirty = false;
 				}

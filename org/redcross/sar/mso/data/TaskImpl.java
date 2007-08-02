@@ -1,6 +1,7 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoManagerIf;
+import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.MsoCastException;
 
 import java.util.Calendar;
@@ -65,5 +66,26 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
     public IMsoManagerIf.MsoClassCode getMsoClassCode()
     {
         return IMsoManagerIf.MsoClassCode.CLASSCODE_TASK;
+    }
+
+
+    /*-------------------------------------------------------------------------------------------
+    * Other specified methods
+    *-------------------------------------------------------------------------------------------*/
+
+    public Calendar getDueTime()
+    {
+        return getCalendar();
+    }
+
+    public void setDueTime(Calendar aCalendar)
+    {
+        setCalendar(aCalendar);
+    }
+
+
+    public IMsoModelIf.ModificationState getDueTimeState()
+    {
+        return getCalendarState();
     }
 }

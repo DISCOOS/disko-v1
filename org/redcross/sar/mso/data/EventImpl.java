@@ -151,4 +151,10 @@ public class EventImpl extends AbstractTimeItem implements IEventIf
     {
         setCalendar(aCalendar);
     }
+
+
+    public IMsoModelIf.ModificationState getEventTimeState()
+    {
+        return getCalendarState();
+    }
 }

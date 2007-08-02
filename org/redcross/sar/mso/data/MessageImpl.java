@@ -364,6 +364,11 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
         setCalendar(aCalendar);
     }
 
+    public IMsoModelIf.ModificationState getOccuredTimeState()
+    {
+        return getCalendarState();
+    }
+
     /*-------------------------------------------------------------------------------------------
     * Other methods
     *-------------------------------------------------------------------------------------------*/
