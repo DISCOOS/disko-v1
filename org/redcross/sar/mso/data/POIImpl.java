@@ -13,6 +13,8 @@ public class POIImpl extends AbstractMsoObject implements IPOIIf
     private final AttributeImpl.MsoPosition m_position = new AttributeImpl.MsoPosition(this, "Position");
     private final AttributeImpl.MsoString m_remarks = new AttributeImpl.MsoString(this, "Remarks");
     private final AttributeImpl.MsoEnum<POIType> m_type = new AttributeImpl.MsoEnum<POIType>(this, "Type", POIType.GENERAL);
+    private final AttributeImpl.MsoInteger m_searchSequence = new AttributeImpl.MsoInteger(this, "SearchSequence");
+
 
     public POIImpl(IMsoObjectIf.IObjectIdIf anObjectId)
     {
@@ -31,6 +33,7 @@ public class POIImpl extends AbstractMsoObject implements IPOIIf
         addAttribute(m_position);
         addAttribute(m_remarks);
         addAttribute(m_type);
+        addAttribute(m_searchSequence);
     }
 
     protected void defineLists()
@@ -138,6 +141,26 @@ public class POIImpl extends AbstractMsoObject implements IPOIIf
     public IAttributeIf.IMsoStringIf getRemarksAttribute()
     {
         return m_remarks;
+    }
+
+    public void setSearchSequence(int aNumber)
+    {
+        m_searchSequence.setValue(aNumber);
+    }
+
+    public int getSearchSequence()
+    {
+        return m_searchSequence.intValue();
+    }
+
+    public IMsoModelIf.ModificationState getSearchSequenceState()
+    {
+        return m_searchSequence.getState();
+    }
+
+    public IAttributeIf.IMsoIntegerIf getSearchSequenceAttribute()
+    {
+        return m_searchSequence;
     }
 
 

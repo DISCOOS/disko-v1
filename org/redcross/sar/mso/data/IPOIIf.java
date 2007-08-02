@@ -52,4 +52,11 @@ public interface IPOIIf extends IMsoObjectIf
 
     public IAttributeIf.IMsoStringIf getRemarksAttribute();
 
+    public void setSearchSequence(int aNumber);
+
+    public int getSearchSequence();
+
+    public IMsoModelIf.ModificationState getSearchSequenceState();
+
+    public IAttributeIf.IMsoIntegerIf getSearchSequenceAttribute();
 }

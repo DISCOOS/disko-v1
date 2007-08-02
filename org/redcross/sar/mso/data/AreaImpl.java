@@ -166,6 +166,20 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
         }
     }
 
+    private int getNextSearchSequenceNumber()
+    {
+        int retVal = 0;
+        for (IPOIIf ml : m_areaPOIs.getItems())
+        {
+            if (ml.getSearchSequence() > retVal)
+            {
+                retVal = ml.getSearchSequence();
+            }
+        }
+        return retVal + 1;
+    }
+
+
 //    public void setAreaHypothesis(IHypothesisIf anHypothesis) todo slett
 //    {
 //        getOwningAssignment().setAssignmentHypothesis(anHypothesis);
