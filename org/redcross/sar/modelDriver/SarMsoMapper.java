@@ -84,6 +84,7 @@ public class SarMsoMapper {
         }
         catch(Exception e)
         {
+            Log.printStackTrace(e);
            if(!sarFact.getLabel().equalsIgnoreCase("Objektnavn"))
             Log.warning("Unable to map msoattr "+msoAttr.getName()+" to fact"+ sarFact.getLabel());
         }

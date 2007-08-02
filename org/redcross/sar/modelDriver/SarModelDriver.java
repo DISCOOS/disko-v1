@@ -623,17 +623,19 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
             SarObjectImpl rel = (SarObjectImpl) sarOperation.getSarObject(relId);
 
             updateMsoReference(so, rel, relName, co.getFieldName());
-        } else
+        }
+        else
         {
             //Change of factvalue
             //Find object containing the fact
             SarObject parentObject = getParentObject(so);
             // Use object to find msoobject
+            AttributeImpl attr=null;
             if (parentObject != null)
             {
                 IMsoObjectIf msoObj = saraMsoMap.get(parentObject);
                 Map attrs = msoObj.getAttributes();
-                AttributeImpl attr = (AttributeImpl) attrs.get(((SarFact) so).getLabel().toLowerCase());
+                attr = (AttributeImpl) attrs.get(((SarFact) so).getLabel().toLowerCase());
                 if (attr != null)
                 {
                     SarMsoMapper.mapSarFactToMsoAttr(attr, (SarFact) so);
@@ -641,7 +643,10 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
 
             }
             //Update msoobject
-            Log.warning("NOT IMPLEMENTED YET changeMsoFromSara field: " + co.getFieldType() + " ftype: " + co.getFactType());
+            if(parentObject==null || attr==null)
+            {
+                Log.warning("NOT IMPLEMENTED YET changeMsoFromSara field: " + co.getFieldType() + " ftype: " + co.getFactType());
+            }
         }
     }
 
