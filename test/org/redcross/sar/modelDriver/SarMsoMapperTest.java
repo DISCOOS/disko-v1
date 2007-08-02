@@ -1,29 +1,24 @@
 package org.redcross.sar.modelDriver;
 
-import org.junit.Before;
+import no.cmr.geo.PositionOccurrence;
+import no.cmr.hrs.sar.model.*;
 import org.junit.After;
-import org.junit.Ignore;
+import static org.junit.Assert.assertEquals;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import org.rescuenorway.saraccess.model.SarFact;
-import org.rescuenorway.saraccess.model.SarFactLocation;
-import org.rescuenorway.saraccess.model.SarFactTrack;
-import org.rescuenorway.saraccess.model.SarFactArea;
-import org.redcross.sar.modelDriver.SarMsoMapper;
+import org.redcross.sar.mso.data.AbstractMsoObject;
 import org.redcross.sar.mso.data.AttributeImpl;
 import org.redcross.sar.mso.data.VehicleImpl;
-import org.redcross.sar.mso.data.AbstractMsoObject;
 import org.redcross.sar.util.mso.*;
-import no.cmr.hrs.sar.model.*;
-import no.cmr.geo.PositionOccurrence;
-import junit.framework.Assert;
-import com.sun.corba.se.impl.ior.ObjectIdImpl;
+import org.rescuenorway.saraccess.model.SarFact;
+import org.rescuenorway.saraccess.model.SarFactArea;
+import org.rescuenorway.saraccess.model.SarFactTrack;
 
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.ArrayList;
-import java.awt.geom.Point2D;
 
 /**
  * Created by Christian Michelsen Research AS
@@ -171,7 +166,7 @@ public class SarMsoMapperTest {
         testowner.addAttribute(attCopy);
 
         SarMsoMapper.mapSarFactToMsoAttr(att1, lFact);
-        ((SarFactLocation) lFact).updateLocation(pos2.getY(),  pos2.getX(), null, false);
+// todo ??? VW        ((SarFactLocation) lFact).updateLocation(pos2.getY(),  pos2.getX(), null, false);
         SarMsoMapper.mapMsoAttrToSarFact(lFact, att1, false);
 
         assertEquals(lFact, copyFact);
@@ -203,7 +198,7 @@ public class SarMsoMapperTest {
         testowner.addAttribute(attCopy);
 
         SarMsoMapper.mapSarFactToMsoAttr(att1, lFact);
-        ((SarFactLocation) lFact).updateLocation( pos2.getY(),  pos2.getX(), null, false);
+// todo ??? VW                ((SarFactLocation) lFact).updateLocation( pos2.getY(),  pos2.getX(), null, false);
         SarMsoMapper.mapMsoAttrToSarFact(lFact, att1, false);
 
         assertEquals(lFact, copyFact);

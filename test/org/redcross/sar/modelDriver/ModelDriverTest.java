@@ -1,40 +1,30 @@
 package org.redcross.sar.modelDriver;
 
-import org.junit.Before; 
-import org.junit.After;
-import org.junit.Ignore; 
-import org.junit.Test; 
-import static org.junit.Assert.*;
-
-import org.redcross.sar.modelDriver.SarModelDriver;
-import org.redcross.sar.mso.MsoModelImpl;
-import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.mso.IMsoManagerIf;
-import org.redcross.sar.mso.event.IMsoEventManagerIf;
-import org.redcross.sar.mso.event.MsoEvent;
-import org.redcross.sar.mso.data.*;
-import org.redcross.sar.util.mso.Position;
-import org.rescuenorway.saraccess.api.*;
-import org.rescuenorway.saraccess.model.SarOperation;
-import org.rescuenorway.saraccess.model.SarObject;
-import org.rescuenorway.saraccess.model.SarBaseObject;
-import org.rescuenorway.saraccess.except.SaraException;
-import org.w3c.dom.Document;
-import no.cmr.tools.Log;
-import no.cmr.tools.FileUtils;
-import no.cmr.tools.XmlTool;
-import no.cmr.hrs.sar.model.*;
+import no.cmr.hrs.sar.model.Operation;
 import no.cmr.hrs.sar.tools.SARparse;
-import no.cmr.hrs.sar.tools.ElementDispatcher;
-import no.cmr.hrs.sar.tools.ChangeObject;
-import no.cmr.search.SearchResults;
+import no.cmr.tools.FileUtils;
+import no.cmr.tools.Log;
+import no.cmr.tools.XmlTool;
+import org.junit.After;
+import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
+import org.redcross.sar.mso.IMsoManagerIf;
+import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.mso.MsoModelImpl;
+import org.redcross.sar.mso.data.IMsoObjectIf;
+import org.redcross.sar.mso.data.IUnitIf;
+import org.redcross.sar.mso.data.VehicleImpl;
+import org.redcross.sar.util.mso.Position;
+import org.rescuenorway.saraccess.api.SarBaseObjectFactory;
+import org.rescuenorway.saraccess.api.SarSession;
+import org.rescuenorway.saraccess.model.SarObject;
 
-import java.util.Calendar;
-import java.util.List;
-import java.util.Iterator;
 import java.io.File;
+import java.util.Iterator;
+import java.util.List;
 
-import com.sun.xml.internal.ws.util.xml.XmlUtil;
+//import com.sun.xml.internal.ws.util.xml.XmlUtil;
 
 /**
  * ModelDriver Tester.
@@ -93,7 +83,7 @@ public class ModelDriverTest
 
       //MsoEvent.Commit e=new MsoEvent.Commit(ve,0);
 
-      
+
   }
 
     @Test
@@ -105,7 +95,7 @@ public class ModelDriverTest
 
       SarSession sarSess=smd.getSarSvc().getSession();
         smd.initiate();
-      
+
       SarObject sbo= (SarObject)sarSess.createInstance("Vehicle",SarBaseObjectFactory.TYPE_OBJECT,sarSess.createInstanceId());
 
        smd.addMsoObject(sbo);
@@ -127,7 +117,7 @@ public class ModelDriverTest
      SarObject sbo= (SarObject)sarSess.createInstance("Vehicle",SarBaseObjectFactory.TYPE_OBJECT,sarSess.createInstanceId());
 
       //smd.addMsoObject(sbo);
-     
+
       while (!sarSess.isFinishedLoading())
       {
          try
