@@ -5,7 +5,6 @@ import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent;
 import org.redcross.sar.util.except.DuplicateIdException;
-import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.except.MsoNullPointerException;
 import org.redcross.sar.util.mso.Position;
 import org.redcross.sar.util.mso.Route;
@@ -257,29 +256,9 @@ public class MsoManagerImpl implements IMsoManagerIf
                 aText);
     }
 
-    public IEnvironmentIf createEnvironment(String aDTG, String aText) throws IllegalMsoArgumentException
-    {
-        return getExistingCmdPost().getEnvironmentList().createEnvironment(aDTG, aText);
-    }
-
-    public IEnvironmentIf createEnvironment(long aDTG, String aText) throws IllegalMsoArgumentException
-    {
-        return getExistingCmdPost().getEnvironmentList().createEnvironment(aDTG, aText);
-    }
-
     public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         return getExistingCmdPost().getEnvironmentList().createEnvironment(anObjectId);
-    }
-
-    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId, String aDTG, String aText) throws IllegalMsoArgumentException
-    {
-        return getExistingCmdPost().getEnvironmentList().createEnvironment(anObjectId, aDTG, aText);
-    }
-
-    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId, long aDTG, String aText) throws IllegalMsoArgumentException
-    {
-        return getExistingCmdPost().getEnvironmentList().createEnvironment(anObjectId, aDTG, aText);
     }
 
     public IEquipmentIf createEquipment()
@@ -297,29 +276,9 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getForecastList().createForecast(aCalendar, aText);
     }
 
-    public IForecastIf createForecast(String aDTG, String aText) throws IllegalMsoArgumentException
-    {
-        return getExistingCmdPost().getForecastList().createForecast(aDTG, aText);
-    }
-
-    public IForecastIf createForecast(long aDTG, String aText) throws IllegalMsoArgumentException
-    {
-        return getExistingCmdPost().getForecastList().createForecast(aDTG, aText);
-    }
-
     public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         return getExistingCmdPost().getForecastList().createForecast(anObjectId);
-    }
-
-    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId, String aDTG, String aText) throws IllegalMsoArgumentException
-    {
-        return getExistingCmdPost().getForecastList().createForecast(anObjectId, aDTG, aText);
-    }
-
-    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId, long aDTG, String aText) throws IllegalMsoArgumentException
-    {
-        return getExistingCmdPost().getForecastList().createForecast(anObjectId, aDTG, aText);
     }
 
     public IHypothesisIf createHypothesis()

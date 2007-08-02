@@ -356,17 +356,17 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
 
     public Calendar getOccuredTime()
     {
-        return null; /*todo*/
+        return getCalendar();
     }
 
-    public void setOccuredTime()
+    public void setOccuredTime(Calendar aCalendar)
     {
+        setCalendar(aCalendar);
     }
 
     /*-------------------------------------------------------------------------------------------
     * Other methods
     *-------------------------------------------------------------------------------------------*/
-
 
     public boolean addBroadcastNotAccepted(ICommunicatorIf aReceiver)
     {
@@ -528,5 +528,4 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
             return m1.getLineNumber() - m2.getLineNumber();
         }
     };
-
 }

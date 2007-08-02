@@ -55,7 +55,7 @@ public abstract class DTG
 
     public static String CalToDTG(Calendar aCalendar)
     {
-        return String.format("%1$td%1$tH%1$tM", aCalendar);
+        return aCalendar != null ? String.format("%1$td%1$tH%1$tM", aCalendar) : "";
     }
 
     private static boolean adjustToDay(Calendar aCalendar, int aDay)
@@ -73,9 +73,9 @@ public abstract class DTG
 
     public static void main(String[] argv)
     {
-        for (int year = 2007;year <= 2008; year ++)
+        for (int year = 2007; year <= 2008; year++)
         {
-            for (int month = 0;month <= 2;month++)
+            for (int month = 0; month <= 2; month++)
             {
                 for (int day = 1; day <= 32; day++)
                 {

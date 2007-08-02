@@ -7,6 +7,7 @@ import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent;
+import org.redcross.sar.util.mso.DTG;
 import org.redcross.sar.util.mso.Selector;
 
 import javax.swing.*;
@@ -99,7 +100,7 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
             	}
                 return string.toString();
             case 1:
-                return message.getDTG();
+                return DTG.CalToDTG(message.getOccuredTime());
             case 2:
             	//return message.getFrom();
                 return "";

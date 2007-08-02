@@ -1,8 +1,6 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.util.except.IllegalMsoArgumentException;
-import org.redcross.sar.util.mso.DTG;
 
 import java.util.Calendar;
 
@@ -21,20 +19,9 @@ public abstract class AbstractTimeItem extends AbstractMsoObject implements ITim
         this(anObjectId, aCalendar, true);
     }
 
-    public AbstractTimeItem(IMsoObjectIf.IObjectIdIf anObjectId, String aDTG) throws IllegalMsoArgumentException
-    {
-        this(anObjectId, DTG.DTGToCal(aDTG), true);
-    }
-
-    public AbstractTimeItem(IMsoObjectIf.IObjectIdIf anObjectId, long aDTG) throws IllegalMsoArgumentException
-    {
-        this(anObjectId, DTG.DTGToCal(aDTG), true);
-    }
-
     public AbstractTimeItem(IMsoObjectIf.IObjectIdIf anObjectId, Calendar aCalendar, boolean aVisible)
     {
         super(anObjectId);
-//        System.out.println("AbstractTimeItem");
         m_calendar.setValue(aCalendar);
         setVisible(aVisible);
     }
@@ -61,11 +48,6 @@ public abstract class AbstractTimeItem extends AbstractMsoObject implements ITim
     {
     }
 
-    public String getDTG()
-    {
-        return m_calendar.getDTG();
-    }
-
     public void setCalendar(Calendar aDTG)
     {
         m_calendar.setValue(aDTG);
@@ -86,23 +68,13 @@ public abstract class AbstractTimeItem extends AbstractMsoObject implements ITim
         return m_calendar;
     }
 
-    public void setDTG(Long aDTG) throws IllegalMsoArgumentException
-    {
-        m_calendar.setValue(aDTG);
-    }
-
-    public void setDTG(String aDTG) throws IllegalMsoArgumentException
-    {
-        m_calendar.setValue(aDTG);
-    }
-
     /**
      * Compare time with another ITimeItemIf object.
      * The following rule applies: A <code>null</code>-reference element is considered to be greater (later) than all other objects,
      * two <code>null</code>-reference elements are equal.
      *
      * @param aTimeObject The object to compare.
-     * @return As defined in java.lang.Comparable
+     * @return As {@link Comparable#compareTo(Object)}
      */
     public int compareTo(ITimeItemIf aTimeObject)
     {
@@ -137,7 +109,7 @@ public abstract class AbstractTimeItem extends AbstractMsoObject implements ITim
 
     public String toString()
     {
-        return "Item " + getDTG();
+        return "Item " + getCalendar();
     }
 
     public IMsoModelIf.ModificationState getVisibleState()
@@ -149,6 +121,4 @@ public abstract class AbstractTimeItem extends AbstractMsoObject implements ITim
     {
         return m_visible;
     }
-
-
 }

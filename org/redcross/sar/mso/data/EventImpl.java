@@ -72,7 +72,7 @@ public class EventImpl extends AbstractTimeItem implements IEventIf
         }
         super.removeObjectReference(anObject,aReferenceName);
     }
-    
+
     public static EventImpl implementationOf(IEventIf anInterface) throws MsoCastException
     {
         try
@@ -144,12 +144,11 @@ public class EventImpl extends AbstractTimeItem implements IEventIf
 
     public Calendar getEventTime()
     {
-        return null; /*todo*/
+        return getCalendar();
     }
 
-    public void setEventTime()
-    { /*todo*/
+    public void setEventTime(Calendar aCalendar)
+    {
+        setCalendar(aCalendar);
     }
-
-
 }

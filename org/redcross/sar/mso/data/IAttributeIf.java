@@ -1,7 +1,6 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.mso.*;
 
 import java.awt.geom.Point2D;
@@ -172,19 +171,9 @@ public interface IAttributeIf<T>
      */
     public interface IMsoCalendarIf extends IAttributeIf<Calendar>
     {
-        public void setDTG(String aDTG) throws IllegalMsoArgumentException;
-
-        public void setDTG(Number aDTG) throws IllegalMsoArgumentException;
-
-        public void setValue(String aDTG) throws IllegalMsoArgumentException;
-
-        public void setValue(Number aDTG) throws IllegalMsoArgumentException;
-
         public void setValue(Calendar aDTG);
 
         public void set(Calendar aDTG);
-
-        public String getDTG();
 
         public Calendar getCalendar();
     }

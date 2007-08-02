@@ -102,7 +102,7 @@ public interface IMessageIf extends ITimeItemIf, ISerialNumberedIf
 
     public Calendar getOccuredTime();
 
-    public void setOccuredTime();
+    public void setOccuredTime(Calendar aCalendar);
 
     /*-------------------------------------------------------------------------------------------
     * Other methods

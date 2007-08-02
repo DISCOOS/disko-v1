@@ -1,7 +1,6 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoManagerIf;
-import org.redcross.sar.util.except.IllegalMsoArgumentException;
 
 import java.util.Calendar;
 
@@ -17,18 +16,6 @@ public class EnvironmentImpl extends AbstractTimeItem implements IEnvironmentIf
     public EnvironmentImpl(IMsoObjectIf.IObjectIdIf anObjectId,Calendar aCalendar, String aText)
     {
         super(anObjectId,aCalendar);
-        setText(aText);
-    }
-
-    public EnvironmentImpl(IMsoObjectIf.IObjectIdIf anObjectId,String aDTG, String aText) throws IllegalMsoArgumentException
-    {
-        super(anObjectId,aDTG);
-        setText(aText);
-    }
-
-    public EnvironmentImpl(IMsoObjectIf.IObjectIdIf anObjectId,long aDTG, String aText) throws IllegalMsoArgumentException
-    {
-        super(anObjectId, aDTG);
         setText(aText);
     }
 

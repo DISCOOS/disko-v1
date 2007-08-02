@@ -1,7 +1,6 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.util.except.DuplicateIdException;
 
 import java.util.Calendar;
 import java.util.Collection;
@@ -30,5 +29,5 @@ public interface IEventIf extends ITimeItemIf, ISerialNumberedIf
 
     public Calendar getEventTime();
 
-    public void setEventTime();
+    public void setEventTime(Calendar aCalendar);
 }

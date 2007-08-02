@@ -1,7 +1,6 @@
 package org.redcross.sar.mso;
 
 import org.redcross.sar.mso.data.*;
-import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.except.MsoNullPointerException;
 import org.redcross.sar.util.mso.Position;
 import org.redcross.sar.util.mso.Route;
@@ -261,50 +260,10 @@ public interface IMsoManagerIf
     /**
      * Create a new {@link org.redcross.sar.mso.data.IEnvironmentIf} object and add it to the collection of Environment objects.
      *
-     * @param aDTG The time (in DateTimeGroup format) from which the information is valid.
-     * @return The created object.
-     * @throws org.redcross.sar.util.except.IllegalMsoArgumentException
-     *          if paramter aDTG holds an illegal DateTimeGroup value.
-     */
-    public IEnvironmentIf createEnvironment(String aDTG, String aText) throws IllegalMsoArgumentException;
-
-    /**
-     * Create a new {@link org.redcross.sar.mso.data.IEnvironmentIf} object and add it to the collection of Environment objects.
-     *
-     * @return The created object.
-     * @throws org.redcross.sar.util.except.IllegalMsoArgumentException
-     *          if paramter aDTG holds an illegal DateTimeGroup value.
-     */
-    public IEnvironmentIf createEnvironment(long aDTG, String aText) throws IllegalMsoArgumentException;
-
-    /**
-     * Create a new {@link org.redcross.sar.mso.data.IEnvironmentIf} object and add it to the collection of Environment objects.
-     *
      * @param anObjectId The Object id
      * @return The created object.
      */
     public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId);
-
-    /**
-     * Create a new {@link org.redcross.sar.mso.data.IEnvironmentIf} object and add it to the collection of Environment objects.
-     *
-     * @param aDTG The time (in DateTimeGroup format) from which the information is valid.
-     * @return The created object.
-     * @throws org.redcross.sar.util.except.IllegalMsoArgumentException
-     *          if paramter aDTG holds an illegal DateTimeGroup value.
-     */
-    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId, String aDTG, String aText) throws IllegalMsoArgumentException;
-
-    /**
-     * Create a new {@link org.redcross.sar.mso.data.IEnvironmentIf} object and add it to the collection of Environment objects.
-     *
-     * @param aDTG The time (in DateTimeGroup format) from which the information is valid.
-     * @param anObjectId The Object id
-     * @return The created object.
-     * @throws org.redcross.sar.util.except.IllegalMsoArgumentException
-     *          if paramter aDTG holds an illegal DateTimeGroup value.
-     */
-    public IEnvironmentIf createEnvironment(IMsoObjectIf.IObjectIdIf anObjectId, long aDTG, String aText) throws IllegalMsoArgumentException;
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.IEquipmentIf} object and add it to the collection of Equipment objects.
@@ -333,55 +292,10 @@ public interface IMsoManagerIf
     /**
      * Create a new {@link org.redcross.sar.mso.data.IForecastIf} object and add it to the collection of Forecast objects.
      *
-     * @param aDTG The time (in DateTimeGroup format) from which the information is valid.
-     * @param aText A forecast text
-     * @return The created object.
-     * @throws org.redcross.sar.util.except.IllegalMsoArgumentException
-     *          if paramter aDTG holds an illegal DateTimeGroup value.
-     */
-    public IForecastIf createForecast(String aDTG, String aText) throws IllegalMsoArgumentException;
-
-    /**
-     * Create a new {@link org.redcross.sar.mso.data.IForecastIf} object and add it to the collection of Forecast objects.
-     *
-     * @param aDTG The time (in DateTimeGroup format) from which the information is valid.
-     * @param aText A forecast text
-     * @return The created object.
-     * @throws org.redcross.sar.util.except.IllegalMsoArgumentException
-     *          if paramter aDTG holds an illegal DateTimeGroup value.
-     */
-    public IForecastIf createForecast(long aDTG, String aText) throws IllegalMsoArgumentException;
-
-    /**
-     * Create a new {@link org.redcross.sar.mso.data.IForecastIf} object and add it to the collection of Forecast objects.
-     *
      * @param anObjectId The Object id
      * @return The created object.
      */
     public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId);
-
-    /**
-     * Create a new {@link org.redcross.sar.mso.data.IForecastIf} object and add it to the collection of Forecast objects.
-     *
-     * @param aDTG The time (in DateTimeGroup format) from which the information is valid.
-     * @param aText A forecast text
-     * @return The created object.
-     * @throws org.redcross.sar.util.except.IllegalMsoArgumentException
-     *          if paramter aDTG holds an illegal DateTimeGroup value.
-     */
-    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId, String aDTG, String aText) throws IllegalMsoArgumentException;
-
-    /**
-     * Create a new {@link org.redcross.sar.mso.data.IForecastIf} object and add it to the collection of Forecast objects.
-     *
-     * @param anObjectId The Object id
-     * @param aDTG The time (in DateTimeGroup format) from which the information is valid.
-     * @param aText A forecast text
-     * @return The created object.
-     * @throws org.redcross.sar.util.except.IllegalMsoArgumentException
-     *          if paramter aDTG holds an illegal DateTimeGroup value.
-     */
-    public IForecastIf createForecast(IMsoObjectIf.IObjectIdIf anObjectId, long aDTG, String aText) throws IllegalMsoArgumentException;
 
     /**
      * Create a new {@link org.redcross.sar.mso.data.IHypothesisIf} object and add it to the collection of Hypothesis objects.
