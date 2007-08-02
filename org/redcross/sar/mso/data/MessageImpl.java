@@ -412,6 +412,19 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
     {
         return m_confirmedReceivers;
     }
+    
+    public ICommunicatorIf getSingleReceiver()
+	{
+		return m_confirmedReceivers.getItem();
+	}
+
+	public void setSingleReceiver(ICommunicatorIf communicator)
+	{
+		m_broadcast.set(false);
+		m_unconfirmedReceivers.clear();
+		m_confirmedReceivers.clear();
+		m_confirmedReceivers.add(communicator);
+	}
 
     private int getNextLineNumber()
     {
