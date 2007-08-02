@@ -10,6 +10,8 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -21,6 +23,7 @@ import javax.swing.SwingConstants;
 import org.redcross.sar.event.DialogEvent;
 import org.redcross.sar.event.IDialogEventListener;
 import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.mso.data.ICommunicatorIf;
 import org.redcross.sar.mso.data.IMessageIf;
 
 /**
@@ -212,5 +215,19 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 	public boolean getBroadcast()
 	{
 		return m_broadcast;
+	}
+
+	public List<ICommunicatorIf> getCommunicators()
+	{
+		List<ICommunicatorIf> communicators = new LinkedList<ICommunicatorIf>();
+		if(m_broadcast)
+		{
+			// TODO get from broadcast dialog
+		}
+		else
+		{
+			communicators.add(m_nbFieldDialog.getCommunicator());
+		}
+		return communicators;
 	}
 }

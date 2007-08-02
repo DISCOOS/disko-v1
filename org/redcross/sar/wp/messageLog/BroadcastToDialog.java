@@ -1,11 +1,14 @@
 package org.redcross.sar.wp.messageLog;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -19,6 +22,7 @@ import org.redcross.sar.mso.data.AbstractDerivedList;
 import org.redcross.sar.mso.data.ICommunicatorIf;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IUnitIf;
+import org.redcross.sar.mso.data.IUnitIf.UnitType;
 
 import com.esri.arcgis.geometry.IUnit;
 
@@ -69,10 +73,14 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialog
 		
 		initContentsPanel();
 		initActionButtons();
+		m_listArea = new JPanel();
+		m_listArea.setBorder(BorderFactory.createLineBorder(Color.green));
+		m_listArea.setLayout(new BoxLayout(m_listArea, BoxLayout.LINE_AXIS));
+		m_contentsPanel.add(m_listArea);
+		
 		updateCommunicatorList();
 		
-		m_contentsPanel.setPreferredSize(new Dimension(SingleUnitListSelectionDialog.PANEL_WIDTH, 
-				MessageLogPanel.SMALL_BUTTON_SIZE.height*(NUM_ROWS_COMMUNICATOR_LIST+1)));
+		
 		
 		this.pack();
 	}
@@ -96,7 +104,7 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialog
 				m_listArea.add(buttonPanel);
 			}
 			
-			JToggleButton button = new JToggleButton();
+			JToggleButton button = new JToggleButton(String.valueOf(communicator.getCommunicatorNumberPrefix()) + " " + String.valueOf(communicator.getCommunicatorNumber()));
 			
 			// Store mapping between button and communicator
 			m_buttonCommunicatorMap.put(button, communicator);
@@ -114,6 +122,10 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialog
 	private void initActionButtons()
 	{
 		m_buttonRowPanel = new JPanel();
+		m_buttonRowPanel.setPreferredSize(new Dimension(SingleUnitListSelectionDialog.PANEL_WIDTH, 
+				MessageLogPanel.SMALL_BUTTON_SIZE.height));
+		m_contentsPanel.setBorder(BorderFactory.createLineBorder(Color.red));
+		m_buttonRowPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 		m_buttonRowPanel.setLayout(new BoxLayout(m_buttonRowPanel, BoxLayout.LINE_AXIS));
 		
 		m_selectionButton = new JButton(m_wpMessageLog.getText("SelectionButton.text"));
@@ -126,6 +138,7 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialog
 			}
 		});
 		m_buttonRowPanel.add(m_selectionButton);
+		m_buttonRowPanel.setMaximumSize(new Dimension(MessageLogPanel.PANEL_WIDTH, MessageLogPanel.SMALL_BUTTON_SIZE.height));
 		
 		m_confirmButton = new JButton(m_wpMessageLog.getText("ConfirmButton.text"));
 		m_confirmButton.setMinimumSize(ChangeToDialog.BUTTON_SIZE);
@@ -139,44 +152,39 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialog
 		});
 		m_buttonRowPanel.add(m_confirmButton);
 		
+		m_buttonRowPanel.add(Box.createHorizontalGlue());
+		
 		m_buttonRowPanel.add(new JSeparator(JSeparator.VERTICAL));
 		m_buttonRowPanel.add(new JSeparator(JSeparator.VERTICAL));
 		
+		m_buttonRowPanel.add(Box.createHorizontalGlue());
+		
 		m_allButton = new JButton(m_wpMessageLog.getText("AllButton.text"));
+		m_allButton.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
+		m_allButton.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
 		m_buttonRowPanel.add(m_allButton);
 		
 		m_noneButton = new JButton(m_wpMessageLog.getText("NoneButton.text"));
+		m_noneButton.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
+		m_noneButton.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
 		m_buttonRowPanel.add(m_noneButton);
+		
+		m_buttonRowPanel.add(Box.createHorizontalGlue());
 		
 		m_buttonRowPanel.add(new JSeparator(JSeparator.VERTICAL));
 		m_buttonRowPanel.add(new JSeparator(JSeparator.VERTICAL));
+		
+		m_buttonRowPanel.add(Box.createHorizontalGlue());
 		
 		m_unitTypePanel = new JPanel();
 		m_unitTypePanel.setLayout(new BoxLayout(m_unitTypePanel, BoxLayout.LINE_AXIS));
 		
-		m_teamButton = new JButton();
-		m_teamButton.setIcon(Utils.getIcon(IUnitIf.UnitType.TEAM));
-		m_unitTypePanel.add(m_teamButton);
-		
-		m_dogButton = new JButton();
-		m_dogButton.setIcon(Utils.getIcon(IUnitIf.UnitType.DOG));
-		m_unitTypePanel.add(m_dogButton);
-		
-		m_vehicleButton = new JButton();
-		m_vehicleButton.setIcon(Utils.getIcon(IUnitIf.UnitType.VEHICLE));
-		m_unitTypePanel.add(m_vehicleButton);
-		
-		m_aircraftButton = new JButton();
-		m_aircraftButton.setIcon(Utils.getIcon(IUnitIf.UnitType.AIRCRAFT));
-		m_unitTypePanel.add(m_aircraftButton);
-		
-		m_boatButton = new JButton();
-		m_boatButton.setIcon(Utils.getIcon(IUnitIf.UnitType.BOAT));
-		m_unitTypePanel.add(m_boatButton);
-		
-		m_commandPostButton = new JButton();
-		m_commandPostButton.setIcon(Utils.getIcon(IUnitIf.UnitType.COMMAND_POST));
-		m_unitTypePanel.add(m_commandPostButton);
+		m_teamButton = createUnitButton(UnitType.TEAM);
+		m_dogButton = createUnitButton(UnitType.DOG);
+		m_vehicleButton = createUnitButton(UnitType.VEHICLE);
+		m_aircraftButton = createUnitButton(UnitType.AIRCRAFT);
+		m_boatButton = createUnitButton(UnitType.BOAT);
+		m_commandPostButton = createUnitButton(UnitType.COMMAND_POST);
 		
 		m_confirmationStatusLabel = new JLabel();
 		m_buttonRowPanel.add(m_confirmationStatusLabel);
@@ -185,13 +193,24 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialog
 		
 		m_contentsPanel.add(m_buttonRowPanel);
 	}
+	
+	private JButton createUnitButton(UnitType type)
+	{
+		JButton button = new JButton();
+		button.setIcon(Utils.getIcon(type));
+		button.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
+		button.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
+		m_unitTypePanel.add(button);
+		return button;
+	}
 
 	private void initContentsPanel()
 	{
 		m_contentsPanel = new JPanel();
-		m_listArea = new JPanel();
-		m_listArea.setLayout(new BoxLayout(m_listArea, BoxLayout.LINE_AXIS));
-		m_contentsPanel.add(m_listArea);
+		m_contentsPanel.setLayout(new BoxLayout(m_contentsPanel, BoxLayout.PAGE_AXIS));
+		m_contentsPanel.setPreferredSize(new Dimension(SingleUnitListSelectionDialog.PANEL_WIDTH, 
+				MessageLogPanel.SMALL_BUTTON_SIZE.height*(NUM_ROWS_COMMUNICATOR_LIST+1)));
+		m_contentsPanel.setBorder(BorderFactory.createLineBorder(Color.red));
 		this.add(m_contentsPanel);
 	}
 

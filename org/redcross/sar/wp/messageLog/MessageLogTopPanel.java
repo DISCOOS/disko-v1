@@ -437,14 +437,18 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			{
 				// Roll back any changes made to the message
 				// TODO sjekk med vinjar/stian
-				m_wpMessageLog.getMsoManager().rollback();
+				if(m_newMessage)
+				{
+					m_currentMessage.deleteObject();
+				}
+				else
+				{
+					m_wpMessageLog.getMsoManager().rollback();
+				}
 			}
 		}
 		m_messageDirty = false;
-
 		m_currentMessageNr = messageNr;
-
-		// Editing an existing message
 		m_newMessage = false;
 
 		// Get the message
@@ -471,8 +475,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			m_fromLabel.setText(sender.getCommunicatorNumberPrefix() + " " + sender.getCommunicatorNumber());
 
 			// Update to
-			IMsoListIf<ICommunicatorIf> recievers = m_currentMessage.getConfirmedReceivers();
-			if(recievers.size() == 0)
+			IMsoListIf<ICommunicatorIf> receivers = m_currentMessage.getConfirmedReceivers();
+			if(receivers.size() == 0)
 			{
 				ICommunicatorIf defaultReciever = (ICommunicatorIf)m_wpMessageLog.getMsoManager().getCmdPost();
 				m_toLabel.setText(defaultReciever.getCommunicatorNumberPrefix() + " " +
@@ -480,7 +484,15 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			}
 			else
 			{
-				// TODO ?
+				if(m_currentMessage.isBroadcast())
+				{
+					m_toLabel.setText(m_wpMessageLog.getText("BroadcastLabel.text"));
+				}
+				else
+				{
+					ICommunicatorIf receiver = m_currentMessage.getSingleReceiver();
+					m_toLabel.setText(receiver.getCommunicatorNumberPrefix() + " " + receiver.getCommunicatorNumber());
+				}
 			}
 
 			ITaskListIf tasks = m_currentMessage.getMessageTasks();
@@ -571,6 +583,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		if(m_currentMessage == null)
 		{
 			m_currentMessage = m_wpMessageLog.getMsoManager().createMessage();
+			m_newMessage = true;
 		}
 		
 		if(source instanceof ChangeDTGDialog)
@@ -608,13 +621,12 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		}
 		else if(source instanceof ChangeToDialog)
 		{
-
 			// set receiver(s) in current message
-			boolean broadcast = m_changeToDialog.getBroadcast();
-			m_currentMessage.setBroadcast(broadcast);
-			if(broadcast)
+			List<ICommunicatorIf> communicators = m_changeToDialog.getCommunicators();
+			if(communicators.size() == 1)
 			{
-				
+				// Not broadcast
+				m_currentMessage.setSingleReceiver(communicators.get(0));
 			}
 			else
 			{
@@ -628,6 +640,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			textLine.setText(m_messageTextDialog.getText());
 		}
 
+		updateMessageGUI();
 		m_messageDirty = true;
 	}
 
