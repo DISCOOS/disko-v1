@@ -489,27 +489,27 @@ public class MsoBasicTest
         try
         {
             IEventIf event1 = eventLog.createEvent(Calendar.getInstance());
-            event1.setCalendar(DTG.DTGToCal(121212L));
+            event1.setEventTime(DTG.DTGToCal(121212L));
             assertEquals(timeLine.size(), 1);
             IEventIf event2 = eventLog.createEvent(Calendar.getInstance());
-            event2.setCalendar(DTG.DTGToCal(131313L));
+            event2.setEventTime(DTG.DTGToCal(131313L));
             assertEquals(timeLine.size(), 2);
             ITaskIf task1 = taskListImpl.createTask(Calendar.getInstance());
-            task1.setCalendar(DTG.DTGToCal(121313L));
+            task1.setDueTime(DTG.DTGToCal(121313L));
             assertEquals(timeLine.size(), 3);
             assertTrue(isSorted(timeLine));
 
-            event1.setCalendar(DTG.DTGToCal(151212L));
+            event1.setEventTime(DTG.DTGToCal(151212L));
             assertTrue(isSorted(timeLine));
 
             eventLog.removeReference(event2);
             assertEquals(timeLine.size(), 2);
             assertTrue(isSorted(timeLine));
 
-            task1.setCalendar(DTG.DTGToCal(151213L));
+            task1.setDueTime(DTG.DTGToCal(151213L));
             assertTrue(isSorted(timeLine));
 
-            event1.setCalendar(DTG.DTGToCal(151213L));
+            event1.setEventTime(DTG.DTGToCal(151213L));
             assertTrue(isSorted(timeLine));
 
             eventLog.removeReference(event1);
@@ -658,13 +658,13 @@ public class MsoBasicTest
         try
         {
             IEventIf event1 = eventLog.createEvent(Calendar.getInstance());
-            event1.setCalendar(DTG.DTGToCal(121212L));
+            event1.setEventTime(DTG.DTGToCal(121212L));
             assertEquals(timeLine.size(), 1);
-            assertEquals(event1.getCalendarState(), IMsoModelIf.ModificationState.STATE_SERVER);
+            assertEquals(event1.getEventTimeState(), IMsoModelIf.ModificationState.STATE_SERVER);
 
             m_msoModel.setLocalUpdateMode();
             updateModeSet = true;
-            event1.setCalendar(DTG.DTGToCal(121215L));
+            event1.setEventTime(DTG.DTGToCal(121215L));
             IPOIIf pui = poiList.createPOI();
             assertEquals(poiList.size(), 1);
 
@@ -678,14 +678,14 @@ public class MsoBasicTest
             assertNotNull(assignment.getAssignmentBriefing());
 
             IEventIf event2 = eventLog.createEvent(Calendar.getInstance());
-            event2.setCalendar(DTG.DTGToCal(131313L));
+            event2.setEventTime(DTG.DTGToCal(131313L));
             assertEquals(timeLine.size(), 2);
             ITaskIf task1 = taskListImpl.createTask(Calendar.getInstance());
-            task1.setCalendar(DTG.DTGToCal(121313L));
+            task1.setDueTime(DTG.DTGToCal(121313L));
             assertEquals(timeLine.size(), 3);
             assertTrue(isSorted(timeLine));
 
-            assertEquals(event1.getCalendarState(), IMsoModelIf.ModificationState.STATE_LOCAL);
+            assertEquals(event1.getEventTimeState(), IMsoModelIf.ModificationState.STATE_LOCAL);
 
             if (commit)
             {
@@ -699,7 +699,7 @@ public class MsoBasicTest
                 assertEquals(timeLine.size(), 3);
                 assertTrue(isSorted(timeLine));
                 assertEquals(DTG.CalToDTG(event1.getEventTime()), "121215");
-                assertEquals(event1.getCalendarState(), IMsoModelIf.ModificationState.STATE_SERVER);
+                assertEquals(event1.getEventTimeState(), IMsoModelIf.ModificationState.STATE_SERVER);
                 m_msoModel.rollback();        // to assert thar rollback has no effect
                 assertEquals(poiList.size(), 1);
                 assertEquals(briefingList.size(), 1);
@@ -709,7 +709,7 @@ public class MsoBasicTest
                 assertEquals(timeLine.size(), 3);
                 assertTrue(isSorted(timeLine));
                 assertEquals(DTG.CalToDTG(event1.getEventTime()), "121215");
-                assertEquals(event1.getCalendarState(), IMsoModelIf.ModificationState.STATE_SERVER);
+                assertEquals(event1.getEventTimeState(), IMsoModelIf.ModificationState.STATE_SERVER);
             } else
             {
                 m_msoModel.rollback();
@@ -721,7 +721,7 @@ public class MsoBasicTest
                 assertNull(assignment.getAssignmentBriefing());
                 assertEquals(timeLine.size(), 1);
                 assertEquals(DTG.CalToDTG(event1.getEventTime()), "121212");
-                assertEquals(event1.getCalendarState(), IMsoModelIf.ModificationState.STATE_SERVER);
+                assertEquals(event1.getEventTimeState(), IMsoModelIf.ModificationState.STATE_SERVER);
             }
         }
         catch (MsoException e)
