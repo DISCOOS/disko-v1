@@ -9,7 +9,7 @@
 <fact comp="n" edit="y" id="00000000017" label="Priority" pos1="999" pos2="999" relTo="00000000094" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000063" label="Status" pos1="999" pos2="999" relTo="00000000094" version="1">
+<fact comp="n" edit="y" id="00000000062" label="Status" pos1="999" pos2="999" relTo="00000000094" version="1">
 <str_fact/>
 </fact>
 </object>

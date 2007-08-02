@@ -6,7 +6,7 @@
 <fact comp="n" edit="y" id="00000000072" label="LineType" pos1="999" pos2="999" relTo="00000000070" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000057" label="Text" pos1="999" pos2="999" relTo="00000000070" version="1">
+<fact comp="n" edit="y" id="00000000055" label="Text" pos1="999" pos2="999" relTo="00000000070" version="1">
 <str_fact/>
 </fact>
 </object>
