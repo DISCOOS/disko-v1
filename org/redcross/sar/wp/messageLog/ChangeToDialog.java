@@ -45,7 +45,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 	
 	protected IDiskoWpMessageLog m_wpMessageLog;
 	
-	private final Dimension BUTTON_SIZE = new Dimension(MessageLogPanel.SMALL_BUTTON_SIZE.width*3, 
+	public static final Dimension BUTTON_SIZE = new Dimension(MessageLogPanel.SMALL_BUTTON_SIZE.width*3, 
 			MessageLogPanel.SMALL_BUTTON_SIZE.height);
 	
 	
@@ -70,9 +70,11 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 	{
 		m_nbFieldDialog = new UnitFieldSelectionDialog(m_wpMessageLog);
 		m_nbListDialog = new SingleUnitListSelectionDialog(m_wpMessageLog);
+		m_broadcastDialog = new BroadcastToDialog(m_wpMessageLog);
 		
 		m_nbFieldDialog.addDialogListener(this);
 		m_nbListDialog.addDialogListener(this);
+		m_broadcastDialog.addDialogListener(this);
 		
 		m_nbListDialog.addActionListener(m_nbFieldDialog);
 		m_nbFieldDialog.addActionListener(m_nbListDialog);
@@ -83,13 +85,12 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 		m_contentsPanel = new JPanel();
 		m_contentsPanel.setLayout(new BoxLayout(m_contentsPanel, BoxLayout.LINE_AXIS));
 		m_contentsPanel.setPreferredSize(new Dimension(SingleUnitListSelectionDialog.PANEL_WIDTH, BUTTON_SIZE.height));
-		//m_contentsPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 		this.add(m_contentsPanel);
 	}
 	
 	private void initButtons()
 	{
-		m_nonBroadcastButton = new JButton("Enkeltanrop");
+		m_nonBroadcastButton = new JButton(m_wpMessageLog.getText("NonBroadcastButton.text"));
 		m_nonBroadcastButton.setPreferredSize(BUTTON_SIZE);
 		m_nonBroadcastButton.setMaximumSize(BUTTON_SIZE);
 		m_nonBroadcastButton.setHorizontalAlignment(SwingConstants.LEFT);
@@ -99,12 +100,13 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 			{
 				m_nbFieldDialog.showDialog();
 				m_nbListDialog.showDialog();
+				m_broadcastDialog.hideDialog();
 				m_broadcast = false;
 			}	
 		});
 		m_contentsPanel.add(m_nonBroadcastButton);
 		
-		m_broadcastButton = new JButton("Fellesanrop");
+		m_broadcastButton = new JButton(m_wpMessageLog.getText("BroadcastButton.text"));
 		m_broadcastButton.setPreferredSize(BUTTON_SIZE);
 		m_broadcastButton.setMaximumSize(BUTTON_SIZE);
 		m_broadcastButton.setHorizontalAlignment(SwingConstants.LEFT);
@@ -114,6 +116,11 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 			{
 				m_nbFieldDialog.hideDialog();
 				m_nbListDialog.hideDialog();
+				
+				Point location = m_nonBroadcastButton.getLocationOnScreen();
+				location.y += BUTTON_SIZE.height;
+				m_broadcastDialog.setLocation(location);
+				m_broadcastDialog.showDialog();
 				m_broadcast = true;
 			}
 		});
@@ -127,6 +134,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 		this.setVisible(false);
 		m_nbListDialog.hideDialog();
 		m_nbFieldDialog.hideDialog();
+		m_broadcastDialog.hideDialog();
 	}
 
 	public void newMessageSelected(IMessageIf message)

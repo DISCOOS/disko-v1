@@ -566,13 +566,13 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	public void dialogFinished(DialogEvent e)
 	{
 		Object source = e.getSource();
-
+		
 		// If no message is selected a new one should be created once a field is edited
 		if(m_currentMessage == null)
 		{
 			m_currentMessage = m_wpMessageLog.getMsoManager().createMessage();
 		}
-
+		
 		if(source instanceof ChangeDTGDialog)
 		{
 			// Check validity of DTG
@@ -584,14 +584,14 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			catch (IllegalMsoArgumentException e1)
 			{
 				System.err.println("Not a valid DTG format");
-				}
+			}
 		}
 		else if(source instanceof UnitFieldSelectionDialog ||
 				source instanceof SingleUnitListSelectionDialog)
 		{
 			m_fieldFromDialog.hideDialog();
 			m_listFromDialog.hideDialog();
-
+			
 			ICommunicatorIf sender = null;
 			if(m_fieldFromDialog.getText().isEmpty())
 			{
@@ -608,10 +608,18 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		}
 		else if(source instanceof ChangeToDialog)
 		{
-			//m_toLabel.setText(m_changeToDialog.getCommunicatorName());
-			// TODO set receiver(s) in current message
-			m_currentMessage.setBroadcast(m_changeToDialog.getBroadcast());
-			// TODO ...
+
+			// set receiver(s) in current message
+			boolean broadcast = m_changeToDialog.getBroadcast();
+			m_currentMessage.setBroadcast(broadcast);
+			if(broadcast)
+			{
+				
+			}
+			else
+			{
+				//m_toLabel.setText(m_changeToDialog.getCommunicatorName());
+			}
 			m_changeToDialog.hideDialog();
 		}
 		else if(source instanceof MessageTextDialog)
@@ -682,10 +690,10 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 						{
 							m_currentMessage.setStatus(MessageStatus.CONFIRMED);
 						}
-
+						
 						clearPanelContents();
 						clearDialogContents();
-
+						
 						// Commit changes
 						m_wpMessageLog.getMsoManager().commit();
 
@@ -823,7 +831,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					clearDialogContents();
 
 					m_wpMessageLog.getMsoManager().rollback(); // TODO sjekk om korrekt?
-
+					
 					m_currentMessage = null;
 					m_messageDirty = false;
 				}
