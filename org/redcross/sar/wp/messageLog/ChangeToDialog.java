@@ -37,7 +37,9 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 	protected JPanel m_contentsPanel;
 	
 	protected UnitFieldSelectionDialog m_nbFieldDialog;
-	protected UnitListSelectionDialog m_nbListDialog;
+	protected SingleUnitListSelectionDialog m_nbListDialog;
+	
+	protected BroadcastToDialog m_broadcastDialog;
 	
 	protected boolean m_broadcast = false;
 	
@@ -67,7 +69,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 	private void initDialogs()
 	{
 		m_nbFieldDialog = new UnitFieldSelectionDialog(m_wpMessageLog);
-		m_nbListDialog = new UnitListSelectionDialog(m_wpMessageLog);
+		m_nbListDialog = new SingleUnitListSelectionDialog(m_wpMessageLog);
 		
 		m_nbFieldDialog.addDialogListener(this);
 		m_nbListDialog.addDialogListener(this);
@@ -80,7 +82,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 	{
 		m_contentsPanel = new JPanel();
 		m_contentsPanel.setLayout(new BoxLayout(m_contentsPanel, BoxLayout.LINE_AXIS));
-		m_contentsPanel.setPreferredSize(new Dimension(UnitListSelectionDialog.PANEL_WIDTH, BUTTON_SIZE.height));
+		m_contentsPanel.setPreferredSize(new Dimension(SingleUnitListSelectionDialog.PANEL_WIDTH, BUTTON_SIZE.height));
 		//m_contentsPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 		this.add(m_contentsPanel);
 	}
@@ -182,7 +184,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 	public void dialogFinished(DialogEvent e)
 	{
 		Object source = e.getSource();
-		if(source instanceof UnitListSelectionDialog || source instanceof UnitFieldSelectionDialog)
+		if(source instanceof SingleUnitListSelectionDialog || source instanceof UnitFieldSelectionDialog)
 		{
 			fireDialogFinished();
 		}

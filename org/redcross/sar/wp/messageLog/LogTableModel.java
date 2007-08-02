@@ -1,6 +1,7 @@
 package org.redcross.sar.wp.messageLog;
 
 import org.redcross.sar.mso.IMsoManagerIf;
+import org.redcross.sar.mso.data.ICommunicatorIf;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLogIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
@@ -102,11 +103,33 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
             case 1:
                 return DTG.CalToDTG(message.getOccuredTime());
             case 2:
-            	//return message.getFrom();
-                return "";
+            	ICommunicatorIf sender = message.getSender();
+            	if(sender != null)
+            	{
+            		return sender.getCommunicatorNumberPrefix() + " " + sender.getCommunicatorNumber();
+            	}
+            	else
+            	{
+            		return "";
+            	}
             case 3:
-            	// return message.getTo();
-                return "";
+            	if(message.isBroadcast())
+            	{
+            		// TODO get text from resource bundle
+            		return "Fellesanrop";
+            	}
+            	else
+            	{
+            		ICommunicatorIf reciever = message.getConfirmedReceivers().getItem();
+            		if(reciever != null)
+            		{
+            			return reciever.getCommunicatorNumberPrefix() + " " + reciever.getCommunicatorNumber();
+            		}
+            		else
+            		{
+            			return "";
+            		}
+            	}
             case 4:
                 return message.getLines();
             case 5:

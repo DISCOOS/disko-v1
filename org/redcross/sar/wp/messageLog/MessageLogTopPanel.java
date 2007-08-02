@@ -57,7 +57,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     private JPanel m_fromPanel;
     private JLabel m_fromLabel;
     private UnitFieldSelectionDialog m_fieldFromDialog;
-    private UnitListSelectionDialog m_listFromDialog;
+    private SingleUnitListSelectionDialog m_listFromDialog;
     private JButton m_changeFromButton;
 
     private JPanel m_toPanel;
@@ -174,11 +174,11 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     	return m_fieldFromDialog;
     }
 
-    private UnitListSelectionDialog getListChangeFromDialog()
+    private SingleUnitListSelectionDialog getListChangeFromDialog()
     {
     	if(m_listFromDialog == null)
     	{
-    		m_listFromDialog = new UnitListSelectionDialog(m_wpMessageLog);
+    		m_listFromDialog = new SingleUnitListSelectionDialog(m_wpMessageLog);
     		m_listFromDialog.addDialogListener(this);
     		m_dialogs.add(m_listFromDialog);
     	}
@@ -544,7 +544,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	{
 		Object sender = e.getSource();
 
-		if(sender.getClass() == UnitListSelectionDialog.class)
+		if(sender.getClass() == SingleUnitListSelectionDialog.class)
 		{
 		}
 		if(sender.getClass() == ChangeDTGDialog.class)
@@ -553,49 +553,11 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		}
 	}
 
-	/**
-	 * Updates currently selected message (or creates a new) with the contents of the dialogs
-	 *
-	 */
-	private void updateCurrentMessage()
-	{
-		if(m_newMessage)
-		{
-			m_currentMessage = m_wpMessageLog.getMsoManager().createMessage();
-		}
-
-		try
-		{
-			m_currentMessage.setOccuredTime(DTG.DTGToCal(m_dtgLabel.getText()));
-		}
-		catch (IllegalMsoArgumentException e)
-		{
-			System.err.println("Error parsing DTG when updating message");
-			//e.printStackTrace();
-		}
-
-		// TODO m_currentMessage.setSender(aCommunicator);
-		// TODO m_currentMessage.addConfirmedReceiver(anICommunicatorIf);
-
-		// Add text message line
-		String text = m_messageTextDialog.getText();
-		if(text.length()>0)
-		{
-			IMessageLineIf textMessageLine = m_currentMessage.findMessageLine(MessageLineType.TEXT, true);
-			textMessageLine.setText(text);
-		}
-
-		// Add POI message line
-
-
-		m_messageDirty = false;
-
-	}
-
 	private boolean validMessage()
 	{
 		// TODO Auto-generated method stub
-		return false;
+		// TODO data should be valid already, perhaps not needed?
+		return true;
 	}
 
 	/**
@@ -605,57 +567,56 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	{
 		Object source = e.getSource();
 		
+		// If no message is selected a new one should be created once a field is edited
+		if(m_currentMessage == null)
+		{
+			m_currentMessage = m_wpMessageLog.getMsoManager().createMessage();
+		}
+		
 		if(source instanceof ChangeDTGDialog)
 		{
-			if(m_newMessage)
+			// Check validity of DTG
+			try
 			{
-				// Check validity of DTG
-				try
-				{
-					DTG.DTGToCal(m_changeDTGDialog.getTime());
-					m_dtgLabel.setText(m_changeDTGDialog.getTime());
-				}
-				catch (IllegalMsoArgumentException e1)
-				{
-					System.err.println("Not a valid DTG format");
-				}
+				m_currentMessage.setCalendar(DTG.DTGToCal(m_changeDTGDialog.getTime()));
+				//m_dtgLabel.setText(m_changeDTGDialog.getTime());
 			}
-			else
+			catch (IllegalMsoArgumentException e1)
 			{
-				try
-				{
-					// Send to mso, don't commit anything
-					m_currentMessage.setCalendar(DTG.DTGToCal(m_changeDTGDialog.getTime()));
-				}
-				catch (IllegalMsoArgumentException e1)
-				{
-					System.err.println("Error parsing DTG");
-					//e1.printStackTrace();
-				}
+				System.err.println("Not a valid DTG format");
 			}
 		}
 		else if(source instanceof UnitFieldSelectionDialog ||
-				source instanceof UnitListSelectionDialog)
+				source instanceof SingleUnitListSelectionDialog)
 		{
 			m_fieldFromDialog.hideDialog();
 			m_listFromDialog.hideDialog();
+			
+			ICommunicatorIf sender = null;
 			if(m_fieldFromDialog.getText().isEmpty())
 			{
-				ICommunicatorIf cp = (ICommunicatorIf)m_wpMessageLog.getMsoManager().getCmdPost();
-				m_fieldFromDialog.setCommunicatorNumberPrefix(cp.getCommunicatorNumberPrefix());
-				m_fieldFromDialog.setCommunicatorNumber(cp.getCommunicatorNumber());
+				sender = (ICommunicatorIf)m_wpMessageLog.getMsoManager().getCmdPost();
+				//m_fieldFromDialog.setCommunicatorNumberPrefix(cp.getCommunicatorNumberPrefix());
+				//m_fieldFromDialog.setCommunicatorNumber(cp.getCommunicatorNumber());
 			}
-			m_fromLabel.setText(m_fieldFromDialog.getText());
+			else
+			{
+				sender = m_fieldFromDialog.getCommunicator();
+			}
+			//m_fromLabel.setText(m_fieldFromDialog.getText());
+			m_currentMessage.setSender(sender);
 		}
 		else if(source instanceof ChangeToDialog)
 		{
-			m_toLabel.setText(m_changeToDialog.getCommunicatorName());
+			//m_toLabel.setText(m_changeToDialog.getCommunicatorName());
 			// TODO set receiver(s) in current message
+			m_currentMessage.setBroadcast(m_changeToDialog.getBroadcast());
+			// TODO ...
 			m_changeToDialog.hideDialog();
 		}
 		else if(source instanceof MessageTextDialog)
 		{
-			IMessageLineIf textLine = m_currentMessage.findMessageLine(MessageLineType.TEXT, false);
+			IMessageLineIf textLine = m_currentMessage.findMessageLine(MessageLineType.TEXT, true);
 			textLine.setText(m_messageTextDialog.getText());
 		}
 
@@ -677,11 +638,9 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     		//m_waitEndStatusButton.setIcon(createImageIcon(iconPath));
     		m_waitEndStatusButton.addActionListener(new ActionListener()
     		{
-				@Override
 				public void actionPerformed(ActionEvent arg0)
 				{
 					// Commit message, set status to postponed
-					updateCurrentMessage();
 					m_currentMessage.setStatus(MessageStatus.POSTPONED);
 					m_wpMessageLog.getMsoManager().commit();
 				}
@@ -710,12 +669,10 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			}
     		m_finishedStatusButton.addActionListener(new ActionListener()
     		{
-				@Override
 				public void actionPerformed(ActionEvent arg0)
 				{
 					if(validMessage())
 					{
-						updateCurrentMessage();
 						// Set message status
 						if(m_currentMessage.isBroadcast())
 						{
@@ -725,12 +682,15 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 						{
 							m_currentMessage.setStatus(MessageStatus.CONFIRMED);
 						}
-
-						// TODO sjekk med vinja/stian
-						m_wpMessageLog.getMsoManager().commit();
-
+						
 						clearPanelContents();
 						clearDialogContents();
+						
+						// Commit changes
+						m_wpMessageLog.getMsoManager().commit();
+
+						m_currentMessage = null;
+						m_messageDirty = false;
 					}
 					else
 					{
@@ -856,7 +816,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
     		m_cancelStatusButton.addActionListener(new ActionListener()
     		{
-				@Override
 				public void actionPerformed(ActionEvent e)
 				{
 					// Remove current message from panel
@@ -864,9 +823,9 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					clearDialogContents();
 
 					m_wpMessageLog.getMsoManager().rollback(); // TODO sjekk om korrekt?
-
-					// Current empty message has not been sent to mso model
-					m_newMessage = true;
+					
+					m_currentMessage = null;
+					m_messageDirty = false;
 				}
     		});
     	}

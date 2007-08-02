@@ -18,18 +18,13 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.JToggleButton;
-
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.gui.NumPadDialog;
 import org.redcross.sar.mso.data.AbstractDerivedList;
-import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.ICommunicatorIf;
 import org.redcross.sar.mso.data.IMessageIf;
-import org.redcross.sar.mso.data.IUnitIf;
-import org.redcross.sar.mso.data.IUnitListIf;
 import org.redcross.sar.mso.data.IUnitIf.UnitType;
 import org.redcross.sar.util.mso.Selector;
 
@@ -489,7 +484,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		return m_unitNumberPad.getOkButton();
 	}
 
-	public void addActionListener(UnitListSelectionDialog fromDialog)
+	public void addActionListener(SingleUnitListSelectionDialog fromDialog)
 	{
 		LinkedList<JButton> buttons = m_unitTypePad.getButtons();
 		for(JButton button : buttons)
@@ -521,5 +516,50 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 	public String getCommunicatorName()
 	{
 		return m_unitTypeField.getText() + " " + m_unitNumberField.getText();
+	}
+
+	/**
+	 *  
+	 * @return reference to the current communicator in the dialog
+	 */
+	public ICommunicatorIf getCommunicator()
+	{
+		final String prefix = m_unitTypeField.getText();
+		final String number = m_unitNumberField.getText();
+		
+		if(prefix.isEmpty() && number.isEmpty())
+		{
+			return (ICommunicatorIf)m_wp.getMsoManager().getCmdPost();
+		}
+		else
+		{
+			// Get communicator from communicator list
+			List<ICommunicatorIf> communicators = m_wp.getMsoManager().getCmdPost().getCommunicatorList().selectItems(
+					new Selector<ICommunicatorIf>()
+					{
+						public boolean select(ICommunicatorIf anObject)
+						{
+							if(prefix.equals(String.valueOf(anObject.getCommunicatorNumberPrefix()))
+									&& number.equals(String.valueOf(anObject.getCommunicatorNumber())))
+							{
+								return true;
+							}
+							else
+								
+							{
+								return false;
+							}
+						}
+					},
+					new Comparator<ICommunicatorIf>()
+					{
+						public int compare(ICommunicatorIf arg0,
+								ICommunicatorIf arg1)
+						{
+							return 0;
+						}
+					});
+			return communicators.get(0);
+		}
 	}
 }
