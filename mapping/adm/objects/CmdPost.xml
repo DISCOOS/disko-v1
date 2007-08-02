@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<object id="00000000134" name="CmdPost" objectType="test" pos="33">
-<fact comp="n" edit="y" id="00000000005" label="CallSign" pos1="999" pos2="999" relTo="00000000134" version="1">
+<object id="00000000060" name="CmdPost" objectType="test" pos="9">
+<fact comp="n" edit="y" id="00000000004" label="Status" pos1="999" pos2="999" relTo="00000000060" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000045" label="Released" pos1="999" pos2="999" relTo="00000000134" version="1">
+<fact comp="n" edit="y" id="00000000006" label="CallSign" pos1="999" pos2="999" relTo="00000000060" version="1">
+<str_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000061" label="Released" pos1="999" pos2="999" relTo="00000000060" version="1">
 <date_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000046" label="Telephone1" pos1="999" pos2="999" relTo="00000000134" version="1">
+<fact comp="n" edit="y" id="00000000062" label="Telephone1" pos1="999" pos2="999" relTo="00000000060" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000047" label="Telephone2" pos1="999" pos2="999" relTo="00000000134" version="1">
+<fact comp="n" edit="y" id="00000000063" label="Telephone2" pos1="999" pos2="999" relTo="00000000060" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000048" label="Telephone3" pos1="999" pos2="999" relTo="00000000134" version="1">
+<fact comp="n" edit="y" id="00000000064" label="Telephone3" pos1="999" pos2="999" relTo="00000000060" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000049" label="Established" pos1="999" pos2="999" relTo="00000000134" version="1">
+<fact comp="n" edit="y" id="00000000065" label="Established" pos1="999" pos2="999" relTo="00000000060" version="1">
 <date_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000050" label="Shift" pos1="999" pos2="999" relTo="00000000134" version="1">
+<fact comp="n" edit="y" id="00000000066" label="Shift" pos1="999" pos2="999" relTo="00000000060" version="1">
 <num_fact antdec="0" max="1.0E8" min="0.0"/>
-</fact>
-<fact comp="n" edit="y" id="00000000062" label="Status" pos1="999" pos2="999" relTo="00000000134" version="1">
-<str_fact/>
 </fact>
 </object>

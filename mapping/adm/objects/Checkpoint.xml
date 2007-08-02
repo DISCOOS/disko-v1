@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<object id="00000000040" name="Checkpoint" objectType="test" pos="4">
-<fact comp="n" edit="y" id="00000000041" label="Checked" pos1="999" pos2="999" relTo="00000000040" version="1">
+<object id="00000000056" name="Checkpoint" objectType="test" pos="8">
+<fact comp="n" edit="y" id="00000000057" label="Name" pos1="999" pos2="999" relTo="00000000056" version="1">
+<str_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000058" label="Description" pos1="999" pos2="999" relTo="00000000056" version="1">
+<str_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000059" label="Checked" pos1="999" pos2="999" relTo="00000000056" version="1">
 <num_fact antdec="0" max="1.0" min="0.0"/>
-</fact>
-<fact comp="n" edit="y" id="00000000042" label="Name" pos1="999" pos2="999" relTo="00000000040" version="1">
-<str_fact/>
-</fact>
-<fact comp="n" edit="y" id="00000000043" label="Description" pos1="999" pos2="999" relTo="00000000040" version="1">
-<str_fact/>
 </fact>
 </object>
