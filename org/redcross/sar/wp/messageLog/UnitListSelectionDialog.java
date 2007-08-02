@@ -42,7 +42,7 @@ import org.redcross.sar.util.mso.Selector;
  * 
  * @author thomasl
  *
- * Dialog containing all units
+ * Dialog containing a list of all units  in command post communicator list
  */
 public class UnitListSelectionDialog extends DiskoDialog implements IEditMessageDialogIf, IMsoUpdateListenerIf, ActionListener
 {
@@ -87,8 +87,9 @@ public class UnitListSelectionDialog extends DiskoDialog implements IEditMessage
 		public void mouseReleased(MouseEvent arg0){}		
 	};
 	
-	private final Dimension BUTTON_SIZE = new Dimension(MessageLogPanel.SMALL_BUTTON_SIZE.width*3, 
+	final private static Dimension BUTTON_SIZE = new Dimension(MessageLogPanel.SMALL_BUTTON_SIZE.width*3, 
 			MessageLogPanel.SMALL_BUTTON_SIZE.height);
+	final static public int PANEL_WIDTH = BUTTON_SIZE.width * 5 + 6;
 	private final int NUMBER_OF_ROWS = 7;
 	
 	/**
@@ -104,6 +105,8 @@ public class UnitListSelectionDialog extends DiskoDialog implements IEditMessage
 		m_communicatorList = wp.getMsoManager().getCmdPost().getCommunicatorList();
 		
 		m_actionListeners = new LinkedList<ActionListener>();
+		
+		m_buttonGroup = new ButtonGroup();
 		
 		initContentsPanel();
 		this.pack();
@@ -185,7 +188,7 @@ public class UnitListSelectionDialog extends DiskoDialog implements IEditMessage
 		m_scrollPane = new JScrollPane(m_contentsPanel);
 		m_scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		m_scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-		m_contentsPanel.setPreferredSize(new Dimension(BUTTON_SIZE.width*5 + 6, 
+		m_contentsPanel.setPreferredSize(new Dimension(PANEL_WIDTH, 
 				MessageLogPanel.SMALL_BUTTON_SIZE.height*NUMBER_OF_ROWS + 6));
 		this.add(m_scrollPane);
 		this.pack();

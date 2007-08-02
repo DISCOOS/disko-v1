@@ -127,7 +127,6 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		// Pressing unit type should clear unit number text field
 		ActionListener numberFieldClear = new ActionListener()
 		{
-			@Override
 			public void actionPerformed(ActionEvent arg0)
 			{
 				m_unitNumberField.setText("");
@@ -517,5 +516,10 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 	public void setCommunicatorNumber(int communicatorNumber)
 	{
 		m_unitNumberField.setText(String.valueOf(communicatorNumber));
+	}
+
+	public String getCommunicatorName()
+	{
+		return m_unitTypeField.getText() + " " + m_unitNumberField.getText();
 	}
 }

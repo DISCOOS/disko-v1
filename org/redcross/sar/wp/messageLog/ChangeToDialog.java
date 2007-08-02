@@ -1,19 +1,36 @@
 package org.redcross.sar.wp.messageLog;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
+import org.redcross.sar.event.DialogEvent;
+import org.redcross.sar.event.IDialogEventListener;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.mso.data.IMessageIf;
 
-public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf
+/**
+ * Provides a dialog for selecting broadcast or non-broadcast receiver. This dialog also handles sub-dialogs 
+ * such as field based unit selection, list unit selection and the broadcast dialogs
+ * 
+ * @author thomasl
+ *
+ */
+public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf, IDialogEventListener
 {
 	protected JButton m_broadcastButton;
 	protected JButton m_nonBroadcastButton;
@@ -50,20 +67,45 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf
 	private void initDialogs()
 	{
 		m_nbFieldDialog = new UnitFieldSelectionDialog(m_wpMessageLog);
-		
 		m_nbListDialog = new UnitListSelectionDialog(m_wpMessageLog);
+		
+		m_nbFieldDialog.addDialogListener(this);
+		m_nbListDialog.addDialogListener(this);
+		
+		m_nbListDialog.addActionListener(m_nbFieldDialog);
+		m_nbFieldDialog.addActionListener(m_nbListDialog);
 	}
 
 	private void initContentsPanel()
 	{
-		m_contentsPanel = new JPanel(new FlowLayout());
-		m_contentsPanel.setPreferredSize(new Dimension(800, BUTTON_SIZE.height));
+		m_contentsPanel = new JPanel();
+		m_contentsPanel.setLayout(new BoxLayout(m_contentsPanel, BoxLayout.LINE_AXIS));
+		m_contentsPanel.setPreferredSize(new Dimension(UnitListSelectionDialog.PANEL_WIDTH, BUTTON_SIZE.height));
+		//m_contentsPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 		this.add(m_contentsPanel);
 	}
+	
 	private void initButtons()
 	{
-		m_broadcastButton = new JButton();
+		m_nonBroadcastButton = new JButton("Enkeltanrop");
+		m_nonBroadcastButton.setPreferredSize(BUTTON_SIZE);
+		m_nonBroadcastButton.setMaximumSize(BUTTON_SIZE);
+		m_nonBroadcastButton.setHorizontalAlignment(SwingConstants.LEFT);
+		m_nonBroadcastButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				m_nbFieldDialog.showDialog();
+				m_nbListDialog.showDialog();
+				m_broadcast = false;
+			}	
+		});
+		m_contentsPanel.add(m_nonBroadcastButton);
+		
+		m_broadcastButton = new JButton("Fellesanrop");
 		m_broadcastButton.setPreferredSize(BUTTON_SIZE);
+		m_broadcastButton.setMaximumSize(BUTTON_SIZE);
+		m_broadcastButton.setHorizontalAlignment(SwingConstants.LEFT);
 		m_broadcastButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent arg0)
@@ -75,18 +117,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf
 		});
 		m_contentsPanel.add(m_broadcastButton);
 		
-		m_nonBroadcastButton = new JButton();
-		m_nonBroadcastButton.setPreferredSize(BUTTON_SIZE);
-		m_nonBroadcastButton.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				m_nbFieldDialog.showDialog();
-				m_nbListDialog.showDialog();
-				m_broadcast = false;
-			}	
-		});
-		m_contentsPanel.add(m_nonBroadcastButton);
+		m_contentsPanel.add(Box.createHorizontalGlue());
 	}
 	
 	public void hideDialog()
@@ -100,25 +131,38 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf
 	{
 		// TODO Auto-generated method stub
 	}
+	
+	public String getCommunicatorName()
+	{
+		if(m_broadcast)
+		{
+			// TODO
+			return null;
+		}
+		else
+		{
+			return m_nbFieldDialog.getCommunicatorName();
+		}
+	}
 
 	public void showDialog()
 	{
 		this.setVisible(true);
-		m_contentsPanel.setVisible(true);
+		
 		if(m_broadcast)
 		{
 			
 		}
 		else
 		{
-			Point location = m_contentsPanel.getLocationOnScreen();
+			Point location = m_nonBroadcastButton.getLocationOnScreen();
 			location.y += BUTTON_SIZE.height;
 			m_nbListDialog.setLocation(location);
 			m_nbListDialog.showDialog();
 			
-			location = m_contentsPanel.getLocationOnScreen();
-			location.y -= m_nbFieldDialog.getHeight();
-			
+			location = m_nonBroadcastButton.getLocationOnScreen();
+			location.y -= (m_nbFieldDialog.getHeight() + BUTTON_SIZE.height + 4);
+			m_nbFieldDialog.setLocation(location);
 			m_nbFieldDialog.showDialog();
 		}
 	}
@@ -127,5 +171,36 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf
 	{
 		// TODO Auto-generated method stub
 		
+	}
+
+	public void dialogCanceled(DialogEvent e)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void dialogFinished(DialogEvent e)
+	{
+		Object source = e.getSource();
+		if(source instanceof UnitListSelectionDialog || source instanceof UnitFieldSelectionDialog)
+		{
+			fireDialogFinished();
+		}
+	}
+
+	public void dialogStateChanged(DialogEvent e)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public void setBroadcast(boolean broadcast)
+	{
+		m_broadcast = broadcast;
+	}
+	
+	public boolean getBroadcast()
+	{
+		return m_broadcast;
 	}
 }

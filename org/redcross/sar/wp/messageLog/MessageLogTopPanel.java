@@ -603,7 +603,9 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	 */
 	public void dialogFinished(DialogEvent e)
 	{
-		if(e.getSource().getClass() == ChangeDTGDialog.class)
+		Object source = e.getSource();
+		
+		if(source instanceof ChangeDTGDialog)
 		{
 			if(m_newMessage)
 			{
@@ -632,8 +634,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				}
 			}
 		}
-		else if(e.getSource().getClass() == UnitFieldSelectionDialog.class ||
-				e.getSource().getClass() == UnitListSelectionDialog.class)
+		else if(source instanceof UnitFieldSelectionDialog ||
+				source instanceof UnitListSelectionDialog)
 		{
 			m_fieldFromDialog.hideDialog();
 			m_listFromDialog.hideDialog();
@@ -645,7 +647,13 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			}
 			m_fromLabel.setText(m_fieldFromDialog.getText());
 		}
-		else if(e.getSource().getClass() == MessageTextDialog.class)
+		else if(source instanceof ChangeToDialog)
+		{
+			m_toLabel.setText(m_changeToDialog.getCommunicatorName());
+			// TODO set receiver(s) in current message
+			m_changeToDialog.hideDialog();
+		}
+		else if(source instanceof MessageTextDialog)
 		{
 			IMessageLineIf textLine = m_currentMessage.findMessageLine(MessageLineType.TEXT, false);
 			textLine.setText(m_messageTextDialog.getText());
@@ -818,6 +826,9 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				{
 					getChangeToDialog();
 					hideDialogs();
+					Point location = m_changeDTGButton.getLocationOnScreen();
+					location.y += MessageLogPanel.SMALL_BUTTON_SIZE.height;
+					m_changeToDialog.setLocation(location);
 					m_changeToDialog.showDialog();
 				}
     		});
