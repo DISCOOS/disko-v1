@@ -1,48 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<object id="00000000023" name="Briefing" objectType="test" pos="2">
-<fact comp="n" edit="y" id="00000000024" label="Channel1" pos1="999" pos2="999" relTo="00000000023" version="1">
+<object id="00000000066" name="Briefing" objectType="test" pos="6">
+<fact comp="n" edit="y" id="00000000067" label="Active" pos1="999" pos2="999" relTo="00000000066" version="1">
+<num_fact antdec="0" max="1.0" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000068" label="Channel1" pos1="999" pos2="999" relTo="00000000066" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000025" label="Channel2" pos1="999" pos2="999" relTo="00000000023" version="1">
+<fact comp="n" edit="y" id="00000000069" label="Channel2" pos1="999" pos2="999" relTo="00000000066" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000026" label="Closure" pos1="999" pos2="999" relTo="00000000023" version="1">
+<fact comp="n" edit="y" id="00000000070" label="Closure" pos1="999" pos2="999" relTo="00000000066" version="1">
 <date_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000027" label="CommsProcedure" pos1="999" pos2="999" relTo="00000000023" version="1">
+<fact comp="n" edit="y" id="00000000071" label="CommsProcedure" pos1="999" pos2="999" relTo="00000000066" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000028" label="FindingsProcedure" pos1="999" pos2="999" relTo="00000000023" version="1">
+<fact comp="n" edit="y" id="00000000072" label="FindingsProcedure" pos1="999" pos2="999" relTo="00000000066" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000029" label="ImportantClues" pos1="999" pos2="999" relTo="00000000023" version="1">
+<fact comp="n" edit="y" id="00000000073" label="ImportantClues" pos1="999" pos2="999" relTo="00000000066" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000030" label="MediaProcedure" pos1="999" pos2="999" relTo="00000000023" version="1">
+<fact comp="n" edit="y" id="00000000074" label="MediaProcedure" pos1="999" pos2="999" relTo="00000000066" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000031" label="Other" pos1="999" pos2="999" relTo="00000000023" version="1">
+<fact comp="n" edit="y" id="00000000075" label="Other" pos1="999" pos2="999" relTo="00000000066" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000032" label="Others" pos1="999" pos2="999" relTo="00000000023" version="1">
+<fact comp="n" edit="y" id="00000000076" label="Others" pos1="999" pos2="999" relTo="00000000066" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000033" label="OverallStrategy" pos1="999" pos2="999" relTo="00000000023" version="1">
+<fact comp="n" edit="y" id="00000000077" label="OverallStrategy" pos1="999" pos2="999" relTo="00000000066" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000034" label="Repeaters" pos1="999" pos2="999" relTo="00000000023" version="1">
+<fact comp="n" edit="y" id="00000000078" label="Repeaters" pos1="999" pos2="999" relTo="00000000066" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000035" label="Supplies" pos1="999" pos2="999" relTo="00000000023" version="1">
+<fact comp="n" edit="y" id="00000000079" label="Supplies" pos1="999" pos2="999" relTo="00000000066" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000036" label="Telephones" pos1="999" pos2="999" relTo="00000000023" version="1">
+<fact comp="n" edit="y" id="00000000080" label="Telephones" pos1="999" pos2="999" relTo="00000000066" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000037" label="TransportProcedure" pos1="999" pos2="999" relTo="00000000023" version="1">
+<fact comp="n" edit="y" id="00000000081" label="TransportProcedure" pos1="999" pos2="999" relTo="00000000066" version="1">
 <str_fact/>
-</fact>
-<fact comp="n" edit="y" id="00000000038" label="Active" pos1="999" pos2="999" relTo="00000000023" version="1">
-<num_fact antdec="0" max="1.0" min="0.0"/>
 </fact>
 </object>

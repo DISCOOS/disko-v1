@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<object id="00000000060" name="Forecast" objectType="test" pos="10">
-<fact comp="n" edit="y" id="00000000054" label="Visible" pos1="999" pos2="999" relTo="00000000060" version="1">
+<object id="00000000116" name="Forecast" objectType="test" pos="16">
+<fact comp="n" edit="y" id="00000000117" label="Visible" pos1="999" pos2="999" relTo="00000000116" version="1">
 <num_fact antdec="0" max="1.0" min="0.0"/>
 </fact>
-<fact comp="n" edit="y" id="00000000055" label="Text" pos1="999" pos2="999" relTo="00000000060" version="1">
+<fact comp="n" edit="y" id="00000000118" label="Text" pos1="999" pos2="999" relTo="00000000116" version="1">
 <str_fact/>
 </fact>
 </object>
