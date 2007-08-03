@@ -35,10 +35,10 @@ public class SaraObjectCreator
    static final int LOC_POI = 0;
    static final int LOC_POS = 1;
    static final NumberFormat millisforma = new DecimalFormat("00000000000");
-   private HashMap<String, SarBaseObject> facts = new HashMap();
-   private HashMap<String, SarObjectImpl> objs = new HashMap();
-   private HashMap<String, String> objNameIdMap = new HashMap();
-   private HashMap<String, String> idObjNameMap = new HashMap();
+   //private HashMap<String, SarBaseObject> facts = new HashMap();
+   private HashMap<String, SarObjectImpl> objs = new LinkedHashMap();
+   private HashMap<String, String> objNameIdMap = new LinkedHashMap();
+   private HashMap<String, String> idObjNameMap = new LinkedHashMap();
 
 
    private int counter = 0;
@@ -156,7 +156,7 @@ public class SaraObjectCreator
                if (fact instanceof SarFact)
                {
                   so.addFact((SarFact) fact);
-                  facts.put(((SarFact) fact).getLabel(), fact);
+//                  facts.put(((SarFact) fact).getLabel(), fact);
                }
                else
                {
@@ -214,10 +214,10 @@ public class SaraObjectCreator
 //         //Check object
 //         return objs.get(type);
 //      }
-      if (facts.containsKey(name))
-      {
-         return facts.get(name);
-      }
+//      if (facts.containsKey(name))
+//      {
+//         return facts.get(name);
+//      }
       if (type.equalsIgnoreCase("int") || type.equalsIgnoreCase("Integer"))
       {
          return createIntFact(objId, name);
@@ -252,6 +252,10 @@ public class SaraObjectCreator
          return createAreaFact(objId, name);
       }
       else if (type.equalsIgnoreCase("org.redcross.sar.util.mso.Route"))
+      {
+         return createTrackFact(objId, name);
+      }
+       else if (type.equalsIgnoreCase("org.redcross.sar.util.mso.Track"))
       {
          return createTrackFact(objId, name);
       }

@@ -372,7 +372,9 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
         String objId = msoObj.getObjectId().indexOf(".") > 0 ?
                 msoObj.getObjectId().substring(msoObj.getObjectId().indexOf(".") + 1) :
                 msoObj.getObjectId();
-        SarObject sbo = (SarObject) sarSess.createInstance(className, SarBaseObjectFactory.TYPE_OBJECT, objId);
+        SarObject sbo = (SarObject) sarSess.createInstance(
+                className,sarOperation.getID(),
+                SarBaseObjectFactory.TYPE_OBJECT, objId);
 
         //TODO sett attributter og tilordne til hendelse
         sbo.setOperation(sarOperation);
@@ -672,9 +674,13 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
             IMsoReferenceIf refObj = (IMsoReferenceIf) source.getReferenceObjects().get(relName);
             if (refObj == null)
             {
-                System.out.println(relName);
+                source.getReferenceObjects().put(relName,relObj);
             }
-            refObj.setReference(relObj);
+            else
+            {
+
+                refObj.setReference(relObj);
+            }
 
         }
     }

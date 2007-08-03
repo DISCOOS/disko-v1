@@ -133,7 +133,8 @@ public class SarMsoMapper {
             AttributeImpl.MsoPolygon lAttr = (AttributeImpl.MsoPolygon) msoAttr;
 
             SarFactArea aFact = (SarFactArea) sarFact;
-            Polygon lPoly = new Polygon(lAttr.getPolygon().getId(), aFact.getName());
+            //Polygon lPoly = new Polygon(lAttr.getPolygon().getId(), aFact.getName());
+            Polygon lPoly = new Polygon(aFact.getID(), aFact.getName());
             lPoly.setLayout(aFact.getStyle());
             for (TimePos tp : aFact.getArea()) {
                 lPoly.add(tp.getLongitude(), tp.getLatitude());
@@ -143,7 +144,8 @@ public class SarMsoMapper {
             AttributeImpl.MsoRoute lAttr = (AttributeImpl.MsoRoute) msoAttr;
             SarFactTrack aFact = (SarFactTrack) sarFact;
 
-            Route lPoly = new Route(lAttr.getRoute().getId(), aFact.getName());//TODO avsjekk
+            //Route lPoly = new Route(lAttr.getRoute().getId(), aFact.getName());//TODO avsjekk
+            Route lPoly = new Route(aFact.getID(), aFact.getName());//TODO avsjekk
             lPoly.setLayout(aFact.getStyle());
             for (TimePos tp : aFact.getTrack()) {
                 lPoly.add(tp.getLongitude(), tp.getLatitude());
@@ -155,7 +157,8 @@ public class SarMsoMapper {
 
             AttributeImpl.MsoTrack lAttr = (AttributeImpl.MsoTrack) msoAttr;
             SarFactTrack aFact = (SarFactTrack) sarFact;
-            Track lPoly = new Track(lAttr.getTrack().getId(), aFact.getName());
+            //Track lPoly = new Track(lAttr.getTrack().getId(), aFact.getName());
+            Track lPoly = new Track(aFact.getID(), aFact.getName());
 
             lPoly.setLayout(aFact.getStyle());
             for (TimePos tp : aFact.getTrack()) {
