@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<object id="00000000085" name="MessageLine" objectType="test" pos="20">
-<fact comp="n" edit="y" id="00000000086" label="LineNumber" pos1="999" pos2="999" relTo="00000000085" version="1">
+<object id="00000000070" name="MessageLine" objectType="test" pos="14">
+<fact comp="n" edit="y" id="00000000071" label="LineNumber" pos1="999" pos2="999" relTo="00000000070" version="1">
 <num_fact antdec="0" max="1.0E8" min="0.0"/>
 </fact>
-<fact comp="n" edit="y" id="00000000071" label="Text" pos1="999" pos2="999" relTo="00000000085" version="1">
+<fact comp="n" edit="y" id="00000000072" label="LineType" pos1="999" pos2="999" relTo="00000000070" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000087" label="LineType" pos1="999" pos2="999" relTo="00000000085" version="1">
+<fact comp="n" edit="y" id="00000000055" label="Text" pos1="999" pos2="999" relTo="00000000070" version="1">
 <str_fact/>
 </fact>
 </object>
