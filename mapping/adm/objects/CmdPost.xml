@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <object id="00000000087" name="CmdPost" objectType="test" pos="9">
-<fact comp="n" edit="y" id="00000000088" label="Status" pos1="999" pos2="999" relTo="00000000087" version="1">
+<fact comp="n" edit="y" id="00000000088" label="CallSign" pos1="999" pos2="999" relTo="00000000087" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000089" label="CallSign" pos1="999" pos2="999" relTo="00000000087" version="1">
-<str_fact/>
-</fact>
-<fact comp="n" edit="y" id="00000000090" label="Released" pos1="999" pos2="999" relTo="00000000087" version="1">
+<fact comp="n" edit="y" id="00000000089" label="Released" pos1="999" pos2="999" relTo="00000000087" version="1">
 <date_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000091" label="Telephone1" pos1="999" pos2="999" relTo="00000000087" version="1">
+<fact comp="n" edit="y" id="00000000090" label="Telephone1" pos1="999" pos2="999" relTo="00000000087" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000092" label="Telephone2" pos1="999" pos2="999" relTo="00000000087" version="1">
+<fact comp="n" edit="y" id="00000000091" label="Telephone2" pos1="999" pos2="999" relTo="00000000087" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000093" label="Telephone3" pos1="999" pos2="999" relTo="00000000087" version="1">
+<fact comp="n" edit="y" id="00000000092" label="Telephone3" pos1="999" pos2="999" relTo="00000000087" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000094" label="Established" pos1="999" pos2="999" relTo="00000000087" version="1">
+<fact comp="n" edit="y" id="00000000093" label="Established" pos1="999" pos2="999" relTo="00000000087" version="1">
 <date_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000095" label="Shift" pos1="999" pos2="999" relTo="00000000087" version="1">
+<fact comp="n" edit="y" id="00000000094" label="Shift" pos1="999" pos2="999" relTo="00000000087" version="1">
 <num_fact antdec="0" max="1.0E8" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000095" label="Status" pos1="999" pos2="999" relTo="00000000087" version="1">
+<str_fact/>
 </fact>
 </object>

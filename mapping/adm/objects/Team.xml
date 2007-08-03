@@ -6,25 +6,25 @@
 <fact comp="n" edit="y" id="00000000222" label="MaxSpeed" pos1="999" pos2="999" relTo="00000000220" version="1">
 <num_fact antdec="0" max="1.0E8" min="0.0"/>
 </fact>
-<fact comp="n" edit="y" id="00000000223" label="Status" pos1="999" pos2="999" relTo="00000000220" version="1">
-<str_fact/>
-</fact>
-<fact comp="n" edit="y" id="00000000224" label="Bearing" pos1="999" pos2="999" relTo="00000000220" version="1">
+<fact comp="n" edit="y" id="00000000223" label="Bearing" pos1="999" pos2="999" relTo="00000000220" version="1">
 <num_fact antdec="0" max="1.0E8" min="0.0"/>
 </fact>
-<fact comp="n" edit="y" id="00000000225" label="CallSign" pos1="999" pos2="999" relTo="00000000220" version="1">
+<fact comp="n" edit="y" id="00000000224" label="CallSign" pos1="999" pos2="999" relTo="00000000220" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000226" label="Position" pos1="999" pos2="999" relTo="00000000220" version="1">
+<fact comp="n" edit="y" id="00000000225" label="Remarks" pos1="999" pos2="999" relTo="00000000220" version="1">
+<str_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000226" label="Speed" pos1="999" pos2="999" relTo="00000000220" version="1">
+<num_fact antdec="0" max="1.0E8" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000227" label="Number" pos1="999" pos2="999" relTo="00000000220" version="1">
+<num_fact antdec="0" max="1.0E8" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000228" label="Position" pos1="999" pos2="999" relTo="00000000220" version="1">
 <loc_fact lat_value="" locationType="1" long_value=""/>
 </fact>
-<fact comp="n" edit="y" id="00000000227" label="Remarks" pos1="999" pos2="999" relTo="00000000220" version="1">
+<fact comp="n" edit="y" id="00000000229" label="Status" pos1="999" pos2="999" relTo="00000000220" version="1">
 <str_fact/>
-</fact>
-<fact comp="n" edit="y" id="00000000228" label="Speed" pos1="999" pos2="999" relTo="00000000220" version="1">
-<num_fact antdec="0" max="1.0E8" min="0.0"/>
-</fact>
-<fact comp="n" edit="y" id="00000000229" label="Number" pos1="999" pos2="999" relTo="00000000220" version="1">
-<num_fact antdec="0" max="1.0E8" min="0.0"/>
 </fact>
 </object>
