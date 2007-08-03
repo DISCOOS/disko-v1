@@ -29,17 +29,8 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
     private IAssignmentListIf m_AssignmentList;
 
     /**
-     * Types of selection in left panel
-     */
-//    public enum Selection
-//    {
-//        READY, ALLOCATED, ASSIGNED, EXECUTING, FINISHED
-//    }
-
-    /**
      * Initial value for selection
      */
-//    private Selection m_assigmentSelection = Selection.READY;
     private IAssignmentIf.AssignmentStatus m_assigmentSelection = IAssignmentIf.AssignmentStatus.READY;
 
     /**
@@ -68,15 +59,23 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
      */
     private int m_readyDivider;
 
+    /**
+     * Constructor
+     *
+     * @param panel1 Reference to left panel
+     * @param panel2 Reference to right panel
+     * @param anEventManager MSO model's event manager
+     * @param anAssignmentList MSO model's assignment list.
+     */
     public AssignmentDisplayModel(AssignmentScrollPanel panel1, AssignmentScrollPanel panel2, IMsoEventManagerIf anEventManager, IAssignmentListIf anAssignmentList)
     {
         m_selectableAssignments = panel1;
-        m_selectableAssignments.setMaxIndex(-1);
+        m_selectableAssignments.setLastIndex(-1);
         m_selectableSelector = IAssignmentIf.READY_SELECTOR;
         m_selectableAssignments.setHeaderPopupHandler(new SelectionPopupHandler(this));
 
         m_priAssignments = panel2;
-        m_priAssignments.setMinIndex(0);
+        m_priAssignments.setFirstIndex(0);
         m_priSelector = IAssignmentIf.READY_SELECTOR;
         m_priAssignments.getHeaderLabel().setText("Pri");
         m_priAssignments.setSelectedStatus(IAssignmentIf.AssignmentStatus.READY);
@@ -87,7 +86,7 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
 
         panel2.getParent().addComponentListener(this);
 
-        setSelection(IAssignmentIf.AssignmentStatus.FINISHED);
+        setSelectedStatus(IAssignmentIf.AssignmentStatus.FINISHED);
         handleMsoUpdateEvent(null);
     }
 
@@ -174,10 +173,10 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
     }
 
     /**
-     * Set selection for left panel.
-     * @param aSelection Value to set
+     * Set selection status for left panel.
+     * @param aSelection Status value to set
      */
-    public void setSelection(IAssignmentIf.AssignmentStatus aSelection)
+    public void setSelectedStatus(IAssignmentIf.AssignmentStatus aSelection)
     {
         if (m_assigmentSelection != aSelection)
         {
@@ -188,10 +187,10 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
     }
 
     /**
-     * Get selection for left panel
-     * @return Selection value.
+     * Get selected status for left panel
+     * @return Selected status.
      */
-    public IAssignmentIf.AssignmentStatus getSelection()
+    public IAssignmentIf.AssignmentStatus getSelectedStatus()
     {
         return m_assigmentSelection;
     }
@@ -234,7 +233,7 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
      */
     private void renderPriPanel()
     {
-        m_priAssignments.setMaxIndex(m_readyDivider - 1);
+        m_priAssignments.setLastIndex(m_readyDivider - 1);
         m_priAssignments.renderPanel();
     }
 
@@ -245,10 +244,10 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
     {
         if (m_assigmentSelection == IAssignmentIf.AssignmentStatus.READY)
         {
-            m_selectableAssignments.setMinIndex(m_readyDivider);
+            m_selectableAssignments.setFirstIndex(m_readyDivider);
         } else
         {
-            m_selectableAssignments.setMinIndex(0);
+            m_selectableAssignments.setFirstIndex(0);
         }
         System.out.println("List size:" + m_selectableAssignments.getAssignmentList().size());
         m_selectableAssignments.renderPanel();
@@ -269,7 +268,7 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
     }
 
     /**
-     * Handler of popup events, after the are detected by a {@link org.redcross.sar.gui.PopupListener}
+     * Handler of popup events, after they are detected by a {@link org.redcross.sar.gui.PopupListener}
      */
     public static class SelectionPopupHandler extends AbstractPopupHandler
     {
@@ -278,6 +277,13 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
         private final Vector<SelectButton> m_buttons = new Vector<SelectButton>(5);
         private final ButtonGroup m_buttonGroup = new ButtonGroup();
 
+        /**
+         * Constructor.
+         *
+         * Defines the buttons for the handler.
+         *
+         * @param aModel Reference to the {@link AssignmentDisplayModel} that shall be handled.
+         */
         public SelectionPopupHandler(AssignmentDisplayModel aModel)
         {
             super();
@@ -291,7 +297,8 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
         }
 
         /**
-         * Add a radio button to the structures
+         * Add a radio button to the menu
+         *
          * @param aButton The button to add
          */
         private void addButton(SelectButton aButton)
@@ -301,6 +308,12 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
             m_buttonGroup.add(aButton);
         }
 
+        /**
+         * Button factory
+         *
+         * @param aSelection The {@link IAssignmentIf.AssignmentStatus} the button shall select.
+         * @return The creatd button.
+         */
         private SelectButton buttonWithAction(final IAssignmentIf.AssignmentStatus aSelection)
         {
             String buttonText = AssignmentImpl.getEnumText(aSelection);
@@ -308,7 +321,7 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    m_model.setSelection(aSelection);
+                    m_model.setSelectedStatus(aSelection);
                 }
             };
             return new SelectButton(action, aSelection);
@@ -320,7 +333,7 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
          */
         public JPopupMenu getMenu(MouseEvent e)
         {
-            IAssignmentIf.AssignmentStatus s = m_model.getSelection();
+            IAssignmentIf.AssignmentStatus s = m_model.getSelectedStatus();
             for (SelectButton b : m_buttons)
             {
                 if (b.m_selection == s)

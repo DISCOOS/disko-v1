@@ -16,6 +16,8 @@ import java.util.Vector;
 
 /**
  * Scroll panel for assignments.
+ *
+ * The panel shows assignment labels for a given list of assignments.
  */
 public class AssignmentScrollPanel extends DiskoScrollPanel
 {
@@ -27,13 +29,13 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
     /**
      * Index of first item to show.
      */
-    private int m_minIndex = 0;
+    private int m_firstIndex = 0;
 
     /**
      * Index of last item to show.
-     * i f equal to -1, show all items.
+     * if equal to -1, show all items.
      */
-    private int m_maxIndex = -1;
+    private int m_lastIndex = -1;
 
     /**
      * Pool of icons
@@ -59,12 +61,32 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
      */
     private IAssignmentIf.AssignmentStatus m_selectedStatus;
 
+    /**
+     * Selected unit if the panel contains assignments for a specific unit.
+     */
     private IUnitIf m_selectedUnit;
 
+    /**
+     * Tell if icons shall be shown in the labels.
+     */
     private final boolean m_showIcons;
 
+    /**
+     * Action handler for the labels
+     */
     private final AssignmentLabel.AssignmentLabelActionHandler m_actionHandler;
 
+    /**
+     * Constructor.
+     *
+     * Define a panel with a given FlowLayout manager.
+     *
+     * @param aScrollPane The surrounding scroll pane.
+     * @param aLayoutManager The layout manager used by the panel.
+     * @param anActionHandler The {@link AssignmentLabel.AssignmentLabelActionHandler} that shall be used by te labels.
+     * @param showIcons <code>true</code> if icons shall be shown in the labels, <code>false</code> otherwise.
+     * @see DiskoScrollPanel
+     */
     public AssignmentScrollPanel(JScrollPane aScrollPane, FlowLayout aLayoutManager, AssignmentLabel.AssignmentLabelActionHandler anActionHandler, boolean showIcons)
     {
         super(aScrollPane, aLayoutManager);
@@ -73,6 +95,17 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
         initPanel();
     }
 
+    /**
+     * Constructor.
+     *
+     * Define a panel with a given GridLayout manager.
+     *
+     * @param aScrollPane The surrounding scroll pane.
+     * @param aLayoutManager The layout manager used by the panel.
+     * @param anActionHandler The {@link AssignmentLabel.AssignmentLabelActionHandler} that shall be used by te labels.
+     * @param showIcons <code>true</code> if icons shall be shown in the labels, <code>false</code> otherwise.
+     * @see DiskoScrollPanel
+     */
     public AssignmentScrollPanel(JScrollPane aScrollPane, GridLayout aLayoutManager, AssignmentLabel.AssignmentLabelActionHandler anActionHandler, boolean showIcons)
     {
         super(aScrollPane, aLayoutManager);
@@ -81,6 +114,21 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
         initPanel();
     }
 
+    /**
+     * Constructor.
+     *
+     * Define a panel with a given layout manager.
+     *
+     * @param aScrollPane The surrounding scroll pane.
+     * @param aLayoutManager The layout manager used by the panel.
+     * @param aHgap Horizontal gap between labels.
+     * @param aVgap Vertical gap between labels.
+     * @param isHorizontalFlow <code>true</code> if labels shall be displayed in horizontal rows, <code>false</code> if the
+     * shall be shown in vertical columns.
+     * @param anActionHandler The {@link AssignmentLabel.AssignmentLabelActionHandler} that shall be used by te labels.
+     * @param showIcons <code>true</code> if icons shall be shown in the labels, <code>false</code> otherwise.
+     * @see DiskoScrollPanel
+     */
     public AssignmentScrollPanel(JScrollPane aScrollPane, LayoutManager aLayoutManager, int aHgap, int aVgap, boolean isHorizontalFlow, AssignmentLabel.AssignmentLabelActionHandler anActionHandler, boolean showIcons)
     {
         super(aScrollPane, aLayoutManager, aHgap, aVgap, isHorizontalFlow);
@@ -125,52 +173,85 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
         return m_assignmentList;
     }
 
-    public int getMinIndex()
+    /**
+     * Get first index to show.
+     */
+    public int getFirstIndex()
     {
-        return m_minIndex;
+        return m_firstIndex;
     }
 
-    public void setMinIndex(int aMinIndex)
+    /**
+     * Set first index to show.
+     */
+    public void setFirstIndex(int anIndex)
     {
-        m_minIndex = aMinIndex;
+        m_firstIndex = anIndex;
     }
 
-    public int getMaxIndex()
+
+    /**
+     * Get last index to show.
+     */
+    public int getLastIndex()
     {
-        return m_maxIndex;
+        return m_lastIndex;
     }
 
-    public void setMaxIndex(int aMaxIndex)
+    /**
+     * Set last index to show.
+     *
+     * If equal to -1, show all items.
+     */
+    public void setLastIndex(int anIndex)
     {
-        m_maxIndex = aMaxIndex;
+        m_lastIndex = anIndex;
     }
 
+    /**
+     *  Get the current {@link IAssignmentIf.AssignmentStatus} for the assigments in the panel.
+     */
     public IAssignmentIf.AssignmentStatus getSelectedStatus()
     {
         return m_selectedStatus;
     }
 
+    /**
+     *  Set the current {@link IAssignmentIf.AssignmentStatus} for the assigments in the panel.
+     */
     public void setSelectedStatus(IAssignmentIf.AssignmentStatus aSelectedStatus)
     {
         m_selectedStatus = aSelectedStatus;
     }
 
 
+    /**
+     *  Get the {@link org.redcross.sar.mso.data.IUnitIf} owning the assigments in the panel.
+     */
     public IUnitIf getSelectedUnit()
     {
         return m_selectedUnit;
     }
 
+    /**
+     *  Set the {@link org.redcross.sar.mso.data.IUnitIf} owning the assigments in the panel.
+     */
     public void setSelectedUnit(IUnitIf aSelectedUnit)
     {
         m_selectedUnit = aSelectedUnit;
     }
 
+    /**
+     * Clear the set of selected assignments.
+     */
     public void clearSelected()
     {
         m_selected.clear();
     }
 
+    /**
+     * Add an assignments to the set of selected assignments.
+     */
     public void addSelected(IAssignmentIf anAsg)
     {
         m_selected.add(anAsg);
@@ -189,8 +270,8 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
             return;
         }
 
-        int firstIndex = Math.max(m_minIndex, 0);
-        int lastIndex = m_maxIndex < 0 ? m_assignmentList.size() - 1 : Math.min(m_assignmentList.size() - 1, m_maxIndex);
+        int firstIndex = Math.max(m_firstIndex, 0);
+        int lastIndex = m_lastIndex < 0 ? m_assignmentList.size() - 1 : Math.min(m_assignmentList.size() - 1, m_lastIndex);
         int iv = 0;
         IconRenderer.AssignmentIcon icon;
 
