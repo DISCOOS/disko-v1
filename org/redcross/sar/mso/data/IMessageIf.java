@@ -133,9 +133,9 @@ public interface IMessageIf extends ITimeItemIf, ISerialNumberedIf
      * @return the list.
      */
     public MsoListImpl<ICommunicatorIf> getBroadcastConfirmed();
-    
+
     public void setSingleReceiver(ICommunicatorIf communicatorIf);
-    
+
 	public ICommunicatorIf getSingleReceiver();
 
 
