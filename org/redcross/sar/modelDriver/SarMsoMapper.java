@@ -13,6 +13,7 @@ import no.cmr.tools.Log;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Calendar;
 
 /**
  * Helper class userd to map between MSO object attributes and Sara facts
@@ -49,15 +50,21 @@ public class SarMsoMapper {
         if (msoAttr instanceof AttributeImpl.MsoPosition) {
 
             AttributeImpl.MsoPosition lAttr = (AttributeImpl.MsoPosition) msoAttr;
+            if(lAttr.getPosition()!=null)
+            {
 
             ((SarFactLocation) sarFact).updateLocation( lAttr.getPosition().getPosition().getY(),
-                     lAttr.getPosition().getPosition().getX(), null, null, null, "", distribute);
+                     lAttr.getPosition().getPosition().getX(), distribute);
+            }
 
         }
         if (msoAttr instanceof AttributeImpl.MsoTimePos) {
             AttributeImpl.MsoTimePos lAttr = (AttributeImpl.MsoTimePos) msoAttr;
-            ((SarFactLocation) sarFact).updateLocation( lAttr.getTimePos().getPosition().getY(),
-                     lAttr.getTimePos().getPosition().getX(), lAttr.getTimePos().getTime(), null, null, "", distribute);
+            if(lAttr.getTimePos()!=null && lAttr.getTimePos().getPosition()!=null && lAttr.getTimePos().getTime()!=null)
+            {
+                ((SarFactLocation) sarFact).updateLocation( lAttr.getTimePos().getPosition().getY(),
+                     lAttr.getTimePos().getPosition().getX(), lAttr.getTimePos().getTime(), distribute);
+            }
         }
         if (msoAttr instanceof AttributeImpl.MsoPolygon) {
             AttributeImpl.MsoPolygon lAttr = (AttributeImpl.MsoPolygon) msoAttr;

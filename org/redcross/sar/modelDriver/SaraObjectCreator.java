@@ -2,6 +2,7 @@ package org.redcross.sar.modelDriver;
 
 import org.rescuenorway.saraccess.model.SarBaseObject;
 import org.rescuenorway.saraccess.model.SarFact;
+import org.redcross.sar.mso.data.AttributeImpl;
 
 import java.text.NumberFormat;
 import java.text.DecimalFormat;
@@ -350,7 +351,8 @@ public class SaraObjectCreator
 
          Method fld = fieldlist[i];
          Class[] params = fld.getParameterTypes();
-         if (fld.getName().startsWith("set") && Modifier.isPublic(fld.getModifiers()) && params.length == 1)
+         if (fld.getName().startsWith("set") && Modifier.isPublic(fld.getModifiers()) && params.length == 1 &&
+                 !params[0].isAssignableFrom(AttributeImpl.MsoEnum.class) && !params[0].isEnum())
          {
             String name = fld.getName().substring(3);
             list.add(new String[]{name, params[0].getName()});

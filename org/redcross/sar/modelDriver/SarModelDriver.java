@@ -658,7 +658,14 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
         //Get type relation change
         if (fieldName.equalsIgnoreCase(SarBaseObjectImpl.ADD_REL_FIELD))
         {
+            try
+            {
             source.addObjectReference(relObj, relName);
+            }
+            catch(DuplicateIdException die)
+            {
+                //Do nothing will occure when object is created by this client
+            }
         } else if (fieldName.equalsIgnoreCase(SarBaseObjectImpl.ADD_NAMED_REL_FIELD))
         {
 
