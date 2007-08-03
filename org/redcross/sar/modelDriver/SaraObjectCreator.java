@@ -371,8 +371,8 @@ public class SaraObjectCreator
       Log.init("MsoTestGen");
       SaraObjectCreator mso = new SaraObjectCreator();
       System.out.print("Genererte " +
-            mso.generateSARAObjects("C:\\projects\\Disko\\trsvn\\org\\redcross\\sar\\mso\\data",
-                  "C:\\projects\\Disko\\trsvn\\mapping\\adm\\objects") + " objekter");
+            mso.generateSARAObjects(".\\org\\redcross\\sar\\mso\\data",
+                  ".\\mapping\\adm\\objects") + " objekter");
 
 //          try {
 //                      Class cls = Class.forName("org.redcross.sar.mso.data.IBoatIf");
