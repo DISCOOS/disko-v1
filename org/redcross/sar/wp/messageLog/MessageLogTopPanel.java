@@ -45,6 +45,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	private boolean m_messageDirty = false;
 
 	List<IEditMessageDialogIf> m_dialogs;
+	
+	private ButtonGroup m_buttonGroup;
 
 	private JPanel m_nrPanel;
 	private JLabel m_nrLabel;
@@ -52,44 +54,44 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	private JPanel m_dtgPanel;
 	private JLabel m_dtgLabel;
 	private ChangeDTGDialog m_changeDTGDialog;
-    private JButton m_changeDTGButton;
+    private JToggleButton m_changeDTGButton;
 
     private JPanel m_fromPanel;
     private JLabel m_fromLabel;
     private UnitFieldSelectionDialog m_fieldFromDialog;
     private SingleUnitListSelectionDialog m_listFromDialog;
-    private JButton m_changeFromButton;
+    private JToggleButton  m_changeFromButton;
 
     private JPanel m_toPanel;
     private JLabel m_toLabel;
     private ChangeToDialog m_changeToDialog;
-    private JButton m_changeToButton;
+    private JToggleButton  m_changeToButton;
 
     private JPanel m_messagePanel;
     private JLabel m_messagePanelTopLabel;
     private JComponent m_dialogArea;
     private JPanel m_buttonRow;
-	private JButton m_textButton;
+	private JToggleButton  m_textButton;
 	private MessageTextDialog m_messageTextDialog;
-	private JButton m_positionButton;
+	private JToggleButton  m_positionButton;
 	private MessagePositionDialog m_messagePositionDialog;
-	private JButton m_findingButton;
+	private JToggleButton  m_findingButton;
 	private MessageFindingDialog m_messageFindingDialog;
-	private JButton m_assignedButton;
+	private JToggleButton  m_assignedButton;
 	private MessageAssignedDialog m_messageAssignedDialog;
-	private JButton m_startedButton;
+	private JToggleButton  m_startedButton;
 	private MessageStartedDialog m_messageStartedDialog;
-	private JButton m_completedButton;
+	private JToggleButton  m_completedButton;
 	private MessageCompletedDialog m_messageCompletedDialog;
-	private JButton m_listButton;
+	private JToggleButton  m_listButton;
 	private MessageListDialog m_messageListDialog;
-	private JButton m_deleteButton;
+	private JToggleButton  m_deleteButton;
 	private MessageDeleteDialog m_messageDeleteDialog;
 
     private JPanel m_taskPanel;
     private JLabel m_taskLabel;
     private ChangeTaskDialog m_changeTaskDialog;
-    private JButton m_changeTaskButton;
+    private JToggleButton  m_changeTaskButton;
 
     private JPanel m_statusPanel;
     private JButton m_cancelStatusButton;
@@ -133,9 +135,9 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     	return panel;
     }
 
-    private JButton createChangeButton()
+    private JToggleButton  createChangeButton()
     {
-    	JButton button = new JButton();
+    	JToggleButton  button = new JToggleButton ();
     	try
 		{
 			button.setIcon(Utils.createImageIcon("icons/60x60/change.gif", "Change"));
@@ -166,7 +168,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     {
     	if(m_fieldFromDialog == null)
     	{
-    		m_fieldFromDialog = new UnitFieldSelectionDialog(m_wpMessageLog);
+    		m_fieldFromDialog = new UnitFieldSelectionDialog(m_wpMessageLog, true);
     		m_fieldFromDialog.addDialogListener(this);
     		m_dialogs.add(m_fieldFromDialog);
     	}
@@ -178,7 +180,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     {
     	if(m_listFromDialog == null)
     	{
-    		m_listFromDialog = new SingleUnitListSelectionDialog(m_wpMessageLog);
+    		m_listFromDialog = new SingleUnitListSelectionDialog(m_wpMessageLog, true);
     		m_listFromDialog.addDialogListener(this);
     		m_dialogs.add(m_listFromDialog);
     	}
@@ -399,6 +401,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     public void initButtons()
     {
     	m_buttonRow = new JPanel(new FlowLayout(FlowLayout.LEADING, 4, 0));
+    	m_buttonGroup = new ButtonGroup();
 
     	createChangeDtgButton();
         createChangeFromButton();
@@ -555,6 +558,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	public void dialogCanceled(DialogEvent e)
 	{
 		Object sender = e.getSource();
+		
+		m_buttonGroup.clearSelection();
 
 		if(sender.getClass() == SingleUnitListSelectionDialog.class)
 		{
@@ -578,6 +583,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	public void dialogFinished(DialogEvent e)
 	{
 		Object source = e.getSource();
+		
+		m_buttonGroup.clearSelection();
 		
 		// If no message is selected a new one should be created once a field is edited
 		if(m_currentMessage == null)
@@ -630,7 +637,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			}
 			else
 			{
-				//m_toLabel.setText(m_changeToDialog.getCommunicatorName());
+				m_currentMessage.setBroadcast(true);
+				// TODO
 			}
 			m_changeToDialog.hideDialog();
 		}
@@ -646,8 +654,19 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 	public void dialogStateChanged(DialogEvent e)
 	{
-		// TODO Auto-generated method stub
-
+		Object source = e.getSource();
+		if(source instanceof ChangeToDialog)
+		{
+			// TODO create new message if single/broadcast is selected?
+			if(m_currentMessage == null)
+			{
+				m_newMessage = true;
+				m_messageDirty = true;
+				m_currentMessage = m_wpMessageLog.getMsoManager().createMessage();
+			}
+			// Toggle broadcast
+			m_currentMessage.setBroadcast(m_changeToDialog.getBroadcast());
+		}
 	}
 
 	private JButton createWaitEndButton()
@@ -726,12 +745,11 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     	return m_finishedStatusButton;
     }
 
-    private JButton createChangeDtgButton()
+    private JToggleButton  createChangeDtgButton()
     {
     	m_changeDTGButton = createChangeButton();
     	m_changeDTGButton.addActionListener(new ActionListener()
     	{
-    		@Override
     		// Display the change DTG dialog when button is pressed
     		public void actionPerformed(ActionEvent e)
     		{
@@ -743,17 +761,17 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     			m_changeDTGDialog.setVisible(true);
     		}
     	});
+    	m_buttonGroup.add(m_changeDTGButton);
     	return m_changeDTGButton;
     }
 
-    private JButton createChangeTaskButton()
+    private JToggleButton  createChangeTaskButton()
     {
     	if(m_changeTaskButton == null)
     	{
     		m_changeTaskButton = createChangeButton();
     		m_changeTaskButton.addActionListener(new ActionListener()
     		{
-				@Override
 				public void actionPerformed(ActionEvent e)
 				{
 					getChangeTaskDialog();
@@ -761,11 +779,12 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					m_changeTaskDialog.setVisible(true);
 				}
     		});
+    		m_buttonGroup.add(m_changeTaskButton);
     	}
     	return m_changeTaskButton;
     }
 
-    private JButton createChangeFromButton()
+    private JToggleButton  createChangeFromButton()
     {
     	if(m_changeFromButton == null)
     	{
@@ -792,11 +811,12 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					m_listFromDialog.addActionListener(m_fieldFromDialog);
 				}
     		});
+    		m_buttonGroup.add(m_changeFromButton);
     	}
     	return m_changeFromButton;
     }
 
-    private JButton createChangeToButton()
+    private JToggleButton  createChangeToButton()
     {
     	if(m_changeToButton == null)
     	{
@@ -813,6 +833,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					m_changeToDialog.showDialog();
 				}
     		});
+    		m_buttonGroup.add(m_changeToButton);
     	}
     	return m_changeToButton;
     }
@@ -858,12 +879,12 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     	m_deleteButton = createButton("DELETE", "icons/60x60/delete.gif");
 		m_deleteButton.addActionListener(new ActionListener()
 		{
-			@Override
 			public void actionPerformed(ActionEvent e)
 			{
 				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelDeleteLabel.text"));
 			}
 		});
+		m_buttonGroup.add(m_deleteButton);
 		m_buttonRow.add(m_deleteButton);
 	}
 
@@ -872,8 +893,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		m_listButton = createButton("LIST", "icons/60x60/list.gif");
 		m_listButton.addActionListener(new ActionListener()
 		{
-
-			@Override
 			public void actionPerformed(ActionEvent e)
 			{
 				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelListLabel.text"));
@@ -885,6 +904,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			}
 
 		});
+		m_buttonGroup.add(m_listButton);
 		m_buttonRow.add(m_listButton);
 	}
 
@@ -893,13 +913,13 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		m_completedButton = createButton("COMPLETED", null);
 		m_completedButton.addActionListener(new ActionListener()
 		{
-			@Override
 			public void actionPerformed(ActionEvent e)
 			{
 				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelCompletedLabel.text"));
 
 			}
 		});
+		m_buttonGroup.add(m_completedButton);
 		m_buttonRow.add(m_completedButton);
 	}
 
@@ -908,12 +928,12 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		m_startedButton = createButton("STARTED", null);
 		m_startedButton.addActionListener(new ActionListener()
 		{
-			@Override
 			public void actionPerformed(ActionEvent e)
 			{
 				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelStartedLabel.text"));
 			}
 		});
+		m_buttonGroup.add(m_startedButton);
 		m_buttonRow.add(m_startedButton);
 	}
 
@@ -922,12 +942,12 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		m_assignedButton = createButton("ASSIGNED", null);
 		m_assignedButton.addActionListener(new ActionListener()
 		{
-			@Override
 			public void actionPerformed(ActionEvent e)
 			{
 				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelAssignedLabel.text"));
 			}
 		});
+		m_buttonGroup.add(m_assignedButton);
 		m_buttonRow.add(m_assignedButton);
 	}
 
@@ -936,12 +956,12 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		m_findingButton = createButton("FINDING", "icons/60x60/discovery.gif");
 		m_findingButton.addActionListener(new ActionListener()
 		{
-			@Override
 			public void actionPerformed(ActionEvent e)
 			{
 				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelFindingLabel.text"));
 			}
 		});
+		m_buttonGroup.add(m_findingButton);
 		m_buttonRow.add(m_findingButton);
 	}
 
@@ -950,7 +970,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		m_positionButton = createButton("POI", null);
 		m_positionButton.addActionListener(new ActionListener()
 		{
-			@Override
 			public void actionPerformed(ActionEvent e)
 			{
 				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelPositionLabel.text"));
@@ -960,6 +979,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				positionDialogInArea(m_messagePositionDialog);
 			}
 		});
+		m_buttonGroup.add(m_positionButton);
 		m_buttonRow.add(m_positionButton);
 	}
 
@@ -968,7 +988,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		m_textButton = createButton("TEXT", "icons/60x60/text.gif");
 		m_textButton.addActionListener(new ActionListener()
 		{
-			@Override
 			public void actionPerformed(ActionEvent e)
 			{
 				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelTextLabel.text"));
@@ -978,6 +997,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     			positionDialogInArea(m_messageTextDialog);
 			}
 		});
+		m_buttonGroup.add(m_textButton);
 		m_buttonRow.add(m_textButton);
 	}
 
@@ -1000,9 +1020,9 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		}
 	}
 
-	private JButton createButton(String text, String iconPath)
+	private JToggleButton  createButton(String text, String iconPath)
 	{
-		JButton button = new JButton();
+		JToggleButton  button = new JToggleButton ();
 		if(iconPath != null)
 		{
 			try

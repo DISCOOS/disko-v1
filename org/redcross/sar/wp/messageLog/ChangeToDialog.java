@@ -1,12 +1,7 @@
 package org.redcross.sar.wp.messageLog;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,6 +13,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
 import org.redcross.sar.event.DialogEvent;
@@ -35,8 +31,8 @@ import org.redcross.sar.mso.data.IMessageIf;
  */
 public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf, IDialogEventListener
 {
-	protected JButton m_broadcastButton;
-	protected JButton m_nonBroadcastButton;
+	protected JToggleButton m_broadcastButton;
+	protected JToggleButton m_nonBroadcastButton;
 	protected JPanel m_contentsPanel;
 	
 	protected UnitFieldSelectionDialog m_nbFieldDialog;
@@ -71,8 +67,8 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 	
 	private void initDialogs()
 	{
-		m_nbFieldDialog = new UnitFieldSelectionDialog(m_wpMessageLog);
-		m_nbListDialog = new SingleUnitListSelectionDialog(m_wpMessageLog);
+		m_nbFieldDialog = new UnitFieldSelectionDialog(m_wpMessageLog, false);
+		m_nbListDialog = new SingleUnitListSelectionDialog(m_wpMessageLog, false);
 		m_broadcastDialog = new BroadcastToDialog(m_wpMessageLog);
 		
 		m_nbFieldDialog.addDialogListener(this);
@@ -86,6 +82,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 	private void initContentsPanel()
 	{
 		m_contentsPanel = new JPanel();
+		m_contentsPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 		m_contentsPanel.setLayout(new BoxLayout(m_contentsPanel, BoxLayout.LINE_AXIS));
 		m_contentsPanel.setPreferredSize(new Dimension(SingleUnitListSelectionDialog.PANEL_WIDTH, BUTTON_SIZE.height));
 		this.add(m_contentsPanel);
@@ -93,7 +90,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 	
 	private void initButtons()
 	{
-		m_nonBroadcastButton = new JButton(m_wpMessageLog.getText("NonBroadcastButton.text"));
+		m_nonBroadcastButton = new JToggleButton(m_wpMessageLog.getText("NonBroadcastButton.text"));
 		m_nonBroadcastButton.setPreferredSize(BUTTON_SIZE);
 		m_nonBroadcastButton.setMaximumSize(BUTTON_SIZE);
 		m_nonBroadcastButton.setHorizontalAlignment(SwingConstants.LEFT);
@@ -101,15 +98,18 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 		{
 			public void actionPerformed(ActionEvent e)
 			{
+				m_broadcastButton.setSelected(false);
 				m_nbFieldDialog.showDialog();
 				m_nbListDialog.showDialog();
 				m_broadcastDialog.hideDialog();
 				m_broadcast = false;
+				fireDialogStateChanged();
 			}	
 		});
+		m_nonBroadcastButton.setSelected(true);
 		m_contentsPanel.add(m_nonBroadcastButton);
 		
-		m_broadcastButton = new JButton(m_wpMessageLog.getText("BroadcastButton.text"));
+		m_broadcastButton = new JToggleButton(m_wpMessageLog.getText("BroadcastButton.text"));
 		m_broadcastButton.setPreferredSize(BUTTON_SIZE);
 		m_broadcastButton.setMaximumSize(BUTTON_SIZE);
 		m_broadcastButton.setHorizontalAlignment(SwingConstants.LEFT);
@@ -117,6 +117,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
+				m_nonBroadcastButton.setSelected(false);
 				m_nbFieldDialog.hideDialog();
 				m_nbListDialog.hideDialog();
 				
@@ -125,6 +126,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 				m_broadcastDialog.setLocation(location);
 				m_broadcastDialog.showDialog();
 				m_broadcast = true;
+				fireDialogStateChanged();
 			}
 		});
 		m_contentsPanel.add(m_broadcastButton);
@@ -142,10 +144,12 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 
 	public void newMessageSelected(IMessageIf message)
 	{
-		// TODO Auto-generated method stub
+		m_nbListDialog.newMessageSelected(message);
+		m_nbFieldDialog.newMessageSelected(message);
+		m_broadcastDialog.newMessageSelected(message);
 	}
 	
-	public String getCommunicatorName()
+	public String getCommunicatorText()
 	{
 		if(m_broadcast)
 		{
@@ -154,7 +158,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 		}
 		else
 		{
-			return m_nbFieldDialog.getCommunicatorName();
+			return m_nbFieldDialog.getCommunicatorText();
 		}
 	}
 
@@ -164,7 +168,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 		
 		if(m_broadcast)
 		{
-			
+			m_broadcastDialog.showDialog();
 		}
 		else
 		{
@@ -203,8 +207,6 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 
 	public void dialogStateChanged(DialogEvent e)
 	{
-		// TODO Auto-generated method stub
-		
 	}
 	
 	public void setBroadcast(boolean broadcast)

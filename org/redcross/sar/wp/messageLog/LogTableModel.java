@@ -116,7 +116,7 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
             	if(message.isBroadcast())
             	{
             		// TODO get text from resource bundle
-            		return "Fellesanrop";
+            		return "FA";
             	}
             	else
             	{

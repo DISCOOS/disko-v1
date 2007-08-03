@@ -54,13 +54,16 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 	
 	private boolean m_notebookMode = true;
 	
+	private boolean m_senderUnit = true;
+	
 	protected ResourceBundle m_unitResources;
 	
-	public UnitFieldSelectionDialog(IDiskoWpMessageLog messageLog)
+	public UnitFieldSelectionDialog(IDiskoWpMessageLog messageLog, boolean senderUnit)
 	{
 		super(messageLog.getApplication().getFrame());
 		
 		m_wp = messageLog;
+		m_senderUnit = senderUnit;
 		
 		m_contentsPanel = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -346,12 +349,10 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 			m_unitNumberPadArea.setSize(m_unitNumberPad.getSize());
 			m_unitNumberPad.setLocation(m_unitNumberPadArea.getLocationOnScreen());
 			m_unitNumberPad.setVisible(true);
-			//m_unitNumberPad.setAlwaysOnTop(true);
 			
 			m_unitTypePadArea.setSize(m_unitTypePad.getSize());
 			m_unitTypePad.setLocation(m_unitTypePadArea.getLocationOnScreen());
 			m_unitTypePad.setVisible(true);
-			//m_unitNumberPad.setAlwaysOnTop(true);
 		}
 	}
 	
@@ -368,18 +369,44 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 
 	public void newMessageSelected(IMessageIf message)
 	{
-		ICommunicatorIf sender = message.getSender();
-		if(sender != null)
+		ICommunicatorIf communicator = null;
+		
+		if(m_senderUnit)
 		{
-			m_unitNumberField.setText(String.valueOf(sender.getCommunicatorNumber()));
-			m_unitTypeField.setText(String.valueOf(sender.getCommunicatorNumberPrefix()));
+			communicator = message.getSender();
+			if(communicator != null)
+			{
+				m_unitNumberField.setText(String.valueOf(communicator.getCommunicatorNumber()));
+				m_unitTypeField.setText(String.valueOf(communicator.getCommunicatorNumberPrefix()));
+			}
+			else
+			{
+				m_unitTypeField.setText("");
+				m_unitNumberField.setText("");
+			}
 		}
 		else
 		{
-			m_unitTypeField.setText("");
-			m_unitNumberField.setText("");
+			if(!message.isBroadcast())
+			{
+				communicator = message.getSingleReceiver();
+				if(communicator != null)
+				{
+					m_unitNumberField.setText(String.valueOf(communicator.getCommunicatorNumber()));
+					m_unitTypeField.setText(String.valueOf(communicator.getCommunicatorNumberPrefix()));
+				}
+				else
+				{
+					m_unitTypeField.setText(m_wp.getText("BroadcastLabel.text"));
+					m_unitNumberField.setText("");
+				}
+			}
+			else
+			{
+				m_unitTypeField.setText(m_wp.getText("BroadcastLabel.text"));
+				m_unitNumberField.setText("");
+			}
 		}
-		
 	}
 
 	public void keyPressed(KeyEvent ke)
@@ -513,7 +540,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		m_unitNumberField.setText(String.valueOf(communicatorNumber));
 	}
 
-	public String getCommunicatorName()
+	public String getCommunicatorText()
 	{
 		return m_unitTypeField.getText() + " " + m_unitNumberField.getText();
 	}

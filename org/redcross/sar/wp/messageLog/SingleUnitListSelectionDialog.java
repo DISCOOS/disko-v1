@@ -52,6 +52,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	protected List<ActionListener> m_actionListeners;
 	protected ButtonGroup m_buttonGroup = null;
 	protected JToggleButton m_currentButton = null;
+	protected boolean m_senderList = true;
 	
 	protected MouseListener m_buttonMouseListener = new MouseListener()
 	{
@@ -63,7 +64,8 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 				// If a selected unit is de-selected in the list, standard sender should be set
 				m_buttonGroup.clearSelection();
 				// TODO change default value when multiple command posts are possible
-				ActionEvent ae = new ActionEvent(button, 1, "C 1");
+				ICommunicatorIf commandPost = (ICommunicatorIf)m_wpMessageLog.getMsoManager().getCmdPost();
+				ActionEvent ae = new ActionEvent(button, 1, commandPost.getCommunicatorNumberPrefix() + " " + commandPost.getCommunicatorNumber());
 				ActionListener[] listeners = button.getActionListeners();
 				for(ActionListener actionListener : listeners)
 				{
@@ -93,13 +95,15 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	 * Constructor
 	 * @param wp
 	 */
-	public SingleUnitListSelectionDialog(IDiskoWpMessageLog wp)
+	public SingleUnitListSelectionDialog(IDiskoWpMessageLog wp, boolean senderList)
 	{
 		super(wp.getApplication().getFrame());
 		m_wpMessageLog = wp;
 		m_wpMessageLog.getMmsoEventManager().addClientUpdateListener(this);
 		m_unitList = wp.getMsoManager().getCmdPost().getUnitList();
 		m_communicatorList = wp.getMsoManager().getCmdPost().getCommunicatorList();
+		
+		m_senderList = senderList;
 		
 		m_actionListeners = new LinkedList<ActionListener>();
 		
@@ -206,10 +210,22 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	public void newMessageSelected(IMessageIf message)
 	{
 		m_buttonGroup.clearSelection();
-		ICommunicatorIf sender = message.getSender();
-		if(sender == null)
+		
+		// Update depending on whether this is a list of senders or receivers
+		ICommunicatorIf communicator;
+		if(m_senderList)
 		{
-			sender = (ICommunicatorIf)m_wpMessageLog.getMsoManager().getCmdPost();
+			communicator = message.getSender();
+		}
+		else
+		{
+			communicator = message.getSingleReceiver();
+		}
+		
+		// Default value is command post
+		if(communicator == null)
+		{
+			communicator = (ICommunicatorIf)m_wpMessageLog.getMsoManager().getCmdPost();
 		}
 		
 		// Get sender button and mark it
@@ -219,8 +235,8 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 		{
 			button = buttons.nextElement();
 			String[] command = button.getActionCommand().split(" ");
-			if(command[0].charAt(0) == sender.getCommunicatorNumberPrefix() && 
-					Integer.valueOf(command[1]) == sender.getCommunicatorNumber())
+			if(command[0].charAt(0) == communicator.getCommunicatorNumberPrefix() && 
+					Integer.valueOf(command[1]) == communicator.getCommunicatorNumber())
 			{
 				m_currentButton = (JToggleButton)button;
 				button.setSelected(true);
