@@ -1,27 +1,6 @@
 package org.redcross.sar.wp.tactics;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.io.IOException;
-import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.ListSelectionModel;
-import javax.swing.border.BevelBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
+import com.esri.arcgis.interop.AutomationException;
 import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.event.IDiskoMapEventListener;
 import org.redcross.sar.gui.DiskoDialog;
@@ -34,11 +13,17 @@ import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IHypothesisIf;
+import org.redcross.sar.mso.data.IHypothesisIf.HypothesisStatus;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.ISearchAreaIf;
-import org.redcross.sar.mso.data.IHypothesisIf.HypothesisStatus;
 
-import com.esri.arcgis.interop.AutomationException;
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.io.IOException;
+import java.util.List;
 
 public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListener {
 
@@ -57,7 +42,7 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 	private JLabel priorityLabel;
 	private JComboBox priorityComboBox;
 	private JComboBox statusComboBox;
-	
+
 	private IHypothesisIf selectedHypotheses = null;
 
 	public HypothesesDialog(DiskoWpTacticsImpl wp) {
@@ -82,7 +67,7 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 
 	/**
 	 * This method initializes this
-	 * 
+	 *
 	 */
 	private void initialize() {
 		try {
@@ -94,19 +79,19 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 			//  Do Something
 		}
 	}
-	
+
 	public void reset() {
 		getDescriptionTextArea().setText(null);
 		getPriorityComboBox().setSelectedIndex(0);
 		getStatusComboBox().setSelectedIndex(0);
 		selectedHypotheses = null;
 	}
-	
+
 	public IHypothesisIf getSelectedHypotheses() {
 		applyChanges();
 		return selectedHypotheses;
 	}
-	
+
 	private void applyChanges() {
 		if (selectedHypotheses == null) {
 			return;
@@ -114,8 +99,8 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 		if (!selectedHypotheses.getDescription().equals(getDescriptionTextArea().getText())) {
 			selectedHypotheses.setDescription(getDescriptionTextArea().getText());
 		}
-		if (selectedHypotheses.getPriority()-1 != getPriorityComboBox().getSelectedIndex()) {
-			selectedHypotheses.setPriority(getPriorityComboBox().getSelectedIndex()+1);
+		if (selectedHypotheses.getPriorityIndex()-1 != getPriorityComboBox().getSelectedIndex()) {
+			selectedHypotheses.setPriorityIndex(getPriorityComboBox().getSelectedIndex()+1);
 		}
 		if (selectedHypotheses.getStatus() != getStatusComboBox().getSelectedItem()) {
 			selectedHypotheses.setStatus((HypothesisStatus)getStatusComboBox().getSelectedItem());
@@ -123,9 +108,9 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 	}
 
 	/**
-	 * This method initializes contentPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
+	 * This method initializes contentPanel
+	 *
+	 * @return javax.swing.JPanel
 	 */
 	private JPanel getContentPanel() {
 		if (contentPanel == null) {
@@ -133,7 +118,7 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 				contentPanel = new JPanel();
 				contentPanel.setLayout(new BorderLayout());
 				contentPanel.setBorder(BorderFactory.createCompoundBorder(
-						BorderFactory.createBevelBorder(BevelBorder.RAISED), 
+						BorderFactory.createBevelBorder(BevelBorder.RAISED),
 						BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 				contentPanel.add(getListScrollPane(), BorderLayout.WEST);
 				contentPanel.add(getCenterPanel(), BorderLayout.CENTER);
@@ -145,9 +130,9 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 	}
 
 	/**
-	 * This method initializes buttonPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
+	 * This method initializes buttonPanel
+	 *
+	 * @return javax.swing.JPanel
 	 */
 	private JPanel getButtonPanel() {
 		if (buttonPanel == null) {
@@ -165,9 +150,9 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 	}
 
 	/**
-	 * This method initializes newButton	
-	 * 	
-	 * @return javax.swing.JButton	
+	 * This method initializes newButton
+	 *
+	 * @return javax.swing.JButton
 	 */
 	private JButton getNewButton() {
 		if (newButton == null) {
@@ -191,9 +176,9 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 	}
 
 	/**
-	 * This method initializes listScrollPane	
-	 * 	
-	 * @return javax.swing.JScrollPane	
+	 * This method initializes listScrollPane
+	 *
+	 * @return javax.swing.JScrollPane
 	 */
 	private JScrollPane getListScrollPane() {
 		if (listScrollPane == null) {
@@ -210,9 +195,9 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 	}
 
 	/**
-	 * This method initializes hypothesesList	
-	 * 	
-	 * @return javax.swing.JList	
+	 * This method initializes hypothesesList
+	 *
+	 * @return javax.swing.JList
 	 */
 	private JList getHypothesesList() {
 		if (hypothesesList == null) {
@@ -233,8 +218,8 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 							return;
 						}
 						getDescriptionTextArea().setText(selectedHypotheses.getDescription());
-						if (selectedHypotheses.getPriority() > 0) {
-							getPriorityComboBox().setSelectedIndex(selectedHypotheses.getPriority()-1);
+						if (selectedHypotheses.getPriorityIndex() > 0) {
+							getPriorityComboBox().setSelectedIndex(selectedHypotheses.getPriorityIndex()-1);
 						}
 						else {
 							getPriorityComboBox().setSelectedIndex(0);
@@ -251,9 +236,9 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 	}
 
 	/**
-	 * This method initializes centerPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
+	 * This method initializes centerPanel
+	 *
+	 * @return javax.swing.JPanel
 	 */
 	private JPanel getCenterPanel() {
 		if (centerPanel == null) {
@@ -271,9 +256,9 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 	}
 
 	/**
-	 * This method initializes textAreaScrollPane	
-	 * 	
-	 * @return javax.swing.JScrollPane	
+	 * This method initializes textAreaScrollPane
+	 *
+	 * @return javax.swing.JScrollPane
 	 */
 	private JScrollPane getTextAreaScrollPane() {
 		if (textAreaScrollPane == null) {
@@ -288,9 +273,9 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 	}
 
 	/**
-	 * This method initializes descriptionTextArea	
-	 * 	
-	 * @return javax.swing.JTextArea	
+	 * This method initializes descriptionTextArea
+	 *
+	 * @return javax.swing.JTextArea
 	 */
 	private JTextArea getDescriptionTextArea() {
 		if (descriptionTextArea == null) {
@@ -309,11 +294,11 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 		}
 		return descriptionTextArea;
 	}
-	
+
 	/**
-	 * This method initializes propertiesPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
+	 * This method initializes propertiesPanel
+	 *
+	 * @return javax.swing.JPanel
 	 */
 	private JPanel getPropertiesPanel() {
 		if (propertiesPanel == null) {
@@ -359,11 +344,11 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 		}
 		return propertiesPanel;
 	}
-	
+
 	/**
-	 * This method initializes priorityComboBox	
-	 * 	
-	 * @return javax.swing.JComboBox	
+	 * This method initializes priorityComboBox
+	 *
+	 * @return javax.swing.JComboBox
 	 */
 	private JComboBox getPriorityComboBox() {
 		if (priorityComboBox == null) {
@@ -378,7 +363,7 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 						fireDialogStateChanged();
 					}
 				});
-				
+
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
@@ -387,9 +372,9 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 	}
 
 	/**
-	 * This method initializes statusComboBox	
-	 * 	
-	 * @return javax.swing.JComboBox	
+	 * This method initializes statusComboBox
+	 *
+	 * @return javax.swing.JComboBox
 	 */
 	private JComboBox getStatusComboBox() {
 		if (statusComboBox == null) {
@@ -415,7 +400,7 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 
 	public void editLayerChanged(DiskoMapEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void onAfterScreenDraw(DiskoMapEvent e) throws IOException, AutomationException {
