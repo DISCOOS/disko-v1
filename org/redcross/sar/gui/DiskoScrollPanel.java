@@ -143,12 +143,6 @@ public class DiskoScrollPanel extends JPanel implements Scrollable
         {
             myDimension.height = newHeight;
             setPreferredSize(myDimension);
-//            revalidate();
-//            repaint();
-        } else if (dataChanged)
-        {
-//            revalidate();
-//            repaint();
         }
         revalidate();
         repaint();

@@ -255,7 +255,8 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
         }
     }
 
-    private HashMap<String, SarObject> tmpObjects=new HashMap();
+    private HashMap<String, SarObject> tmpObjects = new HashMap();
+
     public void handleMsoCommitEvent(MsoEvent.Commit e)
     {
         tmpObjects.clear();
@@ -267,7 +268,7 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
         //sarSvc.getSession().beginCommit(sarOperation.getID());
         //Iterer gjennom objektene, sjekk type og oppdater sara etter typen
         ICommitWrapperIf wrapper = (ICommitWrapperIf) e.getSource();
-        List<ICommittableIf.ICommitObjectIf> objectList = new ArrayList<ICommittableIf.ICommitObjectIf>(wrapper.getObjects());
+        List<ICommittableIf.ICommitObjectIf> objectList = wrapper.getObjects();
         for (ICommittableIf.ICommitObjectIf ico : objectList)
         {
             System.out.println("Commit Object " + ico.getType() + " " + ico.getObject());
@@ -275,7 +276,7 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
             if (ico.getType().equals(CommitManager.CommitType.COMMIT_CREATED))
             {
                 SarObject so = createSaraObject(ico);
-                tmpObjects.put(so.getID(),so);
+                tmpObjects.put(so.getID(), so);
                 so.createNewOut();
             } else if (ico.getType().equals(CommitManager.CommitType.COMMIT_MODIFIED))
             {
@@ -288,19 +289,19 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
             }
         }
 
-        List<ICommittableIf.ICommitReferenceIf> attrList = new ArrayList<ICommittableIf.ICommitReferenceIf>(wrapper.getListReferences());
-        System.out.println("Antall endrede referanser : "+attrList.size());
+        List<ICommittableIf.ICommitReferenceIf> attrList = wrapper.getListReferences();
+        System.out.println("Antall endrede referanser : " + attrList.size());
         for (ICommittableIf.ICommitReferenceIf ico : attrList)
         {
             System.out.println("Commit List " + ico.getType() + " " + ico.getReferenceName());
             msoReferenceChanged(ico, false);
         }
 
-        List<ICommittableIf.ICommitReferenceIf> listList = new ArrayList<ICommittableIf.ICommitReferenceIf>(wrapper.getAttributeReferences());
-        System.out.println("Antall endrede listereferanser : "+listList.size());
+        List<ICommittableIf.ICommitReferenceIf> listList = wrapper.getAttributeReferences();
+        System.out.println("Antall endrede listereferanser : " + listList.size());
         for (ICommittableIf.ICommitReferenceIf ico : listList)
         {
-//            System.out.println("Commit Attr " + ico.getType() + " " + ico.getReferenceName());
+            System.out.println("Commit Attr " + ico.getType() + " " + ico.getReferenceName());
             msoReferenceChanged(ico, true);
         }
         sarSvc.getSession().commit(sarOperation.getID());
@@ -315,23 +316,21 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
         SarObject sourceObj = sarOperation.getSarObject(owner.getObjectId());
         SarObject relObj = sarOperation.getSarObject(ref.getObjectId());
         String refName = ico.getReferenceName();
-            if(sourceObj==null)
-            {
-                sourceObj=tmpObjects.get(owner.getObjectId());
-            }
-            if(relObj==null)
-            {
-                relObj=tmpObjects.get(ref.getObjectId());
-            }
+        if (sourceObj == null)
+        {
+            sourceObj = tmpObjects.get(owner.getObjectId());
+        }
+        if (relObj == null)
+        {
+            relObj = tmpObjects.get(ref.getObjectId());
+        }
         if (sourceObj == null || relObj == null)
         {
-                Log.warning("Object not found " + owner.getObjectId() + " or " + ref.getObjectId());
-    //            System.out.println("Object not found " + owner.getObjectId() + " or " + ref.getObjectId());
-         }
-
-         else
+            Log.warning("Object not found " + owner.getObjectId() + " or " + ref.getObjectId());
+            System.out.println("Object not found " + owner.getObjectId() + " or " + ref.getObjectId());
+        } else
         {
-            System.out.println("ChangeReference " + isNamedReference + " " +ct);
+            System.out.println("ChangeReference " + isNamedReference + " " + ct);
             if (ct.equals(CommitManager.CommitType.COMMIT_CREATED))
             {
                 if (isNamedReference)
@@ -625,14 +624,13 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
             SarObjectImpl rel = (SarObjectImpl) sarOperation.getSarObject(relId);
 
             updateMsoReference(so, rel, relName, co.getFieldName());
-        }
-        else
+        } else
         {
             //Change of factvalue
             //Find object containing the fact
             SarObject parentObject = getParentObject(so);
             // Use object to find msoobject
-            AttributeImpl attr=null;
+            AttributeImpl attr = null;
             if (parentObject != null)
             {
                 IMsoObjectIf msoObj = saraMsoMap.get(parentObject);
@@ -645,7 +643,7 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
 
             }
             //Update msoobject
-            if(parentObject==null || attr==null)
+            if (parentObject == null || attr == null)
             {
                 Log.warning("NOT IMPLEMENTED YET changeMsoFromSara field: " + co.getFieldType() + " ftype: " + co.getFactType());
             }
