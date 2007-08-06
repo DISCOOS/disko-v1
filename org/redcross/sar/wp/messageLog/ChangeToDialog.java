@@ -11,6 +11,7 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
@@ -33,6 +34,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 {
 	protected JToggleButton m_broadcastButton;
 	protected JToggleButton m_nonBroadcastButton;
+	protected ButtonGroup m_buttonGroup;
 	protected JPanel m_contentsPanel;
 	
 	protected UnitFieldSelectionDialog m_nbFieldDialog;
@@ -42,15 +44,20 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 	
 	protected boolean m_broadcast = false;
 	
+	// Reference to message is needed in order to update mso continuously
+	protected IMessageIf m_currentMessage = null;
+	
 	protected IDiskoWpMessageLog m_wpMessageLog;
 	
 	public static final Dimension BUTTON_SIZE = new Dimension(MessageLogPanel.SMALL_BUTTON_SIZE.width*3, 
 			MessageLogPanel.SMALL_BUTTON_SIZE.height);
 	
 	
-	public ChangeToDialog(IDiskoWpMessageLog wp)
+	public ChangeToDialog(IDiskoWpMessageLog wp, IMessageIf message)
 	{
 		super(wp.getApplication().getFrame());
+	
+		m_currentMessage = message;
 		
 		m_wpMessageLog = wp;
 		
@@ -69,7 +76,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 	{
 		m_nbFieldDialog = new UnitFieldSelectionDialog(m_wpMessageLog, false);
 		m_nbListDialog = new SingleUnitListSelectionDialog(m_wpMessageLog, false);
-		m_broadcastDialog = new BroadcastToDialog(m_wpMessageLog);
+		m_broadcastDialog = new BroadcastToDialog(m_wpMessageLog, m_currentMessage);
 		
 		m_nbFieldDialog.addDialogListener(this);
 		m_nbListDialog.addDialogListener(this);
@@ -90,6 +97,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 	
 	private void initButtons()
 	{
+		m_buttonGroup = new ButtonGroup();
 		m_nonBroadcastButton = new JToggleButton(m_wpMessageLog.getText("NonBroadcastButton.text"));
 		m_nonBroadcastButton.setPreferredSize(BUTTON_SIZE);
 		m_nonBroadcastButton.setMaximumSize(BUTTON_SIZE);
@@ -103,10 +111,12 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 				m_nbListDialog.showDialog();
 				m_broadcastDialog.hideDialog();
 				m_broadcast = false;
+				m_currentMessage.setBroadcast(false);
 				fireDialogStateChanged();
 			}	
 		});
 		m_nonBroadcastButton.setSelected(true);
+		m_buttonGroup.add(m_nonBroadcastButton);
 		m_contentsPanel.add(m_nonBroadcastButton);
 		
 		m_broadcastButton = new JToggleButton(m_wpMessageLog.getText("BroadcastButton.text"));
@@ -126,9 +136,11 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 				m_broadcastDialog.setLocation(location);
 				m_broadcastDialog.showDialog();
 				m_broadcast = true;
+//				m_currentMessage.setBroadcast(true);
 				fireDialogStateChanged();
 			}
 		});
+		m_buttonGroup.add(m_broadcastButton);
 		m_contentsPanel.add(m_broadcastButton);
 		
 		m_contentsPanel.add(Box.createHorizontalGlue());
@@ -144,6 +156,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 
 	public void newMessageSelected(IMessageIf message)
 	{
+		m_currentMessage = message;
 		m_nbListDialog.newMessageSelected(message);
 		m_nbFieldDialog.newMessageSelected(message);
 		m_broadcastDialog.newMessageSelected(message);
@@ -154,7 +167,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 		if(m_broadcast)
 		{
 			// TODO
-			return null;
+			return "FA";
 		}
 		else
 		{
@@ -164,10 +177,17 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 
 	public void showDialog()
 	{
+		// TODO remove, testing purpose
+		if(m_currentMessage == null)
+			m_currentMessage = m_wpMessageLog.getMsoManager().createMessage();
+		
 		this.setVisible(true);
 		
 		if(m_broadcast)
 		{
+			Point location = m_nonBroadcastButton.getLocationOnScreen();
+			location.y += BUTTON_SIZE.height;
+			m_broadcastDialog.setLocation(location);
 			m_broadcastDialog.showDialog();
 		}
 		else

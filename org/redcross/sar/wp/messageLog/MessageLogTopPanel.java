@@ -16,6 +16,7 @@ import org.redcross.sar.mso.data.*;
 import org.redcross.sar.mso.data.IMessageIf.MessageStatus;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
+import org.redcross.sar.mso.event.MsoEvent;
 import org.redcross.sar.mso.event.MsoEvent.Update;
 import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.mso.DTG;
@@ -191,7 +192,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	{
 		if(m_changeToDialog == null)
 		{
-			m_changeToDialog = new ChangeToDialog(m_wpMessageLog);
+			m_changeToDialog = new ChangeToDialog(m_wpMessageLog, m_currentMessage);
 			m_changeToDialog.addDialogListener(this);
 			m_dialogs.add(m_changeToDialog);
 		}
@@ -281,7 +282,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     	gbc.gridy = 0;
 
     	// Nr panel
-        m_nrPanel = createPanel(SMALL_PANEL_WIDTH/2, PANEL_HEIGHT, m_wpMessageLog.getText("MessagePanelNrLabel.text"));
+        m_nrPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT, m_wpMessageLog.getText("MessagePanelNrLabel.text"));
         m_nrPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
         m_nrLabel = new JLabel();
         m_nrLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -426,6 +427,12 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
      */
 	public void newMessageSelected(int messageNr)
 	{
+		// No need to update if current message is selected
+		if(messageNr == m_currentMessageNr)
+		{
+			return;                                                                        
+		}
+		
 		// Have user confirm message overwrite
 		if(m_messageDirty)
 		{
@@ -456,8 +463,12 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 		// Get the message
 		List<IMessageIf> messages = m_messageLog.selectItems(m_currentMessageSelector, m_lineNumberComparator);
-		m_currentMessage = messages.get(0);
-
+		if(!messages.isEmpty())
+		{
+			// Check that an uncommitted message is not reselected
+			m_currentMessage = messages.get(0);
+		}
+		
 		updateMessageGUI();
 	}
 

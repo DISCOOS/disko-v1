@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,6 +31,8 @@ import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IUnitListIf;
+import org.redcross.sar.mso.data.ICmdPostIf.CmdPostStatus;
+import org.redcross.sar.mso.data.IUnitIf.UnitStatus;
 import org.redcross.sar.mso.data.IUnitIf.UnitType;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
@@ -140,27 +143,45 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	};
 	
 	/**
-	 * Selects unit based on the unit type filter
+	 * Selects active units based on the unit type filter
 	 */
+	private final EnumSet<UnitStatus> m_activeUnitStatusSet = EnumSet.of(UnitStatus.PAUSED, UnitStatus.READY, UnitStatus.WORKING);
+	private final EnumSet<CmdPostStatus> m_activeCmdPostStatusSet = EnumSet.of(CmdPostStatus.IDLE, CmdPostStatus.OPERATING, CmdPostStatus.PAUSED);
 	private Selector<ICommunicatorIf> m_communicatorSelector = new Selector<ICommunicatorIf>()
 	{
 		public boolean select(ICommunicatorIf communicator)
 		{
-			if(m_unitTypeFilter == null)
+			if(communicator instanceof ICmdPostIf )
 			{
-				return true;
-			}
-			else if(communicator instanceof ICmdPostIf )
-			{
-				return (m_unitTypeFilter == UnitType.COMMAND_POST);
+				// Command post should only be selected if the type filter is set to cp and the cp is active
+				ICmdPostIf cmdPost = (ICmdPostIf)communicator;
+				if(m_activeCmdPostStatusSet.contains(cmdPost.getStatus()) &&
+						(m_unitTypeFilter == UnitType.COMMAND_POST || m_unitTypeFilter == null))
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
 			}
 			else if(communicator instanceof IUnitIf)
 			{
+				// Unit should be selected if it is active, and the unit type filter match
 				IUnitIf unit = (IUnitIf)communicator;
-				return unit.getType() == m_unitTypeFilter;
+				if(m_activeUnitStatusSet.contains(unit.getStatus()) && 
+						(m_unitTypeFilter == unit.getType() || m_unitTypeFilter == null))
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
 			}
 			else
 			{
+				// TODO add possible extensions here, should not be reached for the time being 
 				return false;
 			}
 		}
@@ -288,7 +309,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 		m_buttonGroup = new ButtonGroup();
 		
 		// Set contents panel size in order to enable scroll pane
-		int numberOfColumns = m_communicatorList.getItems().size() / NUMBER_OF_ROWS + 1;
+		int numberOfColumns = m_communicatorList.selectItems(m_communicatorSelector, m_communicatorComparator).size() / NUMBER_OF_ROWS + 1;
 		m_contentsPanel.setMinimumSize(new Dimension(numberOfColumns * BUTTON_SIZE.width, 
 				NUMBER_OF_ROWS * BUTTON_SIZE.height));
 		m_contentsPanel.setPreferredSize(new Dimension(numberOfColumns * BUTTON_SIZE.width, 

@@ -134,7 +134,7 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 	public void newMessageSelected(IMessageIf message)
 	{
 		setCreated(message.getCreated());
-		m_timeTextField.setText(DTG.CalToDTG(message.getTimeStamp()));
+		m_timeTextField.setText(DTG.CalToDTG(message.getOccuredTime()));
 	}
 
 	public void setCreated(Calendar created)
