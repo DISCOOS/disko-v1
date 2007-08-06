@@ -1,52 +1,46 @@
 package org.redcross.sar.wp.messageLog;
 
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.Calendar;
-
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.border.BevelBorder;
-
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.util.mso.DTG;
 
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.Calendar;
+
 /**
- * 
+ *
  * @author thomasl
  *
- * Creates the dialog for changing DTG in message log edit mode. 
+ * Creates the dialog for changing DTG in message log edit mode.
  */
 public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMessageDialogIf
 {
 	private JPanel m_contentsPanel = null;
-	
+
 	private JPanel m_createdPanel;
 	private JLabel m_createdLabel;
 	private JTextField m_createdTextField;
-	
+
 	private JPanel m_timePanel;
 	private JLabel m_timeLabel;
 	private JTextField m_timeTextField;
 	private IDiskoWpMessageLog m_wp;
 
-	public ChangeDTGDialog(IDiskoWpMessageLog wp) 
+	public ChangeDTGDialog(IDiskoWpMessageLog wp)
 	{
-		super(wp.getApplication().getFrame());	
+		super(wp.getApplication().getFrame());
 		m_wp = wp;
-		
+
 		initialize();
 	}
-	
+
 	private void initialize()
 	{
-		try 
+		try
 		{
             this.setContentPane(getContentPanel());
 			this.pack();
@@ -54,20 +48,20 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 					(int)(MessageLogPanel.SMALL_BUTTON_SIZE.getHeight()*1.5)));
 			m_timeTextField.requestFocus();
 		}
-		catch (java.lang.Throwable e) 
+		catch (java.lang.Throwable e)
 		{
 		}
 	}
-	
+
 	private JPanel getContentPanel()
 	{
 		if (m_contentsPanel == null) {
-			try 
+			try
 			{
 				m_contentsPanel = new JPanel();
 				m_contentsPanel.setLayout(new GridLayout(2, 2));
 				m_contentsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-				
+
 				m_createdPanel = new JPanel();
 				m_createdLabel = new JLabel(m_wp.getText("ChangeDTGDialogCreated.text"));
 				m_createdLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -76,7 +70,7 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 				m_createdTextField.setEditable(false);
 				m_createdPanel.add(m_createdTextField);
 				m_contentsPanel.add(m_createdPanel);
-				
+
 				m_timePanel = new JPanel();
 				m_timeLabel = new JLabel(m_wp.getText("ChangeDTGDialogTime.text"));
 				m_timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -86,14 +80,14 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 				m_timePanel.add(m_timeTextField);
 				m_contentsPanel.add(m_timePanel);
 				m_contentsPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-			} 
-			catch (java.lang.Throwable e) 
+			}
+			catch (java.lang.Throwable e)
 			{
 			}
 		}
 		return m_contentsPanel;
 	}
-	
+
 	public String getTime()
 	{
 		return m_timeTextField.getText();
@@ -101,7 +95,7 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 
 	public void keyPressed(KeyEvent ke)
 	{
-		// Changes should be checked, and if found correct, sent to mso, not commited 
+		// Changes should be checked, and if found correct, sent to mso, not commited
 		if(ke.getKeyCode() == KeyEvent.VK_ENTER)
 		{
 			this.setVisible(false);
@@ -115,7 +109,7 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 			}
 		}
 	}
-	
+
 	private boolean validDTG()
 	{
 		try
@@ -140,7 +134,7 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 	public void newMessageSelected(IMessageIf message)
 	{
 		setCreated(message.getCreated());
-		m_timeTextField.setText(DTG.CalToDTG(message.getCalendar()));
+		m_timeTextField.setText(DTG.CalToDTG(message.getTimeStamp()));
 	}
 
 	public void setCreated(Calendar created)
