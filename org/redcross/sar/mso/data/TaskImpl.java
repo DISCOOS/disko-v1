@@ -75,17 +75,17 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
 
     public Calendar getDueTime()
     {
-        return getCalendar();
+        return getTimeStamp();
     }
 
     public void setDueTime(Calendar aCalendar)
     {
-        setCalendar(aCalendar);
+        setTimeStamp(aCalendar);
     }
 
 
     public IMsoModelIf.ModificationState getDueTimeState()
     {
-        return getCalendarState();
+        return getTimeStampState();
     }
 }

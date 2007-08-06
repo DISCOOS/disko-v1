@@ -8,7 +8,7 @@ public class HypothesisImpl extends AbstractMsoObject implements IHypothesisIf
 {
     private final AttributeImpl.MsoString m_description = new AttributeImpl.MsoString(this, "Description");
     private final AttributeImpl.MsoInteger m_number = new AttributeImpl.MsoInteger(this, "Number");
-    private final AttributeImpl.MsoInteger m_priority = new AttributeImpl.MsoInteger(this, "Priority");
+    private final AttributeImpl.MsoInteger m_priorityIndex = new AttributeImpl.MsoInteger(this, "PriorityIndex");
 
     private final AttributeImpl.MsoEnum<HypothesisStatus> m_status = new AttributeImpl.MsoEnum<HypothesisStatus>(this, "Status", HypothesisStatus.ACTIVE);
 
@@ -23,7 +23,7 @@ public class HypothesisImpl extends AbstractMsoObject implements IHypothesisIf
     {
         addAttribute(m_description);
         addAttribute(m_number);
-        addAttribute(m_priority);
+        addAttribute(m_priorityIndex);
         addAttribute(m_status);
     }
 
@@ -42,7 +42,7 @@ public class HypothesisImpl extends AbstractMsoObject implements IHypothesisIf
     public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
     }
-    
+
     public static HypothesisImpl implementationOf(IHypothesisIf anInterface) throws MsoCastException
     {
         try
@@ -118,24 +118,24 @@ public class HypothesisImpl extends AbstractMsoObject implements IHypothesisIf
         return m_number;
     }
 
-    public void setPriority(int aPriority)
+    public void setPriorityIndex(int aPriorityIndex)
     {
-        m_priority.setValue(aPriority);
+        m_priorityIndex.setValue(aPriorityIndex);
     }
 
-    public int getPriority()
+    public int getPriorityIndex()
     {
-        return m_priority.intValue();
+        return m_priorityIndex.intValue();
     }
 
-    public IMsoModelIf.ModificationState getPriorityState()
+    public IMsoModelIf.ModificationState getPriorityIndexState()
     {
-        return m_priority.getState();
+        return m_priorityIndex.getState();
     }
 
-    public IAttributeIf.IMsoIntegerIf getPriorityAttribute()
+    public IAttributeIf.IMsoIntegerIf getPriorityIndexAttribute()
     {
-        return m_priority;
+        return m_priorityIndex;
     }
 
     // From ISerialNumberedIf

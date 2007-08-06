@@ -45,11 +45,11 @@ public interface IHypothesisIf extends IMsoObjectIf, ISerialNumberedIf
 
     public IAttributeIf.IMsoStringIf getDescriptionAttribute();
 
-    public void setPriority(int aPriority);
+    public void setPriorityIndex(int aPriority);
 
-    public int getPriority();
+    public int getPriorityIndex();
 
-    public IMsoModelIf.ModificationState getPriorityState();
+    public IMsoModelIf.ModificationState getPriorityIndexState();
 
-    public IAttributeIf.IMsoIntegerIf getPriorityAttribute();
+    public IAttributeIf.IMsoIntegerIf getPriorityIndexAttribute();
 }

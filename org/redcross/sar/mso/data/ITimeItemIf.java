@@ -6,13 +6,13 @@ import java.util.Calendar;
 
 public interface ITimeItemIf extends Comparable<ITimeItemIf>, IMsoObjectIf
 {
-    public Calendar getCalendar();
+    public Calendar getTimeStamp();
 
-    public void setCalendar(Calendar aDTG);
+    public void setTimeStamp(Calendar aDTG);
 
-    public IMsoModelIf.ModificationState getCalendarState();
+    public IMsoModelIf.ModificationState getTimeStampState();
 
-    public IAttributeIf.IMsoCalendarIf getCalendarAttribute();
+    public IAttributeIf.IMsoCalendarIf getTimeStampAttribute();
 
     public String toString();
 

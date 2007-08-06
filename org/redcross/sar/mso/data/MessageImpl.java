@@ -356,17 +356,17 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
 
     public Calendar getOccuredTime()
     {
-        return getCalendar();
+        return getTimeStamp();
     }
 
     public void setOccuredTime(Calendar aCalendar)
     {
-        setCalendar(aCalendar);
+        setTimeStamp(aCalendar);
     }
 
     public IMsoModelIf.ModificationState getOccuredTimeState()
     {
-        return getCalendarState();
+        return getTimeStampState();
     }
 
     /*-------------------------------------------------------------------------------------------
@@ -412,7 +412,7 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
     {
         return m_confirmedReceivers;
     }
-    
+
     public ICommunicatorIf getSingleReceiver()
 	{
 		return m_confirmedReceivers.getItem();

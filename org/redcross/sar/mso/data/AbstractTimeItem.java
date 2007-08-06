@@ -6,7 +6,7 @@ import java.util.Calendar;
 
 public abstract class AbstractTimeItem extends AbstractMsoObject implements ITimeItemIf
 {
-    protected final AttributeImpl.MsoCalendar m_calendar = new AttributeImpl.MsoCalendar(this, "TimeStamp");
+    protected final AttributeImpl.MsoCalendar m_timeStamp = new AttributeImpl.MsoCalendar(this, "TimeStamp");
     protected final AttributeImpl.MsoBoolean m_visible = new AttributeImpl.MsoBoolean(this, "Visible");
 
     public AbstractTimeItem(IMsoObjectIf.IObjectIdIf anObjectId)
@@ -22,13 +22,13 @@ public abstract class AbstractTimeItem extends AbstractMsoObject implements ITim
     public AbstractTimeItem(IMsoObjectIf.IObjectIdIf anObjectId, Calendar aCalendar, boolean aVisible)
     {
         super(anObjectId);
-        m_calendar.setValue(aCalendar);
+        m_timeStamp.setValue(aCalendar);
         setVisible(aVisible);
     }
 
     protected void defineAttributes()
     {
-        addAttribute(m_calendar);
+        addAttribute(m_timeStamp);
         addAttribute(m_visible);
     }
 
@@ -48,24 +48,24 @@ public abstract class AbstractTimeItem extends AbstractMsoObject implements ITim
     {
     }
 
-    public void setCalendar(Calendar aDTG)
+    public void setTimeStamp(Calendar aDTG)
     {
-        m_calendar.setValue(aDTG);
+        m_timeStamp.setValue(aDTG);
     }
 
-    public Calendar getCalendar()
+    public Calendar getTimeStamp()
     {
-        return m_calendar.getCalendar();
+        return m_timeStamp.getCalendar();
     }
 
-    public IMsoModelIf.ModificationState getCalendarState()
+    public IMsoModelIf.ModificationState getTimeStampState()
     {
-        return m_calendar.getState();
+        return m_timeStamp.getState();
     }
 
-    public IAttributeIf.IMsoCalendarIf getCalendarAttribute()
+    public IAttributeIf.IMsoCalendarIf getTimeStampAttribute()
     {
-        return m_calendar;
+        return m_timeStamp;
     }
 
     /**
@@ -80,13 +80,13 @@ public abstract class AbstractTimeItem extends AbstractMsoObject implements ITim
     {
         if (aTimeObject != null)
         {
-            if (getCalendar() != null && aTimeObject.getCalendar() != null)
+            if (getTimeStamp() != null && aTimeObject.getTimeStamp() != null)
             {
-                return getCalendar().compareTo(aTimeObject.getCalendar());
-            } else if (getCalendar() == null && aTimeObject.getCalendar() == null)
+                return getTimeStamp().compareTo(aTimeObject.getTimeStamp());
+            } else if (getTimeStamp() == null && aTimeObject.getTimeStamp() == null)
             {
                 return 0;
-            } else if (aTimeObject.getCalendar() == null)
+            } else if (aTimeObject.getTimeStamp() == null)
             {
                 return 1;
             } else
@@ -109,7 +109,7 @@ public abstract class AbstractTimeItem extends AbstractMsoObject implements ITim
 
     public String toString()
     {
-        return "Item " + getCalendar();
+        return "Item " + getTimeStamp();
     }
 
     public IMsoModelIf.ModificationState getVisibleState()
