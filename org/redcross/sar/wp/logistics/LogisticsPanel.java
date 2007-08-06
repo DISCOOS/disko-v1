@@ -431,8 +431,8 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
 
     private void setTableData()
     {
-//        UnitTableModel utm = (UnitTableModel) m_unitTable.getModel();
-//        utm.buildTable();
+        UnitTableModel utm = (UnitTableModel) m_unitTable.getModel();
+        utm.buildTable();
     }
 
 
