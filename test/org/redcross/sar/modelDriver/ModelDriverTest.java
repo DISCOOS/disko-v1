@@ -96,7 +96,7 @@ public class ModelDriverTest
       SarSession sarSess=smd.getSarSvc().getSession();
         smd.initiate();
 
-      SarObject sbo= (SarObject)sarSess.createInstance("Vehicle",SarBaseObjectFactory.TYPE_OBJECT,sarSess.createInstanceId());
+      SarObject sbo= (SarObject)sarSess.createInstance("Vehicle","test",SarBaseObjectFactory.TYPE_OBJECT,sarSess.createInstanceId());
 
        smd.addMsoObject(sbo);
 
@@ -114,7 +114,7 @@ public class ModelDriverTest
      SarSession sarSess=smd.getSarSvc().getSession();
        smd.initiate();
 
-     SarObject sbo= (SarObject)sarSess.createInstance("Vehicle",SarBaseObjectFactory.TYPE_OBJECT,sarSess.createInstanceId());
+     SarObject sbo= (SarObject)sarSess.createInstance("Vehicle","test",SarBaseObjectFactory.TYPE_OBJECT,sarSess.createInstanceId());
 
       //smd.addMsoObject(sbo);
 
