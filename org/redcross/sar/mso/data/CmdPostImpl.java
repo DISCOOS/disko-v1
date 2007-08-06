@@ -2,10 +2,14 @@ package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.mso.data.IUnitIf.UnitStatus;
 import org.redcross.sar.util.except.MsoCastException;
+import org.redcross.sar.util.mso.Selector;
 
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -735,6 +739,55 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     {
         return m_communicatorList;
     }
+    
+    
+    private final EnumSet<UnitStatus> m_activeUnitStatusSet = EnumSet.of(UnitStatus.PAUSED, UnitStatus.READY, UnitStatus.WORKING);
+    private final EnumSet<CmdPostStatus> m_activeCmdPostStatusSet = EnumSet.of(CmdPostStatus.IDLE, CmdPostStatus.OPERATING, CmdPostStatus.PAUSED);
+    private Selector<ICommunicatorIf> m_activeCommunicatorsSelector = new Selector<ICommunicatorIf>()
+    {
+		public boolean select(ICommunicatorIf anObject)
+		{
+			if(anObject instanceof ICmdPostIf)
+			{
+				ICmdPostIf cmdPost = (ICmdPostIf)anObject;
+				if(m_activeCmdPostStatusSet.contains(cmdPost.getStatus()))
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			else if(anObject instanceof IUnitIf)
+			{
+				IUnitIf unit = (IUnitIf)anObject;
+				if(m_activeUnitStatusSet.contains(unit.getStatus()))
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			else
+			{
+				return false;
+			}
+		}
+    };
+	private Comparator<ICommunicatorIf> m_communicatorComparator = new Comparator<ICommunicatorIf>()
+	{
+		public int compare(ICommunicatorIf o1, ICommunicatorIf o2)
+		{
+			return o1.getCommunicatorNumber() - o2.getCommunicatorNumber();
+		}
+	};
+    public List<ICommunicatorIf> getActiveCommunicators()
+	{ 
+		return m_communicatorList.selectItems(m_activeCommunicatorsSelector, m_communicatorComparator);
+	}
 
     /*-------------------------------------------------------------------------------------------
     *  Methods from IHierarchicalUnitIf
@@ -764,4 +817,5 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     {
         return AbstractUnit.getSubOrdinates(this);
     }
+
 }

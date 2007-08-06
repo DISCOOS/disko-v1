@@ -4,6 +4,7 @@ import org.redcross.sar.mso.IMsoModelIf;
 
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.List;
 
 public interface ICmdPostIf extends IMsoObjectIf
 {
@@ -245,6 +246,8 @@ public interface ICmdPostIf extends IMsoObjectIf
     *-------------------------------------------------------------------------------------------*/
 
     public AbstractDerivedList<ICommunicatorIf> getCommunicatorList();
+    
+    public List<ICommunicatorIf> getActiveCommunicators();
 
     public ITimeLineIf getTimeLine();
 }
