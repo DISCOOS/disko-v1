@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <object id="00000000221" name="Task" objectType="test" pos="32">
-<fact comp="n" edit="y" id="00000000222" label="Visible" pos1="999" pos2="999" relTo="00000000221" version="1">
-<num_fact antdec="0" max="1.0" min="0.0"/>
-</fact>
-<fact comp="n" edit="y" id="00000000223" label="Calendar" pos1="999" pos2="999" relTo="00000000221" version="1">
+<fact comp="n" edit="y" id="00000000222" label="TimeStamp" pos1="999" pos2="999" relTo="00000000221" version="1">
 <date_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000223" label="Visible" pos1="999" pos2="999" relTo="00000000221" version="1">
+<num_fact antdec="0" max="1.0" min="0.0"/>
 </fact>
 <fact comp="n" edit="y" id="00000000224" label="DueTime" pos1="999" pos2="999" relTo="00000000221" version="1">
 <date_fact/>
