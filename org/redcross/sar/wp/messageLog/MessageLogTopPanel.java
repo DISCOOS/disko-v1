@@ -26,6 +26,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.LinkedList;
@@ -50,6 +51,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		if(m_currentMessage == null)
 		{
 			m_currentMessage = m_wpMessageLog.getMsoManager().createMessage();
+			m_currentMessage.setCreated(Calendar.getInstance());
+			m_currentMessage.setOccuredTime(Calendar.getInstance());
 			m_newMessage = true;
 			m_messageDirty = false;
 			m_currentMessageNr = m_currentMessage.getNumber();
@@ -503,25 +506,19 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			m_fromLabel.setText(sender.getCommunicatorNumberPrefix() + " " + sender.getCommunicatorNumber());
 
 			// Update to
-			IMsoListIf<ICommunicatorIf> receivers = m_currentMessage.getConfirmedReceivers();
-			if(receivers.size() == 0)
+			if(m_currentMessage.isBroadcast())
 			{
-				ICommunicatorIf defaultReciever = (ICommunicatorIf)m_wpMessageLog.getMsoManager().getCmdPost();
-				m_toLabel.setText(defaultReciever.getCommunicatorNumberPrefix() + " " +
-						defaultReciever.getCommunicatorNumber());
+				m_toLabel.setText(m_wpMessageLog.getText("BroadcastLabel.text"));
 			}
 			else
 			{
-				if(m_currentMessage.isBroadcast())
+				ICommunicatorIf receiver = m_currentMessage.getSingleReceiver();
+				if(receiver != null)
 				{
-					m_toLabel.setText(m_wpMessageLog.getText("BroadcastLabel.text"));
-				}
-				else
-				{
-					ICommunicatorIf receiver = m_currentMessage.getSingleReceiver();
 					m_toLabel.setText(receiver.getCommunicatorNumberPrefix() + " " + receiver.getCommunicatorNumber());
 				}
 			}
+			
 
 			ITaskListIf tasks = m_currentMessage.getMessageTasks();
 			StringBuilder tasksString = new StringBuilder();
@@ -614,8 +611,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		// If no message is selected a new one should be created once a field is edited
 		if(m_currentMessage == null)
 		{
-			m_currentMessage = m_wpMessageLog.getMsoManager().createMessage();
-			m_newMessage = true;
+			getCurrentMessage();
 		}
 
 		if(source instanceof ChangeDTGDialog)
@@ -682,13 +678,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		Object source = e.getSource();
 		if(source instanceof ChangeToDialog)
 		{
-			// TODO create new message if single/broadcast is selected?
-			if(m_currentMessage == null)
-			{
-				m_newMessage = true;
-				m_messageDirty = true;
-				m_currentMessage = m_wpMessageLog.getMsoManager().createMessage();
-			}
+			getCurrentMessage();
+			
 			// Toggle broadcast
 			m_currentMessage.setBroadcast(m_changeToDialog.getBroadcast());
 		}

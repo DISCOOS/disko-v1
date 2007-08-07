@@ -94,6 +94,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 	{
 		m_buttonGroup = new ButtonGroup();
 		m_nonBroadcastButton = new JToggleButton(m_wpMessageLog.getText("NonBroadcastButton.text"));
+		m_nonBroadcastButton.setMinimumSize(BUTTON_SIZE);
 		m_nonBroadcastButton.setPreferredSize(BUTTON_SIZE);
 		m_nonBroadcastButton.setMaximumSize(BUTTON_SIZE);
 		m_nonBroadcastButton.setHorizontalAlignment(SwingConstants.LEFT);
@@ -115,6 +116,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 		m_contentsPanel.add(m_nonBroadcastButton);
 		
 		m_broadcastButton = new JToggleButton(m_wpMessageLog.getText("BroadcastButton.text"));
+		m_broadcastButton.setMinimumSize(BUTTON_SIZE);
 		m_broadcastButton.setPreferredSize(BUTTON_SIZE);
 		m_broadcastButton.setMaximumSize(BUTTON_SIZE);
 		m_broadcastButton.setHorizontalAlignment(SwingConstants.LEFT);
@@ -151,6 +153,16 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 
 	public void newMessageSelected(IMessageIf message)
 	{
+		m_broadcast = message.isBroadcast();
+		if(m_broadcast)
+		{
+			m_broadcastButton.setSelected(true);
+		}
+		else
+		{
+			m_nonBroadcastButton.setSelected(true);
+		}
+		
 		m_nbListDialog.newMessageSelected(message);
 		m_nbFieldDialog.newMessageSelected(message);
 		m_broadcastDialog.newMessageSelected(message);
@@ -171,9 +183,9 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 
 	public void showDialog()
 	{
+		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
 		this.setVisible(true);
-		
-		if(m_broadcast)
+		if(message.isBroadcast())
 		{
 			Point location = m_nonBroadcastButton.getLocationOnScreen();
 			location.y += BUTTON_SIZE.height;

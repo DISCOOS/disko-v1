@@ -19,6 +19,8 @@ import org.redcross.sar.mso.data.IUnitIf;
  */
 public class DiskoButtonFactory
 {
+	public final static Dimension SMALL_BUTTON_SIZE = new Dimension(60, 60);
+	public final static Dimension LARGE_BUTTON_SIZE = new Dimension(180, 60);
 	/**
 	 * Creates a small JToggleButton based on the communicator
 	 * TODO should be moved to some utility class
@@ -61,9 +63,9 @@ public class DiskoButtonFactory
 			}
 		}
 		
-		button.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-		button.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-		button.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
+		button.setMinimumSize(SMALL_BUTTON_SIZE);
+		button.setPreferredSize(SMALL_BUTTON_SIZE);
+		button.setMaximumSize(SMALL_BUTTON_SIZE);
 		return button;
 	}
 	
@@ -112,12 +114,9 @@ public class DiskoButtonFactory
 		button.setText(communicator.getCommunicatorNumberPrefix() + communicator.getCommunicatorNumber() +
 				"  " + communicator.getCallSign());
 		
-		button.setMinimumSize(new Dimension(MessageLogPanel.SMALL_BUTTON_SIZE.width*3,
-				MessageLogPanel.SMALL_BUTTON_SIZE.height));
-		button.setPreferredSize(new Dimension(MessageLogPanel.SMALL_BUTTON_SIZE.width*3,
-				MessageLogPanel.SMALL_BUTTON_SIZE.height));
-		button.setMaximumSize(new Dimension(MessageLogPanel.SMALL_BUTTON_SIZE.width*3,
-				MessageLogPanel.SMALL_BUTTON_SIZE.height));
+		button.setMinimumSize(LARGE_BUTTON_SIZE);
+		button.setPreferredSize(LARGE_BUTTON_SIZE);
+		button.setMaximumSize(LARGE_BUTTON_SIZE);
 		return button;
 	}
 }
