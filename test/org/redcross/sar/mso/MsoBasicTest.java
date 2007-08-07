@@ -531,12 +531,12 @@ public class MsoBasicTest
         {
             if (cal != null)
             {
-                if (cal.compareTo(ti.getCalendar()) > 0)
+                if (cal.compareTo(ti.getTimeStamp()) > 0)
                 {
                     return false;
                 }
             }
-            cal = ti.getCalendar();
+            cal = ti.getTimeStamp();
         }
         return true;
     }
