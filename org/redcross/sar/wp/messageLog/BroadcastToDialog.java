@@ -317,7 +317,10 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialog
 				{
 					for(ICommunicatorIf communicator : m_wpMessageLog.getMsoManager().getCmdPost().getActiveCommunicators())
 					{
-						message.addUnconfirmedReceiver(communicator);
+						if(!message.getUnconfirmedReceivers().contains(communicator))
+						{
+							message.addUnconfirmedReceiver(communicator);
+						}	
 					}
 					
 					// Set unit type filter buttons

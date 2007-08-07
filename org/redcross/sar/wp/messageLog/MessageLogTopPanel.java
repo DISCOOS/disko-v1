@@ -15,6 +15,7 @@ import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.*;
 import org.redcross.sar.mso.data.IMessageIf.MessageStatus;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
+import org.redcross.sar.mso.data.IPOIIf.POIType;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
 import org.redcross.sar.util.except.IllegalMsoArgumentException;
@@ -247,6 +248,28 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     		m_dialogs.add(m_messagePositionDialog);
     	}
     	return m_messagePositionDialog;
+    }
+    
+    private FindingDialog getMessageFindingDialog()
+    {
+    	if(m_messageFindingDialog == null)
+    	{
+    		//TODO
+    		POITool tool = null;
+    		try
+    		{
+    			tool = new POITool(m_wpMessageLog.getApplication());
+    		}
+    		catch(IOException exc)
+    		{
+    			// TODO
+    			exc.printStackTrace();
+    		}
+    		m_messageFindingDialog = new FindingDialog(m_wpMessageLog, tool);
+    		m_messageFindingDialog.addDialogListener(this);
+    		m_dialogs.add(m_messageFindingDialog);
+    	}
+    	return m_messageFindingDialog;
     }
 
     private ListDialog getMessageListDialog()
@@ -583,12 +606,16 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 		m_buttonGroup.clearSelection();
 
-		if(sender.getClass() == SingleUnitListSelectionDialog.class)
+		if(sender instanceof SingleUnitListSelectionDialog)
 		{
 		}
-		if(sender.getClass() == ChangeDTGDialog.class)
+		else if(sender instanceof ChangeDTGDialog)
 		{
 			m_changeDTGDialog.hideDialog();
+		}
+		else if(sender instanceof TextDialog)
+		{
+			m_messageTextDialog.hideDialog();
 		}
 	}
 
@@ -649,24 +676,14 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		}
 		else if(source instanceof ChangeToDialog)
 		{
-			// set receiver(s) in current message
-			List<ICommunicatorIf> communicators = m_changeToDialog.getCommunicators();
-			if(communicators.size() == 1)
-			{
-				// Not broadcast
-				m_currentMessage.setSingleReceiver(communicators.get(0));
-			}
-			else
-			{
-				m_currentMessage.setBroadcast(true);
-				// TODO
-			}
+			// Receivers are manipulated in dialog, just hide it
 			m_changeToDialog.hideDialog();
 		}
 		else if(source instanceof TextDialog)
 		{
 			IMessageLineIf textLine = m_currentMessage.findMessageLine(MessageLineType.TEXT, true);
 			textLine.setLineText(m_messageTextDialog.getText());
+			m_messageTextDialog.hideDialog();
 		}
 
 		updateMessageGUI();
@@ -741,7 +758,15 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 						// Set message status
 						if(m_currentMessage.isBroadcast())
 						{
-							//TODO check all units have confirmed
+							if(m_currentMessage.getUnconfirmedReceivers().size() == 0)
+							{
+								m_currentMessage.setStatus(MessageStatus.CONFIRMED);
+							}
+							else
+							{
+								// If broadcast all units have to confirm to get confirmed status
+								m_currentMessage.setStatus(MessageStatus.UNCONFIRMED);
+							}
 						}
 						else
 						{
@@ -998,6 +1023,10 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			public void actionPerformed(ActionEvent e)
 			{
 				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelFindingLabel.text"));
+				getMessageFindingDialog();
+				hideDialogs();
+				m_messageFindingDialog.showDialog();
+				positionDialogInArea(m_messageFindingDialog);
 			}
 		});
 		m_buttonGroup.add(m_findingButton);
@@ -1053,6 +1082,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	 */
 	public void hideDialogs()
 	{
+		m_buttonGroup.clearSelection();
+		
 		for(int i=0; i<m_dialogs.size(); i++)
 		{
 			m_dialogs.get(i).hideDialog();

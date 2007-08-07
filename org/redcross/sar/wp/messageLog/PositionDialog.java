@@ -32,26 +32,22 @@ public class PositionDialog extends POIDialog implements IEditMessageDialogIf
 		
 	}
 
-	@Override
 	public void hideDialog()
 	{
 		this.setVisible(false);
 	}
 
-	@Override
 	public void newMessageSelected(IMessageIf message)
 	{
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void showDialog()
 	{
 		this.setVisible(true);
 	}
 
-	@Override
 	public void clearContents()
 	{
 		// TODO Auto-generated method stub

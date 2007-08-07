@@ -83,11 +83,9 @@ public class TextDialog extends DiskoDialog implements IEditMessageDialogIf
 		}
 		m_cancelButton.addActionListener(new ActionListener()
 		{
-			@Override
 			public void actionPerformed(ActionEvent e)
 			{
 				fireDialogCanceled();
-				closeDialog();
 			}
 		});
 		this.add(m_cancelButton, gbc);
@@ -97,35 +95,27 @@ public class TextDialog extends DiskoDialog implements IEditMessageDialogIf
 		m_okButton.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
 		m_okButton.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
 		m_okButton.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-		try
+		/*try
 		{
 			m_okButton.setIcon(Utils.createImageIcon("icons/60x60/ok.gif", "OK"));
 		}
 		catch(Exception e)
 		{
 			m_okButton.setText("OK");
-		}
+		}*/
+		m_okButton.setText("OK");
 		m_okButton.addActionListener(new ActionListener()
 		{
-			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				// TODO Auto-generated method stub
 				fireDialogFinished();
-				closeDialog();
 			}	
 		});
 		this.add(m_okButton, gbc);
 	}
 	
-	private void closeDialog()
-	{
-		this.setVisible(false);
-	}
-	
 	private final Comparator<IMessageLineIf> m_lineComparator = new Comparator<IMessageLineIf>()
 	{
-		@Override
 		public int compare(IMessageLineIf o1, IMessageLineIf o2)
 		{
 			// TODO Auto-generated method stub
@@ -135,7 +125,6 @@ public class TextDialog extends DiskoDialog implements IEditMessageDialogIf
 	
 	private final Selector<IMessageLineIf> m_textLineSelector = new Selector<IMessageLineIf>()
 	{
-		@Override
 		public boolean select(IMessageLineIf messageLine)
 		{
 			if(messageLine.getLineType() == IMessageLineIf.MessageLineType.TEXT)
@@ -149,29 +138,22 @@ public class TextDialog extends DiskoDialog implements IEditMessageDialogIf
 		}	
 	};
 
-	@Override
 	public void hideDialog()
 	{
 		this.setVisible(false);
 	}
 
-	@Override
 	public void newMessageSelected(IMessageIf message)
 	{
-		IMessageLineIf textMessageLine = message.findMessageLine(MessageLineType.TEXT, false);
-		if(textMessageLine != null)
-		{
-			m_textArea.setText(textMessageLine.getLineText());
-		}
+		IMessageLineIf textMessageLine = message.findMessageLine(MessageLineType.TEXT, true);
+		m_textArea.setText(textMessageLine.getLineText());
 	}
 
-	@Override
 	public void showDialog()
 	{
 		this.setVisible(true);
 	}
 
-	@Override
 	public void clearContents()
 	{
 		m_textArea.setText("");
