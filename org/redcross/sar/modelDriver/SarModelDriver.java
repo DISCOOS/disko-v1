@@ -669,7 +669,7 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
         } else if (fieldName.equalsIgnoreCase(SarBaseObjectImpl.ADD_NAMED_REL_FIELD))
         {
 
-            IMsoReferenceIf refObj = (IMsoReferenceIf) source.getReferenceObjects().get(relName);
+            IMsoReferenceIf refObj = (IMsoReferenceIf) source.getReferenceObjects().get(relName.toLowerCase());
             if (refObj == null)
             {
                 source.getReferenceObjects().put(relName,relObj);

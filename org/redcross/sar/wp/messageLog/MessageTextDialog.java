@@ -1,30 +1,17 @@
 package org.redcross.sar.wp.messageLog;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Comparator;
-import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
-import org.redcross.sar.mso.data.IMessageLineListIf;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 import org.redcross.sar.util.mso.Selector;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Comparator;
 
 /**
  * @author thomasl
@@ -37,8 +24,8 @@ public class MessageTextDialog extends DiskoDialog implements IEditMessageDialog
 	private JTextArea m_textArea;
 	private JButton m_cancelButton;
 	private JButton m_okButton;
-	
-	public MessageTextDialog(IDiskoWpMessageLog wp) 
+
+	public MessageTextDialog(IDiskoWpMessageLog wp)
 	{
 		super(wp.getApplication().getFrame());
 		this.setLayout(new GridBagLayout());
@@ -61,13 +48,13 @@ public class MessageTextDialog extends DiskoDialog implements IEditMessageDialog
 		m_textScroll = new JScrollPane(m_textArea);
 		this.add(m_textScroll, gbc);
 	}
-	
+
 	private void initButtons(GridBagConstraints gbc)
 	{
 		gbc.gridheight = 1;
 		gbc.gridx++;
 		gbc.weightx = 0.0;
-		
+
 		m_cancelButton = new JButton();
 		m_cancelButton.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
 		m_cancelButton.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
@@ -91,7 +78,7 @@ public class MessageTextDialog extends DiskoDialog implements IEditMessageDialog
 			}
 		});
 		this.add(m_cancelButton, gbc);
-		
+
 		gbc.gridy = 1;
 		m_okButton = new JButton();
 		m_okButton.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
@@ -113,16 +100,16 @@ public class MessageTextDialog extends DiskoDialog implements IEditMessageDialog
 				// TODO Auto-generated method stub
 				fireDialogFinished();
 				closeDialog();
-			}	
+			}
 		});
 		this.add(m_okButton, gbc);
 	}
-	
+
 	private void closeDialog()
 	{
 		this.setVisible(false);
 	}
-	
+
 	private final Comparator<IMessageLineIf> m_lineComparator = new Comparator<IMessageLineIf>()
 	{
 		@Override
@@ -130,9 +117,9 @@ public class MessageTextDialog extends DiskoDialog implements IEditMessageDialog
 		{
 			// TODO Auto-generated method stub
 			return o1.getLineNumber() - o2.getLineNumber();
-		}	
+		}
 	};
-	
+
 	private final Selector<IMessageLineIf> m_textLineSelector = new Selector<IMessageLineIf>()
 	{
 		@Override
@@ -146,7 +133,7 @@ public class MessageTextDialog extends DiskoDialog implements IEditMessageDialog
 			{
 				return false;
 			}
-		}	
+		}
 	};
 
 	@Override
@@ -161,7 +148,7 @@ public class MessageTextDialog extends DiskoDialog implements IEditMessageDialog
 		IMessageLineIf textMessageLine = message.findMessageLine(MessageLineType.TEXT, false);
 		if(textMessageLine != null)
 		{
-			m_textArea.setText(textMessageLine.getText());
+			m_textArea.setText(textMessageLine.getLineText());
 		}
 	}
 

@@ -135,7 +135,7 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
             case 5:
                 return "";
             default:
-                return message.getStatus().name();
+                return message.getStatusText();
         }
     }
 

@@ -7,10 +7,7 @@ import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.except.MsoRuntimeException;
 import org.redcross.sar.util.mso.Selector;
 
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Communication message
@@ -31,6 +28,23 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
     private final MessageLineListImpl m_messageLines = new MessageLineListImpl(this, "MessageLines", false);
 
     private final MsoReferenceImpl<ICommunicatorIf> m_sender = new MsoReferenceImpl<ICommunicatorIf>(this, "Sender", true);
+
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Message");
+
+    public static String getText(String aKey)
+    {
+        return AbstractMsoObject.getBundleText(bundle,aKey);
+    }
+
+    public static String getEnumText(Enum anEnum)
+    {
+        return getText(anEnum.getClass().getSimpleName()+"."+anEnum.name() + ".text");
+    }
+
+    public String getStatusText()
+    {
+        return getEnumText(getStatus());
+    }
 
     public MessageImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
     {

@@ -28,6 +28,8 @@ public interface IMessageIf extends ITimeItemIf, ISerialNumberedIf
 
     public IAttributeIf.IMsoEnumIf<MessageStatus> getStatusAttribute();
 
+    public String getStatusText();
+
     /*-------------------------------------------------------------------------------------------
     * Methods for attributes
     *-------------------------------------------------------------------------------------------*/
@@ -144,7 +146,7 @@ public interface IMessageIf extends ITimeItemIf, ISerialNumberedIf
      *
      * @param aType       Type of line to create.
      * @param makeNewLine If set, create a new line if non-existing.
-     * @return Actualø line if found or created, otherwise null.
+     * @return Actual line if found or created, otherwise null.
      */
     public IMessageLineIf findMessageLine(IMessageLineIf.MessageLineType aType, boolean makeNewLine);
 

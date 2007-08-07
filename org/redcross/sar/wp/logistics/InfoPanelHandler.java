@@ -127,9 +127,6 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
     {
         // Build up a scrollpane with room for assignment labels.
         JScrollPane scrollpane = new JScrollPane();
-//        m_unitAssignmentsPanel = new AssignmentScrollPanel(scrollpane, new GridLayout(0, 1, 5, 5), m_assignmentLabelMouseListener, false);
-//        m_unitAssignmentsPanel = new AssignmentScrollPanel(scrollpane, new FlowLayout(FlowLayout.LEADING,5, 5), m_assignmentLabelMouseListener, false);
-//        m_unitAssignmentsPanel = new AssignmentScrollPanel(scrollpane, new GridBagLayout(),5,5,false, m_assignmentLabelMouseListener, false);
         m_unitAssignmentsPanel = new AssignmentScrollPanel(scrollpane, new SpringLayout(),5,5,false, m_assignmentLabelMouseListener, false);
         m_unitAssignmentsPanel.setCols(1);
         JLabel hl = m_unitAssignmentsPanel.getHeaderLabel();

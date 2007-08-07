@@ -481,12 +481,14 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
     {
         public MsoCalendar(AbstractMsoObject theOwner, String theName)
         {
-            super(Calendar.class, theOwner, theName, Integer.MAX_VALUE, Calendar.getInstance());
+//            super(Calendar.class, theOwner, theName, Integer.MAX_VALUE, Calendar.getInstance());
+            super(Calendar.class, theOwner, theName, Integer.MAX_VALUE, null);
         }
 
         public MsoCalendar(AbstractMsoObject theOwner, String theName, int theIndexNo)
         {
-            super(Calendar.class, theOwner, theName, theIndexNo, Calendar.getInstance());
+//            super(Calendar.class, theOwner, theName, theIndexNo, Calendar.getInstance());
+            super(Calendar.class, theOwner, theName, theIndexNo, null);
         }
 
         public MsoCalendar(AbstractMsoObject theOwner, String theName, int theIndexNo, Calendar aCalendar)

@@ -2,6 +2,8 @@ package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
 
+import java.util.Calendar;
+
 /**
  * User: vinjar
  * Date: 25.jun.2007
@@ -36,6 +38,8 @@ public interface IMessageLineIf extends IMsoObjectIf
 
     public IAttributeIf.IMsoEnumIf<MessageLineType> getLineTypeAttribute();
 
+    public String getLineTypeText();
+
     /*-------------------------------------------------------------------------------------------
     * Methods for attributes
     *-------------------------------------------------------------------------------------------*/
@@ -48,23 +52,40 @@ public interface IMessageLineIf extends IMsoObjectIf
 
     public IAttributeIf.IMsoIntegerIf getLineNumberAttribute();
 
-    public void setText(String aText);
+    public void setLineText(String aText);
 
-    public String getText();
+    public String getLineText();
 
-    public IMsoModelIf.ModificationState getTextState();
+    public IMsoModelIf.ModificationState getLineTextState();
 
-    public IAttributeIf.IMsoStringIf getTextAttribute();
+    public IAttributeIf.IMsoStringIf getLineTextAttribute();
+
+    public void setOperationTime(Calendar anOperationTime);
+
+    public Calendar getOperationTime();
+
+    public IMsoModelIf.ModificationState getOperationTimeState();
+
+    public IAttributeIf.IMsoCalendarIf getOperationTimeAttribute();
+
 
     /*-------------------------------------------------------------------------------------------
     * Methods for references
     *-------------------------------------------------------------------------------------------*/
 
-    public void setPOI(IPOIIf aPoi);
+    public void setLinePOI(IPOIIf aPoi);
 
-    public IPOIIf getPOI();
+    public IPOIIf getLinePOI();
 
-    public IMsoModelIf.ModificationState getPOIState();
+    public IMsoModelIf.ModificationState getLinePOIState();
 
-    public IMsoReferenceIf<IPOIIf> getPOIAttribute();
+    public IMsoReferenceIf<IPOIIf> geLinetPOIAttribute();
+
+    public void setLineAssignment(IAssignmentIf anAssignment);
+
+    public IAssignmentIf getLineAssignment();
+
+    public IMsoModelIf.ModificationState getLineAssignmentState();
+
+    public IMsoReferenceIf<IAssignmentIf> geLinetAssignmentAttribute();
 }

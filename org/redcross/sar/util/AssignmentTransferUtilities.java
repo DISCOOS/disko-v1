@@ -23,34 +23,69 @@ public class AssignmentTransferUtilities
 {
     final static EnumSet<IAssignmentIf.AssignmentStatus> acceptedStatuses = EnumSet.range(IAssignmentIf.AssignmentStatus.ASSIGNED, IAssignmentIf.AssignmentStatus.REPORTED);
 
-    public static void createCommunicationMessage(IDiskoWpModule aWpModule, IUnitIf aUnit, IAssignmentIf anAssignment)
+    public static void createAssignmentChangeMessage(IDiskoWpModule aWpModule, IUnitIf aUnit, IAssignmentIf anAssignment, IAssignmentIf.AssignmentStatus oldStatus)
     {
-
-        IMessageLineIf.MessageLineType lineType;
-        switch (anAssignment.getStatus())
+        IMessageLineIf.MessageLineType firstLineType;
+        switch (oldStatus)
         {
+            case READY:
+            case ALLOCATED:
+                firstLineType = IMessageLineIf.MessageLineType.ASSIGNED;
+                break;
             case ASSIGNED:
-                lineType = IMessageLineIf.MessageLineType.ASSIGNED;
+                firstLineType = IMessageLineIf.MessageLineType.STARTED;
                 break;
             case EXECUTING:
-                lineType = IMessageLineIf.MessageLineType.STARTED;
-                break;
-            case ABORTED:
-            case FINISHED:
-            case REPORTED:
-                lineType = IMessageLineIf.MessageLineType.COMPLETE;
+                firstLineType = IMessageLineIf.MessageLineType.COMPLETE;
                 break;
             default:
                 return;
         }
+
+        IMessageLineIf.MessageLineType finalLineType;
+        switch (anAssignment.getStatus())
+        {
+            case ASSIGNED:
+                finalLineType = IMessageLineIf.MessageLineType.ASSIGNED;
+                break;
+            case EXECUTING:
+                finalLineType = IMessageLineIf.MessageLineType.STARTED;
+                break;
+            case ABORTED:
+            case FINISHED:
+            case REPORTED:
+                finalLineType = IMessageLineIf.MessageLineType.COMPLETE;
+                break;
+            default:
+                return;
+        }
+        Calendar now = Calendar.getInstance();
         IMsoManagerIf manager = aWpModule.getMsoManager();
         IMessageIf message = manager.createMessage();
-        message.setCreated(Calendar.getInstance());
-        message.setOccuredTime(Calendar.getInstance());
+        message.setCreated(now);
+        message.setOccuredTime(now);
         message.setStatus(IMessageIf.MessageStatus.UNCONFIRMED);
-        IMessageLineIf l0 = message.findMessageLine(lineType, true);
-        IMessageLineIf l1 = message.findMessageLine(IMessageLineIf.MessageLineType.TEXT, true);
-        l1.setText(anAssignment.getStatus().name());
+        createAssignmentChangeMessageLines(message, firstLineType, finalLineType, now, anAssignment);
+    }
+
+    final static IMessageLineIf.MessageLineType[] types = {IMessageLineIf.MessageLineType.ASSIGNED,
+            IMessageLineIf.MessageLineType.STARTED,
+            IMessageLineIf.MessageLineType.COMPLETE};
+
+    private static void createAssignmentChangeMessageLines(IMessageIf message, IMessageLineIf.MessageLineType firstLineType, IMessageLineIf.MessageLineType lastLineType, Calendar aDTG, IAssignmentIf anAssignment)
+    {
+        for ( IMessageLineIf.MessageLineType t : types)
+        {
+            if (t.ordinal() >= firstLineType.ordinal() &&  t.ordinal() <= lastLineType.ordinal())
+            {
+                IMessageLineIf line = message.findMessageLine(t, true);
+                if (line != null)
+                {
+                    line.setOperationTime(aDTG);
+                    line.setLineAssignment(anAssignment);
+                }
+            }
+        }
     }
 
     public static boolean unitCanAccept(IUnitIf aUnit, IAssignmentIf.AssignmentStatus aStatus)

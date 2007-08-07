@@ -16,7 +16,6 @@ import org.redcross.sar.mso.data.*;
 import org.redcross.sar.mso.data.IMessageIf.MessageStatus;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
-import org.redcross.sar.mso.event.MsoEvent;
 import org.redcross.sar.mso.event.MsoEvent.Update;
 import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.mso.DTG;
@@ -46,7 +45,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	private boolean m_messageDirty = false;
 
 	List<IEditMessageDialogIf> m_dialogs;
-	
+
 	private ButtonGroup m_buttonGroup;
 
 	private JPanel m_nrPanel;
@@ -430,9 +429,9 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		// No need to update if current message is selected
 		if(messageNr == m_currentMessageNr)
 		{
-			return;                                                                        
+			return;
 		}
-		
+
 		// Have user confirm message overwrite
 		if(m_messageDirty)
 		{
@@ -468,7 +467,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			// Check that an uncommitted message is not reselected
 			m_currentMessage = messages.get(0);
 		}
-		
+
 		updateMessageGUI();
 	}
 
@@ -569,7 +568,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	public void dialogCanceled(DialogEvent e)
 	{
 		Object sender = e.getSource();
-		
+
 		m_buttonGroup.clearSelection();
 
 		if(sender.getClass() == SingleUnitListSelectionDialog.class)
@@ -594,16 +593,16 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	public void dialogFinished(DialogEvent e)
 	{
 		Object source = e.getSource();
-		
+
 		m_buttonGroup.clearSelection();
-		
+
 		// If no message is selected a new one should be created once a field is edited
 		if(m_currentMessage == null)
 		{
 			m_currentMessage = m_wpMessageLog.getMsoManager().createMessage();
 			m_newMessage = true;
 		}
-		
+
 		if(source instanceof ChangeDTGDialog)
 		{
 			// Check validity of DTG
@@ -622,7 +621,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		{
 			m_fieldFromDialog.hideDialog();
 			m_listFromDialog.hideDialog();
-			
+
 			ICommunicatorIf sender = null;
 			if(m_fieldFromDialog.getText().isEmpty())
 			{
@@ -656,7 +655,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		else if(source instanceof MessageTextDialog)
 		{
 			IMessageLineIf textLine = m_currentMessage.findMessageLine(MessageLineType.TEXT, true);
-			textLine.setText(m_messageTextDialog.getText());
+			textLine.setLineText(m_messageTextDialog.getText());
 		}
 
 		updateMessageGUI();
@@ -733,10 +732,10 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 						{
 							m_currentMessage.setStatus(MessageStatus.CONFIRMED);
 						}
-						
+
 						clearPanelContents();
 						clearDialogContents();
-						
+
 						// Commit changes
 						m_wpMessageLog.getMsoManager().commit();
 
@@ -876,7 +875,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					clearDialogContents();
 
 					m_wpMessageLog.getMsoManager().rollback(); // TODO sjekk om korrekt?
-					
+
 					m_currentMessage = null;
 					m_messageDirty = false;
 				}

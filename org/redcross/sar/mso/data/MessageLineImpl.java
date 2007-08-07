@@ -3,6 +3,11 @@ package org.redcross.sar.mso.data;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.MsoCastException;
+import org.redcross.sar.util.mso.DTG;
+
+import java.text.MessageFormat;
+import java.util.Calendar;
+import java.util.ResourceBundle;
 /**
  * Created by IntelliJ IDEA.
  * User: vinjar
@@ -16,11 +21,29 @@ import org.redcross.sar.util.except.MsoCastException;
 public class MessageLineImpl extends AbstractMsoObject implements IMessageLineIf
 {
     private final AttributeImpl.MsoInteger m_lineNumber = new AttributeImpl.MsoInteger(this, "LineNumber");
-    private final AttributeImpl.MsoString m_text = new AttributeImpl.MsoString(this, "Text");
+    private final AttributeImpl.MsoString m_lineText = new AttributeImpl.MsoString(this, "LineText");
+    private final AttributeImpl.MsoCalendar m_operationTime = new AttributeImpl.MsoCalendar(this, "OperationTime");
     private final AttributeImpl.MsoEnum<MessageLineType> m_lineType = new AttributeImpl.MsoEnum<MessageLineType>(this, "LineType", MessageLineType.TEXT);
 
-    private final MsoReferenceImpl<IPOIIf> m_POI = new MsoReferenceImpl<IPOIIf>(this, "POI", true);
+    private final MsoReferenceImpl<IPOIIf> m_linePOI = new MsoReferenceImpl<IPOIIf>(this, "LinePOI", true);
+    private final MsoReferenceImpl<IAssignmentIf> m_lineAssignment = new MsoReferenceImpl<IAssignmentIf>(this, "LineAssignment", true);
 
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.MessageLine");
+
+    public static String getText(String aKey)
+    {
+        return AbstractMsoObject.getBundleText(bundle,aKey);
+    }
+
+    public static String getEnumText(Enum anEnum)
+    {
+        return getText(anEnum.getClass().getSimpleName()+"."+anEnum.name() + ".text");
+    }
+
+    public String getLineTypeText()
+    {
+        return getEnumText(getLineType());
+    }
 
     public MessageLineImpl(IObjectIdIf anObjectId)
     {
@@ -30,8 +53,9 @@ public class MessageLineImpl extends AbstractMsoObject implements IMessageLineIf
     protected void defineAttributes()
     {
         addAttribute(m_lineNumber);
-        addAttribute(m_text);
+        addAttribute(m_lineText);
         addAttribute(m_lineType);
+        addAttribute(m_operationTime);
     }
 
     protected void defineLists()
@@ -40,11 +64,12 @@ public class MessageLineImpl extends AbstractMsoObject implements IMessageLineIf
 
     protected void defineReferences()
     {
-        addReference(m_POI);
+        addReference(m_linePOI);
+        addReference(m_lineAssignment);
     }
 
     public static MessageLineImpl implementationOf(IMessageLineIf anInterface) throws MsoCastException
-        {
+    {
         try
         {
             return (MessageLineImpl) anInterface;
@@ -123,52 +148,105 @@ public class MessageLineImpl extends AbstractMsoObject implements IMessageLineIf
     }
 
 
-    public void setText(String aText)
+    public void setLineText(String aText)
     {
-        m_text.setValue(aText);
+        m_lineText.setValue(aText);
     }
 
-    public String getText()
+    public String getLineText()
     {
-        return m_text.getString();
+        return m_lineText.getString();
     }
 
-    public IMsoModelIf.ModificationState getTextState()
+    public IMsoModelIf.ModificationState getLineTextState()
     {
-        return m_text.getState();
+        return m_lineText.getState();
     }
 
-    public IAttributeIf.IMsoStringIf getTextAttribute()
+    public IAttributeIf.IMsoStringIf getLineTextAttribute()
     {
-        return m_text;
+        return m_lineText;
+    }
+
+    public void setOperationTime(Calendar anOperationTime)
+    {
+        m_operationTime.setValue(anOperationTime);
+    }
+
+    public Calendar getOperationTime()
+    {
+        return m_operationTime.getCalendar();
+    }
+
+    public IMsoModelIf.ModificationState getOperationTimeState()
+    {
+        return m_operationTime.getState();
+    }
+
+    public IAttributeIf.IMsoCalendarIf getOperationTimeAttribute()
+    {
+        return m_operationTime;
     }
 
     /*-------------------------------------------------------------------------------------------
     * Methods for references
     *-------------------------------------------------------------------------------------------*/
 
-    public void setPOI(IPOIIf aPoi)
+    public void setLinePOI(IPOIIf aPoi)
     {
-        m_POI.setReference(aPoi);
+        m_linePOI.setReference(aPoi);
     }
 
-    public IPOIIf getPOI()
+    public IPOIIf getLinePOI()
     {
-        return m_POI.getReference();
+        return m_linePOI.getReference();
     }
 
-    public IMsoModelIf.ModificationState getPOIState()
+    public IMsoModelIf.ModificationState getLinePOIState()
     {
-        return m_POI.getState();
+        return m_linePOI.getState();
     }
 
-    public IMsoReferenceIf<IPOIIf> getPOIAttribute()
+    public IMsoReferenceIf<IPOIIf> geLinetPOIAttribute()
     {
-        return m_POI;
+        return m_linePOI;
     }
 
+
+    public void setLineAssignment(IAssignmentIf anAssignment)
+    {
+        m_lineAssignment.setReference(anAssignment);
+    }
+
+    public IAssignmentIf getLineAssignment()
+    {
+        return m_lineAssignment.getReference();
+    }
+
+    public IMsoModelIf.ModificationState getLineAssignmentState()
+    {
+        return m_lineAssignment.getState();
+    }
+
+    public IMsoReferenceIf<IAssignmentIf> geLinetAssignmentAttribute()
+    {
+        return m_lineAssignment;
+    }
+
+    @Override
     public String toString()
     {
-        return  getLineNumber() + " " + getLineType().name() + " " + getText();
+        switch (getLineType())
+        {
+            case ASSIGNED:
+            case STARTED:
+            case COMPLETE:
+                return MessageFormat.format("{0} {1} {2} {3} {4}",
+                getLineNumber(), getLineAssignment().getTypeText(), getLineAssignment().getNumber(),getLineTypeText(), DTG.CalToDTG(getOperationTime()));
+            case POI:
+                return getLineNumber() + " " + getLineType().name() + " " + getLinePOI();
+            default:
+                return getLineNumber() + " " + getLineType().name() + " " + getLineText();
+        }
     }
 }

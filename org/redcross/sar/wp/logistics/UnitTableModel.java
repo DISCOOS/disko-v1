@@ -265,7 +265,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
             {
                 return;
             }
-            System.out.println(MessageFormat.format("Selected row: {0}, selected column: {1}", aRow, aColumn));
+//            System.out.println(MessageFormat.format("Selected row: {0}, selected column: {1}", aRow, aColumn));
             try
             {
                 m_selectedRow = m_table.convertRowIndexToModel(aRow);
