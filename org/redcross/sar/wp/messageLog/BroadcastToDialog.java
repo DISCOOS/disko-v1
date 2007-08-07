@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -65,7 +66,6 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialog
 	protected JToggleButton m_commandPostButton = null;
 	
 	protected JLabel m_confirmationStatusLabel = null;
-	//protected JComponent m_labelGlue = null;
 	
 	protected JScrollPane m_scrollPane = null;
 	protected JPanel m_listArea = null;
@@ -75,18 +75,14 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialog
 	protected HashMap<JToggleButton, ICommunicatorIf> m_buttonCommunicatorMap = null;
 	protected HashMap<ICommunicatorIf, JToggleButton> m_communicatorButtonMap = null;
 	
-	protected IMessageIf m_currentMessage = null;
-	
 	/**
 	 * @param wp
 	 */
-	public BroadcastToDialog(IDiskoWpMessageLog wp, IMessageIf message)
+	public BroadcastToDialog(IDiskoWpMessageLog wp)
 	{
 		super(wp.getApplication().getFrame());
 		
 		m_wpMessageLog = wp;
-		
-		m_currentMessage = message;
 		
 		m_selectedCommuicators = new LinkedList<ICommunicatorIf>();
 		m_confirmedCommunicators = new LinkedList<ICommunicatorIf>();
@@ -133,7 +129,7 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialog
 		JPanel buttonPanel = null;
 		for(final ICommunicatorIf communicator : m_wpMessageLog.getMsoManager().getCmdPost().getActiveCommunicators())
 		{
-			// Necessary for laying buttons out correctly, due to the lack of layout managers in Swing
+			// Necessary for laying buttons out correctly
 			if(i%NUM_ROWS_COMMUNICATOR_LIST == 0)
 			{
 				buttonPanel = new JPanel();
@@ -143,39 +139,44 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialog
 				m_listArea.add(buttonPanel);
 			}
 			
-			JToggleButton button = new JToggleButton(String.valueOf(communicator.getCommunicatorNumberPrefix()) 
-					+ " " + String.valueOf(communicator.getCommunicatorNumber()));
-			button.setMinimumSize(ChangeToDialog.BUTTON_SIZE);
-			button.setPreferredSize(ChangeToDialog.BUTTON_SIZE);
-			button.setMaximumSize(ChangeToDialog.BUTTON_SIZE);
-			
+			JToggleButton button = DiskoButtonFactory.createLargeToggleButton(communicator);
 			button.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent e)
 				{
+					// Update message receiver lists. Update toggle buttons
+					IMessageIf message = MessageLogTopPanel.getCurrentMessage();
 					JToggleButton button = (JToggleButton)e.getSource();
 					if(!button.isSelected())
 					{
+						// Button has been unselected
 						if(m_selectionMode)
 						{
+							message.getUnconfirmedReceivers().removeReference(communicator);
 							m_selectedCommuicators.remove(communicator);
 							m_confirmedCommunicators.remove(communicator);
 						}
 						else
 						{
+							message.getConfirmedReceivers().removeReference(communicator);
 							m_confirmedCommunicators.remove(communicator);
 						}
 					}
 					else
 					{
+						// Add confirmed/uniconfirmed receiver to message
 						if(m_selectionMode)
 						{
+
+							message.addUnconfirmedReceiver(communicator);
 							m_selectedCommuicators.add(communicator);
 						}
 						else
 						{
-							m_confirmedCommunicators.add(communicator);
+							// Communicator should be in unconfirmed list, transfer to confirmed
 							
+							message.confirmReceiver(communicator);
+							m_confirmedCommunicators.add(communicator);
 						}
 					}
 					updateStatusLabel();
@@ -303,13 +304,9 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialog
 		m_buttonGroup.add(m_confirmButton);
 		m_buttonRowPanel.add(m_confirmButton);
 		
-//		JSeparator separator = new JSeparator(JSeparator.VERTICAL);
-//		separator.setAlignmentX(JComponent.LEFT_ALIGNMENT);
-//		m_buttonRowPanel.add(separator);
-//		separator = new JSeparator(JSeparator.VERTICAL);
-//		separator.setAlignmentX(JComponent.LEFT_ALIGNMENT);
-//		m_buttonRowPanel.add(separator);
-		
+		Dimension emptyAreaDimension = new Dimension(10, MessageLogPanel.SMALL_BUTTON_SIZE.height);
+		m_buttonRowPanel.add(Box.createRigidArea(emptyAreaDimension));
+
 		m_allButton = new JButton(m_wpMessageLog.getText("AllButton.text"));
 		m_allButton.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
 		m_allButton.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
@@ -395,12 +392,7 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialog
 		});
 		m_buttonRowPanel.add(m_noneButton);
 		
-//		separator = new JSeparator(JSeparator.VERTICAL);
-//		separator.setAlignmentX(JComponent.LEFT_ALIGNMENT);
-//		m_buttonRowPanel.add(separator);
-//		separator = new JSeparator(JSeparator.VERTICAL);
-//		separator.setAlignmentX(JComponent.LEFT_ALIGNMENT);
-//		m_buttonRowPanel.add(separator);
+		m_buttonRowPanel.add(Box.createRigidArea(emptyAreaDimension));
 		
 		m_unitTypePanel = new JPanel();
 		m_unitTypePanel.setLayout(new BoxLayout(m_unitTypePanel, BoxLayout.LINE_AXIS));
@@ -418,9 +410,6 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialog
 		updateStatusLabel();
 		m_confirmationStatusLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		m_buttonRowPanel.add(m_confirmationStatusLabel);
-		//m_labelGlue = (JComponent)Box.createHorizontalGlue();
-		//m_labelGlue.setAlignmentX(JComponent.LEFT_ALIGNMENT);
-//		m_buttonRowPanel.add(m_labelGlue);
 		
 		m_contentsPanel.add(m_buttonRowPanel, BorderLayout.NORTH);
 	}
@@ -467,8 +456,10 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialog
 
 	public void clearContents()
 	{
-		// TODO Auto-generated method stub
-		
+		m_selectionMode = true;
+		m_confirmedCommunicators.clear();
+		m_selectedCommuicators.clear();
+		updateButtonSelection();
 	}
 
 	public void hideDialog()
@@ -536,8 +527,7 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialog
 
 	public void newMessageSelected(IMessageIf message)
 	{
-		m_currentMessage = message;
-		
+		/*
 		if(message.isBroadcast())
 		{
 			m_confirmedCommunicators.clear();
@@ -575,6 +565,7 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialog
 		
 		// TODO
 		updateStatusLabel();
+		*/
 	}
 	
 	public void setSelectionMode()
@@ -623,5 +614,7 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialog
 		{
 			setConfirmationMode();
 		}
+		
+		updateButtonSelection();
 	}
 }

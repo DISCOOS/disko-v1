@@ -4,10 +4,10 @@ import java.awt.Frame;
 
 import org.redcross.sar.gui.DiskoDialog;
 
-public class MessageCompletedDialog extends DiskoDialog
+public class StartedDialog extends DiskoDialog
 {
 
-	public MessageCompletedDialog(IDiskoWpMessageLog wp)
+	public StartedDialog(IDiskoWpMessageLog wp)
 	{
 		super(wp.getApplication().getFrame());
 		// TODO Auto-generated constructor stub

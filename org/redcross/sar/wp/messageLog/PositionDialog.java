@@ -7,11 +7,11 @@ import org.redcross.sar.map.POITool;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
 
-public class MessagePositionDialog extends POIDialog implements IEditMessageDialogIf
+public class PositionDialog extends POIDialog implements IEditMessageDialogIf
 {
 	IDiskoApplication m_application;
 	POITool m_tool;
-	public MessagePositionDialog(IDiskoWpMessageLog wp, POITool tool)
+	public PositionDialog(IDiskoWpMessageLog wp, POITool tool)
 	{
 		super(wp.getApplication(), tool);
 		m_application = wp.getApplication();

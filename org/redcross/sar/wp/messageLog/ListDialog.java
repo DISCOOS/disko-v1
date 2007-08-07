@@ -9,17 +9,17 @@ import javax.swing.JTable;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.mso.data.IMessageIf;
 
-public class MessageListDialog extends DiskoDialog implements IEditMessageDialogIf
+public class ListDialog extends DiskoDialog implements IEditMessageDialogIf
 {
 	private JTable m_messageListTable;
-	private MessageListTableModel m_messageTableModel;
+	private ListTableModel m_messageTableModel;
 	private JScrollPane m_textScrollPane;
 	
-	public MessageListDialog(IDiskoWpMessageLog wp)
+	public ListDialog(IDiskoWpMessageLog wp)
 	{
 		super(wp.getApplication().getFrame());
 		setLayout(new BorderLayout());
-		m_messageTableModel = new MessageListTableModel();
+		m_messageTableModel = new ListTableModel();
 		m_messageListTable = new JTable(m_messageTableModel);
 		m_textScrollPane = new JScrollPane(m_messageListTable);
 		m_messageListTable.setFillsViewportHeight(true);
