@@ -2,11 +2,11 @@ package org.redcross.sar.event;
 
 import java.util.EventObject;
 
-public class DiskoMapEvent extends EventObject {
+public class MsoLayerEvent extends EventObject {
 
 	private static final long serialVersionUID = 1L;
 
-	public DiskoMapEvent(Object source) {
+	public MsoLayerEvent(Object source) {
 		super(source);
 	}
 }
