@@ -3,9 +3,9 @@ package org.redcross.sar.wp;
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.app.Utils;
-import org.redcross.sar.event.DiskoMapEvent;
+import org.redcross.sar.event.MsoLayerEvent;
 import org.redcross.sar.event.DiskoWpEvent;
-import org.redcross.sar.event.IDiskoMapEventListener;
+import org.redcross.sar.event.IMsoLayerEventListener;
 import org.redcross.sar.event.IDiskoWpEventListener;
 import org.redcross.sar.gui.MainPanel;
 import org.redcross.sar.gui.SubMenuPanel;
@@ -28,7 +28,7 @@ import java.util.ResourceBundle;
  *
  * @author geira
  */
-public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMapEventListener
+public abstract class AbstractDiskoWpModule implements IDiskoWpModule
 {
     private IDiskoRole role = null;
     private IDiskoMap map = null;
@@ -67,7 +67,6 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMap
             {
                 IDiskoMapManager manager = role.getApplication().getDiskoMapManager();
                 map = manager.getMapInstance();
-                map.addDiskoMapEventListener(this);
             }
             catch (Exception e)
             {
@@ -267,33 +266,6 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule, IDiskoMap
             createdButton.addActionListener(aListener);
         }
         return createdButton;
-    }
-
-    // **** DiskoMapEventListeners *****
-
-    public void editLayerChanged(DiskoMapEvent e)
-    {
-        // TODO Auto-generated method stub
-    }
-
-    public void onAfterScreenDraw(DiskoMapEvent e) throws IOException
-    {
-        // TODO Auto-generated method stub
-    }
-
-    public void onExtentUpdated(DiskoMapEvent e) throws IOException
-    {
-        // TODO Auto-generated method stub
-    }
-
-    public void onMapReplaced(DiskoMapEvent e) throws IOException
-    {
-        // TODO Auto-generated method stub
-    }
-
-    public void onSelectionChanged(DiskoMapEvent e) throws IOException
-    {
-        // TODO Auto-generated method stub
     }
 
     public IMsoModelIf getMsoModel()
