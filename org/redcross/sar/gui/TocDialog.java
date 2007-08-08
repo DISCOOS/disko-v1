@@ -16,8 +16,7 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
 
 import org.redcross.sar.app.IDiskoApplication;
-import org.redcross.sar.event.DiskoMapEvent;
-import org.redcross.sar.event.IDiskoMapEventListener;
+import org.redcross.sar.event.MsoLayerEvent;
 import org.redcross.sar.map.DefaultMapLayerSelectionModel;
 import org.redcross.sar.map.IDiskoMap;
 import org.redcross.sar.map.MsoLayerSelectionModel;
@@ -25,11 +24,14 @@ import org.redcross.sar.map.TocCommand;
 import org.redcross.sar.map.WMSLayerSelectionModel;
 
 import com.borland.jbcl.layout.VerticalFlowLayout;
+import com.esri.arcgis.beans.map.MapBean;
 import com.esri.arcgis.carto.IFeatureLayer;
 import com.esri.arcgis.carto.WMSMapLayer;
+import com.esri.arcgis.controls.IMapControlEvents2Adapter;
+import com.esri.arcgis.controls.IMapControlEvents2OnMapReplacedEvent;
 import com.esri.arcgis.interop.AutomationException;
 
-public class TocDialog extends DiskoDialog implements IDiskoMapEventListener{
+public class TocDialog extends DiskoDialog {
 	
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPanel = null;
@@ -47,11 +49,40 @@ public class TocDialog extends DiskoDialog implements IDiskoMapEventListener{
 		initialize();
 	}
 	
-	public void onExtentUpdated(DiskoMapEvent e) throws IOException, AutomationException{
-		//todo
+	/**
+	 * This method initializes this
+	 * 
+	 */
+	private void initialize() {
+		try {
+			
+            this.setContentPane(getContentPanel());
+            this.setPreferredSize(new Dimension(190, 400));
+            this.pack();
+		}
+		catch (java.lang.Throwable e) {
+			//  Do Something
+		}
 	}
-
-	public void onMapReplaced(DiskoMapEvent e) throws IOException, AutomationException{		
+	
+	public void onLoad(IDiskoMap map) throws IOException {
+		this.map = map;
+		this.msoLayerSelectionModel = map.getMsoLayerSelectionModel();
+		this.defaultMapLayerSelectionModel = map.getDefaultMapLayerSelectionModel();
+		this.wmsLayerSelectionModel = map.getWMSLayerSelectionModel();
+		
+		//listen to do actions when the map is loaded
+		((MapBean)map).addIMapControlEvents2Listener(new IMapControlEvents2Adapter() {
+			private static final long serialVersionUID = 1L;
+			public void onMapReplaced(IMapControlEvents2OnMapReplacedEvent e)
+                   	throws java.io.IOException, AutomationException {
+				update();
+			}
+		});
+		updateLayerSelection(map);
+	}
+	
+	private void update() throws IOException, AutomationException{		
 		//Må oppdaterer kartlagsliste
 		
 		//MsoLayerSelectionModel er den samme
@@ -72,46 +103,6 @@ public class TocDialog extends DiskoDialog implements IDiskoMapEventListener{
 
 		this.layerSelectionPanel.updateUI();
 		
-	}
-	
-	public void onAfterScreenDraw(DiskoMapEvent e) throws IOException, AutomationException{
-//		todo
-	}
-	
-	public void onSelectionChanged(DiskoMapEvent e) throws IOException, AutomationException{
-//		todo
-	}
-	
-	public void editLayerChanged(DiskoMapEvent e){
-//		todo
-	}
-	
-	
-	/**
-	 * This method initializes this
-	 * 
-	 */
-	private void initialize() {
-		try {
-			
-            this.setContentPane(getContentPanel());
-            this.setPreferredSize(new Dimension(190, 400));
-            this.pack();
-		}
-		catch (java.lang.Throwable e) {
-			//  Do Something
-		}
-	}
-	
-	public void onLoad(IDiskoMap map) throws IOException {
-		this.map = map;
-        map.addDiskoMapEventListener(this);
-		this.msoLayerSelectionModel = map.getMsoLayerSelectionModel();
-		this.defaultMapLayerSelectionModel = map.getDefaultMapLayerSelectionModel();
-		this.wmsLayerSelectionModel = map.getWMSLayerSelectionModel();
-		updateLayerSelection(map);
-		//updateLayerSelection();
-		//getSnapToleranceSlider().setValue((int)tool.getSnapTolerance());
 	}
 	
 	/**
@@ -264,6 +255,8 @@ public class TocDialog extends DiskoDialog implements IDiskoMapEventListener{
 			e.printStackTrace();
 		}
 	}
-	
-	
+
+	public void onLayerChanged(MsoLayerEvent e) throws IOException, AutomationException {
+		// TODO Auto-generated method stub
+	}
 }
