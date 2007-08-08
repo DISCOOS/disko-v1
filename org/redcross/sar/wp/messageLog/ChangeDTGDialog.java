@@ -2,6 +2,7 @@ package org.redcross.sar.wp.messageLog;
 
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.mso.data.IMessageIf;
+import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.mso.DTG;
 
 import javax.swing.*;
@@ -101,6 +102,15 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 			this.setVisible(false);
 			if(validDTG())
 			{
+				try
+				{
+					IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+					message.setOccuredTime(DTG.DTGToCal(this.getTime()));
+				}
+				catch (IllegalMsoArgumentException e1)
+				{
+					System.err.println("Not a valid DTG format");
+				}
 				fireDialogFinished();
 			}
 			else

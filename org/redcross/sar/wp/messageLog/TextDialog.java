@@ -26,6 +26,8 @@ import org.redcross.sar.mso.data.IMessageLineListIf;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 import org.redcross.sar.util.mso.Selector;
 
+import com.swiftmq.admin.explorer.ButtonFormatter;
+
 /**
  * @author thomasl
  *
@@ -68,19 +70,8 @@ public class TextDialog extends DiskoDialog implements IEditMessageDialogIf
 		gbc.gridx++;
 		gbc.weightx = 0.0;
 		
-		m_cancelButton = new JButton();
-		m_cancelButton.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-		m_cancelButton.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-		m_cancelButton.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-		try
-		{
-			m_cancelButton.setIcon(Utils.createImageIcon("icons/60x60/abort.gif", "ABORT"));
-		}
-		catch(Exception e)
-		{
-			m_cancelButton.setText("Cancel");
-			System.err.println("Error loading cancel button icon in message text panel");
-		}
+		m_cancelButton = DiskoButtonFactory.createSmallCancelButton();
+		
 		m_cancelButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -91,52 +82,21 @@ public class TextDialog extends DiskoDialog implements IEditMessageDialogIf
 		this.add(m_cancelButton, gbc);
 		
 		gbc.gridy = 1;
-		m_okButton = new JButton();
-		m_okButton.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-		m_okButton.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-		m_okButton.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-		/*try
-		{
-			m_okButton.setIcon(Utils.createImageIcon("icons/60x60/ok.gif", "OK"));
-		}
-		catch(Exception e)
-		{
-			m_okButton.setText("OK");
-		}*/
-		m_okButton.setText("OK");
+		m_okButton = DiskoButtonFactory.createSmallOKButton();
 		m_okButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
+				// Store text in current message
+				IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+				IMessageLineIf textLine = message.findMessageLine(MessageLineType.TEXT, true);
+				textLine.setLineText(m_textArea.getText());
+				
 				fireDialogFinished();
 			}	
 		});
 		this.add(m_okButton, gbc);
 	}
-	
-	private final Comparator<IMessageLineIf> m_lineComparator = new Comparator<IMessageLineIf>()
-	{
-		public int compare(IMessageLineIf o1, IMessageLineIf o2)
-		{
-			// TODO Auto-generated method stub
-			return o1.getLineNumber() - o2.getLineNumber();
-		}	
-	};
-	
-	private final Selector<IMessageLineIf> m_textLineSelector = new Selector<IMessageLineIf>()
-	{
-		public boolean select(IMessageLineIf messageLine)
-		{
-			if(messageLine.getLineType() == IMessageLineIf.MessageLineType.TEXT)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}	
-	};
 
 	public void hideDialog()
 	{
@@ -145,8 +105,11 @@ public class TextDialog extends DiskoDialog implements IEditMessageDialogIf
 
 	public void newMessageSelected(IMessageIf message)
 	{
-		IMessageLineIf textMessageLine = message.findMessageLine(MessageLineType.TEXT, true);
-		m_textArea.setText(textMessageLine.getLineText());
+		IMessageLineIf textMessageLine = message.findMessageLine(MessageLineType.TEXT, false);
+		if(textMessageLine != null && !(textMessageLine.getLineText().isEmpty()))
+		{
+			m_textArea.setText(textMessageLine.getLineText());
+		}
 	}
 
 	public void showDialog()
@@ -157,10 +120,5 @@ public class TextDialog extends DiskoDialog implements IEditMessageDialogIf
 	public void clearContents()
 	{
 		m_textArea.setText("");
-	}
-
-	public String getText()
-	{
-		return m_textArea.getText();
 	}
 }

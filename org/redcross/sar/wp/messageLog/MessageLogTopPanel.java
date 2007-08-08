@@ -91,7 +91,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     private JComponent m_dialogArea;
     private JPanel m_buttonRow;
 	private JToggleButton  m_textButton;
-	private TextDialog m_messageTextDialog;
+	private TextDialog m_textDialog;
 	private JToggleButton  m_positionButton;
 	private PositionDialog m_messagePositionDialog;
 	private JToggleButton  m_findingButton;
@@ -219,13 +219,13 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
     private TextDialog getMessageTextDialog()
     {
-    	if(m_messageTextDialog == null)
+    	if(m_textDialog == null)
     	{
-    		m_messageTextDialog = new TextDialog(m_wpMessageLog);
-    		m_messageTextDialog.addDialogListener(this);
-    		m_dialogs.add(m_messageTextDialog);
+    		m_textDialog = new TextDialog(m_wpMessageLog);
+    		m_textDialog.addDialogListener(this);
+    		m_dialogs.add(m_textDialog);
     	}
-    	return m_messageTextDialog;
+    	return m_textDialog;
     }
 
     private PositionDialog getMessagePositionDialog()
@@ -615,7 +615,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		}
 		else if(sender instanceof TextDialog)
 		{
-			m_messageTextDialog.hideDialog();
+			m_textDialog.hideDialog();
 		}
 	}
 
@@ -633,8 +633,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	{
 		Object source = e.getSource();
 
-		m_buttonGroup.clearSelection();
-
 		// If no message is selected a new one should be created once a field is edited
 		if(m_currentMessage == null)
 		{
@@ -643,16 +641,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 		if(source instanceof ChangeDTGDialog)
 		{
-			// Check validity of DTG
-			try
-			{
-				m_currentMessage.setOccuredTime(DTG.DTGToCal(m_changeDTGDialog.getTime()));
-				//m_dtgLabel.setText(m_changeDTGDialog.getTime());
-			}
-			catch (IllegalMsoArgumentException e1)
-			{
-				System.err.println("Not a valid DTG format");
-			}
+			m_changeDTGDialog.hideDialog();
 		}
 		else if(source instanceof UnitFieldSelectionDialog ||
 				source instanceof SingleUnitListSelectionDialog)
@@ -681,11 +670,9 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		}
 		else if(source instanceof TextDialog)
 		{
-			IMessageLineIf textLine = m_currentMessage.findMessageLine(MessageLineType.TEXT, true);
-			textLine.setLineText(m_messageTextDialog.getText());
-			m_messageTextDialog.hideDialog();
+			m_textDialog.hideDialog();
 		}
-
+		m_buttonGroup.clearSelection();
 		updateMessageGUI();
 		m_messageDirty = true;
 	}
@@ -713,6 +700,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     		{
 				public void actionPerformed(ActionEvent arg0)
 				{
+					getCurrentMessage();
 					// Commit message, set status to postponed
 					m_currentMessage.setStatus(MessageStatus.POSTPONED);
 					m_wpMessageLog.getMsoManager().commit();
@@ -725,6 +713,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					m_buttonGroup.clearSelection();
 					clearDialogContents();
 					clearPanelContents();
+					m_currentMessageNr = 0;
 				}
     		});
     		m_waitEndStatusButton.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
@@ -781,6 +770,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 						m_currentMessage = null;
 						m_messageDirty = false;
+						m_currentMessageNr = 0;
 						
 						for(IEditMessageDialogIf dialog : m_dialogs)
 						{
@@ -925,6 +915,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 					m_currentMessage = null;
 					m_messageDirty = false;
+					m_currentMessageNr = 0;
 					
 					for(IEditMessageDialogIf dialog : m_dialogs)
 					{
@@ -1061,8 +1052,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelTextLabel.text"));
 				getMessageTextDialog();
 				hideDialogs();
-    			m_messageTextDialog.setVisible(true);
-    			positionDialogInArea(m_messageTextDialog);
+    			m_textDialog.setVisible(true);
+    			positionDialogInArea(m_textDialog);
 			}
 		});
 		m_buttonGroup.add(m_textButton);

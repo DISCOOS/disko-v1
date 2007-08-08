@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import javax.swing.JButton;
 import javax.swing.JToggleButton;
 
 import org.redcross.sar.app.Utils;
@@ -117,6 +118,64 @@ public class DiskoButtonFactory
 		button.setMinimumSize(LARGE_BUTTON_SIZE);
 		button.setPreferredSize(LARGE_BUTTON_SIZE);
 		button.setMaximumSize(LARGE_BUTTON_SIZE);
+		return button;
+	}
+
+	public static JButton createSmallOKButton()
+	{
+		JButton button = new JButton();
+		button.setMinimumSize(SMALL_BUTTON_SIZE);
+		button.setPreferredSize(SMALL_BUTTON_SIZE);
+		button.setMaximumSize(SMALL_BUTTON_SIZE);
+		
+		try
+		{
+			// TODO point to actual resource
+			ResourceBundle resoureces = ResourceBundle.getBundle("buttonnames");
+			String iconPath = resoureces.getString("OkButton.text");
+			button.setIcon(Utils.createImageIcon(iconPath, "OK"));
+		}
+		catch(Exception e)
+		{
+			button.setText("OK");
+		}
+		return button;
+	}
+
+	public static JButton createSmallCancelButton()
+	{
+		JButton button = new JButton();
+		button.setMinimumSize(SMALL_BUTTON_SIZE);
+		button.setPreferredSize(SMALL_BUTTON_SIZE);
+		button.setMaximumSize(SMALL_BUTTON_SIZE);
+		
+		try
+		{
+			// TODO point to actual resource
+			ResourceBundle resoureces = ResourceBundle.getBundle("buttonnames");
+			String iconPath = resoureces.getString("OkButton.text");
+			button.setIcon(Utils.createImageIcon(iconPath, "OK"));
+		}
+		catch(Exception e)
+		{
+			// TODO internasjonaliser
+			button.setText("Avbryt");
+		}
+		return button;
+	}
+
+	public static JButton createSmallButton(String string)
+	{
+		JButton button = new JButton();
+		if(string != null)
+		{
+			button.setText(string);
+		}
+		
+		button.setMinimumSize(SMALL_BUTTON_SIZE);
+		button.setPreferredSize(SMALL_BUTTON_SIZE);
+		button.setMaximumSize(SMALL_BUTTON_SIZE);
+		
 		return button;
 	}
 }
