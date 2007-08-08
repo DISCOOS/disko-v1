@@ -129,7 +129,6 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	 */
 	private Comparator<ICommunicatorIf> m_communicatorComparator = new Comparator<ICommunicatorIf>()
 	{
-		@Override
 		public int compare(ICommunicatorIf arg0, ICommunicatorIf arg1)
 		{
 			if(arg0 instanceof IUnitIf)

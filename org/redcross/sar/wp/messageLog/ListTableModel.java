@@ -16,7 +16,6 @@ public class ListTableModel extends AbstractTableModel
 		fireTableDataChanged();
 	}
 	
-	@Override
 	public int getColumnCount() 
 	{
 		return 1;
@@ -28,7 +27,6 @@ public class ListTableModel extends AbstractTableModel
 		return null;
 	}
 
-	@Override
 	public int getRowCount() 
 	{
 		if(m_messageLines == null)
@@ -41,7 +39,6 @@ public class ListTableModel extends AbstractTableModel
 		}
 	}
 
-	@Override
 	public Object getValueAt(int rowIndex, int coulumnIndex) 
 	{
 		if(m_messageLines == null)

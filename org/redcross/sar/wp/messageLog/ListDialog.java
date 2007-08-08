@@ -45,26 +45,22 @@ public class ListDialog extends DiskoDialog implements IEditMessageDialogIf
 		m_messageTableModel.setMessageLines(lines);
 	}
 
-	@Override
 	public void hideDialog()
 	{
 		this.setVisible(false);
 	}
 
-	@Override
 	public void newMessageSelected(IMessageIf message)
 	{
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void showDialog()
 	{
 		this.setVisible(true);
 	}
 
-	@Override
 	public void clearContents()
 	{
 		setMessageLines(null);
