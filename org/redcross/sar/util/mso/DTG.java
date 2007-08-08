@@ -4,8 +4,17 @@ import org.redcross.sar.util.except.IllegalMsoArgumentException;
 
 import java.util.Calendar;
 
-public abstract class DTG
+/**
+ * Class for conversion between {@link java.util.Calendar} objects and DTG Strings.
+ */
+public class DTG
 {
+    /**
+     * Create a {@link java.util.Calendar} object for a DTG string.
+     * @param aDTG The DTG value
+     * @return The created object
+     * @throws IllegalMsoArgumentException If DTG has an illegal value.
+     */
     public static Calendar DTGToCal(String aDTG) throws IllegalMsoArgumentException
     {
         try
@@ -22,6 +31,12 @@ public abstract class DTG
         }
     }
 
+    /**
+     * Create a {@link java.util.Calendar} object for a DTG number.
+     * @param aDTG The DTG value
+     * @return The created object
+     * @throws IllegalMsoArgumentException If DTG has an illegal value.
+     */
     public static Calendar DTGToCal(long aDTG) throws IllegalMsoArgumentException
     {
         Calendar calendar = Calendar.getInstance();
@@ -53,6 +68,11 @@ public abstract class DTG
         return calendar;
     }
 
+    /**
+     * Generate a DTG string from a {@link java.util.Calendar} object value.
+     * @param aCalendar Input Calendar value.
+     * @return The generated DTG string, or an empty string if aCalendar is null.
+     */
     public static String CalToDTG(Calendar aCalendar)
     {
         return aCalendar != null ? String.format("%1$td%1$tH%1$tM", aCalendar) : "";

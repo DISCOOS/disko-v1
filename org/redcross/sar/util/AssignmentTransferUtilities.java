@@ -5,7 +5,6 @@ import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IUnitIf;
-import org.redcross.sar.wp.IDiskoWpModule;
 
 import java.util.Calendar;
 import java.util.EnumSet;
@@ -17,13 +16,26 @@ import java.util.EnumSet;
  */
 
 /**
- *
+ *  Class for handling assignment transfers.
  */
 public class AssignmentTransferUtilities
 {
     final static EnumSet<IAssignmentIf.AssignmentStatus> acceptedStatuses = EnumSet.range(IAssignmentIf.AssignmentStatus.ASSIGNED, IAssignmentIf.AssignmentStatus.REPORTED);
 
-    public static void createAssignmentChangeMessage(IDiskoWpModule aWpModule, IUnitIf aUnit, IAssignmentIf anAssignment, IAssignmentIf.AssignmentStatus oldStatus)
+    /**
+     * Create an assignment transfer message and put it in the message log.
+     *
+     * The message is generated with status {@link org.redcross.sar.mso.data.IMessageIf.MessageStatus#UNCONFIRMED}.
+     *
+     * For each status change between {@link org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus#READY} and {@link org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus#FINISHED}
+     * is generated one message line.
+     *
+     * @param anMsoManager The Mso Manager.
+     * @param aUnit Unit receiving the assignment.
+     * @param anAssignment The assignment that is transferred
+     * @param oldStatus Former assignmnet status
+     */
+    public static void createAssignmentChangeMessage(IMsoManagerIf anMsoManager, IUnitIf aUnit, IAssignmentIf anAssignment, IAssignmentIf.AssignmentStatus oldStatus)
     {
         IMessageLineIf.MessageLineType firstLineType;
         switch (oldStatus)
@@ -60,8 +72,7 @@ public class AssignmentTransferUtilities
                 return;
         }
         Calendar now = Calendar.getInstance();
-        IMsoManagerIf manager = aWpModule.getMsoManager();
-        IMessageIf message = manager.createMessage();
+        IMessageIf message = anMsoManager.createMessage();
         message.setCreated(now);
         message.setOccuredTime(now);
         message.setStatus(IMessageIf.MessageStatus.UNCONFIRMED);
@@ -72,7 +83,16 @@ public class AssignmentTransferUtilities
             IMessageLineIf.MessageLineType.STARTED,
             IMessageLineIf.MessageLineType.COMPLETE};
 
-    private static void createAssignmentChangeMessageLines(IMessageIf message, IMessageLineIf.MessageLineType firstLineType, IMessageLineIf.MessageLineType lastLineType, Calendar aDTG, IAssignmentIf anAssignment)
+    /**
+     * Create a set of message lines for assignment transfers.
+     *
+     * @param message The message where the lines shall be put. Possible existing lines of the same type in the message will be overwritten.
+     * @param firstLineType First line type to generate.
+     * @param lastLineType  Last line type to generate.
+     * @param aDTG Time when the message was created.
+     * @param anAssignment The assignment that is transferred
+     */
+    public static void createAssignmentChangeMessageLines(IMessageIf message, IMessageLineIf.MessageLineType firstLineType, IMessageLineIf.MessageLineType lastLineType, Calendar aDTG, IAssignmentIf anAssignment)
     {
         for ( IMessageLineIf.MessageLineType t : types)
         {
@@ -88,6 +108,13 @@ public class AssignmentTransferUtilities
         }
     }
 
+    /**
+     * Check if a unit can accept an assignment with a given status.
+     *
+     * @param aUnit The unit that receives the assignment.
+     * @param aStatus The status to be checked.
+     * @return <code>true</code> if accepted, <code>false </code> otherwise.
+     */
     public static boolean unitCanAccept(IUnitIf aUnit, IAssignmentIf.AssignmentStatus aStatus)
     {
         switch (aUnit.getStatus())
@@ -132,6 +159,14 @@ public class AssignmentTransferUtilities
         return assignmentCanChangeToStatus(anAssignment,status, newUnit);
     }
 
+    /**
+     * Check if an assignment can change to a new status and be transferred to a given unit.
+     *
+     * @param anAssignment The assignment to check.
+     * @param newStatus New status for assignment.
+     * @param newUnit Unit that shall receive the assignment.
+     * @return <code>true</code> if can change, <code>false </code> otherwise.
+     */
     public static boolean assignmentCanChangeToStatus(IAssignmentIf anAssignment, IAssignmentIf.AssignmentStatus newStatus, IUnitIf newUnit)
     {
         IUnitIf currentUnit = anAssignment.getOwningUnit();

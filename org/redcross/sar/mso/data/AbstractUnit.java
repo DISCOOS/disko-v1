@@ -3,6 +3,7 @@ package org.redcross.sar.mso.data;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.MsoModelImpl;
+import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.util.mso.Position;
 
@@ -37,12 +38,12 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
 
     public static String getText(String aKey)
     {
-        return AbstractMsoObject.getBundleText(bundle, aKey);
+        return Internationalization.getFullBundleText(bundle, aKey);
     }
 
     public static String getEnumText(Enum anEnum)
     {
-        return getText(anEnum.getClass().getSimpleName() + "." + anEnum.name() + ".text");
+        return Internationalization.getEnumText(bundle,anEnum);
     }
 
     public static char getEnumLetter(Enum anEnum)
@@ -124,12 +125,12 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
     }
 
     protected abstract UnitType getTypeBySubclass();
-    
+
     public char getCommunicatorNumberPrefix()
     {
     	return getUnitNumberPrefix();
     }
-    
+
     public int getCommunicatorNumber()
     {
     	return getNumber();
@@ -184,7 +185,7 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
 
     public String getTypeText()
     {
-        return getEnumText(getType());
+        return Internationalization.getEnumText(bundle,getType());
     }
 
     public abstract String getSubTypeName();
@@ -216,7 +217,7 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
 
     public String getStatusText()
     {
-        return getEnumText(getStatus());
+        return Internationalization.getEnumText(bundle,getStatus());
     }
 
     /*-------------------------------------------------------------------------------------------

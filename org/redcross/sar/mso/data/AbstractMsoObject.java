@@ -826,23 +826,6 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
     }
 
-    public static String getBundleText(ResourceBundle aBundle, String aKey)
-    {
-        if (aBundle == null)
-        {
-            return aKey;
-        }
-        try
-        {
-            String retVal = aBundle.getString(aKey);
-            return retVal != null ? retVal : aKey;
-        }
-        catch (Exception e)
-        {
-            return aKey;
-        }
-    }
-
     public Collection<ICommittableIf.ICommitReferenceIf> getCommittableAttributeRelations()
     {
         Vector<ICommittableIf.ICommitReferenceIf> retVal = new Vector<ICommittableIf.ICommitReferenceIf>();

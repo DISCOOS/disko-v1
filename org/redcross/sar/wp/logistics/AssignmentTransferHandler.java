@@ -97,7 +97,7 @@ public class AssignmentTransferHandler extends TransferHandler
                 }
                 if (transferOk)
                 {
-                    AssignmentTransferUtilities.createAssignmentChangeMessage(m_wpModule, targetUnit, transferredAssignment,oldAssignemtStatus);
+                    AssignmentTransferUtilities.createAssignmentChangeMessage(m_wpModule.getMsoManager(), targetUnit, transferredAssignment,oldAssignemtStatus);
                     m_wpModule.getMsoModel().commit();
                     return true;
                 } else

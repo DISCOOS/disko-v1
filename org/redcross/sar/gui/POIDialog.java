@@ -1,29 +1,7 @@
 package org.redcross.sar.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.io.IOException;
-import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.TitledBorder;
-
+import com.esri.arcgis.geometry.esriMGRSModeEnum;
+import com.esri.arcgis.interop.AutomationException;
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.event.DiskoMapEvent;
@@ -36,9 +14,14 @@ import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.IPOIIf;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
+import org.redcross.sar.mso.data.POIImpl;
 
-import com.esri.arcgis.geometry.esriMGRSModeEnum;
-import com.esri.arcgis.interop.AutomationException;
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.TitledBorder;
+import java.awt.*;
+import java.io.IOException;
+import java.util.List;
 
 public class POIDialog extends DiskoDialog implements IDiskoMapEventListener {
 
@@ -59,12 +42,12 @@ public class POIDialog extends DiskoDialog implements IDiskoMapEventListener {
 	private JPanel textAreaPanel = null;
 	private JPanel buttonPanel = null;
 	private JButton finishButton = null;
-	
+
 	public POIDialog(IDiskoApplication app, POITool tool) {
 		super(app.getFrame());
 		this.app = app;
 		this.tool = tool;
-		
+
 		// listener
 		try {
 			IMsoFeatureLayer msoLayer = app.getDiskoMapManager().
@@ -84,7 +67,7 @@ public class POIDialog extends DiskoDialog implements IDiskoMapEventListener {
 
 	/**
 	 * This method initializes this
-	 * 
+	 *
 	 */
 	private void initialize() {
 		try {
@@ -96,17 +79,17 @@ public class POIDialog extends DiskoDialog implements IDiskoMapEventListener {
 			//  Do Something
 		}
 	}
-	
+
 	public void reset() {
 		getTxtArea().setText(null);
 		getMGRSTextField().setText(null);
 		getTypeComboBox().setSelectedIndex(0);
 	}
-	
+
 	/**
-	 * This method initializes contentPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
+	 * This method initializes contentPanel
+	 *
+	 * @return javax.swing.JPanel
 	 */
 	private JPanel getContentPanel() {
 		if (contentPanel == null) {
@@ -128,31 +111,31 @@ public class POIDialog extends DiskoDialog implements IDiskoMapEventListener {
 		}
 		return contentPanel;
 	}
-	
+
 	/**
-	 * This method initializes xCoordTextField	
-	 * 	
-	 * @return javax.swing.JTextField	
+	 * This method initializes xCoordTextField
+	 *
+	 * @return javax.swing.JTextField
 	 */
 	private JTextField getMGRSTextField() {
 		if (mgrsTextField == null) {
 			mgrsTextField = new JTextField();
 			mgrsTextField.addMouseListener(new java.awt.event.MouseAdapter() {
-				public void mouseClicked(java.awt.event.MouseEvent e) {					
+				public void mouseClicked(java.awt.event.MouseEvent e) {
 					if (e.getClickCount() == 2){
 						numPadDialog = app.getUIFactory().getNumPadDialog();
 						java.awt.Point p = mgrsTextField.getLocationOnScreen();
 						p.setLocation(p.x + (mgrsTextField.getWidth()+7), p.y);
-						numPadDialog.setLocation(p);					
+						numPadDialog.setLocation(p);
 						numPadDialog.setTextField(mgrsTextField);
-						numPadDialog.setVisible(true);	
+						numPadDialog.setVisible(true);
 					}
 				}
-			});	
+			});
 		}
 		return mgrsTextField;
 	}
-	
+
 	public void setTypes(POIType[] poiTypes) {
 		JComboBox cb = getTypeComboBox();
 		cb.removeAllItems();
@@ -161,30 +144,30 @@ public class POIDialog extends DiskoDialog implements IDiskoMapEventListener {
 		}
 		cb.setSelectedItem(poiTypes[0]);
 	}
-	
+
 	public POIType getSelectedType() {
 		return (POIType)getTypeComboBox().getSelectedItem();
 	}
-	
+
 	/**
-	 * This method initializes typeComboBox	
-	 * 	
-	 * @return javax.swing.JComboBox	
+	 * This method initializes typeComboBox
+	 *
+	 * @return javax.swing.JComboBox
 	 */
 	private JComboBox getTypeComboBox() {
 		if (typeComboBox == null) {
 			typeComboBox = new JComboBox();
-			typeComboBox.setRenderer(new SimpleListCellRenderer());
+			typeComboBox.setRenderer(new SimpleListCellRenderer(POIImpl.getBundle()));
 			typeComboBox.setMaximumRowCount(8);
 		}
 		return typeComboBox;
 	}
-	
-		
+
+
 	/**
-	 * This method initializes txtArea	
-	 * 	
-	 * @return javax.swing.JTextArea	
+	 * This method initializes txtArea
+	 *
+	 * @return javax.swing.JTextArea
 	 */
 	public JTextArea getTxtArea() {
 		if (txtArea == null) {
@@ -194,9 +177,9 @@ public class POIDialog extends DiskoDialog implements IDiskoMapEventListener {
 		return txtArea;
 	}
 	/**
-	 * This method initializes centerPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
+	 * This method initializes centerPanel
+	 *
+	 * @return javax.swing.JPanel
 	 */
 	private JPanel getCoordPanel() {
 		if (coordPanel == null) {
@@ -261,9 +244,9 @@ public class POIDialog extends DiskoDialog implements IDiskoMapEventListener {
 	}
 
 	/**
-	 * This method initializes textAreaScrollPane	
-	 * 	
-	 * @return javax.swing.JScrollPane	
+	 * This method initializes textAreaScrollPane
+	 *
+	 * @return javax.swing.JScrollPane
 	 */
 	private JScrollPane getTextAreaScrollPane() {
 		if (textAreaScrollPane == null) {
@@ -275,12 +258,12 @@ public class POIDialog extends DiskoDialog implements IDiskoMapEventListener {
 			}
 		}
 		return textAreaScrollPane;
-	}	
+	}
 
 	/**
-	 * This method initializes northPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
+	 * This method initializes northPanel
+	 *
+	 * @return javax.swing.JPanel
 	 */
 	private JPanel getNorthPanel() {
 		if (northPanel == null) {
@@ -289,9 +272,9 @@ public class POIDialog extends DiskoDialog implements IDiskoMapEventListener {
 				borderLayout.setVgap(0);
 				northPanel = new JPanel();
 				northPanel.setBorder(BorderFactory.createTitledBorder(
-						null, "PUI", TitledBorder.DEFAULT_JUSTIFICATION, 
-						TitledBorder.DEFAULT_POSITION, 
-						new Font("Tahoma", Font.PLAIN, 11), 
+						null, "PUI", TitledBorder.DEFAULT_JUSTIFICATION,
+						TitledBorder.DEFAULT_POSITION,
+						new Font("Tahoma", Font.PLAIN, 11),
 						new Color(0, 70, 213)));
 				northPanel.setLayout(borderLayout);
 				northPanel.add(getCoordPanel(), BorderLayout.NORTH);
@@ -303,9 +286,9 @@ public class POIDialog extends DiskoDialog implements IDiskoMapEventListener {
 	}
 
 	/**
-	 * This method initializes textAreaPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
+	 * This method initializes textAreaPanel
+	 *
+	 * @return javax.swing.JPanel
 	 */
 	private JPanel getTextAreaPanel() {
 		if (textAreaPanel == null) {
@@ -320,7 +303,7 @@ public class POIDialog extends DiskoDialog implements IDiskoMapEventListener {
 		}
 		return textAreaPanel;
 	}
-	
+
 	private JPanel getButtonPanel() {
 		if (buttonPanel == null) {
 			try {
@@ -337,7 +320,7 @@ public class POIDialog extends DiskoDialog implements IDiskoMapEventListener {
 		}
 		return buttonPanel;
 	}
-	
+
 	private JButton getFinishButton() {
 		if (finishButton == null) {
 			try {
@@ -354,11 +337,11 @@ public class POIDialog extends DiskoDialog implements IDiskoMapEventListener {
 						try {
 							point = new com.esri.arcgis.geometry.Point();
 							point.setSpatialReferenceByRef(tool.getMap().getSpatialReference());
-							point.putCoordsFromMGRS(getMGRSTextField().getText(), 
+							point.putCoordsFromMGRS(getMGRSTextField().getText(),
 									esriMGRSModeEnum.esriMGRSMode_NewStyle);
 						} catch (Exception ex) {
 							JOptionPane.showMessageDialog(app.getFrame(),
-			                        "Ugyldig MGRS koordinat", null, 
+			                        "Ugyldig MGRS koordinat", null,
 			                        JOptionPane.WARNING_MESSAGE);
 							ex.printStackTrace();
 						}
@@ -420,7 +403,7 @@ public class POIDialog extends DiskoDialog implements IDiskoMapEventListener {
 			}
 			tool.setEditFeature(msoFeature);
 			IPOIIf poi = (IPOIIf)msoObject;
-			com.esri.arcgis.geometry.Point point = 
+			com.esri.arcgis.geometry.Point point =
 				(com.esri.arcgis.geometry.Point)msoFeature.getShape();
 			String mgrs = point.createMGRS(5, true, esriMGRSModeEnum.esriMGRSMode_NewStyle);
 			getMGRSTextField().setText(mgrs);

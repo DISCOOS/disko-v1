@@ -2,6 +2,7 @@ package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.mso.DTG;
 
@@ -32,17 +33,13 @@ public class MessageLineImpl extends AbstractMsoObject implements IMessageLineIf
 
     public static String getText(String aKey)
     {
-        return AbstractMsoObject.getBundleText(bundle,aKey);
+        return Internationalization.getFullBundleText(bundle, aKey);
     }
 
-    public static String getEnumText(Enum anEnum)
-    {
-        return getText(anEnum.getClass().getSimpleName()+"."+anEnum.name() + ".text");
-    }
 
     public String getLineTypeText()
     {
-        return getEnumText(getLineType());
+        return Internationalization.getEnumText(bundle,getLineType());
     }
 
     public MessageLineImpl(IObjectIdIf anObjectId)
@@ -242,11 +239,15 @@ public class MessageLineImpl extends AbstractMsoObject implements IMessageLineIf
             case STARTED:
             case COMPLETE:
                 return MessageFormat.format("{0} {1} {2} {3} {4}",
-                getLineNumber(), getLineAssignment().getTypeText(), getLineAssignment().getNumber(),getLineTypeText(), DTG.CalToDTG(getOperationTime()));
+                        getLineNumber(), getLineAssignment().getTypeText(), getLineAssignment().getNumber(), getLineTypeText(), DTG.CalToDTG(getOperationTime()));
             case POI:
-                return getLineNumber() + " " + getLineType().name() + " " + getLinePOI();
+            case FINDING:
+                IPOIIf poi = getLinePOI();
+                return getLineNumber() + " " + getLineTypeText() + " " + poi.getTypeText() + " " + poi.getPosition();
+            case TEXT:
+                return getLineNumber() + " " + getLineText();
             default:
-                return getLineNumber() + " " + getLineType().name() + " " + getLineText();
+                return getLineNumber() + " " + getLineTypeText() + " " + getLineText();
         }
     }
 }

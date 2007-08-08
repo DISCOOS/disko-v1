@@ -4,6 +4,7 @@ import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.util.AssignmentTransferUtilities;
+import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.util.except.MsoCastException;
 
@@ -42,7 +43,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
 
     public static String getText(String aKey)
     {
-        return AbstractMsoObject.getBundleText(bundle,aKey);
+        return Internationalization.getFullBundleText(bundle,aKey);
     }
 
     public static String getEnumText(Enum anEnum)

@@ -3,6 +3,7 @@ package org.redcross.sar.mso.data;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.MsoModelImpl;
+import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.except.MsoRuntimeException;
 import org.redcross.sar.util.mso.Selector;
@@ -33,17 +34,12 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
 
     public static String getText(String aKey)
     {
-        return AbstractMsoObject.getBundleText(bundle,aKey);
-    }
-
-    public static String getEnumText(Enum anEnum)
-    {
-        return getText(anEnum.getClass().getSimpleName()+"."+anEnum.name() + ".text");
+        return Internationalization.getFullBundleText(bundle,aKey);
     }
 
     public String getStatusText()
     {
-        return getEnumText(getStatus());
+        return Internationalization.getEnumText(bundle,getStatus());
     }
 
     public MessageImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)

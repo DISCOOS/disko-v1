@@ -31,6 +31,8 @@ public interface IPOIIf extends IMsoObjectIf
 
     public IAttributeIf.IMsoEnumIf<POIType> getTypeAttribute();
 
+    public String getTypeText();
+
     /*-------------------------------------------------------------------------------------------
     * Methods for attributes
     *-------------------------------------------------------------------------------------------*/

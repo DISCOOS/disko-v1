@@ -2,8 +2,11 @@ package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.mso.Position;
+
+import java.util.ResourceBundle;
 
 /**
  * Point of interest
@@ -15,6 +18,22 @@ public class POIImpl extends AbstractMsoObject implements IPOIIf
     private final AttributeImpl.MsoEnum<POIType> m_type = new AttributeImpl.MsoEnum<POIType>(this, "Type", POIType.GENERAL);
     private final AttributeImpl.MsoInteger m_searchSequence = new AttributeImpl.MsoInteger(this, "SearchSequence");
 
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.POI");
+
+    public static ResourceBundle getBundle()
+    {
+        return bundle;
+    }
+
+    public static String getText(String aKey)
+    {
+        return Internationalization.getFullBundleText(bundle,aKey);
+    }
+
+    public String getTypeText()
+    {
+        return Internationalization.getEnumText(bundle,getType());
+    }
 
     public POIImpl(IMsoObjectIf.IObjectIdIf anObjectId)
     {
