@@ -168,7 +168,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
          Log.init("DISKO");
          //initiate modeldriver
          getMsoModel().getModelDriver().initiate();
-          getMsoModel().getModelDriver().setDiskoApplication(this);
+         getMsoModel().getModelDriver().setDiskoApplication(this);
          // show the login dialog
          LoginDialog loginDialog = getUIFactory().getLoginDialog();
          loginDialog.setVisible(true);
