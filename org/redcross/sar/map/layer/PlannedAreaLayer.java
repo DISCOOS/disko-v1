@@ -6,10 +6,11 @@ import java.util.Hashtable;
 
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.map.feature.IMsoFeature;
-import org.redcross.sar.map.feature.PlannedAreaFeatureClass;
+import org.redcross.sar.map.feature.PlannedAreaFeature;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.IAreaIf;
+import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.ISearchIf;
 import org.redcross.sar.mso.data.ISearchIf.SearchSubType;
 
@@ -30,24 +31,24 @@ public class PlannedAreaLayer extends AbstractMsoFeatureLayer {
 	private static final long serialVersionUID = 1L;
 	private RgbColor selectionColor = null;
 	private Hashtable<SearchSubType, SimpleLineSymbol> symbols = null;
+	private SimpleLineSymbol defaultLineSymbol = null;
 	private TextSymbol textSymbol = null;
  	
  	public PlannedAreaLayer(IMsoModelIf msoModel) {
- 		setClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
- 		setLayerCode(LayerCode.AREA_LAYER);
- 		featureClass = new PlannedAreaFeatureClass(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA, msoModel);
-		try {
-			symbols = new Hashtable<SearchSubType, SimpleLineSymbol>();
-			createSymbols();
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+ 		super(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA,
+ 				LayerCode.AREA_LAYER, msoModel);
+ 		symbols = new Hashtable<SearchSubType, SimpleLineSymbol>();
+		createSymbols();
 	}
-	
+ 	
+ 	protected IMsoFeature createMsoFeature(IMsoObjectIf msoObject) 
+ 			throws IOException, AutomationException {
+ 		IMsoFeature msoFeature = new PlannedAreaFeature(msoModel);
+ 		msoFeature.setSpatialReference(srs);
+ 		msoFeature.setMsoObject(msoObject);
+ 		return msoFeature;
+ 	}
+
 	public void draw(int drawPhase, IDisplay display, ITrackCancel trackCancel)
 			throws IOException, AutomationException {
 		try {
@@ -60,9 +61,15 @@ public class PlannedAreaLayer extends AbstractMsoFeatureLayer {
 				if (geomBag != null) {
 					IAreaIf area = (IAreaIf)feature.getMsoObject();
 					ISearchIf search = (ISearchIf)area.getOwningAssignment();
-					String text = Utils.translate(search.getSubType())+" - "+
+					String text = null;
+					SimpleLineSymbol lineSymbol = null;
+					if (search != null) {
+						lineSymbol = (SimpleLineSymbol)symbols.get(search.getSubType());
+						text = Utils.translate(search.getSubType())+" - "+
 							Utils.translate(search.getStatus());
-					SimpleLineSymbol lineSymbol = (SimpleLineSymbol)symbols.get(search.getSubType());
+					} else {
+						lineSymbol = defaultLineSymbol;
+					}
 					IColor saveColor = lineSymbol.getColor();
 					if (feature.isSelected()) {
 						lineSymbol.setColor(selectionColor);
@@ -72,40 +79,58 @@ public class PlannedAreaLayer extends AbstractMsoFeatureLayer {
 						if (geom instanceof IPolyline) {
 							display.setSymbol(lineSymbol);
 							display.drawPolyline((IPolyline)geom);
-							display.setSymbol(textSymbol);
-							display.drawText(geom, text);
+							if (text != null) {
+								display.setSymbol(textSymbol);
+								display.drawText(geom, text);
+							}
 						}
 					}
 					lineSymbol.setColor(saveColor);
 				}
 			}
+			isDirty = false;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
 
-	private void createSymbols() throws UnknownHostException, IOException {
-		selectionColor = new RgbColor();
-		selectionColor.setBlue(255);
-		selectionColor.setGreen(255);
-		
-		RgbColor blackColor = new RgbColor();
-		
-		SimpleLineSymbol lineSymbol = new SimpleLineSymbol();
-		lineSymbol.setStyle(esriSimpleLineStyle.esriSLSDash);
-		lineSymbol.setWidth(2);
-		lineSymbol.setColor(blackColor);
-		
-		symbols.put(ISearchIf.SearchSubType.LINE, lineSymbol);
-		symbols.put(ISearchIf.SearchSubType.PATROL, lineSymbol);
-		symbols.put(ISearchIf.SearchSubType.URBAN, lineSymbol);
-		symbols.put(ISearchIf.SearchSubType.SHORELINE, lineSymbol);
-		symbols.put(ISearchIf.SearchSubType.MARINE, lineSymbol);
-		symbols.put(ISearchIf.SearchSubType.AIR, lineSymbol);
-		symbols.put(ISearchIf.SearchSubType.DOG, lineSymbol);
-		
-		textSymbol = new TextSymbol();
-		textSymbol.setYOffset(5);
+	private void createSymbols() {
+		try {
+			selectionColor = new RgbColor();
+			selectionColor.setBlue(255);
+			selectionColor.setGreen(255);
+			
+			RgbColor blackColor = new RgbColor();
+			
+			SimpleLineSymbol lineSymbol = new SimpleLineSymbol();
+			lineSymbol.setStyle(esriSimpleLineStyle.esriSLSDash);
+			lineSymbol.setWidth(2);
+			lineSymbol.setColor(blackColor);
+			
+			symbols.put(ISearchIf.SearchSubType.LINE, lineSymbol);
+			symbols.put(ISearchIf.SearchSubType.PATROL, lineSymbol);
+			symbols.put(ISearchIf.SearchSubType.URBAN, lineSymbol);
+			symbols.put(ISearchIf.SearchSubType.SHORELINE, lineSymbol);
+			symbols.put(ISearchIf.SearchSubType.MARINE, lineSymbol);
+			symbols.put(ISearchIf.SearchSubType.AIR, lineSymbol);
+			symbols.put(ISearchIf.SearchSubType.DOG, lineSymbol);
+			
+			textSymbol = new TextSymbol();
+			textSymbol.setYOffset(5);
+			
+			defaultLineSymbol = new SimpleLineSymbol();
+			defaultLineSymbol.setWidth(2);
+			defaultLineSymbol.setColor(blackColor);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (AutomationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

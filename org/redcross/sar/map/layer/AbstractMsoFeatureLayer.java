@@ -1,10 +1,22 @@
 package org.redcross.sar.map.layer;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
 
 import org.redcross.sar.app.Utils;
-import org.redcross.sar.map.feature.IMsoFeatureClass;
+import org.redcross.sar.event.IMsoLayerEventListener;
+import org.redcross.sar.event.MsoLayerEvent;
+import org.redcross.sar.map.feature.IMsoFeature;
+import org.redcross.sar.map.feature.MsoFeatureClass;
 import org.redcross.sar.mso.IMsoManagerIf;
+import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.mso.data.IMsoObjectIf;
+import org.redcross.sar.mso.event.IMsoEventManagerIf;
+import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
+import org.redcross.sar.mso.event.MsoEvent.EventType;
+import org.redcross.sar.mso.event.MsoEvent.Update;
 
 import com.esri.arcgis.carto.ILayerGeneralProperties;
 import com.esri.arcgis.carto.esriViewDrawPhase;
@@ -24,7 +36,7 @@ import com.esri.arcgis.system.IUID;
 import com.esri.arcgis.system.IVariantStream;
 
 public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoDataset,
-		IPersistVariant, ILayerGeneralProperties {
+		IPersistVariant, ILayerGeneralProperties, IMsoUpdateListenerIf {
 	
 	protected String name = null;
 	protected IMsoManagerIf.MsoClassCode classCode = null;
@@ -36,13 +48,136 @@ public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoD
 	protected boolean isValid, isVisible = true;
 	protected boolean isSelectable = true;
 	protected double maximumScale, minimumScale = 0;
-	protected boolean showTips = false;
+	protected boolean showTips, isDirty = false;
+	protected ArrayList<IMsoLayerEventListener> listeners = null;
+	protected MsoLayerEvent msoLayerEvent = null;
+	protected IMsoModelIf msoModel = null;
+	protected EnumSet<IMsoManagerIf.MsoClassCode> myInterests = null;
 
-	public AbstractMsoFeatureLayer() {
+	public AbstractMsoFeatureLayer(IMsoManagerIf.MsoClassCode classCode, 
+			IMsoFeatureLayer.LayerCode layerCode, IMsoModelIf msoModel) {
+		this.classCode = classCode;
+		this.layerCode = layerCode;
+		this.msoModel = msoModel;
+		featureClass = new MsoFeatureClass();
+		name = Utils.translate(layerCode);
+		
+		listeners = new ArrayList<IMsoLayerEventListener>();
+		msoLayerEvent = new MsoLayerEvent(this);
+		
+		myInterests = EnumSet.of(classCode);
+		IMsoEventManagerIf msoEventManager = msoModel.getEventManager();
+		msoEventManager.addClientUpdateListener(this);
+	}
+	
+	public IMsoModelIf getMsoModel() {
+		return msoModel;
+	}
+	
+	public void handleMsoUpdateEvent(Update e) {
+		try {
+ 			MsoFeatureClass msoFC = (MsoFeatureClass)featureClass;
+			int type = e.getEventTypeMask();
+			IMsoObjectIf msoObj = (IMsoObjectIf)e.getSource();
+			IMsoFeature msoFeature = msoFC.getFeature(msoObj.getObjectId());
+			
+			if (type == EventType.ADDED_REFERENCE_EVENT.maskValue() && 
+					msoFeature == null) {
+				msoFeature = createMsoFeature(msoObj);
+				msoFC.addFeature(msoFeature);
+				//isDirty = true;
+			}
+			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && 
+					msoFeature != null && msoFeature.geometryIsChanged(msoObj)) {
+				msoFeature.msoGeometryChanged();
+				isDirty = true;
+			}
+			else if (type == EventType.DELETED_OBJECT_EVENT.maskValue() && 
+					msoFeature != null) {
+				msoFC.removeFeature(msoFeature);
+				isDirty = true;
+			}
+		} catch (AutomationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+
+	public boolean hasInterestIn(IMsoObjectIf aMsoObject) {
+		return myInterests.contains(aMsoObject.getMsoClassCode());
+	}
+	
+	protected IMsoFeature createMsoFeature(IMsoObjectIf msoFeature) 
+			throws AutomationException, IOException {
+		return null;
+	}
+	
+	public void addDiskoLayerEventListener(IMsoLayerEventListener listener) {
+		if (listeners.indexOf(listener) == -1) {
+			listeners.add(listener);
+		}
+	}
+	
+	public void removeDiskoLayerEventListener(IMsoLayerEventListener listener) {
+		listeners.remove(listener);
+	}
+	
+	protected void fireOnSelectionChanged() {
+		for (int i = 0; i < listeners.size(); i++) {
+			try {
+				listeners.get(i).onSelectionChanged(msoLayerEvent);
+			} catch (AutomationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void setSelected(IMsoFeature msoFeature, boolean selected) {
+		msoFeature.setSelected(selected);
+		fireOnSelectionChanged();
+	}
+	
+	public void clearSelected() throws AutomationException, IOException {
+		for (int i = 0; i < featureClass.featureCount(null); i++) {
+			IMsoFeature feature = (IMsoFeature)featureClass.getFeature(i);
+			feature.setSelected(false);
+		}
+		fireOnSelectionChanged();
+	}
+	
+	public List getSelected() throws AutomationException, IOException {
+		ArrayList<IMsoFeature> selection = new ArrayList<IMsoFeature>();
+		for (int i = 0; i < featureClass.featureCount(null); i++) {
+			IMsoFeature feature = (IMsoFeature)featureClass.getFeature(i);
+			if (feature.isSelected()) {
+				selection.add(feature);
+			}
+		}
+		return selection;
+	}
+	
+	public List getSelectedMsoObjects() throws AutomationException, IOException {
+		ArrayList<IMsoObjectIf> selection = new ArrayList<IMsoObjectIf>();
+		for (int i = 0; i < featureClass.featureCount(null); i++) {
+			IMsoFeature feature = (IMsoFeature)featureClass.getFeature(i);
+			selection.add(feature.getMsoObject());
+		}
+		return selection;
 	}
 	
 	public IFeature searchData(Envelope env) throws IOException, AutomationException {
 		return null;
+	}
+	
+	public boolean isDirty() {
+		return isDirty;
 	}
 	
 	public String getName() throws IOException, AutomationException {
@@ -55,15 +190,6 @@ public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoD
 
 	public IMsoManagerIf.MsoClassCode getClassCode() {
 		return classCode;
-	}
-
-	public void setClassCode(IMsoManagerIf.MsoClassCode classCode) {
-		this.classCode = classCode;
-	}
-	
-	public void setLayerCode(IMsoFeatureLayer.LayerCode layerCode) {
-		this.layerCode = layerCode;
-		name = Utils.translate(layerCode);
 	}
 	
 	public IMsoFeatureLayer.LayerCode getLayerCode() {
@@ -117,9 +243,6 @@ public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoD
 	public void setSpatialReferenceByRef(ISpatialReference srs)
 			throws IOException, AutomationException {
 		this.srs = srs;
-		if (featureClass != null) {
-			((IMsoFeatureClass)featureClass).setSpatialReference(srs);
-		}
 	}
 
 	public ISpatialReference getSpatialReference() throws IOException, AutomationException {

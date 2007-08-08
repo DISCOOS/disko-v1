@@ -6,7 +6,7 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 import org.redcross.sar.map.feature.IMsoFeature;
-import org.redcross.sar.map.feature.IMsoFeatureClass;
+import org.redcross.sar.map.feature.MsoFeatureClass;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
 
 import com.esri.arcgis.geodatabase.IFeature;
@@ -50,18 +50,16 @@ public class SelectFeatureTool extends AbstractCommandTool {
 					for (int i = 0; i < layers.size(); i++) {
 						IMsoFeatureLayer layer = (IMsoFeatureLayer)layers.get(i);
 						if (layer.isSelectable()) {
-							IMsoFeatureClass fc = (IMsoFeatureClass)layer.getFeatureClass();
-							fc.clearSelected();
+							layer.clearSelected();
 						}
 					}
 					for (int i = 0; i < layers.size(); i++) {
 						IMsoFeatureLayer layer = (IMsoFeatureLayer)layers.get(i);
 						if (layer.isSelectable()) {
-							IMsoFeatureClass fc = (IMsoFeatureClass)layer.getFeatureClass();
+							MsoFeatureClass fc = (MsoFeatureClass)layer.getFeatureClass();
 							IFeature feature = search(fc, p);
 							if (feature != null && feature instanceof IMsoFeature) {
-								editFeature = (IMsoFeature)feature;
-								fc.setSelected(editFeature, true);
+								layer.setSelected((IMsoFeature)feature, true);
 								map.partialRefresh(layer, null);
 								break;
 							}

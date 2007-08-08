@@ -4,9 +4,10 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 
 import org.redcross.sar.map.feature.IMsoFeature;
-import org.redcross.sar.map.feature.OperationAreaMaskFeatureClass;
+import org.redcross.sar.map.feature.OperationAreaMaskFeature;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.mso.data.IMsoObjectIf;
 
 import com.esri.arcgis.display.IDisplay;
 import com.esri.arcgis.display.RgbColor;
@@ -23,19 +24,17 @@ public class OperationAreaMaskLayer extends AbstractMsoFeatureLayer {
 	private TransparencyDisplayFilter filter = null;
 	
 	public OperationAreaMaskLayer(IMsoModelIf msoModel) {
-		setClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA);
-		setLayerCode(LayerCode.OPERATION_AREA_MASK_LAYER);
- 		featureClass = new OperationAreaMaskFeatureClass(
- 				IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA, msoModel);
-		try {
-			createSymbols();
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		super(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA,
+				LayerCode.OPERATION_AREA_MASK_LAYER, msoModel);
+		createSymbols();
+	}
+	
+	protected IMsoFeature createMsoFeature(IMsoObjectIf msoObject) 
+			throws IOException, AutomationException {
+		IMsoFeature msoFeature = new OperationAreaMaskFeature();
+		msoFeature.setSpatialReference(srs);
+		msoFeature.setMsoObject(msoObject);
+		return msoFeature;
 	}
 	
 	public void draw(int drawPhase, IDisplay display, ITrackCancel trackCancel)
@@ -54,18 +53,30 @@ public class OperationAreaMaskLayer extends AbstractMsoFeatureLayer {
  					display.setFilterByRef(null);
  				}
  			}
+ 			isDirty = false;
  		} catch (Exception e) {
  			e.printStackTrace();
  		}
 	}
 
-	private void createSymbols() throws UnknownHostException, IOException {
-		filter = new TransparencyDisplayFilter();
-		filter.setTransparency((short)50);
-			
-		fill = new SimpleFillSymbol();
-		RgbColor blueColor = new RgbColor();
-		blueColor.setBlue(255);
-		fill.setColor(blueColor);
+	private void createSymbols() {
+		try {
+			filter = new TransparencyDisplayFilter();
+			filter.setTransparency((short)50);
+				
+			fill = new SimpleFillSymbol();
+			RgbColor blueColor = new RgbColor();
+			blueColor.setBlue(255);
+			fill.setColor(blueColor);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (AutomationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

@@ -2,22 +2,11 @@ package org.redcross.sar.map.feature;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-
-import org.redcross.sar.app.Utils;
-import org.redcross.sar.event.DiskoMapEvent;
-import org.redcross.sar.event.IDiskoMapEventListener;
-import org.redcross.sar.mso.IMsoManagerIf;
-import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.mso.data.IMsoObjectIf;
-import org.redcross.sar.mso.event.IMsoEventManagerIf;
-import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
-import org.redcross.sar.mso.event.MsoEvent.Update;
 
 import com.esri.arcgis.geodatabase.IEnumRelationshipClass;
 import com.esri.arcgis.geodatabase.IFeature;
 import com.esri.arcgis.geodatabase.IFeatureBuffer;
+import com.esri.arcgis.geodatabase.IFeatureClass;
 import com.esri.arcgis.geodatabase.IFeatureCursor;
 import com.esri.arcgis.geodatabase.IFeatureDataset;
 import com.esri.arcgis.geodatabase.IField;
@@ -38,64 +27,14 @@ import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.system.IPropertySet;
 import com.esri.arcgis.system.IUID;
 
-public abstract class AbstractMsoFeatureClass implements IMsoFeatureClass, IGeoDataset, 
-		IMsoUpdateListenerIf {
+public class MsoFeatureClass implements IFeatureClass, IGeoDataset {
 
 	private static final long serialVersionUID = 1L;
-	
-	protected IMsoManagerIf.MsoClassCode classCode = null;
-	protected IMsoModelIf msoModel = null;
 	protected ISpatialReference srs = null;
 	protected ArrayList<IMsoFeature> data = null;
-	protected ArrayList<IDiskoMapEventListener> listeners = null;
-	protected DiskoMapEvent diskoMapEvent = null;
-	protected EnumSet<IMsoManagerIf.MsoClassCode> myInterests = null;
-	protected boolean isDirty = false;
 	
-	public AbstractMsoFeatureClass(IMsoManagerIf.MsoClassCode classCode, IMsoModelIf msoModel) {
-		this.classCode = classCode;
-		this.msoModel = msoModel;
-		myInterests = EnumSet.of(classCode);
-		IMsoEventManagerIf msoEventManager = msoModel.getEventManager();
-		msoEventManager.addClientUpdateListener(this);
+	public MsoFeatureClass() {
 		data = new ArrayList<IMsoFeature>();
-		listeners = new ArrayList<IDiskoMapEventListener>();
-		diskoMapEvent = new DiskoMapEvent(this);
-	}
-	
-	public IMsoManagerIf.MsoClassCode getClassCode() {
-		return classCode;
-	}
-
-	public void setClassCode(IMsoManagerIf.MsoClassCode classCode) {
-		this.classCode = classCode;
-	}
-
-	public IMsoModelIf getMsoModel() {
-		return msoModel;
-	}
-
-	public void setMsoModel(IMsoModelIf msoModel) {
-		this.msoModel = msoModel;
-	}
-	
-	public IMsoFeature createMsoFeature() {
-		return null;
-	}
-	
-	public void setIsDirty(boolean isDirty) {
-		this.isDirty = isDirty;
-	}
-	
-	public boolean getIsDirty() {
-		return isDirty;
-	}
-
-	public void handleMsoUpdateEvent(Update e) {
-	}
-	
-	public boolean hasInterestIn(IMsoObjectIf aMsoObject) {
-		return myInterests.contains(aMsoObject.getMsoClassCode());
 	}
 	
 	public IMsoFeature getFeature(String id) {
@@ -108,58 +47,14 @@ public abstract class AbstractMsoFeatureClass implements IMsoFeatureClass, IGeoD
 		return null;
 	}
 	
-	public void setSelected(IMsoFeature msoFeature, boolean selected) {
-		msoFeature.setSelected(selected);
-		fireOnSelectionChanged();
+	public void addFeature(IMsoFeature feature) {
+		data.add(feature);
 	}
 	
-	public void clearSelected() throws AutomationException, IOException {
-		for (int i = 0; i < featureCount(null); i++) {
-			IMsoFeature feature = (IMsoFeature)getFeature(i);
-			feature.setSelected(false);
-		}
-		fireOnSelectionChanged();
-	}
-	
-	public List getSelected() throws AutomationException, IOException {
-		ArrayList<IMsoFeature> selection = new ArrayList<IMsoFeature>();
-		for (int i = 0; i < featureCount(null); i++) {
-			IMsoFeature feature = (IMsoFeature)getFeature(i);
-			if (feature.isSelected()) {
-				selection.add(feature);
-			}
-		}
-		return selection;
-	}
-	
-	public List getSelectedMsoObjects() throws AutomationException, IOException {
-		ArrayList<IMsoObjectIf> selection = new ArrayList<IMsoObjectIf>();
-		for (int i = 0; i < featureCount(null); i++) {
-			IMsoFeature feature = (IMsoFeature)getFeature(i);
-			selection.add(feature.getMsoObject());
-		}
-		return selection;
-	}
-	
-	public void addDiskoMapEventListener(IDiskoMapEventListener listener) {
-		if (listeners.indexOf(listener) == -1) {
-			listeners.add(listener);
-		}
-	}
-	
-	public void removeDiskoMapEventListener(IDiskoMapEventListener listener) {
-		listeners.remove(listener);
-	}
-	
-	protected void fireOnSelectionChanged() {
-		for (int i = 0; i < listeners.size(); i++) {
-			try {
-				listeners.get(i).onSelectionChanged(diskoMapEvent);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+	public void removeFeature(IMsoFeature feature) throws IOException, AutomationException {
+		feature.setShapeByRef(null);
+		feature.setMsoObject(null);
+		data.remove(feature);
 	}
 
 	public IFeatureCursor IFeatureClass_insert(boolean arg0)
@@ -172,14 +67,6 @@ public abstract class AbstractMsoFeatureClass implements IMsoFeatureClass, IGeoD
 			throws IOException, AutomationException {
 		// TODO Auto-generated method stub
 		return null;
-	}
-	
-	protected void removeFeature(IFeature feature) throws IOException, AutomationException {
-		feature.setShapeByRef(null);
-		if (feature instanceof IMsoFeature) {
-			((IMsoFeature)feature).setMsoObject(null);
-		}
-		data.remove(feature);
 	}
 
 	public IFeature createFeature() throws IOException, AutomationException {
@@ -267,7 +154,7 @@ public abstract class AbstractMsoFeatureClass implements IMsoFeatureClass, IGeoD
 	}
 
 	public String getAliasName() throws IOException, AutomationException {
-		return Utils.translate(classCode);
+		return null;
 	}
 
 	public int getObjectClassID() throws IOException, AutomationException {

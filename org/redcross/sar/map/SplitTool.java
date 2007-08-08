@@ -5,7 +5,8 @@ import java.io.IOException;
 import java.util.Vector;
 
 import org.redcross.sar.map.feature.IMsoFeature;
-import org.redcross.sar.map.feature.IMsoFeatureClass;
+import org.redcross.sar.map.feature.MsoFeatureClass;
+import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.mso.data.IAreaIf;
 import org.redcross.sar.util.mso.GeoCollection;
 import org.redcross.sar.util.mso.IGeodataIf;
@@ -44,15 +45,16 @@ public class SplitTool extends AbstractCommandTool {
 	}
 
 	public void onMouseDown(int button, int shift, int x, int y)
-	throws IOException, AutomationException {
+			throws IOException, AutomationException {
 		p.setX(x);
 		p.setY(y); 
 		transform(p);
 
-		IMsoFeatureClass featureClass = (IMsoFeatureClass)editLayer.getFeatureClass();
+		IMsoFeatureLayer editLayer = map.getMapManager().getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER);
+		MsoFeatureClass featureClass = (MsoFeatureClass)editLayer.getFeatureClass();
 		IFeature feature = search(featureClass, p);
 		if (feature != null && feature instanceof IMsoFeature) {
-			editFeature = (IMsoFeature)feature;
+			IMsoFeature editFeature = (IMsoFeature)feature;
 			IGeometry geom = editFeature.getShape();
 			if (featureClass.getShapeType() == esriGeometryType.esriGeometryBag) {
 				GeometryBag geomBag = (GeometryBag)geom;
@@ -67,7 +69,6 @@ public class SplitTool extends AbstractCommandTool {
 								MapUtil.getMsoRoute(result[0]));
 						clone.add(MapUtil.getMsoRoute(result[1]));
 						area.setGeodata(clone);
-						map.fireEditLayerChanged();
 					}
 				}
 			}

@@ -37,6 +37,10 @@ public abstract class AbstractMsoFeature implements IMsoFeature {
 			msoGeometryChanged();
 		}
 	}
+	
+	public boolean geometryIsChanged(IMsoObjectIf msoObj) {
+		return false;
+	}
 
 	public void msoGeometryChanged() throws IOException, AutomationException {
 		// TODO Auto-generated method stub

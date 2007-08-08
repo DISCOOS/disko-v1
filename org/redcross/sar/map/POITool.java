@@ -6,11 +6,11 @@ import java.io.IOException;
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.POIDialog;
-import org.redcross.sar.map.feature.IMsoFeatureClass;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.map.layer.OperationAreaLayer;
-import org.redcross.sar.mso.data.IAreaIf;
+import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IPOIIf;
+import org.redcross.sar.mso.data.IPOIListIf;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
 
 import com.esri.arcgis.geometry.Envelope;
@@ -25,15 +25,16 @@ import com.esri.arcgis.interop.AutomationException;
 public class POITool extends AbstractCommandTool {
 
 	private static final long serialVersionUID = 1L;
-	
+	private IDiskoApplication app = null;
 	private POIDialog poiDialog = null;
-	private IAreaIf area = null;
 	private Point p = null;
+	private IPOIIf poi = null; // current POI
 		
 	/**
 	 * Constructs the DrawTool
 	 */
 	public POITool(IDiskoApplication app) throws IOException {
+		this.app = app;
 		dialog = new POIDialog(app, this);
 		dialog.setIsToggable(false);
 		p = new Point();
@@ -44,7 +45,6 @@ public class POITool extends AbstractCommandTool {
 	public void onCreate(Object obj) throws IOException, AutomationException {
 		if (obj instanceof IDiskoMap) {
 			map = (DiskoMap)obj;
-			map.addDiskoMapEventListener(this);
 			poiDialog = (POIDialog)dialog;
 			poiDialog.setLocationRelativeTo(map, DiskoDialog.POS_WEST, false);
 			
@@ -53,39 +53,32 @@ public class POITool extends AbstractCommandTool {
 					IMsoFeatureLayer.LayerCode.OPERATION_AREA_LAYER);
 		}
 	}
-	
-	/**
-	 * Set an MSO Area to add POI's. POI's will also snap to geometries in Area.
-	 * @param area
-	 */
-	public void setArea(IAreaIf area) {
-		this.area = area;
-	}
 
 	public void onMouseDown(int button, int shift, int x, int y)
 			throws IOException, AutomationException {
 	}	
 	
+	public IPOIIf getCurrentPOI() {
+		return poi;
+	}
+	
 	public void movePOI(Point point) throws IOException, AutomationException {
-		if (editFeature == null) {
-			return;
+		if (poi != null) {
+			//check if point inside operation area
+			if (!insideOpArea(point)) {
+				Toolkit.getDefaultToolkit().beep();
+				return;
+			}
+			poi.setPosition(MapUtil.getMsoPosistion(point));
+
+			//pan to POI if not in current extent
+			Envelope extent = (Envelope)map.getActiveView().getExtent();
+			if (!extent.contains(point)) {
+				extent.centerAt(point);
+				map.setExtent(extent);
+			}
+			map.refreshMsoLayers();
 		}
-		//check if point inside operation area
-		if (!insideOpArea(point)) {
-			Toolkit.getDefaultToolkit().beep();
-			return;
-		}
-		IPOIIf poi = (IPOIIf)editFeature.getMsoObject();
-		poi.setPosition(MapUtil.getMsoPosistion(point));
-		
-		//pan to POI if not in current extent
-		Envelope extent = (Envelope)map.getActiveView().getExtent();
-		if (!extent.contains(point)) {
-			extent.centerAt(point);
-			map.setExtent(extent);
-		}
-		map.partialRefresh(editLayer, null);
-		map.fireEditLayerChanged();
 	}
 	
 	public void addPOIAt(double x, double y) throws IOException, AutomationException {
@@ -106,27 +99,19 @@ public class POITool extends AbstractCommandTool {
 			Toolkit.getDefaultToolkit().beep();
 			return;
 		}
-		map.setSupressDrawing(true);
-		IMsoFeatureClass featureClass = (IMsoFeatureClass)editLayer.getFeatureClass();
-		featureClass.clearSelected();
-		editFeature = featureClass.createMsoFeature();
-		IPOIIf poi = (IPOIIf)editFeature.getMsoObject();
+		ICmdPostIf cmdPost = app.getMsoModel().getMsoManager().getCmdPost();
+		IPOIListIf poiList = cmdPost.getPOIList();
+		poi = poiList.createPOI();
 		poi.setPosition(MapUtil.getMsoPosistion(point));
 		poi.setType(poiType);
 
-		if (area != null) {
-			area.addAreaPOI(poi);
-		}
 		//pan to POI if not in current extent
 		Envelope extent = (Envelope)map.getActiveView().getExtent();
 		if (!extent.contains(point)) {
 			extent.centerAt(point);
 			map.setExtent(extent);
 		}
-		featureClass.setSelected(editFeature, true);
-		map.setSupressDrawing(false);
-		map.partialRefresh(editLayer, null);
-		map.fireEditLayerChanged();
+		map.setSelected(poi, true);
 	}
 	
 	public void onMouseUp(int button, int shift, int x, int y)

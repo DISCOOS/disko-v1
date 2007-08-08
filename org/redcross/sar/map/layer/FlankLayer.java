@@ -5,9 +5,10 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 import org.redcross.sar.map.feature.FlankFeature;
-import org.redcross.sar.map.feature.FlankFeatureClass;
+import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.mso.data.IMsoObjectIf;
 
 import com.esri.arcgis.display.IDisplay;
 import com.esri.arcgis.display.LineFillSymbol;
@@ -24,18 +25,17 @@ public class FlankLayer extends AbstractMsoFeatureLayer {
 	private LineFillSymbol redFill  = null;
 	
 	public FlankLayer(IMsoModelIf msoModel) {
-		setClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
-		setLayerCode(LayerCode.FLANK_LAYER);
- 		featureClass = new FlankFeatureClass(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA, msoModel);
-		try {
-			createSymbols();
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		super(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA,
+				LayerCode.FLANK_LAYER, msoModel);
+		createSymbols();
+	}
+	
+	protected IMsoFeature createMsoFeature(IMsoObjectIf msoObject) 
+			throws IOException, AutomationException {
+		IMsoFeature msoFeature = new FlankFeature();
+		msoFeature.setSpatialReference(srs);
+		msoFeature.setMsoObject(msoObject);
+		return msoFeature;
 	}
 	
 	public void draw(int drawPhase, IDisplay display, ITrackCancel trackCancel)
@@ -57,31 +57,42 @@ public class FlankLayer extends AbstractMsoFeatureLayer {
 					display.drawPolygon((IPolygon)rightFlanks.get(j));
 				}
 			}
+			isDirty = false;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
 
-	private void createSymbols() throws UnknownHostException, IOException {
-
+	private void createSymbols() {
 		// fill symbols
-		redFill = new LineFillSymbol();
-		RgbColor redColor = new RgbColor();
-		redColor.setRed(255);
-		redFill.setColor(redColor);
-		redFill.setAngle(45);
-		SimpleLineSymbol leftOutline = new SimpleLineSymbol();
-		leftOutline.setColor(redColor);
-		redFill.setOutline(leftOutline);
-	
-		blueFill = new LineFillSymbol();
-		RgbColor blueColor = new RgbColor();
-		blueColor.setBlue(255);
-		blueFill.setColor(blueColor);
-		blueFill.setAngle(45);
-		SimpleLineSymbol rightOutline = new SimpleLineSymbol();
-		rightOutline.setColor(blueColor);
-		blueFill.setOutline(rightOutline);
+		try {
+			redFill = new LineFillSymbol();
+			RgbColor redColor = new RgbColor();
+			redColor.setRed(255);
+			redFill.setColor(redColor);
+			redFill.setAngle(45);
+			SimpleLineSymbol leftOutline = new SimpleLineSymbol();
+			leftOutline.setColor(redColor);
+			redFill.setOutline(leftOutline);
+
+			blueFill = new LineFillSymbol();
+			RgbColor blueColor = new RgbColor();
+			blueColor.setBlue(255);
+			blueFill.setColor(blueColor);
+			blueFill.setAngle(45);
+			SimpleLineSymbol rightOutline = new SimpleLineSymbol();
+			rightOutline.setColor(blueColor);
+			blueFill.setOutline(rightOutline);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (AutomationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

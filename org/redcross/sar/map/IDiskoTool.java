@@ -3,8 +3,6 @@ package org.redcross.sar.map;
 import java.io.IOException;
 
 import org.redcross.sar.gui.DiskoDialog;
-import org.redcross.sar.map.feature.IMsoFeature;
-import org.redcross.sar.map.layer.IMsoFeatureLayer;
 
 import com.esri.arcgis.interop.AutomationException;
 
@@ -17,12 +15,4 @@ public interface IDiskoTool {
 	public DiskoDialog getDialog();
 	
 	public IDiskoMap getMap();
-	
-	public void setEditLayer(IMsoFeatureLayer editLayer);
-	
-	public IMsoFeatureLayer getEditLayer();
-	
-	public void setEditFeature(IMsoFeature msoFeature);
-	
-	public IMsoFeature getEditFeature();
 }

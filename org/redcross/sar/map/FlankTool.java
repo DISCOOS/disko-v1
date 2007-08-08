@@ -7,7 +7,8 @@ import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.FlankDialog;
 import org.redcross.sar.map.feature.FlankFeature;
-import org.redcross.sar.map.feature.IMsoFeatureClass;
+import org.redcross.sar.map.feature.MsoFeatureClass;
+import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.mso.data.IAreaIf;
 import org.redcross.sar.util.mso.GeoCollection;
 import org.redcross.sar.util.mso.IGeodataIf;
@@ -52,7 +53,9 @@ public class FlankTool extends AbstractCommandTool {
 		p.setY(y); 
 		transform(p);
 
-		IMsoFeatureClass featureClass = (IMsoFeatureClass)editLayer.getFeatureClass();
+		IMsoFeatureLayer editLayer = map.getMapManager().getMsoLayer(
+				IMsoFeatureLayer.LayerCode.FLANK_LAYER);
+		MsoFeatureClass featureClass = (MsoFeatureClass)editLayer.getFeatureClass();
 		IFeature feature = search(featureClass, p);
 		if (feature != null && feature instanceof FlankFeature) {
 			FlankFeature flankFeature = (FlankFeature)feature;
@@ -63,11 +66,9 @@ public class FlankTool extends AbstractCommandTool {
 				GeoCollection geoColl = area.getGeodata();
 				Route route = getRouteAt(geoColl, index);
 				if (route != null) {
-					System.out.println(route);
 					route.setLayout(getLayout());
 					flankFeature.msoGeometryChanged();
 					map.partialRefresh(editLayer, null);
-					map.fireEditLayerChanged();
 				}
 			}
 		}

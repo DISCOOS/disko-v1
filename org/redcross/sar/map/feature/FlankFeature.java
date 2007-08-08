@@ -11,6 +11,7 @@ import org.redcross.sar.app.Utils;
 import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.map.MapUtil;
 import org.redcross.sar.mso.data.IAreaIf;
+import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.util.mso.GeoCollection;
 import org.redcross.sar.util.mso.IGeodataIf;
 import org.redcross.sar.util.mso.Route;
@@ -48,6 +49,11 @@ public class FlankFeature extends AbstractMsoFeature {
 
 	public List getRightFlanks() {
 		return rightFlanks;
+	}
+	
+	public boolean geometryIsChanged(IMsoObjectIf msoObj) {
+		IAreaIf area = (IAreaIf)msoObj;
+		return area.getGeodata() != null && !area.getGeodata().equals(getGeodata());
 	}
 
 	@Override

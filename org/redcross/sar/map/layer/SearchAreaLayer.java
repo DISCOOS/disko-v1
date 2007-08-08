@@ -5,9 +5,10 @@ import java.net.UnknownHostException;
 
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.map.feature.IMsoFeature;
-import org.redcross.sar.map.feature.SearchAreaFeatureClass;
+import org.redcross.sar.map.feature.SearchAreaFeature;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.ISearchAreaIf;
 
 import com.esri.arcgis.display.IDisplay;
@@ -28,20 +29,19 @@ public class SearchAreaLayer extends AbstractMsoFeatureLayer {
 	private String[] labels = null;
  	
  	public SearchAreaLayer(IMsoModelIf msoModel) {
- 		setClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA);
- 		setLayerCode(LayerCode.SEARCH_AREA_LAYER);
- 		featureClass = new SearchAreaFeatureClass(IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA, msoModel);
+ 		super(IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA, 
+ 				LayerCode.SEARCH_AREA_LAYER, msoModel);
  		createlabels();
-		try {
-			createSymbols();
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		createSymbols();
 	}
+ 	
+ 	protected IMsoFeature createMsoFeature(IMsoObjectIf msoObject) 
+ 			throws IOException, AutomationException {
+ 		IMsoFeature msoFeature = new SearchAreaFeature();
+ 		msoFeature.setSpatialReference(srs);
+ 		msoFeature.setMsoObject(msoObject);
+ 		return msoFeature;
+ 	}
 	
 	public void draw(int drawPhase, IDisplay display, ITrackCancel trackCancel)
 			throws IOException, AutomationException {
@@ -67,36 +67,48 @@ public class SearchAreaLayer extends AbstractMsoFeatureLayer {
 					}
 				}
 			}
+			isDirty = false;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void createSymbols() throws UnknownHostException, IOException {
-		symbol = new SimpleFillSymbol();
-		symbol.setStyle(com.esri.arcgis.display.esriSimpleFillStyle.esriSFSNull);
-		
-		RgbColor color = new RgbColor();
-		color.setBlue(255);
-		
-		SimpleLineSymbol outlineSymbol = new SimpleLineSymbol();	
-		outlineSymbol.setWidth(1.5);
-		outlineSymbol.setColor(color);
-		symbol.setOutline(outlineSymbol);
+	private void createSymbols() {
+		try {
+			symbol = new SimpleFillSymbol();
+			symbol.setStyle(com.esri.arcgis.display.esriSimpleFillStyle.esriSFSNull);
 			
-		selectionSymbol = new SimpleFillSymbol();
-		selectionSymbol.setStyle(com.esri.arcgis.display.esriSimpleFillStyle.esriSFSNull);
-		RgbColor selectionColor = new RgbColor();
-		selectionColor.setBlue(255);
-		selectionColor.setGreen(255);
-		
-		SimpleLineSymbol selectedOutlineSymbol = new SimpleLineSymbol();	
-		selectedOutlineSymbol.setWidth(1.5);
-		selectedOutlineSymbol.setColor(selectionColor);
-		selectionSymbol.setOutline(selectedOutlineSymbol);
-		
-		textSymbol = new TextSymbol();
-		textSymbol.setSize(14);
+			RgbColor color = new RgbColor();
+			color.setBlue(255);
+			
+			SimpleLineSymbol outlineSymbol = new SimpleLineSymbol();	
+			outlineSymbol.setWidth(1.5);
+			outlineSymbol.setColor(color);
+			symbol.setOutline(outlineSymbol);
+				
+			selectionSymbol = new SimpleFillSymbol();
+			selectionSymbol.setStyle(com.esri.arcgis.display.esriSimpleFillStyle.esriSFSNull);
+			RgbColor selectionColor = new RgbColor();
+			selectionColor.setBlue(255);
+			selectionColor.setGreen(255);
+			
+			SimpleLineSymbol selectedOutlineSymbol = new SimpleLineSymbol();	
+			selectedOutlineSymbol.setWidth(1.5);
+			selectedOutlineSymbol.setColor(selectionColor);
+			selectionSymbol.setOutline(selectedOutlineSymbol);
+			
+			textSymbol = new TextSymbol();
+			textSymbol.setSize(14);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (AutomationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private void createlabels() {

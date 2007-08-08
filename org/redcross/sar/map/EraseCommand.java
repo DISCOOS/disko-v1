@@ -3,12 +3,8 @@ package org.redcross.sar.map;
 import java.io.IOException;
 import java.util.List;
 
-import org.redcross.sar.map.feature.PlannedAreaFeatureClass;
 import org.redcross.sar.map.feature.IMsoFeature;
-import org.redcross.sar.map.feature.IMsoFeatureClass;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
-import org.redcross.sar.mso.data.IAreaIf;
-import org.redcross.sar.mso.data.IMsoObjectIf;
 
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.systemUI.ICommand;
@@ -39,18 +35,11 @@ public class EraseCommand implements ICommand {
 		List layers = map.getMapManager().getMsoLayers();
 		for (int i = 0; i < layers.size(); i++) {
 			IMsoFeatureLayer layer = (IMsoFeatureLayer)layers.get(i);
-			IMsoFeatureClass msoFC = (IMsoFeatureClass)layer.getFeatureClass();
-			List selected = msoFC.getSelected();
+			List selected = layer.getSelected();
 			for (int j = 0; j < selected.size(); j++) {
 				IMsoFeature msoFeature = (IMsoFeature)selected.get(j);
 				if (msoFeature.isSelected())  {
-					IMsoObjectIf msoObject = msoFeature.getMsoObject();
-					if (msoObject instanceof IAreaIf) {
-						IAreaIf area = (IAreaIf)msoObject;
-						((PlannedAreaFeatureClass)msoFC).deleteAreaPOIs(area);
-					}
 					msoFeature.getMsoObject().deleteObject();
-					map.fireEditLayerChanged();
 					return;
 				}
 			}

@@ -2,7 +2,6 @@ package org.redcross.sar.map;
 
 import java.io.IOException;
 
-import org.redcross.sar.event.IDiskoMapEventListener;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 
 import com.esri.arcgis.carto.FeatureLayer;
@@ -13,16 +12,6 @@ import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.systemUI.ITool;
 
 public interface IDiskoMap {
-
-	/* (non-Javadoc)
-	 * @see org.redcross.sar.map.IDiskoMap#addDiskoMapEventListener(org.redcross.sar.event.IDiskoMapEventListener)
-	 */
-	public void addDiskoMapEventListener(IDiskoMapEventListener listener);
-
-	/* (non-Javadoc)
-	 * @see org.redcross.sar.map.IDiskoMap#removeDiskoMapEventListener(org.redcross.sar.event.IDiskoMapEventListener)
-	 */
-	public void removeDiskoMapEventListener(IDiskoMapEventListener listener);
 
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#setCurrentToolByRef(com.esri.arcgis.systemUI.ITool)

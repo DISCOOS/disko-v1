@@ -4,23 +4,22 @@ import java.awt.Toolkit;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.redcross.sar.app.IDiskoApplication;
-import org.redcross.sar.event.DiskoMapEvent;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.DrawDialog;
-import org.redcross.sar.map.feature.PlannedAreaFeatureClass;
-import org.redcross.sar.map.feature.IMsoFeatureClass;
-import org.redcross.sar.map.feature.OperationAreaFeatureClass;
-import org.redcross.sar.map.feature.SearchAreaFeatureClass;
 import org.redcross.sar.map.index.IndexedGeometry;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.map.layer.OperationAreaLayer;
+import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.IAreaIf;
+import org.redcross.sar.mso.data.IAreaListIf;
+import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IOperationAreaIf;
+import org.redcross.sar.mso.data.IOperationAreaListIf;
 import org.redcross.sar.mso.data.ISearchAreaIf;
+import org.redcross.sar.mso.data.ISearchAreaListIf;
 import org.redcross.sar.util.mso.GeoCollection;
 
 import com.esri.arcgis.carto.IBasicMap;
@@ -28,6 +27,10 @@ import com.esri.arcgis.carto.IFeatureLayer;
 import com.esri.arcgis.carto.ILayer;
 import com.esri.arcgis.carto.IMap;
 import com.esri.arcgis.carto.InvalidArea;
+import com.esri.arcgis.controls.IMapControlEvents2Adapter;
+import com.esri.arcgis.controls.IMapControlEvents2OnAfterScreenDrawEvent;
+import com.esri.arcgis.controls.IMapControlEvents2OnExtentUpdatedEvent;
+import com.esri.arcgis.controls.IMapControlEvents2OnMapReplacedEvent;
 import com.esri.arcgis.display.IScreenDisplay;
 import com.esri.arcgis.display.RgbColor;
 import com.esri.arcgis.display.SimpleLineSymbol;
@@ -73,6 +76,8 @@ public class DrawTool extends AbstractCommandTool {
 	private SimpleLineSymbol drawSymbol = null;	
 	private SimpleLineSymbol flashSymbol = null;
 	private static final int SNAP_TOL_FACTOR = 200;
+	private IAreaIf area = null;
+	private IMsoManagerIf.MsoClassCode msoClassCode = null;
 	
 	/**
 	 * Constructs the DrawTool
@@ -114,13 +119,13 @@ public class DrawTool extends AbstractCommandTool {
 	public void onCreate(Object obj) throws IOException, AutomationException {
 		if (obj instanceof IDiskoMap) {
 			map = (DiskoMap)obj;
-			map.addDiskoMapEventListener(this);
 			DrawDialog drawDialog = (DrawDialog)dialog;
 			drawDialog.onLoad(map);
 			drawDialog.setLocationRelativeTo(map, DiskoDialog.POS_WEST, true);
 			setSnapTolerance(map.getActiveView().getExtent().getWidth()/SNAP_TOL_FACTOR);
 			drawDialog.setSnapTolerance(getSnapTolerance());
 			updateSnapLayers();
+			map.addIMapControlEvents2Listener(new MapControlAdapter());
 			
 			// getting operation areas
 			opAreaLayer = (OperationAreaLayer) map.getMapManager().getMsoLayer(
@@ -137,6 +142,14 @@ public class DrawTool extends AbstractCommandTool {
 		return searchEnvelope.getHeight();
 	}
 	
+	public void setMsoClassCode(IMsoManagerIf.MsoClassCode msoClassCode) {
+		this.msoClassCode = msoClassCode;
+	}
+	
+	public void setArea(IAreaIf area) {
+		this.area = area;
+	}
+	
 	public void onClick() throws IOException, AutomationException {
 		isActive = true;
 		updateIndexedGeometry();
@@ -148,52 +161,41 @@ public class DrawTool extends AbstractCommandTool {
 	}
 
 	public void onDblClick() throws IOException, AutomationException {
-		if (editLayer == null) {
-			return;
-		}
 		final Polyline polyline = pathGeometry;
 		Runnable r = new Runnable() {
 			public void run() {
 				try {
-					map.setSupressDrawing(true);
-					IMsoFeatureClass featureClass = (IMsoFeatureClass)editLayer.getFeatureClass();
-					if (editFeature != null) {
-						featureClass.setSelected(editFeature, false);
-					} else {
-						editFeature = featureClass.createMsoFeature();
-					}
 					polyline.simplify();
 					polyline.setSpatialReferenceByRef(map.getSpatialReference());
+					ICmdPostIf cmdPost = app.getMsoModel().getMsoManager().getCmdPost();
 
-					if (featureClass instanceof OperationAreaFeatureClass) {
+					if (msoClassCode == IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA) {
 						Polygon polygon = getPolygon(polyline);
 						polygon.setSpatialReferenceByRef(map.getSpatialReference());
-						IOperationAreaIf opArea = (IOperationAreaIf)editFeature.getMsoObject();
-						if (opArea.getGeodata() == null || showYesNo() == 0) {
-							opArea.setGeodata(MapUtil.getMsoPolygon(polygon));
-						}
+						IOperationAreaListIf opAreaList = cmdPost.getOperationAreaList();
+						IOperationAreaIf opArea = opAreaList.createOperationArea();
+						opArea.setGeodata(MapUtil.getMsoPolygon(polygon));
+						map.setSelected(opArea, true);
 					}
-					else if (featureClass instanceof SearchAreaFeatureClass) {
+					else if (msoClassCode == IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA) {
 						Polygon polygon = getPolygon(polyline);
 						polygon.setSpatialReferenceByRef(map.getSpatialReference());
-						ISearchAreaIf searchArea = (ISearchAreaIf)editFeature.getMsoObject();
-						if (searchArea.getGeodata() == null || showYesNo() == 0) {
-							searchArea.setGeodata(MapUtil.getMsoPolygon(polygon));
-						}
+						ISearchAreaListIf searchAreaList = cmdPost.getSearchAreaList();
+						ISearchAreaIf searchArea = searchAreaList.createSearchArea();
+						searchArea.setGeodata(MapUtil.getMsoPolygon(polygon));
+						map.setSelected(searchArea, true);
 					}
-					else if (featureClass instanceof PlannedAreaFeatureClass) {
-						IAreaIf area = (IAreaIf)editFeature.getMsoObject();
-						if (area != null) {
-							GeoCollection clone = cloneGeoCollection(area.getGeodata());
-							clone.add(MapUtil.getMsoRoute(polyline));
-							area.setGeodata(clone);
-							((PlannedAreaFeatureClass)featureClass).updateAreaPOIs(area);
+					else if (msoClassCode == IMsoManagerIf.MsoClassCode.CLASSCODE_AREA) {
+						if (area == null) {
+							IAreaListIf areaList = cmdPost.getAreaList();
+							area = areaList.createArea();
+							area.setGeodata(new GeoCollection(null));
+							map.setSelected(area, true);
 						}
+						GeoCollection clone = cloneGeoCollection(area.getGeodata());
+						clone.add(MapUtil.getMsoRoute(polyline));
+						area.setGeodata(clone);
 					}
-					featureClass.setSelected(editFeature, true);
-					map.setSupressDrawing(false);
-					map.fireEditLayerChanged();
-					map.partialRefresh(editLayer, null);
 				} catch (AutomationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -205,14 +207,6 @@ public class DrawTool extends AbstractCommandTool {
 		};
 		SwingUtilities.invokeLater(r);
 		reset();
-	}
-	
-	private int showYesNo() {
-		Object[] options = {"Ja","Nei"};
-		return JOptionPane.showOptionDialog(app.getFrame(), 
-				"Overskrive det du sist tegnet ?",
-				"Draw tool", JOptionPane.YES_NO_CANCEL_OPTION,
-				JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 	}
 	
 	private Polygon getPolygon(Polyline pline) throws IOException, AutomationException {
@@ -228,13 +222,10 @@ public class DrawTool extends AbstractCommandTool {
 
 	public void onMouseDown(int button, int shift, int x, int y)
 			throws IOException, AutomationException {
-		if (editLayer == null) {
-			return;
-		}
-		IMsoFeatureClass featureClass = (IMsoFeatureClass)editLayer.getFeatureClass();
 		p2 = transform(x,y);
 		// check if point inside operation area
-		if (!(featureClass instanceof OperationAreaFeatureClass) && !insideOpArea(p2)) {
+		if (msoClassCode != IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA && 
+				!insideOpArea(p2)) {
 			Toolkit.getDefaultToolkit().beep();
 			return;
 		}
@@ -260,9 +251,6 @@ public class DrawTool extends AbstractCommandTool {
 	
 	public void onMouseMove(int button, int shift, int x, int y)
 			throws IOException, AutomationException {
-		if (editLayer == null) {
-			return;
-		}
 		//Only create the trace every other time the mouse moves
 		moveCounter++;
 		if(moveCounter < 2) {
@@ -342,9 +330,6 @@ public class DrawTool extends AbstractCommandTool {
 	}
 	
 	private void draw() throws IOException, AutomationException {
-		if (map == null) {
-			return;
-		}
 		IScreenDisplay screenDisplay = map.getActiveView().getScreenDisplay();
 		screenDisplay.startDrawing(screenDisplay.getHDC(),(short) esriScreenCache.esriNoScreenCache);
 		
@@ -446,19 +431,29 @@ public class DrawTool extends AbstractCommandTool {
 		setSnapTolerance(map.getActiveView().getExtent().getWidth()/SNAP_TOL_FACTOR);
 		drawDialog.setSnapTolerance(getSnapTolerance());
 	}
+	
+	class MapControlAdapter extends IMapControlEvents2Adapter {
+		
+		private static final long serialVersionUID = 1L;
 
-	//***** DiskoMapEventListener implementations *****
-	public void onAfterScreenDraw(DiskoMapEvent e) throws IOException, AutomationException {
-		draw();
-	}
+		@Override
+		public void onAfterScreenDraw(IMapControlEvents2OnAfterScreenDrawEvent arg0) 
+				throws IOException, AutomationException {
+			draw();
+		}
 
-	public void onExtentUpdated(DiskoMapEvent e) throws IOException, AutomationException {
-		isDirty = true;
-		updateIndexedGeometry();
-	}
+		@Override
+		public void onExtentUpdated(IMapControlEvents2OnExtentUpdatedEvent arg0) 
+				throws IOException, AutomationException {
+			isDirty = true;
+			updateIndexedGeometry();
+		}
 
-	public void onMapReplaced(DiskoMapEvent e) throws IOException, AutomationException {
-		isDirty = true;
-		updateIndexedGeometry();
+		@Override
+		public void onMapReplaced(IMapControlEvents2OnMapReplacedEvent arg0) 
+				throws IOException, AutomationException {
+			isDirty = true;
+			updateIndexedGeometry();
+		}
 	}
 }

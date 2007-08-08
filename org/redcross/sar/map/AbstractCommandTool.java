@@ -5,11 +5,7 @@ import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.Properties;
 
-import org.redcross.sar.event.DiskoMapEvent;
-import org.redcross.sar.event.IDiskoMapEventListener;
 import org.redcross.sar.gui.DiskoDialog;
-import org.redcross.sar.map.feature.IMsoFeature;
-import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.map.layer.OperationAreaLayer;
 import org.redcross.sar.util.mso.GeoCollection;
 import org.redcross.sar.util.mso.IGeodataIf;
@@ -30,14 +26,12 @@ import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.systemUI.ICommand;
 import com.esri.arcgis.systemUI.ITool;
 
-public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool, IDiskoMapEventListener {
+public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool {
 	
 	protected DiskoMap map = null;
 	protected DiskoDialog dialog = null;
 	protected Properties properties = null;
 	protected IDisplayTransformation transform = null;
-	protected IMsoFeatureLayer editLayer = null;
-	protected IMsoFeature editFeature = null;
 	protected OperationAreaLayer opAreaLayer = null;
 	
 	protected IDisplayTransformation getTransform() 
@@ -75,23 +69,6 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 
 	public DiskoMap getMap() {
 		return map;
-	}
-
-	public void setEditLayer(IMsoFeatureLayer editLayer) {
-		editFeature = null;
-		this.editLayer = editLayer;
-	}
-	
-	public IMsoFeatureLayer getEditLayer() {
-		return editLayer;
-	}
-	
-	public void setEditFeature(IMsoFeature msoFeature) {
-		editFeature = msoFeature;
-	}
-	
-	public IMsoFeature getEditFeature() {
-		return editFeature;
 	}
 	
 	protected IFeature search(IFeatureClass fc, IPoint p) throws UnknownHostException, IOException {
@@ -252,31 +229,5 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 
 	public void refresh(int arg0) throws IOException, AutomationException {
 		// TODO Auto-generated method stub
-
-	}
-
-	public void editLayerChanged(DiskoMapEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void onAfterScreenDraw(DiskoMapEvent e) throws IOException, AutomationException {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void onExtentUpdated(DiskoMapEvent e) throws IOException, AutomationException {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void onMapReplaced(DiskoMapEvent e) throws IOException, AutomationException {
-		// TODO Auto-generated method stub
-
-	}
-	
-	public void onSelectionChanged(DiskoMapEvent e) throws IOException, AutomationException {
-		// TODO Auto-generated method stub
-		
 	}
 }
