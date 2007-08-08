@@ -8,6 +8,7 @@ import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent;
+import org.redcross.sar.mso.event.MsoEvent.Update;
 import org.redcross.sar.util.mso.DTG;
 import org.redcross.sar.util.mso.Selector;
 
@@ -104,14 +105,11 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
                 return DTG.CalToDTG(message.getOccuredTime());
             case 2:
             	ICommunicatorIf sender = message.getSender();
-            	if(sender != null)
+            	if(sender == null)
             	{
-            		return sender.getCommunicatorNumberPrefix() + " " + sender.getCommunicatorNumber();
+            		sender = (ICommunicatorIf)m_wpModule.getMsoManager().getCmdPost();
             	}
-            	else
-            	{
-            		return "";
-            	}
+            	return sender.getCommunicatorNumberPrefix() + " " + sender.getCommunicatorNumber();
             case 3:
             	if(message.isBroadcast())
             	{
@@ -120,15 +118,12 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
             	}
             	else
             	{
-            		ICommunicatorIf reciever = message.getConfirmedReceivers().getItem();
-            		if(reciever != null)
+            		ICommunicatorIf receiver = message.getSingleReceiver();
+            		if(receiver == null)
             		{
-            			return reciever.getCommunicatorNumberPrefix() + " " + reciever.getCommunicatorNumber();
+            			receiver = (ICommunicatorIf)m_wpModule.getMsoManager().getCmdPost();
             		}
-            		else
-            		{
-            			return "";
-            		}
+            		return receiver.getCommunicatorNumberPrefix() + " " + receiver.getCommunicatorNumber();
             	}
             case 4:
                 return message.getLines();
@@ -146,7 +141,7 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
         //return m_wpModule.getText(MessageFormat.format("LogTable_hdr_{0}.text", column));
     }
 
-    public void handleMsoUpdateEvent(MsoEvent.Update e)
+    public void handleMsoUpdateEvent(Update e)
     {
         buildTable();
         fireTableDataChanged();

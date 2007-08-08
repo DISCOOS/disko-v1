@@ -390,16 +390,12 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 			if(!message.isBroadcast())
 			{
 				communicator = message.getSingleReceiver();
-				if(communicator != null)
+				if(communicator == null)
 				{
-					m_unitNumberField.setText(String.valueOf(communicator.getCommunicatorNumber()));
-					m_unitTypeField.setText(String.valueOf(communicator.getCommunicatorNumberPrefix()));
+					communicator = (ICommunicatorIf)m_wp.getMsoManager().getCmdPost();
 				}
-				else
-				{
-					m_unitTypeField.setText(m_wp.getText("BroadcastLabel.text"));
-					m_unitNumberField.setText("");
-				}
+				m_unitNumberField.setText(String.valueOf(communicator.getCommunicatorNumber()));
+				m_unitTypeField.setText(String.valueOf(communicator.getCommunicatorNumberPrefix()));
 			}
 			else
 			{
@@ -543,50 +539,5 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 	public String getCommunicatorText()
 	{
 		return m_unitTypeField.getText() + " " + m_unitNumberField.getText();
-	}
-
-	/**
-	 *  
-	 * @return reference to the current communicator in the dialog
-	 */
-	public ICommunicatorIf getCommunicator()
-	{
-		final String prefix = m_unitTypeField.getText();
-		final String number = m_unitNumberField.getText();
-		
-		if(prefix.isEmpty() && number.isEmpty())
-		{
-			return (ICommunicatorIf)m_wp.getMsoManager().getCmdPost();
-		}
-		else
-		{
-			// Get communicator from communicator list
-			List<ICommunicatorIf> communicators = m_wp.getMsoManager().getCmdPost().getCommunicatorList().selectItems(
-					new Selector<ICommunicatorIf>()
-					{
-						public boolean select(ICommunicatorIf anObject)
-						{
-							if(prefix.equals(String.valueOf(anObject.getCommunicatorNumberPrefix()))
-									&& number.equals(String.valueOf(anObject.getCommunicatorNumber())))
-							{
-								return true;
-							}
-							else
-								
-							{
-								return false;
-							}
-						}
-					},
-					new Comparator<ICommunicatorIf>()
-					{
-						public int compare(ICommunicatorIf arg0,
-								ICommunicatorIf arg1)
-						{
-							return 0;
-						}
-					});
-			return communicators.get(0);
-		}
 	}
 }

@@ -9,6 +9,7 @@ import java.awt.event.MouseListener;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -56,23 +57,27 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	protected ButtonGroup m_buttonGroup = null;
 	protected JToggleButton m_currentButton = null;
 	protected boolean m_senderList = true;
+	protected HashMap<JToggleButton, ICommunicatorIf> m_buttonCommunicatorMap = null;
+	protected HashMap<ICommunicatorIf, JToggleButton> m_communicatorButtonMap = null;
 	
 	protected MouseListener m_buttonMouseListener = new MouseListener()
 	{
 		public void mouseClicked(MouseEvent me)
 		{
+			//TODO event does not get fired
 			JToggleButton button = (JToggleButton)me.getSource();
 			if(button == m_currentButton)
 			{
-				// If a selected unit is de-selected in the list, standard sender should be set
-				m_buttonGroup.clearSelection();
+				IMessageIf message = MessageLogTopPanel.getCurrentMessage();
 				// TODO change default value when multiple command posts are possible
 				ICommunicatorIf commandPost = (ICommunicatorIf)m_wpMessageLog.getMsoManager().getCmdPost();
-				ActionEvent ae = new ActionEvent(button, 1, commandPost.getCommunicatorNumberPrefix() + " " + commandPost.getCommunicatorNumber());
-				ActionListener[] listeners = button.getActionListeners();
-				for(ActionListener actionListener : listeners)
+				if(m_senderList)
 				{
-					actionListener.actionPerformed(ae);
+					message.setSender(commandPost);
+				}
+				else
+				{
+					message.setSingleReceiver(commandPost);
 				}
 				m_currentButton = null;
 			}
@@ -109,6 +114,9 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 		m_senderList = senderList;
 		
 		m_actionListeners = new LinkedList<ActionListener>();
+		
+		m_buttonCommunicatorMap = new HashMap<JToggleButton, ICommunicatorIf>();
+		m_communicatorButtonMap = new HashMap<ICommunicatorIf, JToggleButton>();
 		
 		m_buttonGroup = new ButtonGroup();
 		
@@ -249,19 +257,11 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 			communicator = (ICommunicatorIf)m_wpMessageLog.getMsoManager().getCmdPost();
 		}
 		
-		// Get sender button and mark it
-		Enumeration<AbstractButton> buttons = m_buttonGroup.getElements();
-		AbstractButton button = null;
-		while(buttons.hasMoreElements())
+		// Get communicator button and mark it
+		JToggleButton button = m_communicatorButtonMap.get(communicator);
+		if(button != null)
 		{
-			button = buttons.nextElement();
-			String[] command = button.getActionCommand().split(" ");
-			if(command[0].charAt(0) == communicator.getCommunicatorNumberPrefix() && 
-					Integer.valueOf(command[1]) == communicator.getCommunicatorNumber())
-			{
-				m_currentButton = (JToggleButton)button;
-				button.setSelected(true);
-			}
+			button.setSelected(true);
 		}
 	}
 
@@ -305,8 +305,10 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	{
 		// Clear previous list, brute force maintenance
 		m_contentsPanel.removeAll();
-		
 		m_buttonGroup = new ButtonGroup();
+		
+		m_buttonCommunicatorMap.clear();
+		m_communicatorButtonMap.clear();
 		
 		// Set contents panel size in order to enable scroll pane
 		int numberOfColumns = m_communicatorList.selectItems(m_communicatorSelector, m_communicatorComparator).size() / NUMBER_OF_ROWS + 1;
@@ -331,40 +333,39 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 				panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 				m_contentsPanel.add(panel);
 			}
-			addUnitButton(commnicator, panel);
+			this.addUnitButton(commnicator, panel);
 			i++;
 		}
 	}
 
-	private void addUnitButton(ICommunicatorIf communicator, JPanel buttonPanel)
+	private void addUnitButton(final ICommunicatorIf communicator, JPanel buttonPanel)
 	{
-		JToggleButton button = new JToggleButton();
+		JToggleButton button = DiskoButtonFactory.createLargeToggleButton(communicator);
 		
-		button.setMinimumSize(BUTTON_SIZE);
-		button.setPreferredSize(BUTTON_SIZE);
-		button.setMaximumSize(BUTTON_SIZE);
-		
-		if(communicator instanceof IUnitIf)
-		{
-			IUnitIf unit = (IUnitIf)communicator;
-			button.setIcon(getUnitIcon(unit.getType()));
-		}
-		else if(communicator instanceof ICmdPostIf)
-		{
-			button.setIcon(getUnitIcon(IUnitIf.UnitType.COMMAND_POST));
-		}
-		
-		button.setText(communicator.getCommunicatorNumber() + " " + communicator.getCallSign());
-		button.setActionCommand(communicator.getCommunicatorNumberPrefix() + " " + communicator.getCommunicatorNumber());
-		
-		// Add action listeners to button
-		for(ActionListener listener : m_actionListeners)
-		{
-			button.addActionListener(listener);
-		}
+		m_buttonCommunicatorMap.put(button, communicator);
+		m_communicatorButtonMap.put(communicator, button);
 		
 		// De-selecting a button should result in standard sender value being used
 		button.addMouseListener(m_buttonMouseListener);
+		
+		button.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+				
+				if(m_senderList)
+				{
+					message.setSender(communicator);
+				}
+				else
+				{
+					message.setSingleReceiver(communicator);
+				}
+				fireDialogFinished();
+			}
+		});
+		
 		
 		buttonPanel.add(button);
 		m_buttonGroup.add(button);

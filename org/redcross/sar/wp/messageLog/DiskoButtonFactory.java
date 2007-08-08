@@ -2,6 +2,7 @@ package org.redcross.sar.wp.messageLog;
 
 import java.awt.Dimension;
 import java.util.MissingResourceException;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 import javax.swing.JButton;
@@ -130,9 +131,8 @@ public class DiskoButtonFactory
 		
 		try
 		{
-			// TODO point to actual resource
-			ResourceBundle resoureces = ResourceBundle.getBundle("buttonnames");
-			String iconPath = resoureces.getString("OkButton.text");
+			ResourceBundle resoureces = ResourceBundle.getBundle("properties");
+			String iconPath = resoureces.getString("OkButton.icon");
 			button.setIcon(Utils.createImageIcon(iconPath, "OK"));
 		}
 		catch(Exception e)
@@ -151,10 +151,9 @@ public class DiskoButtonFactory
 		
 		try
 		{
-			// TODO point to actual resource
-			ResourceBundle resoureces = ResourceBundle.getBundle("buttonnames");
-			String iconPath = resoureces.getString("OkButton.text");
-			button.setIcon(Utils.createImageIcon(iconPath, "OK"));
+			ResourceBundle resoureces = ResourceBundle.getBundle("properties");
+			String iconPath = resoureces.getString("CancelButton.icon");
+			button.setIcon(Utils.createImageIcon(iconPath, "CANCEL"));
 		}
 		catch(Exception e)
 		{

@@ -101,6 +101,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 				m_nbFieldDialog.showDialog();
 				m_nbListDialog.showDialog();
 				m_broadcastDialog.hideDialog();
+				m_broadcastDialog.clearContents();
 				m_broadcast = false;
 				MessageLogTopPanel.getCurrentMessage().setBroadcast(false);
 				fireDialogStateChanged();
@@ -121,7 +122,9 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 			{
 				m_nonBroadcastButton.setSelected(false);
 				m_nbFieldDialog.hideDialog();
+				m_nbFieldDialog.clearContents();
 				m_nbListDialog.hideDialog();
+				m_nbListDialog.clearContents();
 				
 				Point location = m_nonBroadcastButton.getLocationOnScreen();
 				location.y += BUTTON_SIZE.height;
