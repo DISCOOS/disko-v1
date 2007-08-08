@@ -19,12 +19,11 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
 
-import org.redcross.sar.event.DiskoMapEvent;
-import org.redcross.sar.event.IDiskoMapEventListener;
+import org.redcross.sar.event.IMsoLayerEventListener;
+import org.redcross.sar.event.MsoLayerEvent;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.NumPadDialog;
 import org.redcross.sar.map.feature.IMsoFeature;
-import org.redcross.sar.map.feature.IMsoFeatureClass;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.mso.data.IAreaIf;
 import org.redcross.sar.mso.data.IAssignmentIf;
@@ -33,7 +32,7 @@ import org.redcross.sar.mso.data.IAssignmentIf.AssignmentPriority;
 
 import com.esri.arcgis.interop.AutomationException;
 
-public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEventListener {
+public class SearchRequirementDialog extends DiskoDialog implements IMsoLayerEventListener {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPanel = null;
@@ -55,18 +54,9 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 		super(wp.getApplication().getFrame());
 		this.wp = wp;
 		//listener
-		try {
-			IMsoFeatureLayer msoLayer = wp.getApplication().getDiskoMapManager().
-				getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER);
-			IMsoFeatureClass msoFC = (IMsoFeatureClass)msoLayer.getFeatureClass();
-			msoFC.addDiskoMapEventListener(this);
-		} catch (AutomationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		IMsoFeatureLayer msoLayer = wp.getApplication().getDiskoMapManager().
+		getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER);
+		msoLayer.addDiskoLayerEventListener(this);
 		initialize();
 		// TODO Auto-generated constructor stub
 	}
@@ -437,25 +427,9 @@ public class SearchRequirementDialog extends DiskoDialog implements IDiskoMapEve
 		return remarksTextArea;
 	}
 
-	public void editLayerChanged(DiskoMapEvent e) {
-		// TODO Auto-generated method stub
-	}
-
-	public void onAfterScreenDraw(DiskoMapEvent e) throws IOException, AutomationException {
-		// TODO Auto-generated method stub
-	}
-
-	public void onExtentUpdated(DiskoMapEvent e) throws IOException, AutomationException {
-		// TODO Auto-generated method stub
-	}
-
-	public void onMapReplaced(DiskoMapEvent e) throws IOException, AutomationException {
-		// TODO Auto-generated method stub
-	}
-
-	public void onSelectionChanged(DiskoMapEvent e) throws IOException, AutomationException {
-		IMsoFeatureClass msoFC = (IMsoFeatureClass)e.getSource();
-		List selection = msoFC.getSelected();
+	public void onSelectionChanged(MsoLayerEvent e) throws IOException, AutomationException {
+		IMsoFeatureLayer msoLayer = (IMsoFeatureLayer)e.getSource();
+		List selection = msoLayer.getSelected();
 		if (selection != null && selection.size() > 0) {
 			IMsoFeature msoFeature = (IMsoFeature)selection.get(0);
 			IAreaIf area = (IAreaIf)msoFeature.getMsoObject();

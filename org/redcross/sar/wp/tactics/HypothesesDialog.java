@@ -1,14 +1,13 @@
 package org.redcross.sar.wp.tactics;
 
 import com.esri.arcgis.interop.AutomationException;
-import org.redcross.sar.event.DiskoMapEvent;
-import org.redcross.sar.event.IDiskoMapEventListener;
+import org.redcross.sar.event.IMsoLayerEventListener;
+import org.redcross.sar.event.MsoLayerEvent;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.models.HypothesesListModel;
 import org.redcross.sar.gui.renderers.HypothesesListCellRenderer;
 import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
 import org.redcross.sar.map.feature.IMsoFeature;
-import org.redcross.sar.map.feature.IMsoFeatureClass;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.ICmdPostIf;
@@ -25,7 +24,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 
-public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListener {
+public class HypothesesDialog extends DiskoDialog implements IMsoLayerEventListener {
 
 	private static final long serialVersionUID = 1L;
 	private IMsoModelIf msoModel = null;
@@ -49,18 +48,9 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 		super(wp.getApplication().getFrame());
 		this.msoModel = wp.getMsoModel();
 		//listener
-		try {
-			IMsoFeatureLayer msoLayer = wp.getApplication().getDiskoMapManager().
-				getMsoLayer(IMsoFeatureLayer.LayerCode.SEARCH_AREA_LAYER);
-			IMsoFeatureClass msoFC = (IMsoFeatureClass)msoLayer.getFeatureClass();
-			msoFC.addDiskoMapEventListener(this);
-		} catch (AutomationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		IMsoFeatureLayer msoLayer = wp.getApplication().getDiskoMapManager().
+		getMsoLayer(IMsoFeatureLayer.LayerCode.SEARCH_AREA_LAYER);
+		msoLayer.addDiskoLayerEventListener(this);
 		initialize();
 		// TODO Auto-generated constructor stub
 	}
@@ -398,26 +388,9 @@ public class HypothesesDialog extends DiskoDialog implements IDiskoMapEventListe
 		return statusComboBox;
 	}
 
-	public void editLayerChanged(DiskoMapEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void onAfterScreenDraw(DiskoMapEvent e) throws IOException, AutomationException {
-		// TODO Auto-generated method stub
-	}
-
-	public void onExtentUpdated(DiskoMapEvent e) throws IOException, AutomationException {
-		// TODO Auto-generated method stub
-	}
-
-	public void onMapReplaced(DiskoMapEvent e) throws IOException, AutomationException {
-		// TODO Auto-generated method stub
-	}
-
-	public void onSelectionChanged(DiskoMapEvent e) throws IOException, AutomationException {
-		IMsoFeatureClass msoFC = (IMsoFeatureClass)e.getSource();
-		List selection = msoFC.getSelected();
+	public void onSelectionChanged(MsoLayerEvent e) throws IOException, AutomationException {
+		IMsoFeatureLayer msoLayer = (IMsoFeatureLayer)e.getSource();
+		List selection = msoLayer.getSelected();
 		if (selection != null && selection.size() > 0) {
 			IMsoFeature msoFeature = (IMsoFeature)selection.get(0);
 			IMsoObjectIf msoObject = msoFeature.getMsoObject();

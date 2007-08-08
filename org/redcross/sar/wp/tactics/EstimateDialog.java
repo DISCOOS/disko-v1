@@ -1,19 +1,23 @@
 package org.redcross.sar.wp.tactics;
 
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Point;
+import java.io.IOException;
+import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
 
-import org.redcross.sar.event.DiskoMapEvent;
-import org.redcross.sar.event.IDiskoMapEventListener;
+import org.redcross.sar.event.IMsoLayerEventListener;
+import org.redcross.sar.event.MsoLayerEvent;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.NumPadDialog;
 import org.redcross.sar.map.feature.IMsoFeature;
-import org.redcross.sar.map.feature.IMsoFeatureClass;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.mso.data.IAreaIf;
 import org.redcross.sar.mso.data.IAssignmentIf;
@@ -21,14 +25,7 @@ import org.redcross.sar.mso.data.ISearchIf;
 
 import com.esri.arcgis.interop.AutomationException;
 
-import javax.swing.JLabel;
-import java.awt.GridBagConstraints;
-import java.io.IOException;
-import java.util.List;
-
-import javax.swing.JTextField;
-
-public class EstimateDialog extends DiskoDialog implements IDiskoMapEventListener {
+public class EstimateDialog extends DiskoDialog implements IMsoLayerEventListener {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPanel = null;
@@ -40,18 +37,9 @@ public class EstimateDialog extends DiskoDialog implements IDiskoMapEventListene
 		super(wp.getApplication().getFrame());
 		this.wp = wp;
 		//listener
-		try {
-			IMsoFeatureLayer msoLayer = wp.getApplication().getDiskoMapManager().
-				getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER);
-			IMsoFeatureClass msoFC = (IMsoFeatureClass)msoLayer.getFeatureClass();
-			msoFC.addDiskoMapEventListener(this);
-		} catch (AutomationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		IMsoFeatureLayer msoLayer = wp.getApplication().getDiskoMapManager().
+		getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER);
+		msoLayer.addDiskoLayerEventListener(this);
 		initialize();
 		// TODO Auto-generated constructor stub
 	}
@@ -157,25 +145,25 @@ public class EstimateDialog extends DiskoDialog implements IDiskoMapEventListene
 		return timeTextField;
 	}
 
-	public void editLayerChanged(DiskoMapEvent e) {
+	public void editLayerChanged(MsoLayerEvent e) {
 		// TODO Auto-generated method stub
 	}
 
-	public void onAfterScreenDraw(DiskoMapEvent e) throws IOException, AutomationException {
+	public void onAfterScreenDraw(MsoLayerEvent e) throws IOException, AutomationException {
 		// TODO Auto-generated method stub
 	}
 
-	public void onExtentUpdated(DiskoMapEvent e) throws IOException, AutomationException {
+	public void onExtentUpdated(MsoLayerEvent e) throws IOException, AutomationException {
 		// TODO Auto-generated method stub
 	}
 
-	public void onMapReplaced(DiskoMapEvent e) throws IOException, AutomationException {
+	public void onMapReplaced(MsoLayerEvent e) throws IOException, AutomationException {
 		// TODO Auto-generated method stub
 	}
 
-	public void onSelectionChanged(DiskoMapEvent e) throws IOException, AutomationException {
-		IMsoFeatureClass msoFC = (IMsoFeatureClass)e.getSource();
-		List selection = msoFC.getSelected();
+	public void onSelectionChanged(MsoLayerEvent e) throws IOException, AutomationException {
+		IMsoFeatureLayer msoLayer = (IMsoFeatureLayer)e.getSource();
+		List selection = msoLayer.getSelected();
 		if (selection != null && selection.size() > 0) {
 			IMsoFeature msoFeature = (IMsoFeature)selection.get(0);
 			IAreaIf area = (IAreaIf)msoFeature.getMsoObject();
