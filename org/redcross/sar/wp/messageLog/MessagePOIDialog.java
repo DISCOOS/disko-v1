@@ -52,12 +52,14 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 	protected POIType[] m_poiTypes = null;
 	protected IDiskoWpMessageLog m_wpMessageLog = null;
 	protected SinglePOIMapDialog m_mapDialog = null;
+	protected boolean m_positionMessageLine = true;
 	
-	public MessagePOIDialog(IDiskoWpMessageLog wp)
+	public MessagePOIDialog(IDiskoWpMessageLog wp, boolean position)
 	{
 		super(wp.getApplication().getFrame());
 		
 		m_wpMessageLog = wp;
+		m_positionMessageLine = position;
 		
 		initialize();
 	}
@@ -71,7 +73,63 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 
 	private void initMapDialog()
 	{
-		m_mapDialog = new SinglePOIMapDialog(m_wpMessageLog);
+		m_mapDialog = new SinglePOIMapDialog(m_wpMessageLog, m_positionMessageLine);
+	}
+	
+	private void updatePOI()
+	{
+		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+		double xCoordinate = 0.0;
+		try
+		{
+			xCoordinate = Double.valueOf(m_xField.getText());
+		}
+		catch(NumberFormatException nfe)
+		{
+			//TODO inform user of invalid x-coordinate?
+			xCoordinate = 0.0;
+		}
+		
+		double yCoordinate = 0.0;
+		try
+		{
+			yCoordinate = Double.valueOf(m_yField.getText());
+		}
+		catch(NumberFormatException nfe)
+		{
+			// TODO error dialog?
+			yCoordinate = 0.0;
+		}
+		
+		// Create POI
+		IPOIIf poi = null;
+		
+		IMessageLineIf messageLine = message.findMessageLine(MessageLineType.POI, false);
+		// Create new POI and message line if POI message line did not exists
+		if(messageLine == null)
+		{
+			messageLine = message.findMessageLine(MessageLineType.POI, true);
+			poi = m_wpMessageLog.getMsoManager().createPOI();
+			messageLine.setLinePOI(poi);
+		}
+		else
+		{
+			poi = messageLine.getLinePOI();
+		}
+		
+		
+		// Update POI
+		Position position = poi.getPosition();
+		if(position == null)
+		{
+			String id = m_wpMessageLog.getMsoModel().getModelDriver().makeObjectId().getId();
+			position = new Position(id, xCoordinate, yCoordinate);
+			poi.setPosition(position);
+		}
+		else
+		{
+			position.setPosition(xCoordinate, yCoordinate);
+		}
 	}
 
 	private void initButtons()
@@ -84,59 +142,8 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 			 */
 			public void actionPerformed(ActionEvent e)
 			{	
-				IMessageIf message = MessageLogTopPanel.getCurrentMessage();
-				double xCoordinate = 0.0;
-				try
-				{
-					xCoordinate = Double.valueOf(m_xField.getText());
-				}
-				catch(NumberFormatException nfe)
-				{
-					//TODO inform user of invalid x-coordinate?
-					xCoordinate = 0.0;
-				}
 				
-				double yCoordinate = 0.0;
-				try
-				{
-					yCoordinate = Double.valueOf(m_yField.getText());
-				}
-				catch(NumberFormatException nfe)
-				{
-					// TODO error dialog?
-					yCoordinate = 0.0;
-				}
-				
-				// Create POI
-				IPOIIf poi = null;
-				
-				IMessageLineIf messageLine = message.findMessageLine(MessageLineType.POI, false);
-				// Create new POI and message line if POI message line did not exists
-				if(messageLine == null)
-				{
-					messageLine = message.findMessageLine(MessageLineType.POI, true);
-					poi = m_wpMessageLog.getMsoManager().createPOI();
-					messageLine.setLinePOI(poi);
-				}
-				else
-				{
-					poi = messageLine.getLinePOI();
-				}
-				
-				
-				// Update POI
-				Position position = poi.getPosition();
-				if(position == null)
-				{
-					String id = m_wpMessageLog.getMsoModel().getModelDriver().makeObjectId().getId();
-					position = new Position(id, xCoordinate, yCoordinate);
-					poi.setPosition(position);
-				}
-				else
-				{
-					position.setPosition(xCoordinate, yCoordinate);
-				}
-				
+				updatePOI();
 				fireDialogFinished();
 			}
 		});
@@ -212,7 +219,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				// TODO Update POI in map
+				updatePOI();
 			}
 		});
 		xPanel.add(m_xField);
@@ -226,8 +233,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				// TODO Update POI in map
-				
+				updatePOI();
 			}
 		});
 		yPanel.add(m_yField);
@@ -290,17 +296,20 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 			else
 			{
 				IPOIIf poi = messageLine.getLinePOI();
-				Position position = poi.getPosition();
-				if(position == null)
+				if(poi != null)
 				{
-					m_xField.setText("");
-					m_yField.setText("");
-				}
-				else
-				{
-					Point2D.Double point = position.getPosition();
-					m_xField.setText(String.valueOf(point.x));
-					m_yField.setText(String.valueOf(point.y));
+					Position position = poi.getPosition();
+					if(position == null)
+					{
+						m_xField.setText("");
+						m_yField.setText("");
+					}
+					else
+					{
+						Point2D.Double point = position.getPosition();
+						m_xField.setText(String.valueOf(point.x));
+						m_yField.setText(String.valueOf(point.y));
+					}
 				}	
 			}
 		}
@@ -308,6 +317,8 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		{
 			
 		}
+		
+		m_mapDialog.newMessageSelected(message);
 	}
 
 	public void showDialog()

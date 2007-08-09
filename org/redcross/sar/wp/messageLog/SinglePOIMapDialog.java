@@ -9,6 +9,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.IDiskoMap;
 import org.redcross.sar.map.POITool;
 import org.redcross.sar.mso.data.IMessageIf;
@@ -24,32 +25,55 @@ public class SinglePOIMapDialog extends DiskoDialog implements IEditMessageDialo
 {
 	protected IDiskoWpMessageLog m_wpMessageLog = null;
 	protected IDiskoMap m_map = null;
-	protected POIType m_poiType = null;
-	protected POITool m_tool = null;
+	protected POIType m_poiType = POIType.GENERAL;
+	protected SinglePOITool m_tool = null;
+	protected boolean m_positionMessageLine = true;
 	
-	public SinglePOIMapDialog(IDiskoWpMessageLog wp)
+	public SinglePOIMapDialog(IDiskoWpMessageLog wp, boolean position)
 	{
 		super(wp.getApplication().getFrame());
 		
 		m_wpMessageLog = wp;
+		m_positionMessageLine = position;
 		
 		try
 		{
-			m_tool = new POITool(wp.getApplication());
-			m_tool.getDialog().setVisible(false);
+			m_tool = new SinglePOITool(wp.getApplication(), this, position);
 		} 
 		catch (IOException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		initMap();
+	}
+	
+	public IDiskoWpMessageLog getWP()
+	{
+		return m_wpMessageLog;
 	}
 	
 	private void initMap()
 	{
 		m_map = m_wpMessageLog.getMap().getMapManager().getMapInstance();
-		this.add((JComponent)m_map);
+		try
+		{
+			m_map.setActiveTool(m_tool);
+			m_tool.setMap((DiskoMap)m_map);
+			m_map.setCurrentToolByRef(m_tool);
+		} 
+		catch (AutomationException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.add((DiskoMap)m_map);
 	}
 
 	public void clearContents()
@@ -60,21 +84,8 @@ public class SinglePOIMapDialog extends DiskoDialog implements IEditMessageDialo
 	
 	public void hideDialog()
 	{
-		try
-		{
-			m_map.setActiveTool(null);
-		} 
-		catch (AutomationException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		this.setVisible(false);
+		m_tool.getDialog().setVisible(false);
 	}
 
 	public void newMessageSelected(IMessageIf message)
@@ -84,21 +95,8 @@ public class SinglePOIMapDialog extends DiskoDialog implements IEditMessageDialo
 
 	public void showDialog()
 	{	
-		try
-		{
-			m_map.setActiveTool(m_tool);
-		} 
-		catch (AutomationException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		this.setVisible(true);
+		m_tool.getDialog().setVisible(true);
 	}
 	
 	private void zoomToPOI()
@@ -142,6 +140,18 @@ public class SinglePOIMapDialog extends DiskoDialog implements IEditMessageDialo
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+	}
+
+	public POIType getType()
+	{
+		if(m_poiType == null)
+		{
+			return POIType.GENERAL;
+		}
+		else
+		{
+			return m_poiType;
 		}
 	}
 }

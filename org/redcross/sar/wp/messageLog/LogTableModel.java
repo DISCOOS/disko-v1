@@ -113,8 +113,7 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
             case 3:
             	if(message.isBroadcast())
             	{
-            		// TODO get text from resource bundle
-            		return "FA";
+            		return m_wpModule.getText("BroadcastLabel.text");
             	}
             	else
             	{

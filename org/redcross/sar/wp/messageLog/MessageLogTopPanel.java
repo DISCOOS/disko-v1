@@ -241,7 +241,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-    		m_messagePositionDialog = new MessagePOIDialog(m_wpMessageLog);
+    		m_messagePositionDialog = new MessagePOIDialog(m_wpMessageLog, true);
     		m_messagePositionDialog.setPOITypes(null);
     		m_messagePositionDialog.addDialogListener(this);
     		m_dialogs.add(m_messagePositionDialog);
@@ -264,7 +264,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     			// TODO
     			exc.printStackTrace();
     		}
-    		m_messageFindingDialog = new MessagePOIDialog(m_wpMessageLog);
+    		m_messageFindingDialog = new MessagePOIDialog(m_wpMessageLog, false);
     		m_messageFindingDialog.addDialogListener(this);
     		POIType[] poiTypes = {POIType.FINDING, POIType.SILENT_WITNESS};
     		m_messageFindingDialog.setPOITypes(poiTypes);
@@ -1038,7 +1038,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		}
 	}
 
-	private JToggleButton  createButton(String text, String iconPath)
+	private JToggleButton createButton(String text, String iconPath)
 	{
 		JToggleButton  button = new JToggleButton ();
 		if(iconPath != null)
