@@ -177,4 +177,19 @@ public class DiskoButtonFactory
 		
 		return button;
 	}
+
+	public static JToggleButton createSmallToggleButton(String string)
+	{
+		JToggleButton button = new JToggleButton();
+		if(string != null)
+		{
+			button.setText(string);
+		}
+		
+		button.setMinimumSize(SMALL_BUTTON_SIZE);
+		button.setPreferredSize(SMALL_BUTTON_SIZE);
+		button.setMaximumSize(SMALL_BUTTON_SIZE);
+		
+		return button;
+	}
 }

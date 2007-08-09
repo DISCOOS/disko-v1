@@ -25,12 +25,12 @@ public class MessageLogPanel
     private JPanel WorkspacePanel;
     private MessageLogTopPanel m_topPanel;
     private JSplitPane m_splitter1;
-    private IDiskoWpMessageLog m_wpModule;
+    private static IDiskoWpMessageLog m_wpModule;
     private IDiskoMap m_map;
     private JTable m_logTable;
     private MessageRowSelectionListener m_rowSelectionListener;
     private JScrollPane m_scrollPane1;
-    private JPanel m_logPanel;
+    private static JPanel m_logPanel;
     IMessageLogIf m_messageLog;
 	public static Dimension SMALL_BUTTON_SIZE = new Dimension(60, 60);
 
@@ -130,6 +130,24 @@ public class MessageLogPanel
         setTableData();
         return WorkspacePanel;
     }
+    
+    /**
+     * Get the message log table position on screen. Used for positioning dialogs
+     */
+    public static Point getBottomAreaPosition()
+    {
+    	Point location = m_logPanel.getLocationOnScreen();
+    	return location;
+    }
+    
+    /**
+     * 
+     * @return The size of the message log table
+     */
+    public static Dimension getBottomAreaDimension()
+    {
+    	return m_logPanel.getSize();
+    }
 
     private void setTableData()
     {
@@ -150,5 +168,10 @@ public class MessageLogPanel
 	public void hideDialogs()
 	{
 		m_topPanel.hideDialogs();
+	}
+
+	public void clearSelection()
+	{
+		m_topPanel.clearSelection();
 	}
 }

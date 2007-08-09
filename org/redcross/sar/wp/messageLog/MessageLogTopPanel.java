@@ -620,7 +620,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	 */
 	public void dialogFinished(DialogEvent e)
 	{
-		Object source = e.getSource();
+		//Object source = e.getSource();
 
 		// If no message is selected a new one should be created once a field is edited
 		if(m_currentMessage == null)
@@ -991,7 +991,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelPositionLabel.text"));
 				getMessagePositionDialog();
 				hideDialogs();
-				m_messagePositionDialog.setVisible(true);
+				m_messagePositionDialog.showDialog();
 				positionDialogInArea(m_messagePositionDialog);
 			}
 		});
@@ -1030,7 +1030,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	 */
 	public void hideDialogs()
 	{
-		m_buttonGroup.clearSelection();
+		//m_buttonGroup.clearSelection();
 		
 		for(int i=0; i<m_dialogs.size(); i++)
 		{
@@ -1060,5 +1060,10 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		button.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
 		button.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
 		return button;
+	}
+
+	public void clearSelection()
+	{
+		m_buttonGroup.clearSelection();
 	}
 }

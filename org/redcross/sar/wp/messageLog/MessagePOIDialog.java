@@ -1,10 +1,12 @@
 package org.redcross.sar.wp.messageLog;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Point2D;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -14,6 +16,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.map.DiskoMap;
@@ -24,6 +27,8 @@ import org.redcross.sar.mso.data.IPOIIf;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
 import org.redcross.sar.util.mso.Position;
+
+import com.esri.arcgis.carto.NewDimensionFeedback;
 
 /**
  * Dialog used in position and finding when editing the message log. A separate POI dialog class was created for 
@@ -37,7 +42,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 	protected JPanel m_contentsPanel = null;
 	protected JButton m_okButton = null;
 	protected JButton m_cancelButton = null;
-	protected JButton m_showInMapButton = null;
+	protected JToggleButton m_showInMapButton = null;
 	protected JLabel m_xLabel = null;
 	protected JLabel m_yLabel = null;
 	protected JTextField m_xField = null;
@@ -45,16 +50,14 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 	protected JLabel m_poiTypeLabel = null;
 	protected JComboBox m_poiTypesComboBox = null;
 	protected POIType[] m_poiTypes = null;
-	protected IDiskoMap m_map = null;
 	protected IDiskoWpMessageLog m_wpMessageLog = null;
+	protected SinglePOIMapDialog m_mapDialog = null;
 	
 	public MessagePOIDialog(IDiskoWpMessageLog wp)
 	{
 		super(wp.getApplication().getFrame());
 		
 		m_wpMessageLog = wp;
-		
-		m_map = wp.getMap();
 		
 		initialize();
 	}
@@ -63,6 +66,12 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 	{
 		initButtons();
 		initContents();
+		initMapDialog();
+	}
+
+	private void initMapDialog()
+	{
+		m_mapDialog = new SinglePOIMapDialog(m_wpMessageLog);
 	}
 
 	private void initButtons()
@@ -70,23 +79,33 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		m_okButton = DiskoButtonFactory.createSmallOKButton();
 		m_okButton.addActionListener(new ActionListener()
 		{
-			IMessageIf message = MessageLogTopPanel.getCurrentMessage();
-			
+			/**
+			 * Add/update POI in current message
+			 */
 			public void actionPerformed(ActionEvent e)
 			{	
-				double xCoordinate = 0;
+				IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+				double xCoordinate = 0.0;
 				try
 				{
 					xCoordinate = Double.valueOf(m_xField.getText());
 				}
-				catch(NumberFormatException nfe){return;}//TODO inform user of invalid x-coordinate?
+				catch(NumberFormatException nfe)
+				{
+					//TODO inform user of invalid x-coordinate?
+					xCoordinate = 0.0;
+				}
 				
-				double yCoordinate = 0;
+				double yCoordinate = 0.0;
 				try
 				{
 					yCoordinate = Double.valueOf(m_yField.getText());
 				}
-				catch(NumberFormatException nfe){return;}
+				catch(NumberFormatException nfe)
+				{
+					// TODO error dialog?
+					yCoordinate = 0.0;
+				}
 				
 				// Create POI
 				IPOIIf poi = null;
@@ -97,7 +116,6 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 				{
 					messageLine = message.findMessageLine(MessageLineType.POI, true);
 					poi = m_wpMessageLog.getMsoManager().createPOI();
-					
 					messageLine.setLinePOI(poi);
 				}
 				else
@@ -105,8 +123,19 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 					poi = messageLine.getLinePOI();
 				}
 				
+				
 				// Update POI
-				poi.getPosition().setPosition(xCoordinate, yCoordinate);
+				Position position = poi.getPosition();
+				if(position == null)
+				{
+					String id = m_wpMessageLog.getMsoModel().getModelDriver().makeObjectId().getId();
+					position = new Position(id, xCoordinate, yCoordinate);
+					poi.setPosition(position);
+				}
+				else
+				{
+					position.setPosition(xCoordinate, yCoordinate);
+				}
 				
 				fireDialogFinished();
 			}
@@ -121,13 +150,25 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 			}
 		});
 		
-		m_showInMapButton = DiskoButtonFactory.createSmallButton("Vis i kart");
+		m_showInMapButton = DiskoButtonFactory.createSmallToggleButton("Vis i kart");
 		m_showInMapButton.setAlignmentY(JComponent.TOP_ALIGNMENT);
 		m_showInMapButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				// TODO display map dialog
+				JToggleButton button = (JToggleButton)e.getSource();
+				if(button.isSelected())
+				{
+					// Set location and dimension
+					m_mapDialog.setMinimumSize(MessageLogPanel.getBottomAreaDimension());
+					m_mapDialog.setPreferredSize(MessageLogPanel.getBottomAreaDimension());
+					m_mapDialog.setLocation(MessageLogPanel.getBottomAreaPosition());
+					m_mapDialog.showDialog();
+				}
+				else
+				{
+					m_mapDialog.hideDialog();
+				}
 			}
 		});
 	}
@@ -231,30 +272,53 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 	public void hideDialog()
 	{
 		this.setVisible(false);
+		m_mapDialog.hideDialog();
 	}
 
 	public void newMessageSelected(IMessageIf message)
 	{
-		IMessageLineIf messageLine = message.findMessageLine(MessageLineType.POI, false);
-		
-		if(messageLine == null)
+		IMessageLineIf messageLine = null;
+		if(m_poiTypes == null)
 		{
-			m_xField.setText("");
-			m_yField.setText("");
-			setPOITypes(null);
+			messageLine = message.findMessageLine(MessageLineType.POI, false);
+			if(messageLine == null)
+			{
+				m_xField.setText("");
+				m_yField.setText("");
+				setPOITypes(null);
+			}
+			else
+			{
+				IPOIIf poi = messageLine.getLinePOI();
+				Position position = poi.getPosition();
+				if(position == null)
+				{
+					m_xField.setText("");
+					m_yField.setText("");
+				}
+				else
+				{
+					Point2D.Double point = position.getPosition();
+					m_xField.setText(String.valueOf(point.x));
+					m_yField.setText(String.valueOf(point.y));
+				}	
+			}
 		}
 		else
 		{
-			IPOIIf poi = messageLine.getLinePOI();
-			Position position = poi.getPosition();
-			//m_xField.setText(String.valueOf(position.getPosition()));
-			//m_yField.setText(String.valueOf(position.getPosition()));
+			
 		}
-		
 	}
 
 	public void showDialog()
 	{
+		if(m_showInMapButton.isSelected())
+		{
+			m_mapDialog.setMinimumSize(MessageLogPanel.getBottomAreaDimension());
+			m_mapDialog.setPreferredSize(MessageLogPanel.getBottomAreaDimension());
+			m_mapDialog.setLocation(MessageLogPanel.getBottomAreaPosition());
+			m_mapDialog.showDialog();
+		}
 		this.setVisible(true);
 	}
 }

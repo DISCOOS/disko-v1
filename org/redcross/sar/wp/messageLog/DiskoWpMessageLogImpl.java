@@ -61,6 +61,7 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
     {
     	super.deactivated();
     	m_logPanel.hideDialogs();
+    	m_logPanel.clearSelection();
     }
 
     /* (non-Javadoc)
