@@ -72,9 +72,6 @@ public class SinglePOITool extends AbstractCommandTool
 		IPOIIf poi = messageLine.getLinePOI();
 		if(poi == null)
 		{
-			System.err.print("WP is:" + m_wpMessageLog);
-			System.err.print("Manager is:" + m_wpMessageLog.getMsoManager());
-			System.err.print("POI is:" + poi);
 			poi = m_wpMessageLog.getMsoManager().createPOI();
 			
 		}

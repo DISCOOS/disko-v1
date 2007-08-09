@@ -6,6 +6,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.geom.Point2D;
 
 import javax.swing.BorderFactory;
@@ -243,6 +245,14 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		m_poiTypeLabel = new JLabel("Type"); // TODO internasjonaliser
 		comboBoxPanel.add(m_poiTypeLabel);
 		m_poiTypesComboBox = new JComboBox();
+		m_poiTypesComboBox.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				// TODO set tool type
+				
+			}
+		});
 		comboBoxPanel.add(m_poiTypesComboBox);
 		this.setPOITypes(null);
 		
