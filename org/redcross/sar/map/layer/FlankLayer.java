@@ -1,13 +1,15 @@
 package org.redcross.sar.map.layer;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
+import java.util.Iterator;
 import java.util.List;
 
 import org.redcross.sar.map.feature.FlankFeature;
 import org.redcross.sar.map.feature.IMsoFeature;
+import org.redcross.sar.map.feature.MsoFeatureClass;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 
 import com.esri.arcgis.display.IDisplay;
@@ -23,12 +25,25 @@ public class FlankLayer extends AbstractMsoFeatureLayer {
 	private static final long serialVersionUID = 1L;
 	private LineFillSymbol blueFill = null;
 	private LineFillSymbol redFill  = null;
+	private boolean isInitiated = false;
 	
 	public FlankLayer(IMsoModelIf msoModel) {
 		super(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA,
 				LayerCode.FLANK_LAYER, msoModel);
-		createSymbols();
 	}
+	
+	private void initiate() throws IOException, AutomationException {
+ 		createSymbols();
+ 		MsoFeatureClass msoFC = (MsoFeatureClass)featureClass;
+ 		ICmdPostIf cmdPost = msoModel.getMsoManager().getCmdPost();
+ 		Iterator iter = cmdPost.getAreaListItems().iterator();
+ 		while(iter.hasNext()) {
+ 			IMsoObjectIf msoObj = (IMsoObjectIf)iter.next();
+ 			IMsoFeature msoFeature = createMsoFeature(msoObj);
+ 			msoFC.addFeature(msoFeature);
+ 		}
+ 		isInitiated = true;
+ 	}
 	
 	protected IMsoFeature createMsoFeature(IMsoObjectIf msoObject) 
 			throws IOException, AutomationException {
@@ -44,6 +59,7 @@ public class FlankLayer extends AbstractMsoFeatureLayer {
 			if (display == null || !this.isVisible) {
 				return;
 			}
+			if (!isInitiated) initiate();
 			for (int i = 0; i < featureClass.featureCount(null); i++) {
 				FlankFeature feature = (FlankFeature)featureClass.getFeature(i);
 				List leftFlanks  = feature.getLeftFlanks();
@@ -64,35 +80,24 @@ public class FlankLayer extends AbstractMsoFeatureLayer {
 
 	}
 
-	private void createSymbols() {
+	private void createSymbols() throws IOException, AutomationException {
 		// fill symbols
-		try {
-			redFill = new LineFillSymbol();
-			RgbColor redColor = new RgbColor();
-			redColor.setRed(255);
-			redFill.setColor(redColor);
-			redFill.setAngle(45);
-			SimpleLineSymbol leftOutline = new SimpleLineSymbol();
-			leftOutline.setColor(redColor);
-			redFill.setOutline(leftOutline);
+		redFill = new LineFillSymbol();
+		RgbColor redColor = new RgbColor();
+		redColor.setRed(255);
+		redFill.setColor(redColor);
+		redFill.setAngle(45);
+		SimpleLineSymbol leftOutline = new SimpleLineSymbol();
+		leftOutline.setColor(redColor);
+		redFill.setOutline(leftOutline);
 
-			blueFill = new LineFillSymbol();
-			RgbColor blueColor = new RgbColor();
-			blueColor.setBlue(255);
-			blueFill.setColor(blueColor);
-			blueFill.setAngle(45);
-			SimpleLineSymbol rightOutline = new SimpleLineSymbol();
-			rightOutline.setColor(blueColor);
-			blueFill.setOutline(rightOutline);
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (AutomationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		blueFill = new LineFillSymbol();
+		RgbColor blueColor = new RgbColor();
+		blueColor.setBlue(255);
+		blueFill.setColor(blueColor);
+		blueFill.setAngle(45);
+		SimpleLineSymbol rightOutline = new SimpleLineSymbol();
+		rightOutline.setColor(blueColor);
+		blueFill.setOutline(rightOutline);
 	}
 }
