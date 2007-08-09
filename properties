@@ -1,6 +1,6 @@
-Database.path=C:\\DISKO\\Database\\DISKO_fdb.gdb
-MxdDocument.path=C:\\DISKO\\Disko.mxd
-MxdDocument.secondary.path=C:\\DISKO\\Disko2.mxd
+Database.path=C:\\DISKO\\Bergen.gdb
+MxdDocument.path=C:\\DISKO\\Bergen.mxd
+MxdDocument.secondary.path=C:\\DISKO\\Trondheim_hoyde.mxd
 MxdDocument.catalog.path=C:\\DISKO\\
 BasicLine.featureClass.Name=basislinje
 BufferPath.featureClass.Name=soek
@@ -48,6 +48,7 @@ ToolCommandType.SELECT_FEATURE_TOOL.icon=icons/60x60/choose.gif
 ToolCommandType.ZOOM_IN_TOOL.icon=icons/60x60/zoomin.gif
 ToolCommandType.ZOOM_OUT_TOOL.icon=icons/60x60/zoomout.gif
 ToolCommandType.PAN_TOOL.icon=icons/60x60/pan.gif
+ToolCommandType.ERASE_COMMAND.icon=icons/60x60/eraser.gif
 ToolCommandType.ZOOM_IN_FIXED_COMMAND.icon=icons/60x60/zoomin.gif
 ToolCommandType.ZOOM_OUT_FIXED_COMMAND.icon=icons/60x60/zoomout.gif
 ToolCommandType.ZOOM_FULL_EXTENT_COMMAND.icon=icons/60x60/fullextent.gif
@@ -55,7 +56,7 @@ ToolCommandType.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND.icon=icons/60x60/next.gif
 ToolCommandType.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND.icon=icons/60x60/back.gif
 ToolCommandType.MAP_TOGGLE_COMMAND.icon=icons/60x60/map_1.gif
 ToolCommandType.MAP_TOGGLE_COMMAND_2.icon=icons/60x60/map_2.gif
-
+ToolCommandType.TOC_COMMAND.icon=icons/60x60/toc.gif
 
 UnitType.COMMAND_POST.icon=icons/60x60/command.gif
 UnitType.TEAM.icon=icons/60x60/people.gif
@@ -149,10 +150,11 @@ SHOW_ALL.text=Vis alle
 
 TacticsTaskType.ELEMENT_TASK.icon=icons/60x60/element.gif
 TacticsTaskType.LIST_TASK.icon=icons/60x60/list.gif
-TacticsTaskType..icon=icons/60x60/assinment.gif
+TacticsTaskType.MISSON_TASK.icon=icons/60x60/assinment.gif
 TacticsTaskType.HYPOTHESIS_TASK.icon=icons/60x60/hypothesis.gif
 TacticsTaskType.PRIORITY_TASK.icon=icons/60x60/priority.gif
 TacticsTaskType.REQUIREMENT_TASK.icon=icons/60x60/requirement.gif
+TacticsTaskType.ESTIMATE_TASK.icon=icons/60x60/estimate.gif
 TacticsTaskType.DESCRIPTION_TASK.icon=icons/60x60/description.gif
 TacticsTaskType.UNIT_TASK.icon=icons/60x60/unit.gif
 TacticsTaskType.MAKE_READY_TASK.icon=icons/60x60/ready.gif
