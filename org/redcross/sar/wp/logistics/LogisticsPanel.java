@@ -17,10 +17,7 @@ import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.EnumSet;
 /**
  * Created by IntelliJ IDEA.
@@ -203,7 +200,9 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         m_unitTable.setCellSelectionEnabled(true);
         JTableHeader th = m_unitTable.getTableHeader();
         th.setPreferredSize(new Dimension(40, 40));
+
         m_unitTable.setTransferHandler(m_assignmentTransferHandler);
+        m_unitTable.setDragEnabled(true);
 
         ListSelectionListener l = new ListSelectionListener()
         {
@@ -222,11 +221,11 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         };
         m_unitTable.getSelectionModel().addListSelectionListener(l);
         m_unitTable.getColumnModel().getSelectionModel().addListSelectionListener(l);
+
         m_unitTable.addFocusListener(new FocusListener()
         {
             public void focusGained(FocusEvent e)
             {
-                System.out.println("Focus gained");
                 model.setSelectedCell(m_unitTable.getSelectionModel().getLeadSelectionIndex(),
                         m_unitTable.getColumnModel().getSelectionModel().
                                 getLeadSelectionIndex());
@@ -235,26 +234,8 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
             public void focusLost(FocusEvent e)
             {
                 m_unitTable.clearSelection();
-                System.out.println("Focus lost");
             }
         });
-
-        m_unitTable.setDragEnabled(true);
-
-        m_unitTable.addMouseMotionListener(new MouseMotionListener()
-        {
-            public void mouseDragged(MouseEvent e)
-            {
-                System.out.println("Mouse dragged");
-            }
-
-            public void mouseMoved(MouseEvent e)
-            {
-                System.out.println("Mouse moved");
-            }
-        });
-
-
     }
 
     private void initInfoPanels()
@@ -344,64 +325,6 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         m_wpModule.getMsoModel().commit();
     }
 
-    private boolean testAssignment(int aUnitNr)      // todo remove
-    {
-        IUnitIf unit = m_unitList.getUnit(aUnitNr);
-
-        return unit.getExecutingAssigment().size() > 0 || unit.getAssignedAssignments().size() > 0 || unit.getAllocatedAssignments().size() > 0;
-    }
-
-    private void moveAssigment(int aUnitNr)     // todo remove
-    {
-        IUnitIf unit = m_unitList.getUnit(aUnitNr);
-        java.util.List<IAssignmentIf> assigments;
-
-
-        try
-        {
-            assigments = unit.getExecutingAssigment();
-            if (assigments.size() > 0)
-            {
-                if (m_wpModule.confirmTransfer(assigments.get(0), IAssignmentIf.AssignmentStatus.FINISHED, null))
-                {
-                    assigments.get(0).setStatusAndOwner(IAssignmentIf.AssignmentStatus.FINISHED, unit);
-                }
-            }
-            else
-            {
-                assigments = unit.getAssignedAssignments();
-                if (assigments.size() > 0)
-                {
-                    if (m_wpModule.confirmTransfer(assigments.get(0), IAssignmentIf.AssignmentStatus.EXECUTING, null))
-                    {
-                        assigments.get(0).setStatusAndOwner(IAssignmentIf.AssignmentStatus.EXECUTING, unit);
-                        assigments.get(0).setTimeStarted(Calendar.getInstance());
-                    }
-                }
-                else
-                {
-                    assigments = unit.getAllocatedAssignments();
-                    if (assigments.size() > 0)
-                    {
-                        if (m_wpModule.confirmTransfer(assigments.get(0), IAssignmentIf.AssignmentStatus.ASSIGNED, null))
-                        {
-                            assigments.get(0).setStatusAndOwner(IAssignmentIf.AssignmentStatus.ASSIGNED, unit);
-                            assigments.get(0).setTimeAssigned(Calendar.getInstance());
-                        }
-                    }
-                }
-            }
-        }
-        catch (IllegalOperationException e)
-        {
-            e.printStackTrace();
-        }
-        finally
-        {
-            m_wpModule.getMsoModel().commit();
-        }
-    }
-
     public JPanel getPanel()
     {
         setTableData();
@@ -422,12 +345,6 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
     {
         return m_unitTable;
     }
-
-//    public JTable getAssignmentTable()
-//    {
-//        return m_assignmentTable;
-//    }
-
 
     private void setTableData()
     {

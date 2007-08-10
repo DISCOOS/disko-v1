@@ -249,7 +249,6 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
         {
             m_selectableAssignments.setFirstIndex(0);
         }
-        System.out.println("List size:" + m_selectableAssignments.getAssignmentList().size());
         m_selectableAssignments.renderPanel();
     }
 

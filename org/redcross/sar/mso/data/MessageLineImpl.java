@@ -247,7 +247,7 @@ public class MessageLineImpl extends AbstractMsoObject implements IMessageLineIf
                 {
                     return getLineNumber() + " " + getLineTypeText() + " " + poi.getTypeText() + " " + poi.getPosition();
                 }
-                return getLineNumber() + " " + getLineTypeText() + " Undefined POI";
+                return getLineNumber() + " " + getLineTypeText() + " NULL";
             case TEXT:
                 return getLineNumber() + " " + getLineText();
             default:

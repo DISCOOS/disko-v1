@@ -4,12 +4,14 @@ package org.redcross.sar.wp.logistics;
  * DragPictureDemo.java example.
  */
 
+import org.redcross.sar.gui.renderers.IconRenderer;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.util.AssignmentTransferUtilities;
 import org.redcross.sar.util.except.IllegalOperationException;
 
 import javax.swing.*;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -17,6 +19,8 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DragSource;
 import java.awt.dnd.DragSourceListener;
 import java.awt.dnd.DragSourceMotionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 
 /**
@@ -32,6 +36,8 @@ public class AssignmentTransferHandler extends TransferHandler
 
     boolean m_shouldRemove;
     IDiskoWpLogistics m_wpModule;
+
+    AssignmentLabel m_tmpLabel;
 
     public AssignmentTransferHandler(IDiskoWpLogistics aWpModule) throws ClassNotFoundException
     {
@@ -90,14 +96,14 @@ public class AssignmentTransferHandler extends TransferHandler
                     {
                         transferredAssignment.setStatusAndOwner(targetStatus, targetUnit);
                         transferOk = true;
-                }
+                    }
                     catch (IllegalOperationException e)
                     {
                     }
                 }
                 if (transferOk)
                 {
-                    AssignmentTransferUtilities.createAssignmentChangeMessage(m_wpModule.getMsoManager(), targetUnit, transferredAssignment,oldAssignemtStatus);
+                    AssignmentTransferUtilities.createAssignmentChangeMessage(m_wpModule.getMsoManager(), targetUnit, transferredAssignment, oldAssignemtStatus);
                     m_wpModule.getMsoModel().commit();
                     return true;
                 } else
@@ -220,6 +226,51 @@ public class AssignmentTransferHandler extends TransferHandler
             e.printStackTrace();
         }
         return null;
+    }
+
+
+    @Override
+    /**
+     * Overridden version that handles drag from a UnitTable.
+     * Generate an {@link AssignmentLabel} for the table cell, that is used for exporting the drag.
+     */
+    public void exportAsDrag(JComponent comp, InputEvent e, int action)
+    {
+        if (comp instanceof JTable && e instanceof MouseEvent)
+        {
+            MouseEvent me = (MouseEvent) e;
+            JTable table = (JTable) comp;
+            TableColumnModel columnModel = table.getColumnModel();
+            int column = columnModel.getColumnIndexAtX(me.getX());
+            int row = me.getY() / table.getRowHeight(0);
+            Object value;
+
+            if (row >= table.getRowCount() || row < 0 ||
+                    column >= table.getColumnCount() || column < 0)
+            {
+                return;
+            }
+
+            value = table.getValueAt(table.convertRowIndexToModel(row), column);
+            if (!(value instanceof IconRenderer.AssignmentIcon))
+            {
+                return;
+            }
+
+            IconRenderer.AssignmentIcon icon = (IconRenderer.AssignmentIcon) value;
+            if (m_tmpLabel == null)
+            {
+                m_tmpLabel = new AssignmentLabel(icon.getAssignment(), null);
+                m_tmpLabel.setTransferHandler(this);
+            } else
+            {
+                m_tmpLabel.setAssignment(icon.getAssignment());
+            }
+            super.exportAsDrag(m_tmpLabel, e, action);
+        } else
+        {
+            super.exportAsDrag(comp, e, action);
+        }
     }
 
     class AssignmentTransferable implements Transferable

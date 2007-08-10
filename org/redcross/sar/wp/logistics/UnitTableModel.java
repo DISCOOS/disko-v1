@@ -409,7 +409,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         {
             if (aList.size() > 0)
             {
-                return aList.get(0).getTimeStarted();
+                return aList.get(0).getTimeAssigned();
             }
             return null;
         }
@@ -433,7 +433,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         {
             if (aList.size() > 0)
             {
-                return aList.get(0).getTimeStarted();
+                return aList.get(0).getTimeEstimatedFinished();
             }
             return null;
         }

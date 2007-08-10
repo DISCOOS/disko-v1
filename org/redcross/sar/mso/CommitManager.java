@@ -81,14 +81,10 @@ public class CommitManager
             if (updateItem.m_object.getObjectId().equals(anObject.getObjectId()))
             {
                 updateItem.applyMask(aMask);
-                System.out.println("CommitManager registerUpdate:  " + anObject.getObjectId() + " " + anObject.getMsoClassCode() + " Mask: " + aMask
-                 + " Queue len: " + m_updates.size());
                 return;
             }
         }
         m_updates.add(new UpdateHolder(anObject, aMask));
-        System.out.println("CommitManager registerUpdate:  " + anObject.getObjectId() + " " + anObject.getMsoClassCode() + " Mask: " + aMask
-         + " Queue len: " + m_updates.size());
     }
 
     /**

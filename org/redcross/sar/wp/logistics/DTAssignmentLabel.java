@@ -11,8 +11,10 @@ import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 
+/**
+ * A subclass of {@link AssignmentLabel} that supports Data Transfer.
+ */
 
-//A subclass of Label that supports Data Transfer.
 public class DTAssignmentLabel extends AssignmentLabel implements MouseMotionListener
 {
     private MouseEvent firstMouseEvent = null;

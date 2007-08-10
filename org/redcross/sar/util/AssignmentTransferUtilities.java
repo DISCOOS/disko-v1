@@ -16,7 +16,7 @@ import java.util.EnumSet;
  */
 
 /**
- *  Class for handling assignment transfers.
+ * Class for handling assignment transfers.
  */
 public class AssignmentTransferUtilities
 {
@@ -24,16 +24,16 @@ public class AssignmentTransferUtilities
 
     /**
      * Create an assignment transfer message and put it in the message log.
-     *
+     * <p/>
      * The message is generated with status {@link org.redcross.sar.mso.data.IMessageIf.MessageStatus#UNCONFIRMED}.
-     *
+     * <p/>
      * For each status change between {@link org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus#READY} and {@link org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus#FINISHED}
      * is generated one message line.
      *
      * @param anMsoManager The Mso Manager.
-     * @param aUnit Unit receiving the assignment.
+     * @param aUnit        Unit receiving the assignment.
      * @param anAssignment The assignment that is transferred
-     * @param oldStatus Former assignmnet status
+     * @param oldStatus    Former assignmnet status
      */
     public static void createAssignmentChangeMessage(IMsoManagerIf anMsoManager, IUnitIf aUnit, IAssignmentIf anAssignment, IAssignmentIf.AssignmentStatus oldStatus)
     {
@@ -45,7 +45,14 @@ public class AssignmentTransferUtilities
                 firstLineType = IMessageLineIf.MessageLineType.ASSIGNED;
                 break;
             case ASSIGNED:
-                firstLineType = IMessageLineIf.MessageLineType.STARTED;
+                // Special consideration when moving assigned assignments between units.
+                if (anAssignment.getStatus() ==  IAssignmentIf.AssignmentStatus.ASSIGNED)
+                {
+                    firstLineType = IMessageLineIf.MessageLineType.ASSIGNED;
+                } else
+                {
+                    firstLineType = IMessageLineIf.MessageLineType.STARTED;
+                }
                 break;
             case EXECUTING:
                 firstLineType = IMessageLineIf.MessageLineType.COMPLETE;
@@ -76,6 +83,8 @@ public class AssignmentTransferUtilities
         message.setCreated(now);
         message.setOccuredTime(now);
         message.setStatus(IMessageIf.MessageStatus.UNCONFIRMED);
+        message.addConfirmedReceiver(aUnit);
+        message.setSender(anMsoManager.getCmdPostCommunicator());
         createAssignmentChangeMessageLines(message, firstLineType, finalLineType, now, anAssignment);
     }
 
@@ -86,17 +95,17 @@ public class AssignmentTransferUtilities
     /**
      * Create a set of message lines for assignment transfers.
      *
-     * @param message The message where the lines shall be put. Possible existing lines of the same type in the message will be overwritten.
+     * @param message       The message where the lines shall be put. Possible existing lines of the same type in the message will be overwritten.
      * @param firstLineType First line type to generate.
      * @param lastLineType  Last line type to generate.
-     * @param aDTG Time when the message was created.
-     * @param anAssignment The assignment that is transferred
+     * @param aDTG          Time when the message was created.
+     * @param anAssignment  The assignment that is transferred
      */
     public static void createAssignmentChangeMessageLines(IMessageIf message, IMessageLineIf.MessageLineType firstLineType, IMessageLineIf.MessageLineType lastLineType, Calendar aDTG, IAssignmentIf anAssignment)
     {
-        for ( IMessageLineIf.MessageLineType t : types)
+        for (IMessageLineIf.MessageLineType t : types)
         {
-            if (t.ordinal() >= firstLineType.ordinal() &&  t.ordinal() <= lastLineType.ordinal())
+            if (t.ordinal() >= firstLineType.ordinal() && t.ordinal() <= lastLineType.ordinal())
             {
                 IMessageLineIf line = message.findMessageLine(t, true);
                 if (line != null)
@@ -111,7 +120,7 @@ public class AssignmentTransferUtilities
     /**
      * Check if a unit can accept an assignment with a given status.
      *
-     * @param aUnit The unit that receives the assignment.
+     * @param aUnit   The unit that receives the assignment.
      * @param aStatus The status to be checked.
      * @return <code>true</code> if accepted, <code>false </code> otherwise.
      */
@@ -144,9 +153,10 @@ public class AssignmentTransferUtilities
 
     /**
      * Test if an assignment can change satus and owner.
+     *
      * @param anAssignment The assignment to change
-     * @param newStatus The new status
-     * @param newUnit The new owner
+     * @param newStatus    The new status
+     * @param newUnit      The new owner
      * @return <code>true</code> if the change is legal, <code>false</code> otherwise.
      */
     public static boolean assignmentCanChangeToStatus(IAssignmentIf anAssignment, String newStatus, IUnitIf newUnit)
@@ -156,15 +166,15 @@ public class AssignmentTransferUtilities
         {
             return false;
         }
-        return assignmentCanChangeToStatus(anAssignment,status, newUnit);
+        return assignmentCanChangeToStatus(anAssignment, status, newUnit);
     }
 
     /**
      * Check if an assignment can change to a new status and be transferred to a given unit.
      *
      * @param anAssignment The assignment to check.
-     * @param newStatus New status for assignment.
-     * @param newUnit Unit that shall receive the assignment.
+     * @param newStatus    New status for assignment.
+     * @param newUnit      Unit that shall receive the assignment.
      * @return <code>true</code> if can change, <code>false </code> otherwise.
      */
     public static boolean assignmentCanChangeToStatus(IAssignmentIf anAssignment, IAssignmentIf.AssignmentStatus newStatus, IUnitIf newUnit)
@@ -184,10 +194,10 @@ public class AssignmentTransferUtilities
             case DRAFT:
                 return newUnit == null && newStatus == IAssignmentIf.AssignmentStatus.READY;
             case READY:
-                return newUnit != null && IAssignmentIf.ACTIVE_SET.contains(newStatus) && AssignmentTransferUtilities.unitCanAccept(newUnit,newStatus);
+                return newUnit != null && IAssignmentIf.ACTIVE_SET.contains(newStatus) && AssignmentTransferUtilities.unitCanAccept(newUnit, newStatus);
             case ALLOCATED:
             case ASSIGNED:
-                return newUnit == null ? newStatus == IAssignmentIf.AssignmentStatus.READY : (IAssignmentIf.ACTIVE_SET.contains(newStatus)  && AssignmentTransferUtilities.unitCanAccept(newUnit,newStatus));
+                return newUnit == null ? newStatus == IAssignmentIf.AssignmentStatus.READY : (IAssignmentIf.ACTIVE_SET.contains(newStatus) && AssignmentTransferUtilities.unitCanAccept(newUnit, newStatus));
             case EXECUTING:
                 return newUnit == currentUnit && IAssignmentIf.FINISHED_AND_REPORTED_SET.contains(newStatus);
             case ABORTED:
@@ -196,7 +206,6 @@ public class AssignmentTransferUtilities
         }
         return false;
     }
-
 
 
 }

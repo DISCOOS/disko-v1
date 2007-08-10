@@ -101,7 +101,7 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
 
     public IAttributeIf.IMsoIntegerIf getPrioritySequenceAttribute();
 
-    public void setTimeAssigned(Calendar aTimeAssigned);
+//    public void setTimeAssigned(Calendar aTimeAssigned);
 
     public Calendar getTimeAssigned();
 
@@ -117,7 +117,7 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
 
     public IAttributeIf.IMsoCalendarIf getTimeEstimatedFinishedAttribute();
 
-    public void setTimeStarted(Calendar aTimeStarted);
+//    public void setTimeStarted(Calendar aTimeStarted);
 
     public Calendar getTimeStarted();
 
@@ -262,6 +262,6 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
         }
     };
 
-
+     public IMessageLineIf getLatestStatusChangeMessageLine(final IMessageLineIf.MessageLineType aType);
 
 }

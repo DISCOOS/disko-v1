@@ -115,7 +115,6 @@ public class MsoModelImpl implements IMsoModelIf
     protected void setUpdateMode(UpdateMode aMode)
     {
         m_updateModeStack.push(aMode);
-        System.out.println("Update mode push: " + aMode + " size: " + m_updateModeStack.size());
         if (m_updateModeStack.size() > 10)
         {
             System.out.println("Update mode stack grows too large, size:" + m_updateModeStack.size());
@@ -131,7 +130,6 @@ public class MsoModelImpl implements IMsoModelIf
         {
             m_updateModeStack.pop();
         }
-        System.out.println("Update mode pop,   size: " + m_updateModeStack.size());
     }
 
     /**
@@ -145,10 +143,8 @@ public class MsoModelImpl implements IMsoModelIf
 
     public void commit()
     {
-        System.out.println("Committing.........");
         m_commitManager.commit();
         setLoopbackUpdateMode();
-//        m_IMsoManager.commit();
         m_IMsoManager.postProcessCommit();
         restoreUpdateMode();
     }

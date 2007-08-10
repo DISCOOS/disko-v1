@@ -271,7 +271,6 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
         List<ICommittableIf.ICommitObjectIf> objectList = wrapper.getObjects();
         for (ICommittableIf.ICommitObjectIf ico : objectList)
         {
-            System.out.println("Commit Object " + ico.getType() + " " + ico.getObject());
             //IF created, create SARA object
             if (ico.getType().equals(CommitManager.CommitType.COMMIT_CREATED))
             {
@@ -290,18 +289,14 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
         }
 
         List<ICommittableIf.ICommitReferenceIf> attrList = wrapper.getListReferences();
-        System.out.println("Antall endrede referanser : " + attrList.size());
         for (ICommittableIf.ICommitReferenceIf ico : attrList)
         {
-            System.out.println("Commit List " + ico.getType() + " " + ico.getReferenceName());
             msoReferenceChanged(ico, false);
         }
 
         List<ICommittableIf.ICommitReferenceIf> listList = wrapper.getAttributeReferences();
-        System.out.println("Antall endrede listereferanser : " + listList.size());
         for (ICommittableIf.ICommitReferenceIf ico : listList)
         {
-            System.out.println("Commit Attr " + ico.getType() + " " + ico.getReferenceName());
             msoReferenceChanged(ico, true);
         }
         sarSvc.getSession().commit(sarOperation.getID());
@@ -327,10 +322,8 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
         if (sourceObj == null || relObj == null)
         {
             Log.warning("Object not found " + owner.getObjectId() + " or " + ref.getObjectId());
-            System.out.println("Object not found " + owner.getObjectId() + " or " + ref.getObjectId());
         } else
         {
-            System.out.println("ChangeReference " + isNamedReference + " " + ct);
             if (ct.equals(CommitManager.CommitType.COMMIT_CREATED))
             {
                 if (isNamedReference)
@@ -490,7 +483,6 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
                 public void run()
                 {
                     //To change body of implemented methods use File | Settings | File Templates.
-                    System.out.println("saraChanged");
 
                     MsoModelImpl.getInstance().setRemoteUpdateMode();
                     try
@@ -774,9 +766,6 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
 
     public static void setMsoObjectValues(SarObject sarObject, IMsoObjectIf msoObj)
     {
-        System.out.println("setMsoObjectValues");
-        //MsoModelImpl.getInstance().setRemoteUpdateMode();
-
         for (SarBaseObject fact : sarObject.getObjects())
         {
             if (fact instanceof SarFact)
