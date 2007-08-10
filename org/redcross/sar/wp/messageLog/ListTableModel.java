@@ -1,6 +1,11 @@
 package org.redcross.sar.wp.messageLog;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.swing.table.AbstractTableModel;
+
+import org.redcross.sar.mso.data.IMessageLineIf;
 
 /**
  * @author thomasl
@@ -8,12 +13,11 @@ import javax.swing.table.AbstractTableModel;
  */
 public class ListTableModel extends AbstractTableModel
 {
-	protected String[] m_messageLines = null;
-	
-	public void setMessageLines(String[] messageLines)
+	protected List<IMessageLineIf> m_messageLines = null;
+
+	public ListTableModel()
 	{
-		m_messageLines = messageLines;
-		fireTableDataChanged();
+		m_messageLines = new LinkedList<IMessageLineIf>();
 	}
 	
 	public int getColumnCount() 
@@ -29,26 +33,37 @@ public class ListTableModel extends AbstractTableModel
 
 	public int getRowCount() 
 	{
-		if(m_messageLines == null)
-		{
-			return 0;
-		}
-		else
-		{
-			return m_messageLines.length;
-		}
+		return m_messageLines.size();
 	}
 
 	public Object getValueAt(int rowIndex, int coulumnIndex) 
 	{
-		if(m_messageLines == null)
+		if(m_messageLines.isEmpty())
 		{
 			return "";
 		}
 		else
 		{
-			return m_messageLines[rowIndex];
+			IMessageLineIf line = m_messageLines.get(rowIndex);
+			/*
+			switch(line.getLineType())
+			{
+			case IMessageLineIf.MessageLineType.TEXT:
+				break;
+			}
+			*/
+			return m_messageLines.get(rowIndex).toString();
 		}
+	}
+
+	public void clearMessageLines()
+	{
+		m_messageLines.clear();
+	}
+
+	public void addMessageLine(IMessageLineIf messageLine)
+	{
+		m_messageLines.add(messageLine);
 	}
 	
 }

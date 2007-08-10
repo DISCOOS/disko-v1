@@ -95,11 +95,11 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	private JToggleButton  m_findingButton;
 	private MessagePOIDialog m_messageFindingDialog;
 	private JToggleButton  m_assignedButton;
-	private AssignedDialog m_messageAssignedDialog;
+	private AssignmentDialog m_messageAssignedDialog;
 	private JToggleButton  m_startedButton;
-	private StartedDialog m_messageStartedDialog;
+	private AssignmentDialog m_messageStartedDialog;
 	private JToggleButton  m_completedButton;
-	private CompletedDialog m_messageCompletedDialog;
+	private AssignmentDialog m_messageCompletedDialog;
 	private JToggleButton  m_listButton;
 	private ListDialog m_messageListDialog;
 	private JToggleButton  m_deleteButton;
@@ -272,6 +272,36 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     	}
     	return m_messageFindingDialog;
     }
+    
+    private void getAssignedDialog()
+    {
+    	if(m_messageAssignedDialog == null)
+    	{
+    		m_messageAssignedDialog = new AssignmentDialog(m_wpMessageLog, AssignmentDialog.AssignmentAction.ASSIGN);
+    		m_messageAssignedDialog.addDialogListener(this);
+    		m_dialogs.add(m_messageAssignedDialog);
+    	}
+    }
+    
+    private void getStartedDialog()
+    {
+    	if(m_messageStartedDialog == null)
+    	{
+    		m_messageStartedDialog = new AssignmentDialog(m_wpMessageLog, AssignmentDialog.AssignmentAction.START);
+    		m_messageStartedDialog.addDialogListener(this);
+    		m_dialogs.add(m_messageStartedDialog);
+    	}
+    }
+    private void getCompletedDialog()
+	{
+		if(m_messageCompletedDialog == null)
+		{
+			m_messageCompletedDialog = new AssignmentDialog(m_wpMessageLog, AssignmentDialog.AssignmentAction.COMPLETE);
+			m_messageCompletedDialog.addDialogListener(this);
+			m_dialogs.add(m_messageCompletedDialog);
+		}
+		
+	}
 
     private ListDialog getMessageListDialog()
     {
@@ -927,8 +957,32 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelCompletedLabel.text"));
-
+				ErrorDialog errorDialog = Utils.getErrorDialog();
+				if(getCurrentMessage().isBroadcast())
+				{
+					errorDialog.showError(m_wpMessageLog.getText("CompletedError.header"), 
+							m_wpMessageLog.getText("CompletedError.details"));
+				}
+				else if(isReceiverCommandPost())
+				{
+					// Not possible to assign when receiver is CP
+					errorDialog.showError(m_wpMessageLog.getText("ReceiverCommandPostError.header"), 
+							m_wpMessageLog.getText("ReceiverCommandPostError.details"));
+				}
+				else if(!isTaskOperationLegal())
+				{
+					// Require certain message status
+					errorDialog.showError(m_wpMessageLog.getText("MessageTaskOperationError.header"), 
+							m_wpMessageLog.getText("MessageTaskOperationError.details"));
+				}
+				else
+				{
+					m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelCompletedLabel.text"));
+					getCompletedDialog();
+					hideDialogs();
+					positionDialogInArea(m_messageCompletedDialog);
+					m_messageCompletedDialog.showDialog();
+				}
 			}
 		});
 		m_buttonGroup.add(m_completedButton);
@@ -942,7 +996,32 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelStartedLabel.text"));
+				ErrorDialog errorDialog = Utils.getErrorDialog();
+				if(getCurrentMessage().isBroadcast())
+				{
+					errorDialog.showError(m_wpMessageLog.getText("StartedError.header"), 
+							m_wpMessageLog.getText("StartedError.details"));
+				}
+				else if(isReceiverCommandPost())
+				{
+					// Not possible to assign when receiver is CP
+					errorDialog.showError(m_wpMessageLog.getText("ReceiverCommandPostError.header"), 
+							m_wpMessageLog.getText("ReceiverCommandPostError.details"));
+				}
+				else if(!isTaskOperationLegal())
+				{
+					// Require certain message status
+					errorDialog.showError(m_wpMessageLog.getText("MessageTaskOperationError.header"), 
+							m_wpMessageLog.getText("MessageTaskOperationError.details"));
+				}
+				else
+				{
+					m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelStartedLabel.text"));
+					getStartedDialog();
+					hideDialogs();
+					positionDialogInArea(m_messageStartedDialog);
+					m_messageStartedDialog.showDialog();
+				}	
 			}
 		});
 		m_buttonGroup.add(m_startedButton);
@@ -956,11 +1035,70 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelAssignedLabel.text"));
+				ErrorDialog errorDialog = Utils.getErrorDialog();
+				if(getCurrentMessage().isBroadcast())
+				{
+					// Only legal if message isn't broadcast
+					errorDialog.showError(m_wpMessageLog.getText("AssignmentError.header"), 
+							m_wpMessageLog.getText("AssignmentError.details"));
+				}
+				else if(isReceiverCommandPost())
+				{
+					// Not possible to assign when receiver is CP
+					errorDialog.showError(m_wpMessageLog.getText("ReceiverCommandPostError.header"), 
+							m_wpMessageLog.getText("ReceiverCommandPostError.details"));
+				}
+				else if(!isTaskOperationLegal())
+				{
+					// Require certain message status
+					errorDialog.showError(m_wpMessageLog.getText("MessageTaskOperationError.header"), 
+							m_wpMessageLog.getText("MessageTaskOperationError.details"));
+				}
+				else
+				{
+					// Task can be changed
+					m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelAssignedLabel.text"));
+					hideDialogs();
+					getAssignedDialog();
+					positionDialogInArea(m_messageAssignedDialog);
+					m_messageAssignedDialog.showDialog();
+				}
 			}
 		});
 		m_buttonGroup.add(m_assignedButton);
 		m_buttonRow.add(m_assignedButton);
+	}
+	
+	private boolean isReceiverCommandPost()
+	{
+		ICommunicatorIf receiver = getCurrentMessage().getSingleReceiver();
+		if(receiver != null)
+		{
+			if(receiver instanceof ICmdPostIf)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			// Receiver is, by default, command post
+			return true;
+		}
+	}
+	
+	private boolean isTaskOperationLegal()
+	{
+		if(m_newMessage)
+		{
+			return true;
+		}
+		
+		MessageStatus status = getCurrentMessage().getStatus();
+		return (status == MessageStatus.UNCONFIRMED || status == MessageStatus.POSTPONED);
 	}
 
 	private void createFindingButton()
