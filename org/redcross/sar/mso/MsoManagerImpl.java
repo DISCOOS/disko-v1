@@ -112,6 +112,12 @@ public class MsoManagerImpl implements IMsoManagerIf
         return (IHierarchicalUnitIf) m_operation.getCmdPostList().getItem();
     }
 
+
+    public ICommunicatorIf getCmdPostCommunicator()
+    {
+        return (ICommunicatorIf) m_operation.getCmdPostList().getItem();
+    }
+
     public boolean remove(IMsoObjectIf aMsoObject) throws MsoNullPointerException
     {
         if (aMsoObject == null)
@@ -442,5 +448,16 @@ public class MsoManagerImpl implements IMsoManagerIf
     {
         return getExistingCmdPost().getUnitList().createVehicle(anObjectId);
     }
+
+    public IBoatIf createBoat(String anIdentifier)
+    {
+        return getExistingCmdPost().getUnitList().createBoat(anIdentifier);
+    }
+
+    public IBoatIf createBoat(IMsoObjectIf.IObjectIdIf anObjectId)
+    {
+        return getExistingCmdPost().getUnitList().createBoat(anObjectId);
+    }
+
 
 }

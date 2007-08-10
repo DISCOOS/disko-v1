@@ -104,6 +104,13 @@ public interface IMsoManagerIf
     public IHierarchicalUnitIf getCmdPostUnit();
 
     /**
+     * Get (Unique) {@link org.redcross.sar.mso.data.ICmdPostIf} object as an {@link ICommunicatorIf} object
+     *
+     * @return The {@link ICommunicatorIf} object
+     */
+    public ICommunicatorIf getCmdPostCommunicator();
+
+    /**
      * Remove an object from the data structure.
      *
      * @param aMsoObject The object to remove.
@@ -527,4 +534,21 @@ public interface IMsoManagerIf
      * @return The created object.
      */
     public IVehicleIf createVehicle(IMsoObjectIf.IObjectIdIf anObjectId);
+
+    /**
+     * Create a new {@link org.redcross.sar.mso.data.IBoatIf} object and add it to the collection of Unit objects.
+     *
+     * @param anIdentifier The unit's identifier (if needed here??)
+     * @return The created object.
+     */
+    public IBoatIf createBoat(String anIdentifier);
+
+    /**
+     * Create a new {@link org.redcross.sar.mso.data.IBoatIf} object and add it to the collection of Unit objects.
+     *
+     * @param anObjectId The Object id
+     * @return The created object.
+     */
+    public IBoatIf createBoat(IMsoObjectIf.IObjectIdIf anObjectId);
+
 }
