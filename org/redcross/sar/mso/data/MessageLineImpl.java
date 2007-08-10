@@ -39,7 +39,7 @@ public class MessageLineImpl extends AbstractMsoObject implements IMessageLineIf
 
     public String getLineTypeText()
     {
-        return Internationalization.getEnumText(bundle,getLineType());
+        return Internationalization.getEnumText(bundle, getLineType());
     }
 
     public MessageLineImpl(IObjectIdIf anObjectId)
@@ -243,7 +243,11 @@ public class MessageLineImpl extends AbstractMsoObject implements IMessageLineIf
             case POI:
             case FINDING:
                 IPOIIf poi = getLinePOI();
-                return getLineNumber() + " " + getLineTypeText() + " " + poi.getTypeText() + " " + poi.getPosition();
+                if (poi != null)
+                {
+                    return getLineNumber() + " " + getLineTypeText() + " " + poi.getTypeText() + " " + poi.getPosition();
+                }
+                return getLineNumber() + " " + getLineTypeText() + " Undefined POI";
             case TEXT:
                 return getLineNumber() + " " + getLineText();
             default:
