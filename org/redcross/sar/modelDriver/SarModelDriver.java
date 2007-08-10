@@ -438,6 +438,9 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
     private void deleteSaraObject(ICommittableIf.ICommitObjectIf commitObject)
     {
         //Finn mappet objekt
+        SarObject soi = sarOperation.getSarObject(commitObject.getObject().getObjectId());
+        soi.delete("DISKO");
+
         //Send slette melding
     }
 
