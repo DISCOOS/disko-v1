@@ -11,7 +11,9 @@ import javax.swing.JTextField;
 
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.mso.data.IAssignmentIf;
+import org.redcross.sar.mso.data.ICommunicatorIf;
 import org.redcross.sar.mso.data.IMessageIf;
+import org.redcross.sar.mso.data.IUnitIf;
 
 /**
  * Dialog handling all updates to assignment. 
@@ -74,18 +76,15 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 		m_showAssignmentPanel = new JPanel();
 		m_showAssignmentPanel.setLayout(new BoxLayout(m_showAssignmentPanel, BoxLayout.PAGE_AXIS));
 		
-		m_assignmentLabel = new JLabel("Oppdrag: ");
-		m_assignmentLabel.setAlignmentX(JComponent.LEFT_ALIGNMENT);
+		m_assignmentLabel = new JLabel("Oppdrag: "); // TODO internasjonaliser
 		m_showAssignmentPanel.add(m_assignmentLabel);
 		
 		JPanel assignmentTimePanel = new JPanel();
-		//assignmentTimePanel.setLayout(new BoxLayout(assignmentTimePanel, BoxLayout.LINE_AXIS));
-		m_assignedTimeLabel = new JLabel("Tildelt når: ");
+		m_assignedTimeLabel = new JLabel("Tildelt når: "); // TODO internasjonaliser
 		assignmentTimePanel.add(m_assignedTimeLabel);
 		m_assignedTimeTextField = new JTextField(12);
 		assignmentTimePanel.add(m_assignedTimeTextField);
 		assignmentTimePanel.add(Box.createHorizontalGlue());
-		assignmentTimePanel.setAlignmentX(JComponent.LEFT_ALIGNMENT);
 		m_showAssignmentPanel.add(assignmentTimePanel);
 		
 		m_showAssignmentPanel.add(Box.createVerticalGlue());
@@ -111,7 +110,43 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 
 	public void showDialog()
 	{
+		// Show components based on current message state
+		if(m_action == AssignmentAction.ASSIGN)
+		{
+			if(hasAssignment())
+			{
+				showHasAssignment();
+			}
+			else if(hasNextAssignment())
+			{
+				
+			}
+			else
+			{
+				
+			}
+		}
 		this.setVisible(true);	
+	}
+
+	private void showHasAssignment()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	private boolean hasNextAssignment()
+	{
+		// TODO
+		IUnitIf unit = (IUnitIf)MessageLogTopPanel.getCurrentMessage().getSingleReceiver();
+		return unit.getAssignedAssignments().size() != 0;
+	}
+
+	private boolean hasAssignment()
+	{
+		// TODO
+		IUnitIf unit = (IUnitIf)MessageLogTopPanel.getCurrentMessage().getSingleReceiver();
+		return unit.getActiveAssignment() != null;
 	}
 
 }

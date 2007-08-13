@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.geom.Point2D;
+import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -19,6 +20,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.map.DiskoMap;
@@ -28,9 +31,13 @@ import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IPOIIf;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
+import org.redcross.sar.mso.event.IMsoGisListenerIf;
+import org.redcross.sar.mso.event.MsoEvent.EventType;
+import org.redcross.sar.mso.event.MsoEvent.Gis;
 import org.redcross.sar.util.mso.Position;
 
 import com.esri.arcgis.carto.NewDimensionFeedback;
+import com.esri.arcgis.interop.AutomationException;
 
 /**
  * Dialog used in position and finding when editing the message log. A separate POI dialog class was created for 
@@ -54,6 +61,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 	protected POIType[] m_poiTypes = null;
 	protected IDiskoWpMessageLog m_wpMessageLog = null;
 	protected SinglePOIMapDialog m_mapDialog = null;
+	protected SinglePOITool m_tool = null;
 	protected boolean m_positionMessageLine = true;
 	
 	public MessagePOIDialog(IDiskoWpMessageLog wp, boolean position)
@@ -68,14 +76,29 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 	
 	private void initialize()
 	{
+		// TODO numpads?
+		
 		initButtons();
 		initContents();
 		initMapDialog();
+		
+		try
+		{
+			m_tool = new SinglePOITool(m_wpMessageLog.getApplication(), this, m_positionMessageLine);
+			m_tool.setMap(m_mapDialog.getMap());
+		} 
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void initMapDialog()
 	{
 		m_mapDialog = new SinglePOIMapDialog(m_wpMessageLog, m_positionMessageLine);
+		m_mapDialog.setActiveTool(m_tool);
+		m_mapDialog.setCurrentToolByRef(m_tool);
 	}
 	
 	private void updatePOI()
@@ -99,28 +122,31 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		}
 		catch(NumberFormatException nfe)
 		{
-			// TODO error dialog?
+			// TODO warning?
 			yCoordinate = 0.0;
 		}
 		
-		// Create POI
-		IPOIIf poi = null;
-		
-		IMessageLineIf messageLine = message.findMessageLine(MessageLineType.POI, false);
-		// Create new POI and message line if POI message line did not exists
-		if(messageLine == null)
+		// Get line
+		IMessageLineIf messageLine = null;
+		if(m_positionMessageLine)
 		{
 			messageLine = message.findMessageLine(MessageLineType.POI, true);
-			poi = m_wpMessageLog.getMsoManager().createPOI();
-			messageLine.setLinePOI(poi);
 		}
 		else
 		{
-			poi = messageLine.getLinePOI();
+			messageLine = message.findMessageLine(MessageLineType.FINDING, true);
 		}
 		
+		// Create new POI and message line if POI message line did not exists
+		IPOIIf poi = messageLine.getLinePOI();
+		if(poi == null)
+		{
+			poi = m_wpMessageLog.getMsoManager().createPOI();
+			messageLine.setLinePOI(poi);
+		}
 		
 		// Update POI
+		poi.setType(this.getSelectedPOIType());
 		Position position = poi.getPosition();
 		if(position == null)
 		{
@@ -212,55 +238,72 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		m_contentsPanel = new JPanel();
 		m_contentsPanel.setLayout(new BoxLayout(m_contentsPanel, BoxLayout.LINE_AXIS));
 		
+		JPanel labelPanel = new JPanel();
+		labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.PAGE_AXIS));
+		
+		JPanel fieldPanel = new JPanel();
+		fieldPanel.setLayout(new BoxLayout(fieldPanel, BoxLayout.PAGE_AXIS));
+		
 		// X
-		JPanel xPanel = new JPanel();
 		m_xLabel = new JLabel("X");
-		xPanel.add(m_xLabel);
+		labelPanel.add(m_xLabel);
 		m_xField = new JTextField(12);
-		m_xField.addActionListener(new ActionListener()
+		m_xField.addCaretListener(new CaretListener()
 		{
-			public void actionPerformed(ActionEvent e)
+			public void caretUpdate(CaretEvent e)
 			{
 				updatePOI();
 			}
 		});
-		xPanel.add(m_xField);
+		fieldPanel.add(m_xField);
 		
 		// Y
 		JPanel yPanel = new JPanel();
 		m_yLabel = new JLabel("Y");
-		yPanel.add(m_yLabel);
+		labelPanel.add(m_yLabel);
 		m_yField = new JTextField(12);
-		m_yField.addActionListener(new ActionListener()
+		m_yField.addCaretListener(new CaretListener()
 		{
-			public void actionPerformed(ActionEvent e)
+			public void caretUpdate(CaretEvent e)
 			{
 				updatePOI();
 			}
 		});
-		yPanel.add(m_yField);
+		fieldPanel.add(m_yField);
 		
 		// Combo box
-		JPanel comboBoxPanel = new JPanel();
+		//JPanel comboBoxPanel = new JPanel();
 		m_poiTypeLabel = new JLabel("Type"); // TODO internasjonaliser
-		comboBoxPanel.add(m_poiTypeLabel);
+		labelPanel.add(m_poiTypeLabel);
 		m_poiTypesComboBox = new JComboBox();
 		m_poiTypesComboBox.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				// TODO set tool type
+				// Set finding poi type
+				JComboBox cb = (JComboBox)e.getSource(); 
+				POIType type = (POIType)cb.getSelectedItem();
 				
+				IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+				IMessageLineIf messageLine = message.findMessageLine(MessageLineType.FINDING, true);
+				IPOIIf poi = messageLine.getLinePOI();
+				if(poi == null)
+				{
+					poi = m_wpMessageLog.getMsoManager().createPOI();
+					messageLine.setLinePOI(poi);
+				}
+				
+				poi.setType(type);
+				// TODO Fire change? Update map?
 			}
 		});
-		comboBoxPanel.add(m_poiTypesComboBox);
+		fieldPanel.add(m_poiTypesComboBox);
 		this.setPOITypes(null);
 		
 		JPanel fieldsPanel = new JPanel();
-		fieldsPanel.setLayout(new BoxLayout(fieldsPanel, BoxLayout.PAGE_AXIS));
-		fieldsPanel.add(xPanel);
-		fieldsPanel.add(yPanel);
-		fieldsPanel.add(comboBoxPanel);
+		fieldsPanel.setLayout(new BoxLayout(fieldsPanel, BoxLayout.LINE_AXIS));
+		fieldsPanel.add(labelPanel);
+		fieldsPanel.add(fieldPanel);
 		
 		JPanel completePOIPanel = new JPanel();
 		completePOIPanel.add(fieldsPanel);
@@ -297,11 +340,20 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		if(m_poiTypes == null)
 		{
 			messageLine = message.findMessageLine(MessageLineType.POI, false);
+		}
+		else
+		{
+			messageLine = message.findMessageLine(MessageLineType.FINDING, false);
+		}
+		
+		try
+		{
+			// Update components
 			if(messageLine == null)
 			{
+				// Message don't have a POI message line
 				m_xField.setText("");
 				m_yField.setText("");
-				setPOITypes(null);
 			}
 			else
 			{
@@ -323,10 +375,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 				}	
 			}
 		}
-		else
-		{
-			
-		}
+		catch(Exception e){}
 		
 		m_mapDialog.newMessageSelected(message);
 	}
@@ -341,5 +390,23 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 			m_mapDialog.showDialog();
 		}
 		this.setVisible(true);
+	}
+
+	public IDiskoWpMessageLog getWP()
+	{
+		return m_wpMessageLog;
+	}
+
+	public POIType getSelectedPOIType()
+	{
+		if(m_poiTypes == null || m_positionMessageLine)
+		{
+			return POIType.GENERAL;
+		}
+		else
+		{
+			String type = m_poiTypesComboBox.getSelectedItem().toString();
+			return POIType.valueOf(type);
+		}
 	}
 }

@@ -26,7 +26,6 @@ public class SinglePOIMapDialog extends DiskoDialog implements IEditMessageDialo
 	protected IDiskoWpMessageLog m_wpMessageLog = null;
 	protected IDiskoMap m_map = null;
 	protected POIType m_poiType = POIType.GENERAL;
-	protected SinglePOITool m_tool = null;
 	protected boolean m_positionMessageLine = true;
 	
 	public SinglePOIMapDialog(IDiskoWpMessageLog wp, boolean position)
@@ -35,16 +34,6 @@ public class SinglePOIMapDialog extends DiskoDialog implements IEditMessageDialo
 		
 		m_wpMessageLog = wp;
 		m_positionMessageLine = position;
-		
-		try
-		{
-			m_tool = new SinglePOITool(wp.getApplication(), this, position);
-		} 
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
 		initMap();
 	}
@@ -57,22 +46,7 @@ public class SinglePOIMapDialog extends DiskoDialog implements IEditMessageDialo
 	private void initMap()
 	{
 		m_map = m_wpMessageLog.getMap().getMapManager().getMapInstance();
-		try
-		{
-			m_map.setActiveTool(m_tool);
-			m_tool.setMap((DiskoMap)m_map);
-			m_map.setCurrentToolByRef(m_tool);
-		} 
-		catch (AutomationException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 		this.add((DiskoMap)m_map);
 	}
 
@@ -85,24 +59,11 @@ public class SinglePOIMapDialog extends DiskoDialog implements IEditMessageDialo
 	public void hideDialog()
 	{
 		this.setVisible(false);
-		m_tool.getDialog().setVisible(false);
 	}
 
 	public void newMessageSelected(IMessageIf message)
 	{
-		zoomToPOI();
-	}
-
-	public void showDialog()
-	{	
-		this.setVisible(true);
-		m_tool.getDialog().setVisible(true);
-	}
-	
-	private void zoomToPOI()
-	{
 		// Update position
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
 		IMessageLineIf messageLine = null;
 		IPOIIf poi = null;
 		if(m_poiType == null || m_poiType == POIType.GENERAL)
@@ -116,19 +77,21 @@ public class SinglePOIMapDialog extends DiskoDialog implements IEditMessageDialo
 			messageLine = message.findMessageLine(MessageLineType.FINDING, false);
 		}
 		
-		if(messageLine != null)
+		if(messageLine == null)
 		{
-			poi = messageLine.getLinePOI();
+			return;
 		}
+		
+		poi = messageLine.getLinePOI();
 		
 		// If point is specified in current message, set position in map
 		if(poi != null)
 		{
 			try
 			{
-				//m_map.setSelected(poi, true);
-				//m_map.zoomToSelected();
-				m_map.zoomToMsoObject(poi);
+				m_map.setSelected(poi, true);
+				m_map.zoomToSelected();
+				//m_map.zoomToMsoObject(poi);
 			} 
 			catch(AutomationException e)
 			{
@@ -143,6 +106,11 @@ public class SinglePOIMapDialog extends DiskoDialog implements IEditMessageDialo
 		}
 	}
 
+	public void showDialog()
+	{	
+		this.setVisible(true);
+	}
+
 	public POIType getType()
 	{
 		if(m_poiType == null)
@@ -152,6 +120,46 @@ public class SinglePOIMapDialog extends DiskoDialog implements IEditMessageDialo
 		else
 		{
 			return m_poiType;
+		}
+	}
+
+	public void setActiveTool(SinglePOITool tool)
+	{
+		try
+		{
+			m_map.setActiveTool(tool);
+		} catch (AutomationException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public IDiskoMap getMap()
+	{
+		return m_map;
+	}
+
+	public void setCurrentToolByRef(SinglePOITool tool)
+	{
+		try
+		{
+			m_map.setCurrentToolByRef(tool);
+		} 
+		catch (AutomationException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }

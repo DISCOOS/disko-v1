@@ -16,6 +16,7 @@ import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IPOIIf;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
+import org.redcross.sar.mso.data.IPOIIf.POIType;
 
 import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.interop.AutomationException;
@@ -35,7 +36,7 @@ public class SinglePOITool extends AbstractCommandTool
 	protected IDiskoWpMessageLog m_wpMessageLog;
 	protected boolean m_positionMessageLine = true;
 
-	public SinglePOITool(IDiskoApplication app, SinglePOIMapDialog dialog, boolean position) throws IOException
+	public SinglePOITool(IDiskoApplication app, MessagePOIDialog dialog, boolean position) throws IOException
 	{
 		this.m_app = app;
 		// TODO Auto-generated constructor stub
@@ -47,9 +48,9 @@ public class SinglePOITool extends AbstractCommandTool
 		this.dialog = dialog;
 	}
 	
-	public void setMap(DiskoMap map)
+	public void setMap(IDiskoMap map)
 	{
-		this.map = map; 
+		this.map = (DiskoMap)map; 
 	}
 	
 	public void onCreate(Object obj) throws IOException, AutomationException 
@@ -64,23 +65,41 @@ public class SinglePOITool extends AbstractCommandTool
 	
 	public void onMouseDown(int button, int shift, int x, int y) throws IOException, AutomationException {}	
 	
+	/**
+	 * Update message POI(s) when map position is clicked. Event causes relevant dialogs to update, no need for
+	 * explicit update
+	 */
 	public void onMouseUp(int button, int shift, int x, int y) throws IOException, AutomationException 
 	{
-		// Update/add POI in current message
+		
 		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
-		IMessageLineIf messageLine = message.findMessageLine(MessageLineType.POI, true);
+		IMessageLineIf messageLine;
+		
+		if(m_positionMessageLine)
+		{
+			// Update/add POI in current message
+			messageLine = message.findMessageLine(MessageLineType.POI, true);
+		}
+		else
+		{
+			// Update finding in message
+			messageLine = message.findMessageLine(MessageLineType.FINDING, true);
+		}
+		
 		IPOIIf poi = messageLine.getLinePOI();
 		if(poi == null)
 		{
 			poi = m_wpMessageLog.getMsoManager().createPOI();
-			
+			messageLine.setLinePOI(poi);
 		}
 		
+		POIType type = ((MessagePOIDialog)dialog).getSelectedPOIType();
+		poi.setType(type);
+
+		// Update position
 		Point point = new Point();
 		point = transform(x, y);
 		point.setSpatialReferenceByRef(map.getSpatialReference());
-		
-		poi.setType(((SinglePOIMapDialog)dialog).getType());
 		poi.setPosition(MapUtil.getMsoPosistion(point));
 	}
 }
