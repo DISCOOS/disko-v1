@@ -238,8 +238,16 @@ public class MessageLineImpl extends AbstractMsoObject implements IMessageLineIf
             case ASSIGNED:
             case STARTED:
             case COMPLETE:
-                return MessageFormat.format("{0} {1} {2} {3} {4}",
-                        getLineNumber(), getLineAssignment().getTypeText(), getLineAssignment().getNumber(), getLineTypeText(), DTG.CalToDTG(getOperationTime()));
+            	if(getLineAssignment() != null)
+            	{
+            		return MessageFormat.format("{0} {1} {2} {3} {4}",
+                            getLineNumber(), getLineAssignment().getTypeText(), getLineAssignment().getNumber(), getLineTypeText(), DTG.CalToDTG(getOperationTime()));
+            	}
+            	else
+            	{
+            		return "";
+            	}
+                
             case POI:
             case FINDING:
                 IPOIIf poi = getLinePOI();
