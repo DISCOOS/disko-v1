@@ -76,19 +76,20 @@ public class MessageLogPanel
 
     private void initBottomPanel()
     {
-    	 m_bottomPanel = new JPanel();
-         m_bottomPanel.setLayout(new CardLayout());
-         m_bottomPanel.setFocusCycleRoot(true);
-         m_splitter1.setRightComponent(m_bottomPanel);
-         
-         m_scrollPane1 = new JScrollPane();
-         m_scrollPane1.setOpaque(false);
-         m_bottomPanel.add(m_scrollPane1, LOG_ID);
-         
-    	m_logTable = new JTable();
-        m_scrollPane1.setViewportView(m_logTable);
+    	m_bottomPanel = new JPanel();
+    	CardLayout layout = new CardLayout();
+    	m_bottomPanel.setLayout(layout);
+    	m_bottomPanel.setFocusCycleRoot(true);
+    	m_splitter1.setRightComponent(m_bottomPanel);
 
-        m_rowSelectionListener = new MessageRowSelectionListener(m_topPanel);
+    	m_scrollPane1 = new JScrollPane();
+    	m_scrollPane1.setOpaque(false);
+    	m_bottomPanel.add(m_scrollPane1, LOG_ID);
+
+    	m_logTable = new JTable();
+    	m_scrollPane1.setViewportView(m_logTable);
+
+    	m_rowSelectionListener = new MessageRowSelectionListener(m_topPanel);
         m_logTable.getSelectionModel().addListSelectionListener(m_rowSelectionListener);
    
         final LogTableModel model = new LogTableModel(m_logTable, m_wpModule, m_messageLog);

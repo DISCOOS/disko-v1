@@ -31,16 +31,11 @@ public class SinglePOITool extends AbstractCommandTool
 
 	protected IDiskoApplication m_app;
 	protected IDiskoWpMessageLog m_wpMessageLog;
-	protected boolean m_positionMessageLine = true;
 
-	public SinglePOITool(IDiskoApplication app, MessagePOIDialog dialog, boolean position) throws IOException
+	public SinglePOITool(IDiskoApplication app, MessagePOIDialog dialog) throws IOException
 	{
 		this.m_app = app;
-		// TODO Auto-generated constructor stub
-		
 		m_wpMessageLog = dialog.getWP();
-		
-		m_positionMessageLine = position;
 		
 		this.dialog = dialog;
 	}
@@ -56,8 +51,10 @@ public class SinglePOITool extends AbstractCommandTool
 		if (obj instanceof IDiskoMap) {
 			map = (DiskoMap)obj;
 			
+			/*
 			opAreaLayer = (OperationAreaLayer) map.getMapManager().getMsoLayer(
-					IMsoFeatureLayer.LayerCode.POI_LAYER);
+					IMsoFeatureLayer.LayerCode.AREA_LAYER);
+					*/
 		}
 	}
 	
@@ -75,7 +72,8 @@ public class SinglePOITool extends AbstractCommandTool
 		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
 		IMessageLineIf messageLine;
 		
-		if(m_positionMessageLine)
+		POIType type = MessagePOIDialog.getSelectedPOIType();
+		if(type == POIType.GENERAL)
 		{
 			// Update/add POI in current message
 			messageLine = message.findMessageLine(MessageLineType.POI, true);
@@ -93,7 +91,6 @@ public class SinglePOITool extends AbstractCommandTool
 			messageLine.setLinePOI(poi);
 		}
 		
-		POIType type = ((MessagePOIDialog)dialog).getSelectedPOIType();
 		poi.setType(type);
 
 		// Update position

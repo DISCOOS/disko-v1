@@ -1,8 +1,10 @@
 package org.redcross.sar.wp.messageLog;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.swing.Box;
@@ -29,6 +31,7 @@ import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 import org.redcross.sar.mso.data.IUnitIf.UnitStatus;
 import org.redcross.sar.util.except.IllegalOperationException;
+import org.redcross.sar.util.mso.DTG;
 
 import com.esri.arcgis.trackinganalyst.ActionProcessor;
 import com.swiftmq.admin.explorer.ButtonFormatter;
@@ -41,12 +44,17 @@ import com.swiftmq.admin.explorer.ButtonFormatter;
  */
 public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogIf
 {
+	protected static final String HAS_ASSIGNMENT_ID = "HAS ASSIGNMENT";
+	protected static final String NEXT_ASSIGNMENT_ID = "NEXT ASSIGNMENT";
+	protected static final String ASSIGNMENT_QUEUE_ID = "ASSIGNMENT QUEUE";
+	
 	public enum AssignmentAction {ASSIGN, START, COMPLETE};
 	
 	protected IDiskoWpMessageLog m_wpMessageLog = null;
 	protected AssignmentAction m_action = AssignmentAction.ASSIGN;
 	
 	protected JPanel m_contentsPanel = null;
+	protected JPanel m_cardsPanel = null;
 	
 	protected JPanel m_showAssignmentPanel = null;
 	protected JLabel m_assignmentLabel = null;
@@ -56,7 +64,7 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 	protected JPanel m_nextAssignmentsPanel = null;
 	protected JScrollPane m_nextAssignmentScrollPane = null;
 	protected ButtonGroup m_nextAssignmentButtonGroup = null;
-	
+
 	protected JPanel m_assignmentQueuePanel = null;
 	protected JScrollPane m_assignmentQueueScrollPane = null;
 	protected ButtonGroup m_assignmentQueueButtonGroup = null;
@@ -81,6 +89,8 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 	{
 		m_contentsPanel = new JPanel(new BorderLayout());
 		
+		m_cardsPanel = new JPanel(new CardLayout());
+		
 		JPanel actionButtonPanel = new JPanel();
 		actionButtonPanel.setLayout(new BoxLayout(actionButtonPanel, BoxLayout.PAGE_AXIS));
 		
@@ -95,12 +105,13 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 					m_messageLineAdded = true;
 					
 					IUnitIf unit = (IUnitIf)MessageLogTopPanel.getCurrentMessage().getSingleReceiver();
-					// ? unit.setStatus(UnitStatus.INITIALIZING);
+					//unit.setStatus(UnitStatus.INITIALIZING);
 					
 					IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.ASSIGNED, true);
 					try
 					{
-						m_selectedAssignment.setStatus(AssignmentStatus.ASSIGNED);
+						m_selectedAssignment.setStatusAndOwner(AssignmentStatus.ALLOCATED, unit);
+						//m_selectedAssignment.setStatus(AssignmentStatus.ASSIGNED);
 					} 
 					catch (IllegalOperationException e1)
 					{
@@ -113,9 +124,18 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 				}
 				else
 				{
+					// Working on existing message line, update current
+					IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.ASSIGNED, false);
+					IAssignmentIf assignment = messageLine.getLineAssignment();
+					
+					// Set assignment time
+					//assignment.set
+					
 					m_messageLineAdded = false;
+					fireDialogFinished();
 				}
-				fireDialogFinished();
+				showDialog();
+				
 			}
 		});
 		actionButtonPanel.add(m_okButton);
@@ -142,7 +162,8 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 		initAssignmentQueuePanel();
 		initNextAssignmentPanel();
 		
-		m_contentsPanel.add(actionButtonPanel);
+		m_contentsPanel.add(m_cardsPanel, BorderLayout.CENTER);
+		m_contentsPanel.add(actionButtonPanel, BorderLayout.EAST);
 		this.add(m_contentsPanel);
 	}
 	
@@ -152,6 +173,7 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 		m_nextAssignmentsPanel.setLayout(new BoxLayout(m_nextAssignmentsPanel, BoxLayout.PAGE_AXIS));
 		m_nextAssignmentScrollPane = new JScrollPane(m_nextAssignmentsPanel);
 		m_nextAssignmentButtonGroup = new ButtonGroup();
+		m_cardsPanel.add(m_nextAssignmentScrollPane, NEXT_ASSIGNMENT_ID);
 	}
 
 	private void initAssignmentQueuePanel()
@@ -159,6 +181,8 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 		m_assignmentQueuePanel = new JPanel();
 		m_assignmentQueueScrollPane = new JScrollPane(m_assignmentQueuePanel);
 		m_assignmentQueueButtonGroup = new ButtonGroup();
+		
+		m_cardsPanel.add(m_assignmentQueueScrollPane, ASSIGNMENT_QUEUE_ID);
 	}
 
 	private void initShowAssignmentPanel()
@@ -166,11 +190,11 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 		m_showAssignmentPanel = new JPanel();
 		m_showAssignmentPanel.setLayout(new BoxLayout(m_showAssignmentPanel, BoxLayout.PAGE_AXIS));
 		
-		m_assignmentLabel = new JLabel("Oppdrag: "); // TODO internasjonaliser
+		m_assignmentLabel = new JLabel();
 		m_showAssignmentPanel.add(m_assignmentLabel);
 		
 		JPanel assignmentTimePanel = new JPanel();
-		m_assignedTimeLabel = new JLabel("Tildelt når: "); // TODO internasjonaliser
+		m_assignedTimeLabel = new JLabel(m_wpMessageLog.getText("AssignmentTimeLabel.text") + ": "); 
 		assignmentTimePanel.add(m_assignedTimeLabel);
 		m_assignedTimeTextField = new JTextField(12);
 		assignmentTimePanel.add(m_assignedTimeTextField);
@@ -179,7 +203,7 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 		
 		m_showAssignmentPanel.add(Box.createVerticalGlue());
 		
-		m_contentsPanel.add(m_showAssignmentPanel, BorderLayout.CENTER);
+		m_cardsPanel.add(m_showAssignmentPanel, HAS_ASSIGNMENT_ID);
 	}
 
 	public void clearContents()
@@ -195,7 +219,19 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 	public void newMessageSelected(IMessageIf message)
 	{
 		// TODO Auto-generated method stub
-		
+		if(messageHasAssignment())
+		{
+			IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.ASSIGNED, false);
+			IAssignmentIf assignment = messageLine.getLineAssignment();
+			if(assignment != null)
+			{
+				m_assignmentLabel.setText(m_wpMessageLog.getText("AssignmentLabel.text") +  ": "  
+						+ assignment.getTypeText() + " " + assignment.getNumber());
+				
+				Calendar timeAssigned = assignment.getTimeAssigned();
+				m_assignedTimeTextField.setText(DTG.CalToDTG(timeAssigned));
+			}			
+		}
 	}
 
 	public void showDialog()
@@ -205,14 +241,17 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 		{
 			if(messageHasAssignment())
 			{
+				System.err.println("Has assignment line");
 				showHasAssignment();
 			}
 			else if(hasNextAssignment())
 			{
+				System.err.println("Has next assignment");
 				showNextAssignment();
 			}
 			else
 			{
+				System.err.println("Assignment queue");
 				showAssignmentQueue();
 			}
 		}
@@ -236,12 +275,16 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 					m_selectedAssignment = assignment;
 				}
 			});
+			m_assignmentQueueButtonGroup.add(button);
+			m_assignmentQueuePanel.add(button);
 		}
-		m_assignmentQueuePanel.setVisible(true);
+
+		CardLayout layout = (CardLayout)m_cardsPanel.getLayout();
+		layout.show(m_cardsPanel, ASSIGNMENT_QUEUE_ID);
 	}
 
 	/**
-	 * Show assignments currently in unit's assirnment queue
+	 * Show assignments currently in unit's assignment queue
 	 */
 	private void showNextAssignment()
 	{
@@ -264,7 +307,8 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 			m_nextAssignmentsPanel.add(button);
 		}
 		
-		m_nextAssignmentsPanel.setVisible(true);
+		CardLayout layout = (CardLayout)m_cardsPanel.getLayout();
+		layout.show(m_cardsPanel, NEXT_ASSIGNMENT_ID);
 	}
 
 	/**
@@ -272,7 +316,8 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 	 */
 	private void showHasAssignment()
 	{
-		m_showAssignmentPanel.setVisible(true);
+		CardLayout layout = (CardLayout)m_cardsPanel.getLayout();
+		layout.show(m_cardsPanel, HAS_ASSIGNMENT_ID);
 	}
 
 	private boolean hasNextAssignment()

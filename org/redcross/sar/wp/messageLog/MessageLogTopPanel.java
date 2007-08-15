@@ -91,9 +91,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	private JToggleButton  m_textButton;
 	private TextDialog m_textDialog;
 	private JToggleButton  m_positionButton;
-	private MessagePOIDialog m_messagePositionDialog;
+	private MessagePOIDialog m_messagePOIDialog;
 	private JToggleButton  m_findingButton;
-	private MessagePOIDialog m_messageFindingDialog;
 	private JToggleButton  m_assignedButton;
 	private AssignmentDialog m_messageAssignedDialog;
 	private JToggleButton  m_startedButton;
@@ -226,51 +225,15 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     	return m_textDialog;
     }
 
-    private MessagePOIDialog getMessagePositionDialog()
+    private MessagePOIDialog getMessagePOIDialog()
     {
-    	if(m_messagePositionDialog == null)
+    	if(m_messagePOIDialog == null)
     	{
-    		//TODO
-    		POITool tool = null;
-			try
-			{
-				tool = new POITool(m_wpMessageLog.getApplication());
-			}
-			catch (IOException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-    		m_messagePositionDialog = new MessagePOIDialog(m_wpMessageLog, true);
-    		m_messagePositionDialog.setPOITypes(null);
-    		m_messagePositionDialog.addDialogListener(this);
-    		m_dialogs.add(m_messagePositionDialog);
+    		m_messagePOIDialog = new MessagePOIDialog(m_wpMessageLog);
+    		m_messagePOIDialog.addDialogListener(this);
+    		m_dialogs.add(m_messagePOIDialog);
     	}
-    	return m_messagePositionDialog;
-    }
-    
-    private MessagePOIDialog getMessageFindingDialog()
-    {
-    	if(m_messageFindingDialog == null)
-    	{
-    		//TODO
-    		POITool tool = null;
-    		try
-    		{
-    			tool = new POITool(m_wpMessageLog.getApplication());
-    		}
-    		catch(IOException exc)
-    		{
-    			// TODO
-    			exc.printStackTrace();
-    		}
-    		m_messageFindingDialog = new MessagePOIDialog(m_wpMessageLog, false);
-    		m_messageFindingDialog.addDialogListener(this);
-    		POIType[] poiTypes = {POIType.FINDING, POIType.SILENT_WITNESS};
-    		m_messageFindingDialog.setPOITypes(poiTypes);
-    		m_dialogs.add(m_messageFindingDialog);
-    	}
-    	return m_messageFindingDialog;
+    	return m_messagePOIDialog;
     }
     
     private void getAssignedDialog()
@@ -464,7 +427,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     	getChangeToDialog();
     	getChangeTaskDialog();
     	getMessageTextDialog();
-    	getMessagePositionDialog();
+    	getMessagePOIDialog();
 
     	getMessageListDialog();
 
@@ -1113,10 +1076,12 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			public void actionPerformed(ActionEvent e)
 			{
 				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelFindingLabel.text"));
-				getMessageFindingDialog();
+				getMessagePOIDialog();
 				hideDialogs();
-				m_messageFindingDialog.showDialog();
-				positionDialogInArea(m_messageFindingDialog);
+				POIType[] poiTypes = {POIType.FINDING, POIType.SILENT_WITNESS};
+	    		MessagePOIDialog.setPOITypes(poiTypes);
+				m_messagePOIDialog.showDialog();
+				positionDialogInArea(m_messagePOIDialog);
 			}
 		});
 		m_buttonGroup.add(m_findingButton);
@@ -1131,10 +1096,11 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			public void actionPerformed(ActionEvent e)
 			{
 				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelPositionLabel.text"));
-				getMessagePositionDialog();
+				getMessagePOIDialog();
 				hideDialogs();
-				m_messagePositionDialog.showDialog();
-				positionDialogInArea(m_messagePositionDialog);
+				MessagePOIDialog.setPOITypes(null);
+				m_messagePOIDialog.showDialog();
+				positionDialogInArea(m_messagePOIDialog);
 			}
 		});
 		m_buttonGroup.add(m_positionButton);

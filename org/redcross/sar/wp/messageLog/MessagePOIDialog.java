@@ -58,19 +58,17 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 	protected JLabel m_yLabel = null;
 	protected JTextField m_xField = null;
 	protected JTextField m_yField = null;
-	protected JLabel m_poiTypeLabel = null;
-	protected JComboBox m_poiTypesComboBox = null;
-	protected POIType[] m_poiTypes = null;
+	protected static JLabel m_poiTypeLabel = null;
+	protected static JComboBox m_poiTypesComboBox = null;
+	protected static POIType[] m_poiTypes = null;
 	protected IDiskoWpMessageLog m_wpMessageLog = null;
-	protected SinglePOITool m_tool = null;
-	protected boolean m_positionMessageLine = true;
+	protected static SinglePOITool m_tool = null;
 	
-	public MessagePOIDialog(IDiskoWpMessageLog wp, boolean position)
+	public MessagePOIDialog(IDiskoWpMessageLog wp)
 	{
 		super(wp.getApplication().getFrame());
 		
 		m_wpMessageLog = wp;
-		m_positionMessageLine = position;
 		
 		initialize();
 	}
@@ -83,9 +81,10 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		initContents();
 		
 		IDiskoMap map = MessageLogPanel.getMap();
+		
 		try
 		{
-			m_tool = new SinglePOITool(m_wpMessageLog.getApplication(), this, m_positionMessageLine);
+			m_tool = new SinglePOITool(m_wpMessageLog.getApplication(), this);
 			m_tool.setMap(map);
 		} 
 		catch (IOException e)
@@ -134,7 +133,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		
 		// Get line
 		IMessageLineIf messageLine = null;
-		if(m_positionMessageLine)
+		if(m_poiTypes == null)
 		{
 			messageLine = message.findMessageLine(MessageLineType.POI, true);
 		}
@@ -152,7 +151,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		}
 		
 		// Update POI
-		poi.setType(this.getSelectedPOIType());
+		poi.setType(MessagePOIDialog.getSelectedPOIType());
 		Position position = poi.getPosition();
 		if(position == null)
 		{
@@ -197,6 +196,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		{
 			public void actionPerformed(ActionEvent e)
 			{
+				// Show/hide map
 				JToggleButton button = (JToggleButton)e.getSource();
 				if(button.isSelected())
 				{
@@ -214,7 +214,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 	 * 
 	 * @param types set to null in order to hide combo box
 	 */
-	public void setPOITypes(POIType[] types)
+	public static void setPOITypes(POIType[] types)
 	{
 		if(types == null)
 		{
@@ -250,9 +250,9 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		m_xLabel = new JLabel("X    ");
 		labelPanel.add(m_xLabel);
 		m_xField = new JTextField(12);
-		m_xField.addCaretListener(new CaretListener()
+		m_xField.addActionListener(new ActionListener()
 		{
-			public void caretUpdate(CaretEvent e)
+			public void actionPerformed(ActionEvent arg0)
 			{
 				updatePOI();
 			}
@@ -263,9 +263,9 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		m_yLabel = new JLabel("Y    ");
 		labelPanel.add(m_yLabel);
 		m_yField = new JTextField(12);
-		m_yField.addCaretListener(new CaretListener()
+		m_yField.addActionListener(new ActionListener()
 		{
-			public void caretUpdate(CaretEvent e)
+			public void actionPerformed(ActionEvent arg0)
 			{
 				updatePOI();
 			}
@@ -299,7 +299,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 			}
 		});
 		fieldPanel.add(m_poiTypesComboBox);
-		this.setPOITypes(null);
+		setPOITypes(null);
 		
 		JPanel fieldsPanel = new JPanel();
 		fieldsPanel.setLayout(new BoxLayout(fieldsPanel, BoxLayout.LINE_AXIS));
@@ -333,8 +333,8 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 	{
 		this.setVisible(false);
 	}
-
-	public void newMessageSelected(IMessageIf message)
+	
+	private void updateFields(IMessageIf message)
 	{
 		IMessageLineIf messageLine = null;
 		if(m_poiTypes == null)
@@ -376,7 +376,48 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 			}
 		}
 		catch(Exception e){}
+	}
+	
+	private void updateComboBox(IMessageIf message)
+	{
+		if(m_poiTypes != null)
+		{
+			IMessageLineIf messageLine = message.findMessageLine(MessageLineType.FINDING, false);
+			POIType type = messageLine.getLinePOI().getType();
+			m_poiTypesComboBox.setSelectedItem(type);
+		}
+	}
+
+	public void newMessageSelected(IMessageIf message)
+	{
+		// Update dialog
+		updateComboBox(message);
+		updateFields(message);
 		
+		// Update map
+		IMessageLineIf messageLine = null;
+		if(m_poiTypes == null)
+		{
+			messageLine = message.findMessageLine(MessageLineType.POI, false);
+		}
+		else
+		{
+			messageLine = message.findMessageLine(MessageLineType.FINDING, false);
+		}
+		
+		if(messageLine != null)
+		{
+			IPOIIf poi = messageLine.getLinePOI();
+			if(poi != null)
+			{
+				try
+				{
+					MessageLogPanel.getMap().zoomToMsoObject(poi);
+				} 
+				catch (AutomationException e){} 
+				catch (IOException e){}
+			}
+		}
 	}
 
 	public void showDialog()
@@ -385,6 +426,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		{
 			MessageLogPanel.showMap();
 		}
+		updateFields(MessageLogTopPanel.getCurrentMessage());
 		this.setVisible(true);
 	}
 
@@ -393,16 +435,20 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		return m_wpMessageLog;
 	}
 
-	public POIType getSelectedPOIType()
+	public static POIType getSelectedPOIType()
 	{
-		if(m_poiTypes == null || m_positionMessageLine)
+		if(m_poiTypes == null)
 		{
 			return POIType.GENERAL;
 		}
 		else
 		{
-			String type = m_poiTypesComboBox.getSelectedItem().toString();
-			return POIType.valueOf(type);
+			return  (POIType)m_poiTypesComboBox.getSelectedItem();
 		}
+	}
+	
+	public static SinglePOITool getMapTool()
+	{
+		return m_tool;
 	}
 }

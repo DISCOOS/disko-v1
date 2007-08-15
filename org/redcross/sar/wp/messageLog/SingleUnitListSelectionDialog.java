@@ -238,6 +238,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	public void newMessageSelected(IMessageIf message)
 	{
 		m_buttonGroup.clearSelection();
+		m_unitTypeFilter = null;
 		
 		// Update depending on whether this is a list of senders or receivers
 		ICommunicatorIf communicator;
