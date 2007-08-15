@@ -22,16 +22,21 @@ public class MessageLogPanel
 {
 	public static final int PANEL_WIDTH = 800;
 	
+	private static final String MAP_ID = "MAP";
+	private static final String LOG_ID = "LOG";
+	
     private JPanel WorkspacePanel;
     private MessageLogTopPanel m_topPanel;
-    private JSplitPane m_splitter1;
+    private static JSplitPane m_splitter1;
     private static IDiskoWpMessageLog m_wpModule;
-    private IDiskoMap m_map;
-    private JTable m_logTable;
+    private static IDiskoMap m_map;
+    private static JTable m_logTable;
     private MessageRowSelectionListener m_rowSelectionListener;
-    private JScrollPane m_scrollPane1;
-    private static JPanel m_logPanel;
-    IMessageLogIf m_messageLog;
+    private static JScrollPane m_scrollPane1;
+    private static JPanel m_bottomPanel;
+    private IMessageLogIf m_messageLog;
+    
+    
 	public static Dimension SMALL_BUTTON_SIZE = new Dimension(60, 60);
 
     public MessageLogPanel(IDiskoWpMessageLog aWp)
@@ -51,28 +56,10 @@ public class MessageLogPanel
         WorkspacePanel.add(m_splitter1, BorderLayout.CENTER);
 
         initTopPanel();
-
-        // Init log panel
-        m_logPanel = new JPanel();
-        m_logPanel.setLayout(new BorderLayout(0, 0));
-        m_logPanel.setFocusCycleRoot(true);
-        m_splitter1.setRightComponent(m_logPanel);
-
-        m_scrollPane1 = new JScrollPane();
-        m_scrollPane1.setOpaque(false);
-        m_logPanel.add(m_scrollPane1, BorderLayout.CENTER);
-        m_logTable = new JTable();
-        m_scrollPane1.setViewportView(m_logTable);
-
-        m_rowSelectionListener = new MessageRowSelectionListener(m_topPanel);
-        m_logTable.getSelectionModel().addListSelectionListener(m_rowSelectionListener);
-        initLogTable();
-
-        // Register the log table with the row selection listener
-        m_rowSelectionListener.setTable(m_logTable);
+        initBottomPanel();
     }
 
-    private void initTopPanel()
+	private void initTopPanel()
     {
         m_topPanel = new MessageLogTopPanel(m_messageLog);
         m_topPanel.setWp(m_wpModule);
@@ -87,8 +74,23 @@ public class MessageLogPanel
         m_splitter1.setLeftComponent(m_topPanel);
     }
 
-    private void initLogTable()
+    private void initBottomPanel()
     {
+    	 m_bottomPanel = new JPanel();
+         m_bottomPanel.setLayout(new CardLayout());
+         m_bottomPanel.setFocusCycleRoot(true);
+         m_splitter1.setRightComponent(m_bottomPanel);
+         
+         m_scrollPane1 = new JScrollPane();
+         m_scrollPane1.setOpaque(false);
+         m_bottomPanel.add(m_scrollPane1, LOG_ID);
+         
+    	m_logTable = new JTable();
+        m_scrollPane1.setViewportView(m_logTable);
+
+        m_rowSelectionListener = new MessageRowSelectionListener(m_topPanel);
+        m_logTable.getSelectionModel().addListSelectionListener(m_rowSelectionListener);
+   
         final LogTableModel model = new LogTableModel(m_logTable, m_wpModule, m_messageLog);
         m_rowSelectionListener.setModel(model);
         m_rowSelectionListener.setRowMap(model.getRowMap());
@@ -100,6 +102,9 @@ public class MessageLogPanel
         m_logTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         m_logTable.setRowMargin(2);
         m_logTable.setRowHeight(22);
+        
+        // Register the log table with the row selection listener
+        m_rowSelectionListener.setTable(m_logTable);
 
         // Set column widths
         TableColumn column = m_logTable.getColumnModel().getColumn(0);
@@ -123,30 +128,14 @@ public class MessageLogPanel
         JTableHeader tableHeader = m_logTable.getTableHeader();
         tableHeader.setResizingAllowed(false);
         tableHeader.setReorderingAllowed(false);
+        
+        m_bottomPanel.add((JComponent)m_map, MAP_ID);
     }
 
     public JPanel getPanel()
     {
         setTableData();
         return WorkspacePanel;
-    }
-    
-    /**
-     * Get the message log table position on screen. Used for positioning dialogs
-     */
-    public static Point getBottomAreaPosition()
-    {
-    	Point location = m_logPanel.getLocationOnScreen();
-    	return location;
-    }
-    
-    /**
-     * 
-     * @return The size of the message log table
-     */
-    public static Dimension getBottomAreaDimension()
-    {
-    	return m_logPanel.getSize();
     }
 
     private void setTableData()
@@ -173,5 +162,22 @@ public class MessageLogPanel
 	public void clearSelection()
 	{
 		m_topPanel.clearSelection();
+	}
+	
+	public static void showMap()
+	{
+		CardLayout cards = (CardLayout)m_bottomPanel.getLayout();
+		cards.show(m_bottomPanel, MAP_ID);
+	}
+	
+	public static void hideMap()
+	{
+		CardLayout cards = (CardLayout)m_bottomPanel.getLayout();
+		cards.show(m_bottomPanel, LOG_ID);
+	}
+	
+	public static IDiskoMap getMap()
+	{
+		return m_map;
 	}
 }

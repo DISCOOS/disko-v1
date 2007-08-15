@@ -106,7 +106,7 @@ public class TextDialog extends DiskoDialog implements IEditMessageDialogIf
 	public void newMessageSelected(IMessageIf message)
 	{
 		IMessageLineIf textMessageLine = message.findMessageLine(MessageLineType.TEXT, false);
-		if(textMessageLine != null && !(textMessageLine.getLineText().isEmpty()))
+		if(textMessageLine != null)
 		{
 			m_textArea.setText(textMessageLine.getLineText());
 		}

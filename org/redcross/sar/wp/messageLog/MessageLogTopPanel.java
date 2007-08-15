@@ -624,7 +624,10 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		updateMessageGUI();
 	}
 
-	private final EnumSet<IMsoManagerIf.MsoClassCode> myInterests = EnumSet.of(IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGE);
+	private final EnumSet<IMsoManagerIf.MsoClassCode> myInterests = EnumSet.of(
+			IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGE,
+			IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGELINE,
+			IMsoManagerIf.MsoClassCode.CLASSCODE_POI);
 
 	public boolean hasInterestIn(IMsoObjectIf msoObject)
 	{
@@ -769,7 +772,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					else
 					{
 						ErrorDialog error = new ErrorDialog(m_wpMessageLog.getApplication().getFrame());
-						error.showError("Message not valid", "");
+						error.showError(m_wpMessageLog.getText("MessageNotValidError.header"),
+								"MessageNotValidError.details");
 					}
 				}
     		});

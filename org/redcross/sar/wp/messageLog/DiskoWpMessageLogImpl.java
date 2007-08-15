@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.gui.NavBar;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
+import org.redcross.sar.wp.TestData.BuildTestData;
 
 /**
  *
@@ -40,6 +41,9 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
         m_logPanel.setSmallButtonSize(getApplication().getUIFactory().getSmallButtonSize());
         m_logPanel.setWpMessageLog(this);
         layoutComponent(m_logPanel.getPanel());
+        
+//        BuildTestData.createUnitsAndAssignments(getMsoModel());
+//        BuildTestData.createMessages(getMsoModel());
     }
 
     public void activated()

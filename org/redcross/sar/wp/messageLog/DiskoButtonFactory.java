@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JToggleButton;
 
 import org.redcross.sar.app.Utils;
+import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.ICommunicatorIf;
 import org.redcross.sar.mso.data.IUnitIf;
@@ -23,6 +24,8 @@ public class DiskoButtonFactory
 {
 	public final static Dimension SMALL_BUTTON_SIZE = new Dimension(60, 60);
 	public final static Dimension LARGE_BUTTON_SIZE = new Dimension(180, 60);
+	public final static Dimension ASSIGNMENT_BUTTON_SIZE = new Dimension(200, 60);
+	
 	/**
 	 * Creates a small JToggleButton based on the communicator
 	 * TODO should be moved to some utility class
@@ -189,6 +192,46 @@ public class DiskoButtonFactory
 		button.setMinimumSize(SMALL_BUTTON_SIZE);
 		button.setPreferredSize(SMALL_BUTTON_SIZE);
 		button.setMaximumSize(SMALL_BUTTON_SIZE);
+		
+		return button;
+	}
+
+	public static JButton createAssignmentButton(IAssignmentIf assignment)
+	{
+		JButton button = new JButton();
+		
+		button.setMinimumSize(ASSIGNMENT_BUTTON_SIZE);
+		button.setPreferredSize(ASSIGNMENT_BUTTON_SIZE);
+		button.setMaximumSize(ASSIGNMENT_BUTTON_SIZE);
+		
+		button.setText(assignment.getNumber() + " " + assignment.getTypeText());
+		
+		return button;
+	}
+
+	public static JToggleButton createAssignmentToggleButton(IAssignmentIf assignment)
+	{
+		JToggleButton button = new JToggleButton();
+
+		button.setMinimumSize(ASSIGNMENT_BUTTON_SIZE);
+		button.setPreferredSize(ASSIGNMENT_BUTTON_SIZE);
+		button.setMaximumSize(ASSIGNMENT_BUTTON_SIZE);
+
+		button.setText(assignment.getNumber() + " " + assignment.getTypeText());
+
+		return button;
+	}
+
+	public static JToggleButton createSmallAssignmentToggleButton(IAssignmentIf assignment)
+	{
+		JToggleButton button = new JToggleButton();
+		
+		button.setMinimumSize(SMALL_BUTTON_SIZE);
+		button.setPreferredSize(SMALL_BUTTON_SIZE);
+		button.setMaximumSize(SMALL_BUTTON_SIZE);
+		
+		// TODO use common label for assignments, move to UIFactory?
+		button.setText(assignment.getNumber() + " " + assignment.getTypeText());
 		
 		return button;
 	}

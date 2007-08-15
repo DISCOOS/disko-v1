@@ -3,13 +3,10 @@ package org.redcross.sar.wp.messageLog;
 import java.io.IOException;
 
 import org.redcross.sar.app.IDiskoApplication;
-import org.redcross.sar.gui.DiskoDialog;
-import org.redcross.sar.gui.POIDialog;
 import org.redcross.sar.map.AbstractCommandTool;
 import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.IDiskoMap;
 import org.redcross.sar.map.MapUtil;
-import org.redcross.sar.map.POITool;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.map.layer.OperationAreaLayer;
 import org.redcross.sar.mso.data.IMessageIf;
@@ -53,22 +50,25 @@ public class SinglePOITool extends AbstractCommandTool
 		this.map = (DiskoMap)map; 
 	}
 	
+	@Override
 	public void onCreate(Object obj) throws IOException, AutomationException 
 	{
 		if (obj instanceof IDiskoMap) {
 			map = (DiskoMap)obj;
 			
 			opAreaLayer = (OperationAreaLayer) map.getMapManager().getMsoLayer(
-					IMsoFeatureLayer.LayerCode.AREA_LAYER);
+					IMsoFeatureLayer.LayerCode.POI_LAYER);
 		}
 	}
 	
+	@Override
 	public void onMouseDown(int button, int shift, int x, int y) throws IOException, AutomationException {}	
 	
 	/**
 	 * Update message POI(s) when map position is clicked. Event causes relevant dialogs to update, no need for
 	 * explicit update
 	 */
+	@Override
 	public void onMouseUp(int button, int shift, int x, int y) throws IOException, AutomationException 
 	{
 		
