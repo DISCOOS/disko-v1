@@ -2,6 +2,7 @@ package org.redcross.sar.map;
 
 import java.awt.geom.Point2D;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -23,6 +24,7 @@ import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.geometry.Polygon;
 import com.esri.arcgis.geometry.Polyline;
 import com.esri.arcgis.geometry.SpatialReferenceEnvironment;
+import com.esri.arcgis.geometry.esriMGRSModeEnum;
 import com.esri.arcgis.geometry.esriSRGeoCSType;
 import com.esri.arcgis.interop.AutomationException;
 
@@ -145,5 +147,22 @@ public class MapUtil {
 		double ymax = p.getY()+size/2;
 		env.putCoords(xmin, ymin, xmax, ymax);
 		return env;
+	}
+	
+	public static String getMGRSfromPosition(Position pos) 
+			throws AutomationException, IOException {
+		Point point = new Point();
+		point.setX(pos.getPosition().getX());
+		point.setY(pos.getPosition().getY());
+		point.setSpatialReferenceByRef(getGeographicCS());
+		return point.createMGRS(5, true, esriMGRSModeEnum.esriMGRSMode_NewStyle);
+	}
+	
+	public static Position getPositionFromMGRS(String mgrs) 
+			throws UnknownHostException, IOException {
+		Point point = new Point();
+		point.setSpatialReferenceByRef(getGeographicCS());
+		point.putCoordsFromMGRS(mgrs, esriMGRSModeEnum.esriMGRSMode_NewStyle);
+		return new Position(null, point.getX(), point.getY());
 	}
 }
