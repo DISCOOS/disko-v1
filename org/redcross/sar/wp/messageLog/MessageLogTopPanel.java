@@ -93,13 +93,13 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	private JToggleButton  m_positionButton;
 	private MessagePOIDialog m_messagePOIDialog;
 	private JToggleButton  m_findingButton;
-	private JToggleButton  m_assignedButton;
+	private static JToggleButton  m_assignedButton;
 	private AssignmentDialog m_messageAssignedDialog;
 	private JToggleButton  m_startedButton;
 	private AssignmentDialog m_messageStartedDialog;
 	private JToggleButton  m_completedButton;
 	private AssignmentDialog m_messageCompletedDialog;
-	private JToggleButton  m_listButton;
+	private static JToggleButton  m_listButton;
 	private ListDialog m_messageListDialog;
 	private JToggleButton  m_deleteButton;
 	private DeleteDialog m_messageDeleteDialog;
@@ -1173,5 +1173,15 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	public void clearSelection()
 	{
 		m_buttonGroup.clearSelection();
+	}
+
+	public static void showAssignDialog()
+	{
+		m_assignedButton.doClick();
+	}
+
+	public static void showListDialog()
+	{
+		m_listButton.doClick();
 	}
 }

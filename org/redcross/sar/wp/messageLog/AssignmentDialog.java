@@ -13,6 +13,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -28,8 +29,10 @@ import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
+import org.redcross.sar.mso.data.IAssignmentIf.AssignmentType;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 import org.redcross.sar.mso.data.IUnitIf.UnitStatus;
+import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.util.mso.DTG;
 
@@ -99,43 +102,83 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				if(m_selectedAssignment != null)
+				if(m_action == AssignmentAction.ASSIGN)
 				{
-					// Have selected an assignment, add assignment and update unit/message
-					m_messageLineAdded = true;
-					
-					IUnitIf unit = (IUnitIf)MessageLogTopPanel.getCurrentMessage().getSingleReceiver();
-					//unit.setStatus(UnitStatus.INITIALIZING);
-					
-					IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.ASSIGNED, true);
+					// Assigning an assignment
+					if(m_selectedAssignment != null)
+					{
+						// Have selected an assignment, add assignment and update unit/message
+						m_messageLineAdded = true;
+						
+						IUnitIf unit = (IUnitIf)MessageLogTopPanel.getCurrentMessage().getSingleReceiver();
+						//unit.setStatus(UnitStatus.INITIALIZING);
+						
+						IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.ASSIGNED, true);
+						try
+						{
+							m_selectedAssignment.setStatusAndOwner(AssignmentStatus.ALLOCATED, unit);
+							//m_selectedAssignment.setStatus(AssignmentStatus.ASSIGNED);
+						} 
+						catch (IllegalOperationException e1)
+						{
+							e1.printStackTrace();
+						}
+						messageLine.setLineAssignment(m_selectedAssignment);
+						
+						m_selectedAssignment = null;
+						
+						// Show assignment in edit mode
+						showDialog();
+					}
+					else
+					{
+						// Working on existing message line, update current
+						IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.ASSIGNED, false);
+						IAssignmentIf assignment = messageLine.getLineAssignment();
+						
+						Calendar time;
+						try
+						{
+							 time = DTG.DTGToCal(m_assignedTimeTextField.getText());
+							// TODO Set assignment time
+							//assignment.set
+						} 
+						catch (IllegalMsoArgumentException e1)
+						{
+							System.err.println("Not a valid DTG format");
+							m_assignedTimeTextField.setText("");
+						}
+						
+						m_messageLineAdded = false;
+						fireDialogFinished();
+					}
+				}
+				else if(m_action == AssignmentAction.START)
+				{
+					// Starting an assignment
+					IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.STARTED, false);
+					IAssignmentIf assignment = messageLine.getLineAssignment();
 					try
 					{
-						m_selectedAssignment.setStatusAndOwner(AssignmentStatus.ALLOCATED, unit);
-						//m_selectedAssignment.setStatus(AssignmentStatus.ASSIGNED);
-					} 
+						// TODO sjekk
+						assignment.setStatus(AssignmentStatus.EXECUTING);
+					}
 					catch (IllegalOperationException e1)
 					{
 						e1.printStackTrace();
 					}
-					messageLine.setLineAssignment(m_selectedAssignment);
 					
-					m_selectedAssignment = null;
-			
+					// TODO sjekk
+					IUnitIf unit = assignment.getOwningUnit();
+					unit.setStatus(UnitStatus.WORKING);
+					
+					// Perform action show in list
+					MessageLogTopPanel.showListDialog();
 				}
 				else
 				{
-					// Working on existing message line, update current
-					IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.ASSIGNED, false);
-					IAssignmentIf assignment = messageLine.getLineAssignment();
-					
-					// TODO Set assignment time
-					//assignment.set
-					
-					m_messageLineAdded = false;
-					fireDialogFinished();
+					// Completing an assignment
 				}
-				showDialog();
-				
 			}
 		});
 		actionButtonPanel.add(m_okButton);
@@ -218,8 +261,7 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 
 	public void newMessageSelected(IMessageIf message)
 	{
-		// TODO Auto-generated method stub
-		if(messageHasAssignment())
+		if(messageHasAssignedAssignment())
 		{
 			IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.ASSIGNED, false);
 			IAssignmentIf assignment = messageLine.getLineAssignment();
@@ -227,7 +269,7 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 			{
 				m_assignmentLabel.setText(m_wpMessageLog.getText("AssignmentLabel.text") +  ": "  
 						+ assignment.getTypeText() + " " + assignment.getNumber());
-				
+
 				Calendar timeAssigned = assignment.getTimeAssigned();
 				m_assignedTimeTextField.setText(DTG.CalToDTG(timeAssigned));
 			}			
@@ -239,9 +281,9 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 		// Show components based on current message state
 		if(m_action == AssignmentAction.ASSIGN)
 		{
-			if(messageHasAssignment())
+			if(messageHasAssignedAssignment())
 			{
-				System.err.println("Has assignment line");
+				System.err.println("Has assigned assignment line");
 				showHasAssignment();
 			}
 			else if(hasNextAssignment())
@@ -255,6 +297,65 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 				showAssignmentQueue();
 			}
 		}
+		else if(m_action == AssignmentAction.START)
+		{
+			// Started button pressed i top panel
+			IAssignmentIf assignment = getUnitAssignment();
+			IUnitIf unit =  (IUnitIf)MessageLogTopPanel.getCurrentMessage().getSingleReceiver();
+			if(messageHasStartedAssignment())
+			{
+				System.err.println("Has started assignment line");
+				showHasAssignment();
+			}
+			else if(assignment != null)
+			{
+				Object[] options = {m_wpMessageLog.getText("yes.text"), m_wpMessageLog.getText("no.text")};
+				// The receiving unit has an assignment, prompt user whether unit has started or not
+				int n = JOptionPane.showOptionDialog(m_wpMessageLog.getApplication().getFrame(), 
+						String.format(m_wpMessageLog.getText("UnitStartedAssignment.text"), unit.toString(), assignment.toString()), 
+						m_wpMessageLog.getText("UnitStartedAssignment.header"), 
+						JOptionPane.YES_NO_OPTION, 
+						JOptionPane.QUESTION_MESSAGE, 
+						null, 
+						options, 
+						options[0]);
+				
+				if(n == JOptionPane.YES_OPTION)
+				{
+					// Set assignment started
+					startAssignment(assignment);
+				}
+				else
+				{
+					fireDialogCanceled();
+				}
+			}
+			else
+			{
+				// Unit does not have an assignment. Have to assign assignment first
+				Object[] options = {m_wpMessageLog.getText("yes.text"), m_wpMessageLog.getText("no.text")};
+				// The receiving unit has an assignment, prompt user whether unit has started or not
+				int n = JOptionPane.showOptionDialog(m_wpMessageLog.getApplication().getFrame(), 
+						String.format(m_wpMessageLog.getText("UnitHasNoAssignment.text"), unit.toString()), 
+						m_wpMessageLog.getText("UnitHasNoAssignment.header"), 
+						JOptionPane.YES_NO_OPTION, 
+						JOptionPane.QUESTION_MESSAGE, 
+						null, 
+						options, 
+						options[0]);
+				if(n == JOptionPane.YES_OPTION)
+				{
+					// Show assign assignment dialog
+					MessageLogTopPanel.showAssignDialog();
+				}
+				else
+				{
+					fireDialogCanceled();
+				}
+			}
+		}
+		
+		
 		this.setVisible(true);	
 	}
 
@@ -265,10 +366,8 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 	{
 		m_assignmentQueuePanel.removeAll();
 		
-		int maxPriority = -1;
 		for(final IAssignmentIf assignment : m_wpMessageLog.getMsoManager().getCmdPost().getAssignmentListItems())
 		{
-			int assignmentPriority = assignment.getPrioritySequence();
 			JToggleButton button = DiskoButtonFactory.createSmallAssignmentToggleButton(assignment);
 			button.addActionListener(new ActionListener()
 			{
@@ -281,11 +380,7 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 			m_assignmentQueuePanel.add(button);
 			
 			// Select button with highest priority
-			if(assignmentPriority > maxPriority)
-			{
-				maxPriority = assignmentPriority;
-				m_assignmentQueueButtonGroup.setSelected(button.getModel(), true);
-			}
+			//m_assignmentQueueButtonGroup.getElements().nextElement().setSelected(true);
 		}
 		
 		CardLayout layout = (CardLayout)m_cardsPanel.getLayout();
@@ -318,6 +413,9 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 		
 		CardLayout layout = (CardLayout)m_cardsPanel.getLayout();
 		layout.show(m_cardsPanel, NEXT_ASSIGNMENT_ID);
+		
+		// Select button with highest priority
+		//m_assignmentQueueButtonGroup.getElements().nextElement().setSelected(true);
 	}
 
 	/**
@@ -332,18 +430,56 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 	private boolean hasNextAssignment()
 	{
 		IUnitIf unit = (IUnitIf)MessageLogTopPanel.getCurrentMessage().getSingleReceiver();
-		// TODO ?
 		return unit.getAllocatedAssignments().size() != 0; 
-//		return unit.getAssignedAssignments().size() != 0;
 	}
 
 	/**
 	 * @return Whether the current message already has a assigned message line
 	 */
-	private boolean messageHasAssignment()
+	private boolean messageHasAssignedAssignment()
 	{
+		// TODO sjekk med vinjar
 		IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.ASSIGNED, false);
 		return messageLine != null;
 	}
+	
+	/**
+	 * 
+	 * @return Whether the current message has a started message line
+	 */
+	private boolean messageHasStartedAssignment()
+	{
+		// TODO sjekk med vinjar
+		IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.STARTED, false);
+		return messageLine != null;
+	}
 
+	/**
+	 * 
+	 * @return Current assignment to receiving unit. null if unit does not have an assignment
+	 */
+	private IAssignmentIf getUnitAssignment()
+	{
+		IAssignmentIf assignment = null;
+		IUnitIf unit = (IUnitIf)MessageLogTopPanel.getCurrentMessage().getSingleReceiver();
+		List<IAssignmentIf> assignments = unit.getAssignedAssignments();
+		//assert assignments.size() == 1;
+		try
+		{
+			assignment = assignments.get(0);
+		}
+		catch(Exception e){}
+		
+		return assignment;
+	}
+	
+	/**
+	 * Adds a started assignment message line
+	 */
+	private void startAssignment(IAssignmentIf assignment)
+	{
+		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+		IMessageLineIf messageLine = message.findMessageLine(MessageLineType.STARTED, true);
+		messageLine.setLineAssignment(assignment);
+	}
 }
