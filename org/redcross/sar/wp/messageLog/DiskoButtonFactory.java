@@ -204,7 +204,7 @@ public class DiskoButtonFactory
 		button.setPreferredSize(ASSIGNMENT_BUTTON_SIZE);
 		button.setMaximumSize(ASSIGNMENT_BUTTON_SIZE);
 		
-		button.setText(assignment.getNumber() + " " + assignment.getTypeText());
+		button.setText(assignment.getTypeText() + " " + assignment.getNumber());
 		
 		return button;
 	}
@@ -217,7 +217,7 @@ public class DiskoButtonFactory
 		button.setPreferredSize(ASSIGNMENT_BUTTON_SIZE);
 		button.setMaximumSize(ASSIGNMENT_BUTTON_SIZE);
 
-		button.setText(assignment.getNumber() + " " + assignment.getTypeText());
+		button.setText(assignment.getTypeText()+ " " + assignment.getNumber());
 
 		return button;
 	}

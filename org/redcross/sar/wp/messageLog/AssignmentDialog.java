@@ -128,7 +128,7 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 					IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.ASSIGNED, false);
 					IAssignmentIf assignment = messageLine.getLineAssignment();
 					
-					// Set assignment time
+					// TODO Set assignment time
 					//assignment.set
 					
 					m_messageLineAdded = false;
@@ -265,8 +265,10 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 	{
 		m_assignmentQueuePanel.removeAll();
 		
+		int maxPriority = -1;
 		for(final IAssignmentIf assignment : m_wpMessageLog.getMsoManager().getCmdPost().getAssignmentListItems())
 		{
+			int assignmentPriority = assignment.getPrioritySequence();
 			JToggleButton button = DiskoButtonFactory.createSmallAssignmentToggleButton(assignment);
 			button.addActionListener(new ActionListener()
 			{
@@ -277,8 +279,15 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 			});
 			m_assignmentQueueButtonGroup.add(button);
 			m_assignmentQueuePanel.add(button);
+			
+			// Select button with highest priority
+			if(assignmentPriority > maxPriority)
+			{
+				maxPriority = assignmentPriority;
+				m_assignmentQueueButtonGroup.setSelected(button.getModel(), true);
+			}
 		}
-
+		
 		CardLayout layout = (CardLayout)m_cardsPanel.getLayout();
 		layout.show(m_cardsPanel, ASSIGNMENT_QUEUE_ID);
 	}
@@ -322,9 +331,10 @@ public class AssignmentDialog extends DiskoDialog implements IEditMessageDialogI
 
 	private boolean hasNextAssignment()
 	{
-		// TODO
 		IUnitIf unit = (IUnitIf)MessageLogTopPanel.getCurrentMessage().getSingleReceiver();
-		return unit.getAssignedAssignments().size() != 0;
+		// TODO ?
+		return unit.getAllocatedAssignments().size() != 0; 
+//		return unit.getAssignedAssignments().size() != 0;
 	}
 
 	/**
