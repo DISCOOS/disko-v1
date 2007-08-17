@@ -47,8 +47,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
    private UIFactory uiFactory = null;
    private IDiskoMapManager mapManager = null;
    private MsoModelImpl m_msoModel = null;
-    private boolean vaitingForNewOp=false;
-    ;
+   private boolean vaitingForNewOp=false;
 
     /**
     * The main method.
