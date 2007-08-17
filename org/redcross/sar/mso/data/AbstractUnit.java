@@ -123,6 +123,11 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
     {
         return getUnitNumberPrefix() + Integer.toString(getNumber());
     }
+    
+    public String getUnitTypeAndNumber()
+    {
+    	return getTypeText() + " " + getUnitNumber();
+    }
 
     protected abstract UnitType getTypeBySubclass();
 
