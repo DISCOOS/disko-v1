@@ -80,6 +80,8 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
     public IAttributeIf.IMsoEnumIf<AssignmentType> getTypeAttribute();
 
     public String getTypeText();
+    
+    public String getTypeAndNumber();
 
     /*-------------------------------------------------------------------------------------------
     * Methods for attributes

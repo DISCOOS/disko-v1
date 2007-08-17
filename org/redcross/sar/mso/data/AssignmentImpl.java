@@ -282,6 +282,11 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
     {
         return getEnumText(getType());
     }
+    
+    public String getTypeAndNumber()
+    {
+    	return getTypeText() + " " + getNumber();
+    }
 
     /*-------------------------------------------------------------------------------------------
     * Methods for attributes

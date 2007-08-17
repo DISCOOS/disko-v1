@@ -61,6 +61,8 @@ public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf, ISerialNu
     *-------------------------------------------------------------------------------------------*/
 
     public String getUnitNumber();
+    
+    public String getTypeAndNumber();
 
     public char getUnitNumberPrefix();
 
