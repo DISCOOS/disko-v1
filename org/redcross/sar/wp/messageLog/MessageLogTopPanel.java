@@ -10,7 +10,6 @@ import org.redcross.sar.event.DialogEvent;
 import org.redcross.sar.event.IDialogEventListener;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.ErrorDialog;
-import org.redcross.sar.map.POITool;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.*;
 import org.redcross.sar.mso.data.IMessageIf.MessageStatus;
@@ -24,7 +23,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -87,21 +85,23 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     private JPanel m_messagePanel;
     private JLabel m_messagePanelTopLabel;
     private JComponent m_dialogArea;
+    
     private JPanel m_buttonRow;
 	private JToggleButton  m_textButton;
-	private TextDialog m_textDialog;
 	private JToggleButton  m_positionButton;
-	private MessagePOIDialog m_messagePOIDialog;
 	private JToggleButton  m_findingButton;
-	private static JToggleButton  m_assignedButton;
-	private AssignmentDialog m_messageAssignedDialog;
-	private JToggleButton  m_startedButton;
-	private AssignmentDialog m_messageStartedDialog;
+	private static JToggleButton  m_assignButton;
+	private static JToggleButton  m_startButton;
 	private JToggleButton  m_completedButton;
-	private AssignmentDialog m_messageCompletedDialog;
 	private static JToggleButton  m_listButton;
-	private ListDialog m_messageListDialog;
 	private JToggleButton  m_deleteButton;
+	
+	private TextDialog m_textDialog;
+	private MessagePOIDialog m_messagePOIDialog;
+	private static AssignmentDialog m_messageAssignedDialog;
+	private static AssignmentDialog m_messageStartedDialog;
+	private static AssignmentDialog m_messageCompletedDialog;
+	private ListDialog m_messageListDialog;
 	private DeleteDialog m_messageDeleteDialog;
 
     private JPanel m_taskPanel;
@@ -240,7 +240,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     {
     	if(m_messageAssignedDialog == null)
     	{
-    		m_messageAssignedDialog = new AssignmentDialog(m_wpMessageLog, AssignmentDialog.AssignmentAction.ASSIGN);
+    		m_messageAssignedDialog = new AssignedAssignmentDialog(m_wpMessageLog);
     		m_messageAssignedDialog.addDialogListener(this);
     		m_dialogs.add(m_messageAssignedDialog);
     	}
@@ -250,7 +250,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     {
     	if(m_messageStartedDialog == null)
     	{
-    		m_messageStartedDialog = new AssignmentDialog(m_wpMessageLog, AssignmentDialog.AssignmentAction.START);
+    		m_messageStartedDialog = new StartedAssignmentDialog(m_wpMessageLog);
     		m_messageStartedDialog.addDialogListener(this);
     		m_dialogs.add(m_messageStartedDialog);
     	}
@@ -259,7 +259,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	{
 		if(m_messageCompletedDialog == null)
 		{
-			m_messageCompletedDialog = new AssignmentDialog(m_wpMessageLog, AssignmentDialog.AssignmentAction.COMPLETE);
+			m_messageCompletedDialog = new CompletedAssignmentDialog(m_wpMessageLog);
 			m_messageCompletedDialog.addDialogListener(this);
 			m_dialogs.add(m_messageCompletedDialog);
 		}
@@ -936,7 +936,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					errorDialog.showError(m_wpMessageLog.getText("ReceiverCommandPostError.header"), 
 							m_wpMessageLog.getText("ReceiverCommandPostError.details"));
 				}
-				else if(!isTaskOperationLegal())
+				else if(!isAssignmentOperationLegal())
 				{
 					// Require certain message status
 					errorDialog.showError(m_wpMessageLog.getText("MessageTaskOperationError.header"), 
@@ -958,8 +958,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 	private void createStartedButton()
 	{
-		m_startedButton = createButton("STARTED", null);
-		m_startedButton.addActionListener(new ActionListener()
+		m_startButton = createButton("STARTED", null);
+		m_startButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
@@ -975,7 +975,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					errorDialog.showError(m_wpMessageLog.getText("ReceiverCommandPostError.header"), 
 							m_wpMessageLog.getText("ReceiverCommandPostError.details"));
 				}
-				else if(!isTaskOperationLegal())
+				else if(!isAssignmentOperationLegal())
 				{
 					// Require certain message status
 					errorDialog.showError(m_wpMessageLog.getText("MessageTaskOperationError.header"), 
@@ -991,14 +991,14 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				}	
 			}
 		});
-		m_buttonGroup.add(m_startedButton);
-		m_buttonRow.add(m_startedButton);
+		m_buttonGroup.add(m_startButton);
+		m_buttonRow.add(m_startButton);
 	}
 
 	private void createAssignedButton()
 	{
-		m_assignedButton = createButton("ASSIGNED", null);
-		m_assignedButton.addActionListener(new ActionListener()
+		m_assignButton = createButton("ASSIGNED", null);
+		m_assignButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
@@ -1015,7 +1015,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					errorDialog.showError(m_wpMessageLog.getText("ReceiverCommandPostError.header"), 
 							m_wpMessageLog.getText("ReceiverCommandPostError.details"));
 				}
-				else if(!isTaskOperationLegal())
+				else if(!isAssignmentOperationLegal())
 				{
 					// Require certain message status
 					errorDialog.showError(m_wpMessageLog.getText("MessageTaskOperationError.header"), 
@@ -1032,8 +1032,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				}
 			}
 		});
-		m_buttonGroup.add(m_assignedButton);
-		m_buttonRow.add(m_assignedButton);
+		m_buttonGroup.add(m_assignButton);
+		m_buttonRow.add(m_assignButton);
 	}
 	
 	private boolean isReceiverCommandPost()
@@ -1057,7 +1057,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		}
 	}
 	
-	private boolean isTaskOperationLegal()
+	private boolean isAssignmentOperationLegal()
 	{
 		if(m_newMessage)
 		{
@@ -1177,11 +1177,26 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 	public static void showAssignDialog()
 	{
-		m_assignedButton.doClick();
+		m_assignButton.doClick();
 	}
 
 	public static void showListDialog()
 	{
 		m_listButton.doClick();
+	}
+
+	public static void showStartDialog()
+	{
+		m_startButton.doClick();
+	}
+
+	public static void cancelAssign()
+	{
+		m_messageAssignedDialog.cancelUpdate();
+	}
+
+	public static void cancelStarted()
+	{
+		m_messageStartedDialog.cancelUpdate();
 	}
 }

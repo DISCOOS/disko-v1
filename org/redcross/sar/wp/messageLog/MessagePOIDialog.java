@@ -21,6 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+import javax.swing.SwingUtilities;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
@@ -454,4 +455,16 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 	{
 		return m_tool;
 	}
+	
+	private void showMap()
+    {
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                MessageLogPanel.showMap();
+            }
+        });
+
+    }
 }

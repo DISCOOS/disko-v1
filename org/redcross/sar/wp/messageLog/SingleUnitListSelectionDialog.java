@@ -64,7 +64,6 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	{
 		public void mouseClicked(MouseEvent me)
 		{
-			//TODO event does not get fired
 			JToggleButton button = (JToggleButton)me.getSource();
 			if(button == m_currentButton)
 			{
@@ -162,29 +161,16 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 			{
 				// Command post should only be selected if the type filter is set to cp and the cp is active
 				ICmdPostIf cmdPost = (ICmdPostIf)communicator;
-				if(m_activeCmdPostStatusSet.contains(cmdPost.getStatus()) &&
-						(m_unitTypeFilter == UnitType.COMMAND_POST || m_unitTypeFilter == null))
-				{
-					return true;
-				}
-				else
-				{
-					return false;
-				}
+				return m_activeCmdPostStatusSet.contains(cmdPost.getStatus()) &&
+						(m_unitTypeFilter == UnitType.COMMAND_POST || m_unitTypeFilter == null);
+				
 			}
 			else if(communicator instanceof IUnitIf)
 			{
 				// Unit should be selected if it is active, and the unit type filter match
 				IUnitIf unit = (IUnitIf)communicator;
-				if(m_activeUnitStatusSet.contains(unit.getStatus()) && 
-						(m_unitTypeFilter == unit.getType() || m_unitTypeFilter == null))
-				{
-					return true;
-				}
-				else
-				{
-					return false;
-				}
+				return m_activeUnitStatusSet.contains(unit.getStatus()) && 
+						(m_unitTypeFilter == unit.getType() || m_unitTypeFilter == null);
 			}
 			else
 			{
@@ -194,6 +180,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 		}
 	};
 	
+	/*
 	private Icon getUnitIcon(UnitType unitType)
 	{
 		Icon icon = null;
@@ -209,6 +196,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 		}
 		return icon;
 	}
+	*/
 
 	private void initContentsPanel()
 	{
@@ -267,6 +255,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 
 	public void showDialog()
 	{
+		buildList();
 		this.setVisible(true);
 	}
 

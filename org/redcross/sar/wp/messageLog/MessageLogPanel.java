@@ -81,10 +81,14 @@ public class MessageLogPanel
     	m_bottomPanel.setLayout(layout);
     	m_bottomPanel.setFocusCycleRoot(true);
     	m_splitter1.setRightComponent(m_bottomPanel);
-
+    	
+    	
+    	 
     	m_scrollPane1 = new JScrollPane();
     	m_scrollPane1.setOpaque(false);
     	m_bottomPanel.add(m_scrollPane1, LOG_ID);
+    	
+    	m_bottomPanel.add((JComponent)m_map, MAP_ID);
 
     	m_logTable = new JTable();
     	m_scrollPane1.setViewportView(m_logTable);
@@ -129,8 +133,6 @@ public class MessageLogPanel
         JTableHeader tableHeader = m_logTable.getTableHeader();
         tableHeader.setResizingAllowed(false);
         tableHeader.setReorderingAllowed(false);
-        
-        m_bottomPanel.add((JComponent)m_map, MAP_ID);
     }
 
     public JPanel getPanel()
@@ -167,6 +169,8 @@ public class MessageLogPanel
 	
 	public static void showMap()
 	{
+		if(m_bottomPanel == null)
+			return;
 		CardLayout cards = (CardLayout)m_bottomPanel.getLayout();
 		cards.show(m_bottomPanel, MAP_ID);
 	}
