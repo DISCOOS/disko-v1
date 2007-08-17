@@ -17,8 +17,6 @@ import java.io.File;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.ResourceBundle;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Implements the DiskoApplication interface. This class is responsible for connecting to the
