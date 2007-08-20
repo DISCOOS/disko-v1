@@ -110,6 +110,10 @@ public class TextDialog extends DiskoDialog implements IEditMessageDialogIf
 		{
 			m_textArea.setText(textMessageLine.getLineText());
 		}
+		else
+		{
+			m_textArea.setText("");
+		}
 	}
 
 	public void showDialog()

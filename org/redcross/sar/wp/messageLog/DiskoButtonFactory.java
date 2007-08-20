@@ -180,6 +180,20 @@ public class DiskoButtonFactory
 		
 		return button;
 	}
+	
+	public static JButton createSmallButton(String name, String iconPath)
+	{
+		JButton button = createSmallButton(name);
+		try
+		{
+			button.setIcon(Utils.createImageIcon(iconPath, name));
+		} 
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return button;
+	}
 
 	public static JToggleButton createSmallToggleButton(String string)
 	{
@@ -192,6 +206,23 @@ public class DiskoButtonFactory
 		button.setMinimumSize(SMALL_BUTTON_SIZE);
 		button.setPreferredSize(SMALL_BUTTON_SIZE);
 		button.setMaximumSize(SMALL_BUTTON_SIZE);
+		
+		return button;
+	}
+	
+	public static JToggleButton createSmallToggleButton(String name, String iconPath)
+	{
+		JToggleButton button = createSmallToggleButton(name);
+		
+		try
+		{
+			button.setIcon(Utils.createImageIcon(iconPath, name));
+		} 
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		return button;
 	}

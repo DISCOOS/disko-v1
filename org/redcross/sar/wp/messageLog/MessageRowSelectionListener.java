@@ -3,7 +3,6 @@ package org.redcross.sar.wp.messageLog;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.util.HashMap;
-import java.util.StringTokenizer;
 
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;

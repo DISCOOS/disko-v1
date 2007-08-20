@@ -13,6 +13,7 @@ import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.*;
 import org.redcross.sar.mso.data.IMessageIf.MessageStatus;
+import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
@@ -57,7 +58,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		return m_currentMessage;
 	}
 
-	
+	private MessageLineType m_currentMessageLineType = null;
 
 	List<IEditMessageDialogIf> m_dialogs;
 
@@ -87,22 +88,22 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     private JComponent m_dialogArea;
     
     private JPanel m_buttonRow;
-	private JToggleButton  m_textButton;
-	private JToggleButton  m_positionButton;
-	private JToggleButton  m_findingButton;
+	private static JToggleButton  m_textButton;
+	private static JToggleButton  m_positionButton;
+	private static JToggleButton  m_findingButton;
 	private static JToggleButton  m_assignButton;
 	private static JToggleButton  m_startButton;
-	private JToggleButton  m_completedButton;
+	private static JToggleButton  m_completedButton;
 	private static JToggleButton  m_listButton;
-	private JToggleButton  m_deleteButton;
+	private JButton m_deleteButton;
 	
-	private TextDialog m_textDialog;
-	private MessagePOIDialog m_messagePOIDialog;
+	private static TextDialog m_textDialog;
+	private static MessagePOIDialog m_messagePOIDialog;
+	private static MessagePOIDialog m_messageFindingDialog;
 	private static AssignmentDialog m_messageAssignedDialog;
 	private static AssignmentDialog m_messageStartedDialog;
 	private static AssignmentDialog m_messageCompletedDialog;
-	private ListDialog m_messageListDialog;
-	private DeleteDialog m_messageDeleteDialog;
+	private static ListDialog m_messageListDialog;
 
     private JPanel m_taskPanel;
     private JLabel m_taskLabel;
@@ -156,7 +157,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     	JToggleButton  button = new JToggleButton ();
     	try
 		{
-			button.setIcon(Utils.createImageIcon("icons/60x60/change.gif", "Change"));
+			button.setIcon(Utils.createImageIcon(m_wpMessageLog.getText("ChangeButton.icon"), 
+					m_wpMessageLog.getText("ChangeButton.text")));
 		}
     	catch (Exception e)
 		{
@@ -229,11 +231,23 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     {
     	if(m_messagePOIDialog == null)
     	{
-    		m_messagePOIDialog = new MessagePOIDialog(m_wpMessageLog);
+    		m_messagePOIDialog = new MessagePOIDialog(m_wpMessageLog, null);
     		m_messagePOIDialog.addDialogListener(this);
     		m_dialogs.add(m_messagePOIDialog);
     	}
     	return m_messagePOIDialog;
+    }
+    
+    private MessagePOIDialog getMessageFindingDialog()
+    {
+    	if(m_messageFindingDialog == null)
+    	{
+    		POIType[] poiTypes = {POIType.FINDING, POIType.SILENT_WITNESS};
+    		m_messageFindingDialog = new MessagePOIDialog(m_wpMessageLog, poiTypes);
+    		m_messageFindingDialog.addDialogListener(this);
+    		m_dialogs.add(m_messageFindingDialog);
+    	}
+    	return m_messageFindingDialog;
     }
     
     private void getAssignedDialog()
@@ -843,19 +857,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     {
     	if(m_cancelStatusButton == null)
     	{
-    		m_cancelStatusButton = new JButton();
-    		String iconPath = "icons/60x60/abort.gif";
-    		try
-			{
-				m_cancelStatusButton.setIcon(Utils.createImageIcon(iconPath, "Cancel status"));
-			}
-    		catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-    		m_cancelStatusButton.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-    		m_cancelStatusButton.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-    		m_cancelStatusButton.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
+    		m_cancelStatusButton = DiskoButtonFactory.createSmallButton(m_wpMessageLog.getText("CancelButton.text"), 
+    				m_wpMessageLog.getText("CancelButton.icon"));
 
     		m_cancelStatusButton.addActionListener(new ActionListener()
     		{
@@ -885,12 +888,30 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
     private void createDeleteButton()
 	{
-    	m_deleteButton = createButton("DELETE", "icons/60x60/delete.gif");
+    	m_deleteButton = DiskoButtonFactory.createSmallButton(m_wpMessageLog.getText("DeleteButton.text"),
+    			m_wpMessageLog.getText("DeleteButton.icon"));
 		m_deleteButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelDeleteLabel.text"));
+				// Delete if message is not committed
+				if(m_newMessage)
+				{
+					IMessageLineIf line = m_currentMessage.findMessageLine(m_currentMessageLineType, false);
+					if(line != null)
+					{
+						if(!line.deleteObject())
+						{
+							// TODO error dialog?
+							System.err.println("Couldn't delete message line");
+						}
+					}
+				}
+				else
+				{
+					// TODO warning?
+					System.err.println("Not possible to delete message lines from committed messages");
+				}
 			}
 		});
 		m_buttonGroup.add(m_deleteButton);
@@ -899,7 +920,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 	private void createListButton()
 	{
-		m_listButton = createButton("LIST", "icons/60x60/list.gif");
+		m_listButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("ListButton.text"), 
+				m_wpMessageLog.getText("ListButton.icon"));
 		m_listButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -919,7 +941,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 	private void createCompletedButton()
 	{
-		m_completedButton = createButton("COMPLETED", null);
+		m_completedButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("CompletedButton.text"),
+				m_wpMessageLog.getText("CompletedButton.icon"));
 		m_completedButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -948,6 +971,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					getCompletedDialog();
 					hideDialogs();
 					positionDialogInArea(m_messageCompletedDialog);
+					m_currentMessageLineType = MessageLineType.COMPLETE;
 					m_messageCompletedDialog.showDialog();
 				}
 			}
@@ -958,7 +982,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 	private void createStartedButton()
 	{
-		m_startButton = createButton("STARTED", null);
+		m_startButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("StartedButton.text"),
+				m_wpMessageLog.getText("StartedButton.icon"));
 		m_startButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -986,6 +1011,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelStartedLabel.text"));
 					getStartedDialog();
 					hideDialogs();
+					m_currentMessageLineType = MessageLineType.STARTED;
 					positionDialogInArea(m_messageStartedDialog);
 					m_messageStartedDialog.showDialog();
 				}	
@@ -997,7 +1023,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 	private void createAssignedButton()
 	{
-		m_assignButton = createButton("ASSIGNED", null);
+		m_assignButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("AssignedButton.text"), 
+				m_wpMessageLog.getText("AssignedButton.icon"));
 		m_assignButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -1027,6 +1054,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelAssignedLabel.text"));
 					hideDialogs();
 					getAssignedDialog();
+					m_currentMessageLineType = MessageLineType.ASSIGNED;
 					positionDialogInArea(m_messageAssignedDialog);
 					m_messageAssignedDialog.showDialog();
 				}
@@ -1070,18 +1098,19 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 	private void createFindingButton()
 	{
-		m_findingButton = createButton("FINDING", "icons/60x60/discovery.gif");
+		m_findingButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("FindingButton.text"), 
+				m_wpMessageLog.getText("FindingButton.icon"));
 		m_findingButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
 				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelFindingLabel.text"));
-				getMessagePOIDialog();
+				getMessageFindingDialog();
 				hideDialogs();
-				POIType[] poiTypes = {POIType.FINDING, POIType.SILENT_WITNESS};
-	    		MessagePOIDialog.setPOITypes(poiTypes);
-				m_messagePOIDialog.showDialog();
-				positionDialogInArea(m_messagePOIDialog);
+				m_currentMessageLineType = MessageLineType.FINDING;
+				m_messageFindingDialog.setMapTool();
+				m_messageFindingDialog.showDialog();
+				positionDialogInArea(m_messageFindingDialog);
 			}
 		});
 		m_buttonGroup.add(m_findingButton);
@@ -1090,7 +1119,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 	private void createPositionButton()
 	{
-		m_positionButton = createButton("POI", null);
+		m_positionButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("PositionButton.text"),
+				m_wpMessageLog.getText("PositionButton.icon"));
 		m_positionButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -1098,7 +1128,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelPositionLabel.text"));
 				getMessagePOIDialog();
 				hideDialogs();
-				MessagePOIDialog.setPOITypes(null);
+				m_currentMessageLineType = MessageLineType.POI;
+				m_messagePOIDialog.setMapTool();
 				m_messagePOIDialog.showDialog();
 				positionDialogInArea(m_messagePOIDialog);
 			}
@@ -1109,7 +1140,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 	private void createTextButton()
 	{
-		m_textButton = createButton("TEXT", "icons/60x60/text.gif");
+		m_textButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("TextButton.text"),
+				m_wpMessageLog.getText("TextButton.icon"));
 		m_textButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -1117,6 +1149,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelTextLabel.text"));
 				getMessageTextDialog();
 				hideDialogs();
+				m_currentMessageLineType = MessageLineType.TEXT;
     			m_textDialog.setVisible(true);
     			positionDialogInArea(m_textDialog);
 			}
@@ -1138,36 +1171,10 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	 */
 	public void hideDialogs()
 	{
-		//m_buttonGroup.clearSelection();
-		
 		for(int i=0; i<m_dialogs.size(); i++)
 		{
 			m_dialogs.get(i).hideDialog();
 		}
-	}
-
-	private JToggleButton createButton(String text, String iconPath)
-	{
-		JToggleButton  button = new JToggleButton ();
-		if(iconPath != null)
-		{
-			try
-			{
-				button.setIcon(Utils.createImageIcon(iconPath, text));
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
-		else
-		{
-			button.setText(text);
-		}
-		button.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-		button.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-		button.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-		return button;
 	}
 
 	public void clearSelection()
@@ -1184,10 +1191,30 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	{
 		m_listButton.doClick();
 	}
+	
+	public static void showCompleteDialog()
+	{
+		m_completedButton.doClick();
+	}
 
 	public static void showStartDialog()
 	{
 		m_startButton.doClick();
+	}
+	
+	public static void showTextDialog()
+	{
+		m_textButton.doClick();
+	}
+	
+	public static void showPositionDialog()
+	{
+		m_positionButton.doClick();
+	}
+	
+	public static void showFindingDialog()
+	{
+		m_findingButton.doClick();
 	}
 
 	public static void cancelAssign()

@@ -1,16 +1,21 @@
 package org.redcross.sar.wp.messageLog;
 
 import java.awt.CardLayout;
+import java.util.Calendar;
 
 import javax.swing.JOptionPane;
 
 import org.redcross.sar.mso.data.IAssignmentIf;
+import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 import org.redcross.sar.mso.data.IUnitIf.UnitStatus;
+import org.redcross.sar.util.AssignmentTransferUtilities;
+import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.except.IllegalOperationException;
+import org.redcross.sar.util.mso.DTG;
 
 /**
  * Dialog for starting an assignment
@@ -108,11 +113,19 @@ public class StartedAssignmentDialog extends AssignmentDialog
 	{
 		// Starting an assignment
 		IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.STARTED, false);
-		assert messageLine != null;
 		IAssignmentIf assignment = messageLine.getLineAssignment();
+		IUnitIf unit = assignment.getOwningUnit();
+		
+		// Check that unit can accept assignment
+		if(!AssignmentTransferUtilities.unitCanAccept(unit, AssignmentStatus.EXECUTING))
+		{
+			// TODO warning?
+			System.err.println(unit.getTypeAndNumber() + " can not accept " + assignment.getTypeAndNumber());
+			return;
+		}
+		
 		try
 		{
-			// TODO sjekk
 			assignment.setStatus(AssignmentStatus.EXECUTING);
 		}
 		catch (IllegalOperationException e1)
@@ -120,9 +133,19 @@ public class StartedAssignmentDialog extends AssignmentDialog
 			e1.printStackTrace();
 		}
 		
-		// TODO sjekk
-		IUnitIf unit = assignment.getOwningUnit();
 		unit.setStatus(UnitStatus.WORKING);
+		
+		// Set started time
+		try
+		{
+			messageLine.setOperationTime(DTG.DTGToCal(m_timeTextField.getText()));
+		} 
+		catch (IllegalMsoArgumentException e)
+		{
+			// TODO warning?
+			System.err.println("Not a valid DTG format");
+			messageLine.setOperationTime(Calendar.getInstance());
+		}
 		
 		// Perform action show in list
 		MessageLogTopPanel.showListDialog();
@@ -131,10 +154,34 @@ public class StartedAssignmentDialog extends AssignmentDialog
 	@Override
 	protected void showHasAssignment()
 	{
-		// TODO Auto-generated method stub
+		// Must have started message line to reach this point
+		IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.STARTED, false);
+		
+		String time = DTG.CalToDTG(messageLine.getOperationTime());
+		if(time.isEmpty())
+		{
+			time = DTG.CalToDTG(Calendar.getInstance());
+		}
+		m_timeTextField.setText(time);
 		
 		CardLayout layout = (CardLayout)m_cardsPanel.getLayout();
 		layout.show(m_cardsPanel, HAS_ASSIGNMENT_ID);
+	}
+
+	@Override
+	public void newMessageSelected(IMessageIf message)
+	{
+		IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.STARTED, false);
+		if(messageLine != null)
+		{
+			IAssignmentIf assignment = messageLine.getLineAssignment();
+			if(assignment != null)
+			{
+				m_assignmentLabel.setText(m_wpMessageLog.getText("AssignmentLabel.text") + ": " + assignment.getTypeAndNumber());
+			}
+			
+			m_timeTextField.setText(DTG.CalToDTG(messageLine.getOperationTime()));
+		}
 	}
 
 }

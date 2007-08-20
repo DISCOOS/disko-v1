@@ -6,11 +6,14 @@ import java.util.Calendar;
 import javax.swing.JOptionPane;
 
 import org.redcross.sar.mso.data.IAssignmentIf;
+import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 import org.redcross.sar.mso.data.IUnitIf.UnitStatus;
+import org.redcross.sar.util.AssignmentTransferUtilities;
+import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.util.mso.DTG;
 
@@ -136,6 +139,19 @@ public class CompletedAssignmentDialog extends AssignmentDialog
 	@Override
 	protected void updateMessage()
 	{
+		// Get started assignment and unit
+		IMessageLineIf startedMessageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.STARTED, false);
+		IAssignmentIf assignment = startedMessageLine.getLineAssignment();
+		IUnitIf unit = assignment.getOwningUnit();
+		
+		// Check validity of transfer
+		if(!AssignmentTransferUtilities.unitCanAccept(unit, AssignmentStatus.FINISHED))
+		{
+			//TODO warning dialog?
+			System.err.println(unit.getTypeAndNumber() + " can not accept " + assignment.getTypeAndNumber());
+			return;
+		}
+		
 		IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.COMPLETE, false);
 		// Keep track of whether a new line is added or not
 		if(messageLine == null)
@@ -144,10 +160,6 @@ public class CompletedAssignmentDialog extends AssignmentDialog
 			m_lineAdded = true;
 		}
 		
-		// Get assignment
-		IMessageLineIf startedMessageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.STARTED, false);
-		IAssignmentIf assignment = startedMessageLine.getLineAssignment();
-		IUnitIf unit = assignment.getOwningUnit();
 		
 		messageLine.setLineAssignment(assignment);
 		try
@@ -161,18 +173,42 @@ public class CompletedAssignmentDialog extends AssignmentDialog
 		
 		unit.setStatus(UnitStatus.READY);
 		
+		// Set completed time
+		try
+		{
+			messageLine.setOperationTime(DTG.DTGToCal(m_timeTextField.getText()));
+		} 
+		catch (IllegalMsoArgumentException e)
+		{
+			System.err.println("Not a valid DTG format");
+			messageLine.setOperationTime(Calendar.getInstance());
+		}
+		
 		// Perform action show in list
 		MessageLogTopPanel.showListDialog();
 	}
 
 	@Override
 	protected void showHasAssignment()
-	{
-		// TODO Auto-generated method stub
-		
-		
+	{	
 		CardLayout layout = (CardLayout)m_cardsPanel.getLayout();
 		layout.show(m_cardsPanel, HAS_ASSIGNMENT_ID);
+	}
+
+	@Override
+	public void newMessageSelected(IMessageIf message)
+	{
+		IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.COMPLETE, false);
+		if(messageLine != null)
+		{
+			IAssignmentIf assignment = messageLine.getLineAssignment();
+			if(assignment != null)
+			{
+				m_assignmentLabel.setText(m_wpMessageLog.getText("AssignmentLabel.text") + ": " + assignment.getTypeAndNumber());
+			}
+			
+			m_timeTextField.setText(DTG.CalToDTG(messageLine.getOperationTime()));
+		}
 	}
 
 }

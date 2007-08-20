@@ -50,11 +50,6 @@ public class SinglePOITool extends AbstractCommandTool
 	{
 		if (obj instanceof IDiskoMap) {
 			map = (DiskoMap)obj;
-			
-			/*
-			opAreaLayer = (OperationAreaLayer) map.getMapManager().getMsoLayer(
-					IMsoFeatureLayer.LayerCode.AREA_LAYER);
-					*/
 		}
 	}
 	
@@ -72,7 +67,7 @@ public class SinglePOITool extends AbstractCommandTool
 		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
 		IMessageLineIf messageLine;
 		
-		POIType type = MessagePOIDialog.getSelectedPOIType();
+		POIType type = ((MessagePOIDialog)dialog).getSelectedPOIType();
 		if(type == POIType.GENERAL)
 		{
 			// Update/add POI in current message
@@ -98,5 +93,7 @@ public class SinglePOITool extends AbstractCommandTool
 		point = transform(x, y);
 		point.setSpatialReferenceByRef(map.getSpatialReference());
 		poi.setPosition(MapUtil.getMsoPosistion(point));
+		
+//		map.refreshMsoLayers();
 	}
 }

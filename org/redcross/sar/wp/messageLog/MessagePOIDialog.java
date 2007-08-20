@@ -34,18 +34,20 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 	protected JLabel m_yLabel = null;
 	protected JTextField m_xField = null;
 	protected JTextField m_yField = null;
-	protected static JLabel m_poiTypeLabel = null;
-	protected static JComboBox m_poiTypesComboBox = null;
-	protected static POIType[] m_poiTypes = null;
+	protected JLabel m_poiTypeLabel = null;
+	protected JComboBox m_poiTypesComboBox = null;
+	protected POIType[] m_poiTypes = null;
 	protected IDiskoWpMessageLog m_wpMessageLog = null;
-	protected static SinglePOITool m_tool = null;
+	protected SinglePOITool m_tool = null;
 
-	public MessagePOIDialog(IDiskoWpMessageLog wp)
+	public MessagePOIDialog(IDiskoWpMessageLog wp, POIType[] poiTypes)
 	{
 		super(wp.getApplication().getFrame());
 
 		m_wpMessageLog = wp;
-
+		
+		m_poiTypes = poiTypes;
+		
 		initialize();
 	}
 
@@ -56,30 +58,16 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		initButtons();
 		initContents();
 
-		IDiskoMap map = MessageLogPanel.getMap();
-
 		try
 		{
 			m_tool = new SinglePOITool(m_wpMessageLog.getApplication(), this);
-			m_tool.setMap(map);
 		}
 		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
 
-		try
-		{
-			MessageLogPanel.getMap().setCurrentToolByRef(m_tool);
-		}
-		catch (AutomationException e)
-		{
-			e.printStackTrace();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
+		m_tool.setMap(m_wpMessageLog.getMap());
 
 		this.hideDialog();
 	}
@@ -127,7 +115,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		}
 
 		// Update POI
-		poi.setType(MessagePOIDialog.getSelectedPOIType());
+		poi.setType(getSelectedPOIType());
 		Position position = poi.getPosition();
 		if(position == null)
 		{
@@ -187,12 +175,11 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 	}
 
 	/**
-	 *
-	 * @param types set to null in order to hide combo box
+	 * Set GUI according to poi types
 	 */
-	public static void setPOITypes(POIType[] types)
+	private void updatePOITypes()
 	{
-		if(types == null)
+		if(m_poiTypes == null)
 		{
 			m_poiTypeLabel.setVisible(false);
 			m_poiTypesComboBox.removeAllItems();
@@ -200,15 +187,14 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		}
 		else
 		{
-			for(POIType type : types)
+			for(POIType type : m_poiTypes)
 			{
 				m_poiTypesComboBox.addItem(type);
 			}
 			m_poiTypeLabel.setVisible(true);
-			m_poiTypesComboBox.setSelectedItem(types[0]);
+			m_poiTypesComboBox.setSelectedItem(m_poiTypes[0]);
 			m_poiTypesComboBox.setVisible(true);
 		}
-		m_poiTypes = types;
 	}
 
 	private void initContents()
@@ -275,7 +261,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 			}
 		});
 		fieldPanel.add(m_poiTypesComboBox);
-		setPOITypes(null);
+		updatePOITypes();
 
 		JPanel fieldsPanel = new JPanel();
 		fieldsPanel.setLayout(new BoxLayout(fieldsPanel, BoxLayout.LINE_AXIS));
@@ -374,7 +360,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		updateComboBox(message);
 		updateFields(message);
 
-		// Update map
+		// Zoom to POI in map
 		IMessageLineIf messageLine = null;
 		if(m_poiTypes == null)
 		{
@@ -406,7 +392,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		{
 			MessageLogPanel.showMap();
 		}
-		updateFields(MessageLogTopPanel.getCurrentMessage());
+		
 		this.setVisible(true);
 	}
 
@@ -415,7 +401,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		return m_wpMessageLog;
 	}
 
-	public static POIType getSelectedPOIType()
+	public POIType getSelectedPOIType()
 	{
 		if(m_poiTypes == null)
 		{
@@ -426,9 +412,24 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 			return  (POIType)m_poiTypesComboBox.getSelectedItem();
 		}
 	}
-
-	public static SinglePOITool getMapTool()
+	
+	/**
+	 * Set the tool for the current wp map
+	 */
+	public void setMapTool()
 	{
-		return m_tool;
+		IDiskoMap map = m_wpMessageLog.getMap();
+		try
+		{
+			map.setCurrentToolByRef(m_tool);
+		} 
+		catch (AutomationException e)
+		{
+			e.printStackTrace();
+		} 
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 }

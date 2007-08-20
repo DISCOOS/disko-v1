@@ -183,20 +183,7 @@ public abstract class AssignmentDialog extends DiskoDialog implements IEditMessa
 		this.setVisible(false);
 	}
 
-	public void newMessageSelected(IMessageIf message)
-	{
-		// Update fields
-		IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.ASSIGNED, false);
-		if(messageLine != null)
-		{
-			IAssignmentIf assignment = messageLine.getLineAssignment();
-			
-			if(assignment != null)
-			{
-				m_assignmentLabel.setText(m_wpMessageLog.getText("AssignmentLabel.text") + ": " + assignment.getTypeAndNumber());
-			}
-		}
-	}
+	public abstract void newMessageSelected(IMessageIf message);
 
 	/**
 	 * Determine which UI elements that should be displayed, varies with assignment action
@@ -290,7 +277,7 @@ public abstract class AssignmentDialog extends DiskoDialog implements IEditMessa
 	 */
 	protected boolean messageHasAssignedAssignment()
 	{
-		// TODO sjekk med vinjar
+		// TODO sjekk
 		IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.ASSIGNED, false);
 		return messageLine != null;
 	}
