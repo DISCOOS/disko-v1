@@ -1,51 +1,26 @@
 package org.redcross.sar.wp.messageLog;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.geom.Point2D;
-import java.io.IOException;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JToggleButton;
-import javax.swing.SwingUtilities;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
-
+import com.esri.arcgis.interop.AutomationException;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
-import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.IDiskoMap;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
-import org.redcross.sar.mso.data.IPOIIf;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
+import org.redcross.sar.mso.data.IPOIIf;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
-import org.redcross.sar.mso.event.IMsoGisListenerIf;
-import org.redcross.sar.mso.event.MsoEvent.EventType;
-import org.redcross.sar.mso.event.MsoEvent.Gis;
 import org.redcross.sar.util.mso.Position;
 
-import com.esri.arcgis.carto.NewDimensionFeedback;
-import com.esri.arcgis.interop.AutomationException;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.geom.Point2D;
+import java.io.IOException;
 
 /**
- * Dialog used in position and finding when editing the message log. A separate POI dialog class was created for 
+ * Dialog used in position and finding when editing the message log. A separate POI dialog class was created for
  * the message log, should be merged with POIDialog / extract a common super class, if this should prove beneficial
- * 
+ *
  * @author thomasl
  *
  */
@@ -64,48 +39,48 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 	protected static POIType[] m_poiTypes = null;
 	protected IDiskoWpMessageLog m_wpMessageLog = null;
 	protected static SinglePOITool m_tool = null;
-	
+
 	public MessagePOIDialog(IDiskoWpMessageLog wp)
 	{
 		super(wp.getApplication().getFrame());
-		
+
 		m_wpMessageLog = wp;
-		
+
 		initialize();
 	}
-	
+
 	private void initialize()
 	{
 		// TODO numpads?
-		
+
 		initButtons();
 		initContents();
-		
+
 		IDiskoMap map = MessageLogPanel.getMap();
-		
+
 		try
 		{
 			m_tool = new SinglePOITool(m_wpMessageLog.getApplication(), this);
 			m_tool.setMap(map);
-		} 
+		}
 		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
-		
+
 		try
 		{
 			MessageLogPanel.getMap().setCurrentToolByRef(m_tool);
-		} 
+		}
 		catch (AutomationException e)
 		{
 			e.printStackTrace();
-		} 
+		}
 		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
-		
+
 		this.hideDialog();
 	}
 
@@ -121,7 +96,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		{
 			xCoordinate = 0.0;
 		}
-		
+
 		double yCoordinate = 0.0;
 		try
 		{
@@ -131,7 +106,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		{
 			yCoordinate = 0.0;
 		}
-		
+
 		// Get line
 		IMessageLineIf messageLine = null;
 		if(m_poiTypes == null)
@@ -142,7 +117,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		{
 			messageLine = message.findMessageLine(MessageLineType.FINDING, true);
 		}
-		
+
 		// Create new POI and message line if POI message line did not exists
 		IPOIIf poi = messageLine.getLinePOI();
 		if(poi == null)
@@ -150,7 +125,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 			poi = m_wpMessageLog.getMsoManager().createPOI();
 			messageLine.setLinePOI(poi);
 		}
-		
+
 		// Update POI
 		poi.setType(MessagePOIDialog.getSelectedPOIType());
 		Position position = poi.getPosition();
@@ -175,13 +150,13 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 			 * Add/update POI in current message
 			 */
 			public void actionPerformed(ActionEvent e)
-			{	
-				
+			{
+
 				updatePOI();
 				fireDialogFinished();
 			}
 		});
-		
+
 		m_cancelButton = DiskoButtonFactory.createSmallCancelButton();
 		m_cancelButton.addActionListener(new ActionListener()
 		{
@@ -190,7 +165,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 				fireDialogCanceled();
 			}
 		});
-		
+
 		m_showInMapButton = DiskoButtonFactory.createSmallToggleButton("Vis i kart"); // TODO internasjonaliser
 		m_showInMapButton.setAlignmentY(JComponent.TOP_ALIGNMENT);
 		m_showInMapButton.addActionListener(new ActionListener()
@@ -210,9 +185,9 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 			}
 		});
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param types set to null in order to hide combo box
 	 */
 	public static void setPOITypes(POIType[] types)
@@ -240,13 +215,13 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 	{
 		m_contentsPanel = new JPanel();
 		m_contentsPanel.setLayout(new BoxLayout(m_contentsPanel, BoxLayout.LINE_AXIS));
-		
+
 		JPanel labelPanel = new JPanel();
 		labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.PAGE_AXIS));
-		
+
 		JPanel fieldPanel = new JPanel();
 		fieldPanel.setLayout(new BoxLayout(fieldPanel, BoxLayout.PAGE_AXIS));
-		
+
 		// X
 		m_xLabel = new JLabel("X    ");
 		labelPanel.add(m_xLabel);
@@ -259,7 +234,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 			}
 		});
 		fieldPanel.add(m_xField);
-		
+
 		// Y
 		m_yLabel = new JLabel("Y    ");
 		labelPanel.add(m_yLabel);
@@ -272,7 +247,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 			}
 		});
 		fieldPanel.add(m_yField);
-		
+
 		// Combo box
 		m_poiTypeLabel = new JLabel("Type "); // TODO internasjonaliser
 		labelPanel.add(m_poiTypeLabel);
@@ -283,9 +258,9 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 			public void actionPerformed(ActionEvent e)
 			{
 				// Set finding POI type
-				JComboBox cb = (JComboBox)e.getSource(); 
+				JComboBox cb = (JComboBox)e.getSource();
 				POIType type = (POIType)cb.getSelectedItem();
-				
+
 				IMessageIf message = MessageLogTopPanel.getCurrentMessage();
 				IMessageLineIf messageLine = message.findMessageLine(MessageLineType.FINDING, true);
 				IPOIIf poi = messageLine.getLinePOI();
@@ -294,32 +269,32 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 					poi = m_wpMessageLog.getMsoManager().createPOI();
 					messageLine.setLinePOI(poi);
 				}
-				
+
 				poi.setType(type);
 				// TODO Fire change? Update map?
 			}
 		});
 		fieldPanel.add(m_poiTypesComboBox);
 		setPOITypes(null);
-		
+
 		JPanel fieldsPanel = new JPanel();
 		fieldsPanel.setLayout(new BoxLayout(fieldsPanel, BoxLayout.LINE_AXIS));
 		fieldsPanel.add(labelPanel);
 		fieldsPanel.add(fieldPanel);
-		
+
 		JPanel completePOIPanel = new JPanel();
 		completePOIPanel.add(fieldsPanel);
 		completePOIPanel.add(m_showInMapButton);
-		
+
 		m_contentsPanel.add(completePOIPanel);
-		
+
 		// Dialog buttons
 		JPanel dialogButtonsPane = new JPanel();
 		dialogButtonsPane.setLayout(new BoxLayout(dialogButtonsPane, BoxLayout.PAGE_AXIS));
 		dialogButtonsPane.add(m_cancelButton);
 		dialogButtonsPane.add(m_okButton);
 		m_contentsPanel.add(dialogButtonsPane);
-		
+
 		this.add(m_contentsPanel);
 		this.pack();
 	}
@@ -333,8 +308,9 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 	public void hideDialog()
 	{
 		this.setVisible(false);
-	}
-	
+        MessageLogPanel.hideMap();
+    }
+
 	private void updateFields(IMessageIf message)
 	{
 		IMessageLineIf messageLine = null;
@@ -346,7 +322,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		{
 			messageLine = message.findMessageLine(MessageLineType.FINDING, false);
 		}
-		
+
 		try
 		{
 			// Update components
@@ -373,12 +349,12 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 						m_xField.setText(String.valueOf(point.x));
 						m_yField.setText(String.valueOf(point.y));
 					}
-				}	
+				}
 			}
 		}
 		catch(Exception e){}
 	}
-	
+
 	private void updateComboBox(IMessageIf message)
 	{
 		if(m_poiTypes != null)
@@ -397,7 +373,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		// Update dialog
 		updateComboBox(message);
 		updateFields(message);
-		
+
 		// Update map
 		IMessageLineIf messageLine = null;
 		if(m_poiTypes == null)
@@ -408,7 +384,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		{
 			messageLine = message.findMessageLine(MessageLineType.FINDING, false);
 		}
-		
+
 		if(messageLine != null)
 		{
 			IPOIIf poi = messageLine.getLinePOI();
@@ -417,8 +393,8 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 				try
 				{
 					MessageLogPanel.getMap().zoomToMsoObject(poi);
-				} 
-				catch (AutomationException e){} 
+				}
+				catch (AutomationException e){}
 				catch (IOException e){}
 			}
 		}
@@ -450,21 +426,9 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 			return  (POIType)m_poiTypesComboBox.getSelectedItem();
 		}
 	}
-	
+
 	public static SinglePOITool getMapTool()
 	{
 		return m_tool;
 	}
-	
-	private void showMap()
-    {
-        SwingUtilities.invokeLater(new Runnable()
-        {
-            public void run()
-            {
-                MessageLogPanel.showMap();
-            }
-        });
-
-    }
 }

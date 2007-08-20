@@ -1,27 +1,21 @@
 package org.redcross.sar.modelDriver;
 
-import org.rescuenorway.saraccess.model.SarBaseObject;
-import org.rescuenorway.saraccess.model.SarFact;
-import org.redcross.sar.mso.data.AttributeImpl;
-
-import java.text.NumberFormat;
-import java.text.DecimalFormat;
-import java.util.*;
-import java.io.File;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Method;
-
 import no.cmr.hrs.sar.model.*;
 import no.cmr.tools.FileUtils;
 import no.cmr.tools.Log;
+import org.redcross.sar.mso.data.AttributeImpl;
+import org.rescuenorway.saraccess.model.SarBaseObject;
+import org.rescuenorway.saraccess.model.SarFact;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -247,7 +241,7 @@ public class SaraObjectCreator
       }
 
       else if (type.equalsIgnoreCase("org.redcross.sar.util.mso.Polygon") ||
-            type.equalsIgnoreCase("org.redcross.sar.util.mso.GeoCollection"))
+            type.equalsIgnoreCase("org.redcross.sar.util.mso.GeoList"))
       {
          return createAreaFact(objId, name);
       }

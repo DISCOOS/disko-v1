@@ -1,32 +1,6 @@
 package org.redcross.sar.map;
 
-import java.awt.Toolkit;
-import java.io.IOException;
-import java.util.ArrayList;
-
-import javax.swing.SwingUtilities;
-
-import org.redcross.sar.app.IDiskoApplication;
-import org.redcross.sar.gui.DiskoDialog;
-import org.redcross.sar.gui.DrawDialog;
-import org.redcross.sar.map.index.IndexedGeometry;
-import org.redcross.sar.map.layer.IMsoFeatureLayer;
-import org.redcross.sar.map.layer.OperationAreaLayer;
-import org.redcross.sar.mso.IMsoManagerIf;
-import org.redcross.sar.mso.data.IAreaIf;
-import org.redcross.sar.mso.data.IAreaListIf;
-import org.redcross.sar.mso.data.ICmdPostIf;
-import org.redcross.sar.mso.data.IOperationAreaIf;
-import org.redcross.sar.mso.data.IOperationAreaListIf;
-import org.redcross.sar.mso.data.ISearchAreaIf;
-import org.redcross.sar.mso.data.ISearchAreaListIf;
-import org.redcross.sar.util.mso.GeoCollection;
-
-import com.esri.arcgis.carto.IBasicMap;
-import com.esri.arcgis.carto.IFeatureLayer;
-import com.esri.arcgis.carto.ILayer;
-import com.esri.arcgis.carto.IMap;
-import com.esri.arcgis.carto.InvalidArea;
+import com.esri.arcgis.carto.*;
 import com.esri.arcgis.controls.IMapControlEvents2Adapter;
 import com.esri.arcgis.controls.IMapControlEvents2OnAfterScreenDrawEvent;
 import com.esri.arcgis.controls.IMapControlEvents2OnExtentUpdatedEvent;
@@ -35,16 +9,24 @@ import com.esri.arcgis.display.IScreenDisplay;
 import com.esri.arcgis.display.RgbColor;
 import com.esri.arcgis.display.SimpleLineSymbol;
 import com.esri.arcgis.display.esriScreenCache;
-import com.esri.arcgis.geometry.Envelope;
-import com.esri.arcgis.geometry.GeometryBag;
-import com.esri.arcgis.geometry.IGeometry;
-import com.esri.arcgis.geometry.IPoint;
-import com.esri.arcgis.geometry.ISegmentGraphCursor;
+import com.esri.arcgis.geometry.*;
 import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.geometry.Polygon;
-import com.esri.arcgis.geometry.Polyline;
-import com.esri.arcgis.geometry.SegmentGraph;
 import com.esri.arcgis.interop.AutomationException;
+import org.redcross.sar.app.IDiskoApplication;
+import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.gui.DrawDialog;
+import org.redcross.sar.map.index.IndexedGeometry;
+import org.redcross.sar.map.layer.IMsoFeatureLayer;
+import org.redcross.sar.map.layer.OperationAreaLayer;
+import org.redcross.sar.mso.IMsoManagerIf;
+import org.redcross.sar.mso.data.*;
+import org.redcross.sar.util.mso.GeoList;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * A custom draw tool.
@@ -54,56 +36,56 @@ import com.esri.arcgis.interop.AutomationException;
 public class DrawTool extends AbstractCommandTool {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private boolean isActive = false;
 	private boolean isDirty = false;
 	private IDiskoApplication app = null;
-	
+
 	// holds path geometry
 	private Polyline pathGeometry = null;
 	private Polyline rubberBand = null;
 	private Envelope searchEnvelope = null;
-	
+
 	private Point p  = null;
 	private Point p1 = null;
 	private Point p2 = null;
-	
+
 	private IndexedGeometry indexedGeometry = null;
 	private IGeometry snapGeometry = null;
 	private int moveCounter = 0;
 	private boolean isMoving = false;
-	
-	private SimpleLineSymbol drawSymbol = null;	
+
+	private SimpleLineSymbol drawSymbol = null;
 	private SimpleLineSymbol flashSymbol = null;
 	private static final int SNAP_TOL_FACTOR = 200;
 	private IAreaIf area = null;
 	private IMsoManagerIf.MsoClassCode msoClassCode = null;
-	
+
 	/**
 	 * Constructs the DrawTool
 	 */
 	public DrawTool(IDiskoApplication app) throws IOException {
 		this.app = app;
 		//symbol to draw with
-		drawSymbol = new SimpleLineSymbol();	
+		drawSymbol = new SimpleLineSymbol();
 		RgbColor drawColor = new RgbColor();
 		drawColor.setRed(255);
 		drawSymbol.setColor(drawColor);
 		drawSymbol.setWidth(1);
-			
-		flashSymbol = new SimpleLineSymbol();	
+
+		flashSymbol = new SimpleLineSymbol();
 		RgbColor flashColor = new RgbColor();
 		flashColor.setGreen(255);
 		flashColor.setBlue(255);
 		flashSymbol.setColor(flashColor);
 		flashSymbol.setWidth(2);
-			
+
 		// a serach envelope
 		searchEnvelope = new Envelope();
 		searchEnvelope.putCoords(0, 0, 0, 0);
 		searchEnvelope.setHeight(100);
 		searchEnvelope.setWidth(100);
-		
+
 		p = new Point();
 		p.setX(0);
 		p.setY(0);
@@ -126,30 +108,30 @@ public class DrawTool extends AbstractCommandTool {
 			drawDialog.setSnapTolerance(getSnapTolerance());
 			updateSnapLayers();
 			map.addIMapControlEvents2Listener(new MapControlAdapter());
-			
+
 			// getting operation areas
 			opAreaLayer = (OperationAreaLayer) map.getMapManager().getMsoLayer(
 					IMsoFeatureLayer.LayerCode.OPERATION_AREA_LAYER);
 		}
 	}
-	
+
 	public void setSnapTolerance(double tolerance) throws IOException, AutomationException {
 		searchEnvelope.setHeight(tolerance);
 		searchEnvelope.setWidth(tolerance);
 	}
-	
+
 	public double getSnapTolerance() throws IOException {
 		return searchEnvelope.getHeight();
 	}
-	
+
 	public void setMsoClassCode(IMsoManagerIf.MsoClassCode msoClassCode) {
 		this.msoClassCode = msoClassCode;
 	}
-	
+
 	public void setArea(IAreaIf area) {
 		this.area = area;
 	}
-	
+
 	public void onClick() throws IOException, AutomationException {
 		isActive = true;
 		updateIndexedGeometry();
@@ -189,10 +171,12 @@ public class DrawTool extends AbstractCommandTool {
 						if (area == null) {
 							IAreaListIf areaList = cmdPost.getAreaList();
 							area = areaList.createArea();
-							area.setGeodata(new GeoCollection(null));
+							area.setGeodata(new GeoList(null));
 							map.setSelected(area, true);
 						}
-						GeoCollection clone = cloneGeoCollection(area.getGeodata());
+//                        IRouteIf route = cmdPost.getRouteList().createRoute(MapUtil.getMsoRoute(polyline));
+//                        area.addAreaGeodata(route);
+                      GeoList clone = cloneGeoList(area.getGeodata());
 						clone.add(MapUtil.getMsoRoute(polyline));
 						area.setGeodata(clone);
 					}
@@ -208,7 +192,7 @@ public class DrawTool extends AbstractCommandTool {
 		SwingUtilities.invokeLater(r);
 		reset();
 	}
-	
+
 	private Polygon getPolygon(Polyline pline) throws IOException, AutomationException {
 		// closing
 		pline.addPoint(pline.getFromPoint(), null, null);
@@ -224,7 +208,7 @@ public class DrawTool extends AbstractCommandTool {
 			throws IOException, AutomationException {
 		p2 = transform(x,y);
 		// check if point inside operation area
-		if (msoClassCode != IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA && 
+		if (msoClassCode != IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA &&
 				!insideOpArea(p2)) {
 			Toolkit.getDefaultToolkit().beep();
 			return;
@@ -248,7 +232,7 @@ public class DrawTool extends AbstractCommandTool {
 		rubberBand.updatePoint(0,p2);
 		p1 = p2;
 	}
-	
+
 	public void onMouseMove(int button, int shift, int x, int y)
 			throws IOException, AutomationException {
 		//Only create the trace every other time the mouse moves
@@ -279,7 +263,7 @@ public class DrawTool extends AbstractCommandTool {
 		p1.setX(0);
 		p1.setY(0);
 	}
-	
+
 	private void updatePath() throws IOException, AutomationException {
 		if (p1.returnDistance(p2) == 0) {
 			return;
@@ -287,7 +271,7 @@ public class DrawTool extends AbstractCommandTool {
 		searchEnvelope.centerAt(p1);
 		Polyline pline1 = (Polyline)indexedGeometry.search(searchEnvelope);
 		Polyline pline2 = (Polyline)snapGeometry;
-		
+
 		if (pline1 == null || pline2 == null) {
 			pathGeometry.addPoint(p2, null, null);
 			return;
@@ -307,7 +291,7 @@ public class DrawTool extends AbstractCommandTool {
 		SegmentGraph segmentGraph = new SegmentGraph();
 		segmentGraph.load(gb, false, true);
 		ISegmentGraphCursor segmentGraphCursor = segmentGraph.getCursor(p1);
-		
+
 		// tracing the segmnet graph
 		for (int i = 0; i < copy.getPointCount(); i++) {
 			IPoint p = copy.getPoint(i);
@@ -328,11 +312,11 @@ public class DrawTool extends AbstractCommandTool {
 		// reset
 		segmentGraphCursor = null;
 	}
-	
+
 	private void draw() throws IOException, AutomationException {
 		IScreenDisplay screenDisplay = map.getActiveView().getScreenDisplay();
 		screenDisplay.startDrawing(screenDisplay.getHDC(),(short) esriScreenCache.esriNoScreenCache);
-		
+
 		if (pathGeometry != null && !isMoving) {
 			screenDisplay.setSymbol(drawSymbol);
 			screenDisplay.drawPolyline(pathGeometry);
@@ -347,7 +331,7 @@ public class DrawTool extends AbstractCommandTool {
 		}
 		screenDisplay.finishDrawing();
 	}
-	
+
 	private void refresh() throws IOException, AutomationException {
 		InvalidArea invalidArea = new InvalidArea();
 		if (pathGeometry != null && !isMoving) {
@@ -362,8 +346,8 @@ public class DrawTool extends AbstractCommandTool {
 		invalidArea.setDisplayByRef(map.getActiveView().getScreenDisplay());
 		invalidArea.invalidate((short) esriScreenCache.esriNoScreenCache);
 	}
-	
-	private Point getNearestPoint(Polyline pline, Point point) 
+
+	private Point getNearestPoint(Polyline pline, Point point)
 			throws IOException, AutomationException {
 		double minDist = Double.MAX_VALUE;
 		Point nearestPoint = null;
@@ -377,7 +361,7 @@ public class DrawTool extends AbstractCommandTool {
 		}
 		return nearestPoint;
 	}
-	
+
 	public void setIsDirty() {
 		isDirty = true;
 		try {
@@ -390,7 +374,7 @@ public class DrawTool extends AbstractCommandTool {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void updateIndexedGeometry() throws IOException, AutomationException {
 		if (!isActive) {
 			isDirty = true;
@@ -406,7 +390,7 @@ public class DrawTool extends AbstractCommandTool {
 			isDirty = false;
 		}
 	}
-	
+
 	private void updateSnapLayers() throws IOException, AutomationException {
 		ArrayList<IFeatureLayer> layers = new ArrayList<IFeatureLayer>();
 		IMap focusMap = map.getActiveView().getFocusMap();
@@ -419,7 +403,7 @@ public class DrawTool extends AbstractCommandTool {
 						shapeType == com.esri.arcgis.geometry.esriGeometryType.esriGeometryPolygon  ||
 						shapeType == com.esri.arcgis.geometry.esriGeometryType.esriGeometryBag) {
 					double scale = map.getScale((IBasicMap)focusMap);
-					if (flayer.isVisible() && scale > flayer.getMaximumScale() && 
+					if (flayer.isVisible() && scale > flayer.getMaximumScale() &&
 							scale < flayer.getMinimumScale()) {
 						layers.add(flayer);
 					}
@@ -431,26 +415,26 @@ public class DrawTool extends AbstractCommandTool {
 		setSnapTolerance(map.getActiveView().getExtent().getWidth()/SNAP_TOL_FACTOR);
 		drawDialog.setSnapTolerance(getSnapTolerance());
 	}
-	
+
 	class MapControlAdapter extends IMapControlEvents2Adapter {
-		
+
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public void onAfterScreenDraw(IMapControlEvents2OnAfterScreenDrawEvent arg0) 
+		public void onAfterScreenDraw(IMapControlEvents2OnAfterScreenDrawEvent arg0)
 				throws IOException, AutomationException {
 			draw();
 		}
 
 		@Override
-		public void onExtentUpdated(IMapControlEvents2OnExtentUpdatedEvent arg0) 
+		public void onExtentUpdated(IMapControlEvents2OnExtentUpdatedEvent arg0)
 				throws IOException, AutomationException {
 			isDirty = true;
 			updateIndexedGeometry();
 		}
 
 		@Override
-		public void onMapReplaced(IMapControlEvents2OnMapReplacedEvent arg0) 
+		public void onMapReplaced(IMapControlEvents2OnMapReplacedEvent arg0)
 				throws IOException, AutomationException {
 			isDirty = true;
 			updateIndexedGeometry();

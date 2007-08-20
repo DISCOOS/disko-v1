@@ -9,6 +9,7 @@
  */
 package org.redcross.sar.mso;
 
+import no.cmr.tools.Log;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.modelDriver.IModelDriverIf;
 import org.redcross.sar.modelDriver.LoopbackCommitHandler;
@@ -78,16 +79,6 @@ public class MsoModelImpl implements IMsoModelIf
         return m_modelDriver;
     }
 
-// todo slett hvis ubrukt      public CommitManager getCommitManager()
-//    {
-//        return m_commitManager;
-//    }
-
-// todo slett hvis ubrukt  public IMsoCommitListenerIf getCommitListener()
-//    {
-//        return m_commitListener;
-//    }
-
     /**
      * Set update mode to {@link IMsoModelIf.UpdateMode#LOCAL_UPDATE_MODE LOCAL_UPDATE_MODE}.
      */
@@ -117,7 +108,7 @@ public class MsoModelImpl implements IMsoModelIf
         m_updateModeStack.push(aMode);
         if (m_updateModeStack.size() > 10)
         {
-            System.out.println("Update mode stack grows too large, size:" + m_updateModeStack.size());
+            Log.error("Update mode stack grows too large, size:" + m_updateModeStack.size());
         }
     }
 

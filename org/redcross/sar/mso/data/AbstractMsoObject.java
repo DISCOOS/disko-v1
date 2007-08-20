@@ -1,5 +1,6 @@
 package org.redcross.sar.mso.data;
 
+import no.cmr.tools.Log;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.mso.committer.ICommittableIf;
@@ -99,7 +100,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     {
         if (m_isSetup)
         {
-            System.out.println("Error in setup: " + this + " is setup already");
+            Log.error("Error in setup: " + this + " is setup already");
         }
         m_isSetup = true;
         defineAttributes();
@@ -165,7 +166,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (IllegalDeleteException e)
         {
-            System.out.println(e.getMessage());     // todo Erstatt med logging
+            Log.error(e.getMessage());
             return false;
         }
         return true;
@@ -208,7 +209,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
             m_listSorted = false;
         } else
         {
-            System.out.println("Error in setup: " + this + ": Try to add null Attribute");
+            Log.error("Error in setup: " + this + ": Try to add null Attribute");
         }
     }
 
@@ -219,7 +220,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
             m_referenceLists.put(aList.getName().toLowerCase(), aList);
         } else
         {
-            System.out.println("Error in setup: " + this + ": Try to add null list");
+            Log.error("Error in setup: " + this + ": Try to add null list");
         }
     }
 
@@ -230,7 +231,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
             m_referenceObjects.put(aReference.getName().toLowerCase(), aReference);
         } else
         {
-            System.out.println("Error in setup: " + this + ": Try to add null reference");
+            Log.error("Error in setup: " + this + ": Try to add null reference");
         }
     }
 

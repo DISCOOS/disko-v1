@@ -735,35 +735,35 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
         }
     }
 
-    public static class MsoGeoCollection extends AttributeImpl<GeoCollection> implements IMsoGeoCollectionIf
+    public static class MsoGeoList extends AttributeImpl<GeoList> implements IMsoGeoListIf
     {
-        public MsoGeoCollection(AbstractMsoObject theOwner, String theName)
+        public MsoGeoList(AbstractMsoObject theOwner, String theName)
         {
-            super(GeoCollection.class, theOwner, theName, Integer.MAX_VALUE, null);
+            super(GeoList.class, theOwner, theName, Integer.MAX_VALUE, null);
         }
 
-        public MsoGeoCollection(AbstractMsoObject theOwner, String theName, int theIndexNo)
+        public MsoGeoList(AbstractMsoObject theOwner, String theName, int theIndexNo)
         {
-            super(GeoCollection.class, theOwner, theName, theIndexNo, null);
+            super(GeoList.class, theOwner, theName, theIndexNo, null);
         }
 
-        public MsoGeoCollection(AbstractMsoObject theOwner, String theName, int theIndexNo, GeoCollection aGeoCollection)
+        public MsoGeoList(AbstractMsoObject theOwner, String theName, int theIndexNo, GeoList aGeoList)
         {
-            super(GeoCollection.class, theOwner, theName, theIndexNo, aGeoCollection);
+            super(GeoList.class, theOwner, theName, theIndexNo, aGeoList);
         }
 
         @Override
-        public void set(GeoCollection aGeoCollection)
+        public void set(GeoList aGeoList)
         {
-            super.set(aGeoCollection);
+            super.set(aGeoList);
         }
 
-        public void setValue(GeoCollection aGeoCollection)
+        public void setValue(GeoList aGeoList)
         {
-            super.setAttrValue(aGeoCollection);
+            super.setAttrValue(aGeoList);
         }
 
-        public GeoCollection getGeoCollection()
+        public GeoList getGeoList()
         {
             return getAttrValue();
         }

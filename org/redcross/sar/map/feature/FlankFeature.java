@@ -1,33 +1,19 @@
 package org.redcross.sar.map.feature;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
-
+import com.esri.arcgis.geodatabase.*;
+import com.esri.arcgis.geometry.*;
+import com.esri.arcgis.interop.AutomationException;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.map.MapUtil;
 import org.redcross.sar.mso.data.IAreaIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
-import org.redcross.sar.util.mso.GeoCollection;
+import org.redcross.sar.util.mso.GeoList;
 import org.redcross.sar.util.mso.IGeodataIf;
 import org.redcross.sar.util.mso.Route;
 
-import com.esri.arcgis.geodatabase.IFeature;
-import com.esri.arcgis.geodatabase.IFeatureClass;
-import com.esri.arcgis.geodatabase.IFeatureCursor;
-import com.esri.arcgis.geodatabase.SpatialFilter;
-import com.esri.arcgis.geodatabase.esriSpatialRelEnum;
-import com.esri.arcgis.geometry.GeometryBag;
-import com.esri.arcgis.geometry.IGeometry;
-import com.esri.arcgis.geometry.IGeometryCollection;
-import com.esri.arcgis.geometry.Line;
-import com.esri.arcgis.geometry.Polygon;
-import com.esri.arcgis.geometry.Polyline;
-import com.esri.arcgis.interop.AutomationException;
+import java.io.IOException;
+import java.util.*;
 
 public class FlankFeature extends AbstractMsoFeature {
 
@@ -36,13 +22,13 @@ public class FlankFeature extends AbstractMsoFeature {
 	private static final int RIGHT_SIDE_FLANK = 2;
 	private List<Polygon> leftFlanks  = null;
 	private List<Polygon> rightFlanks = null;
-	private GeoCollection geoColl = null;
-	
+	private GeoList geoList = null;
+
 	public FlankFeature() {
 		leftFlanks  = new ArrayList<Polygon>();
 		rightFlanks = new ArrayList<Polygon>();
 	}
-	
+
 	public List getLeftFlanks() {
 		return leftFlanks;
 	}
@@ -50,7 +36,7 @@ public class FlankFeature extends AbstractMsoFeature {
 	public List getRightFlanks() {
 		return rightFlanks;
 	}
-	
+
 	public boolean geometryIsChanged(IMsoObjectIf msoObj) {
 		IAreaIf area = (IAreaIf)msoObj;
 		return area.getGeodata() != null && !area.getGeodata().equals(getGeodata());
@@ -59,12 +45,12 @@ public class FlankFeature extends AbstractMsoFeature {
 	@Override
 	public void msoGeometryChanged() throws IOException, AutomationException {
 		IAreaIf area = (IAreaIf)msoObject;
-		geoColl = area.getGeodata();
-		if (geoColl != null) {
+		geoList = area.getGeodata();
+		if (geoList != null) {
 			leftFlanks.clear();
 			rightFlanks.clear();
 			GeometryBag geomBag = new GeometryBag();
-			Iterator iter = geoColl.getPositions().iterator();
+			Iterator iter = geoList.getPositions().iterator();
 			while (iter.hasNext()) {
 				IGeodataIf geodata = (IGeodataIf) iter.next();
 				if (geodata instanceof Route) {
@@ -76,11 +62,11 @@ public class FlankFeature extends AbstractMsoFeature {
 			geometry = geomBag;
 		}
 	}
-	
+
 	public Object getGeodata() {
-		return geoColl;
+		return geoList;
 	}
-	
+
 	private void createFlankForRoute(Route route) throws IOException, AutomationException {
 		String layout = route.getLayout();
 		if (layout == null) {
@@ -92,34 +78,34 @@ public class FlankFeature extends AbstractMsoFeature {
 			String leftDistParam     = (String)params.get("LeftDist");
 			String rightDistParam    = (String)params.get("RightDist");
 			String clipFeaturesParam = (String)params.get("ClipFeatures");
-			
+
 			int leftDist  = leftDistParam  != null ? Integer.parseInt(leftDistParam)  : 0;
 			int rightDist = rightDistParam != null ? Integer.parseInt(rightDistParam) : 0;
-			List clipFeatures = getClipFeatures(clipFeaturesParam); 
-			
+			List clipFeatures = getClipFeatures(clipFeaturesParam);
+
 			if (leftDist > 0) {
 				try {
-					createFlank(path, leftDist, clipFeatures, LEFT_SIDE_FLANK); 
+					createFlank(path, leftDist, clipFeatures, LEFT_SIDE_FLANK);
 				} catch (AutomationException e) {
 					showError("Kan ikke lage venstre flanke. Ugyldig geometri.", e.getDescription());
 				}
 			}
 			if (rightDist > 0) {
 				try {
-					createFlank(path, rightDist, clipFeatures, RIGHT_SIDE_FLANK); 
+					createFlank(path, rightDist, clipFeatures, RIGHT_SIDE_FLANK);
 				} catch (AutomationException e) {
 					showError("Kan ikke lage høyre flanke. Ugyldig geometri.", e.getDescription());
 				}
 			}
 		}
 	}
-	
+
 	private void showError(String msg, String description) {
 		ErrorDialog dialog = Utils.getErrorDialog();
 		dialog.showError(msg, description);
 	}
 
-	private void createFlank(Polyline path, double dist, List clipFeatures, int side) 
+	private void createFlank(Polyline path, double dist, List clipFeatures, int side)
 			throws IOException, AutomationException {
 		Line n1 = new Line();
 		Line n2 = new Line();
@@ -178,7 +164,7 @@ public class FlankFeature extends AbstractMsoFeature {
 		}
 		return result;
 	}
-	
+
 	private Hashtable getParams(String paramString) {
 		Hashtable<String, String> params = new Hashtable<String, String>();
 		StringTokenizer st1 = new StringTokenizer(paramString, "&");
@@ -190,7 +176,7 @@ public class FlankFeature extends AbstractMsoFeature {
 		}
 		return params;
 	}
-	
+
 	private ArrayList getClipFeatures(String param) throws AutomationException, IOException {
 		if (param == null) {
 			return null;

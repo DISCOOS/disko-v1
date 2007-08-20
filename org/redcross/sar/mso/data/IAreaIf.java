@@ -1,9 +1,8 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.util.except.DuplicateIdException;
 import org.redcross.sar.util.except.IllegalOperationException;
-import org.redcross.sar.util.mso.*;
+import org.redcross.sar.util.mso.GeoList;
 
 import java.util.Collection;
 
@@ -13,13 +12,13 @@ public interface IAreaIf extends IMsoObjectIf
     * Methods for attributes
     *-------------------------------------------------------------------------------------------*/
 
-    public void setGeodata(GeoCollection aGeodata);
+    public void setGeodata(GeoList aGeodata);
 
-    public GeoCollection getGeodata();
+    public GeoList getGeodata();
 
     public IMsoModelIf.ModificationState getGeodataState();
 
-    public IAttributeIf.IMsoGeoCollectionIf getGeodataAttribute();
+    public IAttributeIf.IMsoGeoListIf getGeodataAttribute();
 
     public void setRemarks(String aRemarks);
 
@@ -41,6 +40,14 @@ public interface IAreaIf extends IMsoObjectIf
 
     public Collection<IPOIIf> getAreaPOIsItems();
 
+    public void addAreaGeodata(IMsoObjectIf anMsoObjectIf);
+
+    public IMsoListIf<IMsoObjectIf> getAreaGeodata();
+
+    public IMsoModelIf.ModificationState getAreaGeodataState(IMsoObjectIf anMsoObjectIf);
+
+    public Collection<IMsoObjectIf> getAreaGeodataItems();
+
     /*-------------------------------------------------------------------------------------------
     * Other specified methods
     *-------------------------------------------------------------------------------------------*/
@@ -54,8 +61,4 @@ public interface IAreaIf extends IMsoObjectIf
      * @throws IllegalOperationException If the assignment cannot be done (verification failed).
      */
     public void verifyAssignable(IAssignmentIf anAssignment) throws IllegalOperationException;
-
-//    public void setAreaHypothesis(IHypothesisIf anHypothesis);           todo slett
-//
-//    public IHypothesisIf getAreaHypothesis();
 }

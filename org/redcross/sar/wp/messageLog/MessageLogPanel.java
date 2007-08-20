@@ -7,6 +7,8 @@ import javax.swing.*;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,11 +22,11 @@ import java.awt.*;
  */
 public class MessageLogPanel
 {
-	public static final int PANEL_WIDTH = 800;
-	
-	private static final String MAP_ID = "MAP";
-	private static final String LOG_ID = "LOG";
-	
+    public static final int PANEL_WIDTH = 800;
+
+    private static final String MAP_ID = "MAP";
+    private static final String LOG_ID = "LOG";
+
     private JPanel WorkspacePanel;
     private MessageLogTopPanel m_topPanel;
     private static JSplitPane m_splitter1;
@@ -35,9 +37,9 @@ public class MessageLogPanel
     private static JScrollPane m_scrollPane1;
     private static JPanel m_bottomPanel;
     private IMessageLogIf m_messageLog;
-    
-    
-	public static Dimension SMALL_BUTTON_SIZE = new Dimension(60, 60);
+
+
+    public static Dimension SMALL_BUTTON_SIZE = new Dimension(60, 60);
 
     public MessageLogPanel(IDiskoWpMessageLog aWp)
     {
@@ -57,9 +59,34 @@ public class MessageLogPanel
 
         initTopPanel();
         initBottomPanel();
+
+        /*
+        Hack/workarond for a hang-situation when using maps i card layout, show map initially, and hide it when the panel is shown the first time.
+         */
+        showMap();
+        WorkspacePanel.addComponentListener(new ComponentAdapter()
+        {
+            boolean firstTime = true;
+            @Override
+            public void componentShown(ComponentEvent e)
+            {
+                if (firstTime)
+                {
+                    firstTime = false;
+                    try
+                    {
+                        Thread.sleep(1000);
+                    }
+                    catch (InterruptedException e1)
+                    {
+                    }
+                    hideMap();
+                }
+            }
+        });
     }
 
-	private void initTopPanel()
+    private void initTopPanel()
     {
         m_topPanel = new MessageLogTopPanel(m_messageLog);
         m_topPanel.setWp(m_wpModule);
@@ -67,7 +94,7 @@ public class MessageLogPanel
         m_topPanel.setMinimumSize(new Dimension(PANEL_WIDTH, MessageLogTopPanel.PANEL_HEIGHT));
         // Top panel should be informed of updates to mso model
         m_wpModule.getMmsoEventManager().addClientUpdateListener(m_topPanel);
-        
+
         m_splitter1.setContinuousLayout(true);
         m_splitter1.setDividerLocation(MessageLogTopPanel.PANEL_HEIGHT);
         m_splitter1.setResizeWeight(0.0);
@@ -81,21 +108,21 @@ public class MessageLogPanel
     	m_bottomPanel.setLayout(layout);
     	m_bottomPanel.setFocusCycleRoot(true);
     	m_splitter1.setRightComponent(m_bottomPanel);
-    	
-    	
-    	 
+
+
+
     	m_scrollPane1 = new JScrollPane();
     	m_scrollPane1.setOpaque(false);
-    	m_bottomPanel.add(m_scrollPane1, LOG_ID);
-    	
-    	m_bottomPanel.add((JComponent)m_map, MAP_ID);
 
-    	m_logTable = new JTable();
-    	m_scrollPane1.setViewportView(m_logTable);
+        m_bottomPanel.add(m_scrollPane1, LOG_ID);
+        m_bottomPanel.add((JComponent)m_map, MAP_ID);
 
-    	m_rowSelectionListener = new MessageRowSelectionListener(m_topPanel);
+        m_logTable = new JTable();
+        m_scrollPane1.setViewportView(m_logTable);
+
+        m_rowSelectionListener = new MessageRowSelectionListener(m_topPanel);
         m_logTable.getSelectionModel().addListSelectionListener(m_rowSelectionListener);
-   
+
         final LogTableModel model = new LogTableModel(m_logTable, m_wpModule, m_messageLog);
         m_rowSelectionListener.setModel(model);
         m_rowSelectionListener.setRowMap(model.getRowMap());
@@ -107,7 +134,7 @@ public class MessageLogPanel
         m_logTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         m_logTable.setRowMargin(2);
         m_logTable.setRowHeight(22);
-        
+
         // Register the log table with the row selection listener
         m_rowSelectionListener.setTable(m_logTable);
 
@@ -115,16 +142,16 @@ public class MessageLogPanel
         TableColumn column = m_logTable.getColumnModel().getColumn(0);
         column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH);
         column = m_logTable.getColumnModel().getColumn(1);
-        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH+1);
+        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH + 1);
         column = m_logTable.getColumnModel().getColumn(2);
-        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH+1);
+        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH + 1);
         column = m_logTable.getColumnModel().getColumn(3);
-        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH+1);
+        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH + 1);
         column = m_logTable.getColumnModel().getColumn(5);
-        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH*2);
-        column.setMinWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH*2);
+        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH * 2);
+        column.setMinWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH * 2);
         column = m_logTable.getColumnModel().getColumn(6);
-        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH-1);
+        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH - 1);
 
         // Init custom renderer
         column = m_logTable.getColumnModel().getColumn(4);
@@ -147,42 +174,48 @@ public class MessageLogPanel
         ltm.buildTable();
     }
 
-	public void setSmallButtonSize(Dimension smallButtonSize)
-	{
-		SMALL_BUTTON_SIZE = smallButtonSize;
-	}
+    public void setSmallButtonSize(Dimension smallButtonSize)
+    {
+        SMALL_BUTTON_SIZE = smallButtonSize;
+    }
 
-	public void setWpMessageLog(DiskoWpMessageLogImpl diskoWpMessageLogImpl)
-	{
-		m_wpModule = diskoWpMessageLogImpl;
-	}
+    public void setWpMessageLog(DiskoWpMessageLogImpl diskoWpMessageLogImpl)
+    {
+        m_wpModule = diskoWpMessageLogImpl;
+    }
 
-	public void hideDialogs()
-	{
-		m_topPanel.hideDialogs();
-	}
+    public void hideDialogs()
+    {
+        m_topPanel.hideDialogs();
+    }
 
-	public void clearSelection()
-	{
-		m_topPanel.clearSelection();
-	}
-	
-	public static void showMap()
-	{
-		if(m_bottomPanel == null)
-			return;
-		CardLayout cards = (CardLayout)m_bottomPanel.getLayout();
-		cards.show(m_bottomPanel, MAP_ID);
-	}
-	
-	public static void hideMap()
-	{
-		CardLayout cards = (CardLayout)m_bottomPanel.getLayout();
-		cards.show(m_bottomPanel, LOG_ID);
-	}
-	
-	public static IDiskoMap getMap()
-	{
-		return m_map;
-	}
+    public void clearSelection()
+    {
+        m_topPanel.clearSelection();
+    }
+
+    public static void showMap()
+    {
+        if (m_bottomPanel == null)
+        {
+            return;
+        }
+        CardLayout cards = (CardLayout) m_bottomPanel.getLayout();
+        cards.show(m_bottomPanel, MAP_ID);
+    }
+
+    public static void hideMap()
+    {
+        if (m_bottomPanel == null)
+        {
+            return;
+        }
+        CardLayout cards = (CardLayout) m_bottomPanel.getLayout();
+        cards.show(m_bottomPanel, LOG_ID);
+    }
+
+    public static IDiskoMap getMap()
+    {
+        return m_map;
+    }
 }

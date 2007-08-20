@@ -129,8 +129,10 @@ public class AssignmentTransferUtilities
         switch (aUnit.getStatus())
         {
             case READY:
+            case INITIALIZING:
             case PAUSED:
             case WORKING:
+            case PENDING:
                 if (aStatus == IAssignmentIf.AssignmentStatus.ALLOCATED)
                 {
                     return true;

@@ -132,9 +132,8 @@ public class OperationImpl extends AbstractMsoObject implements IOperationIf
 
     public String getOperationNumber()
     {
-        return null; /*todo*/
+        return null; /*todo Implementer*/
     }
-
 
     public boolean deleteObject()
     {

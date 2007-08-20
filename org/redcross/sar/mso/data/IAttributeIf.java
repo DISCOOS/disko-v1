@@ -231,13 +231,13 @@ public interface IAttributeIf<T>
     }
 
     /**
-     * Interface for {@link org.redcross.sar.util.mso.GeoCollection} attributes.
+     * Interface for {@link org.redcross.sar.util.mso.GeoList} attributes.
      */
-    public interface IMsoGeoCollectionIf extends IAttributeIf<GeoCollection>
+    public interface IMsoGeoListIf extends IAttributeIf<GeoList>
     {
-        public void setValue(GeoCollection aGeoCollection);
+        public void setValue(GeoList aGeoList);
 
-        public GeoCollection getGeoCollection();
+        public GeoList getGeoList();
     }
 
     /**

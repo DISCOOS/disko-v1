@@ -159,14 +159,6 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
 
     public IMsoReferenceIf<IBriefingIf> getAssignmentBriefingAttribute();
 
-//    public void setAssignmentHypothesis(IHypothesisIf anHypothesis); todo slett
-//
-//    public IHypothesisIf getAssignmentHypothesis();
-//
-//    public IMsoModelIf.ModificationState getAssignmentHypothesisState();
-//
-//    public IMsoReferenceIf<IHypothesisIf> getAssignmentHypothesisAttribute();
-
     /**
      * Assign planned area
      *

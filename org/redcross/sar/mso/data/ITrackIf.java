@@ -25,4 +25,11 @@ public interface ITrackIf extends IMsoObjectIf
 
     public IAttributeIf.IMsoStringIf getRemarksAttribute();
 
+    public void setAreaSequenceNumber(int aNumber);
+
+    public int getAreaSequenceNumber();
+
+    public IMsoModelIf.ModificationState getAreaSequenceNumberState();
+
+    public IAttributeIf.IMsoIntegerIf getAreaSequenceNumberAttribute();
 }

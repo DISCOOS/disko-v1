@@ -1,13 +1,10 @@
 package org.redcross.sar.wp.messageLog;
 
-import java.util.EnumSet;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.gui.NavBar;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
-import org.redcross.sar.wp.TestData.BuildTestData;
+
+import java.util.EnumSet;
 
 /**
  *
@@ -25,23 +22,13 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
     private void initialize()
     {
         loadProperties("properties");
-
-        try
-        {
-            wpBundle = ResourceBundle.getBundle("org.redcross.sar.wp.messageLog.messageLog");
-        }
-        catch (java.util.MissingResourceException e)
-        {
-            System.out.println("Classname " + e.getClassName());
-            System.out.println("Key " + e.getKey());
-            e.printStackTrace();
-        }
+        assignWpBundle("org.redcross.sar.wp.messageLog.messageLog");
 
         m_logPanel = new MessageLogPanel(this);
         m_logPanel.setSmallButtonSize(getApplication().getUIFactory().getSmallButtonSize());
         m_logPanel.setWpMessageLog(this);
         layoutComponent(m_logPanel.getPanel());
-        
+
 //        BuildTestData.createUnitsAndAssignments(getMsoModel());
 //        BuildTestData.createMessages(getMsoModel());
     }
@@ -60,7 +47,7 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
         myInterests.add(NavBar.ToolCommandType.MAP_TOGGLE_COMMAND);
         navBar.showButtons(myInterests);
     }
-    
+
     public void deactivated()
     {
     	super.deactivated();

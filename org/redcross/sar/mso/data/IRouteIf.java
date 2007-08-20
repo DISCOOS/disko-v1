@@ -23,4 +23,12 @@ public interface IRouteIf extends IMsoObjectIf
     public IMsoModelIf.ModificationState getRemarksState();
 
     public IAttributeIf.IMsoStringIf getRemarksAttribute();
+
+    public void setAreaSequenceNumber(int aNumber);
+
+    public int getAreaSequenceNumber();
+
+    public IMsoModelIf.ModificationState getAreaSequenceNumberState();
+
+    public IAttributeIf.IMsoIntegerIf getAreaSequenceNumberAttribute();
 }

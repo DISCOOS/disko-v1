@@ -86,7 +86,6 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
 
     public void handleMsoUpdateEvent(MsoEvent.Update e)
     {
-        System.out.println(this.getClass() + " " + e + " " + e.getEventTypeMask());
         buildTable();
         fireTableDataChanged();
     }
@@ -102,7 +101,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
     {
         public boolean select(IUnitIf aUnit)
         {
-            return (EnumSet.range(IUnitIf.UnitStatus.READY, IUnitIf.UnitStatus.WORKING).contains(aUnit.getStatus()) &&
+            return (EnumSet.range(IUnitIf.UnitStatus.READY, IUnitIf.UnitStatus.PENDING).contains(aUnit.getStatus()) &&
                     m_unitTypeSelection.contains(aUnit.getType()));
         }
     };
@@ -265,7 +264,6 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
             {
                 return;
             }
-//            System.out.println(MessageFormat.format("Selected row: {0}, selected column: {1}", aRow, aColumn));
             try
             {
                 m_selectedRow = m_table.convertRowIndexToModel(aRow);
@@ -273,7 +271,6 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
                 Object value = getValueAt(m_selectedRow, m_selectedColunm);
                 if (value instanceof IconRenderer)
                 {
-                    System.out.println(aRow + " " + aColumn + " " + ((IconRenderer) value).getIconWidth());
                     ((IconRenderer) value).iconSelected();
                 }
             }

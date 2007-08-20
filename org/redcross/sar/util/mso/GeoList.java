@@ -1,12 +1,12 @@
 package org.redcross.sar.util.mso;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Vector;
 
 /**
  * Class for holding a set of {@link IGeodataIf} objects
  */
-public class GeoCollection
+public class GeoList
 {
     private final String m_id;
 
@@ -18,7 +18,7 @@ public class GeoCollection
      *
      * @param anId Object Id
      */
-    public GeoCollection(String anId)
+    public GeoList(String anId)
     {
         this(anId, "");
     }
@@ -29,7 +29,7 @@ public class GeoCollection
      * @param anId  Object Id
      * @param aName Name of collection
      */
-    public GeoCollection(String anId, String aName)
+    public GeoList(String anId, String aName)
     {
         m_id = anId;
         m_name = aName;
@@ -43,7 +43,7 @@ public class GeoCollection
      * @param aName Name of collection
      * @param aSize The collection size
      */
-    public GeoCollection(String anId, String aName, int aSize)
+    public GeoList(String anId, String aName, int aSize)
     {
         m_id = anId;
         m_name = aName;
@@ -51,7 +51,7 @@ public class GeoCollection
     }
 
     /**
-     * Add a new object to the collection.
+     * Add a new object to the list.
      *
      * @param aGeodata The object to add.
      */
@@ -64,9 +64,9 @@ public class GeoCollection
     /**
      * Get the collection
      *
-     * @return The IGeodataIf collection.
+     * @return The IGeodataIf list.
      */
-    public Collection<IGeodataIf> getPositions()
+    public List<IGeodataIf> getPositions()
     {
         return m_geodata;
     }
@@ -91,7 +91,7 @@ public class GeoCollection
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
 
-      GeoCollection that = (GeoCollection) o;
+      GeoList that = (GeoList) o;
 
       if (m_geodata != null ? !m_geodata.equals(that.m_geodata) : that.m_geodata != null) return false;
       if (m_id != null ? !m_id.equals(that.m_id) : that.m_id != null) return false;

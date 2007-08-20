@@ -3,9 +3,7 @@ package org.redcross.sar.wp;
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.app.Utils;
-import org.redcross.sar.event.MsoLayerEvent;
 import org.redcross.sar.event.DiskoWpEvent;
-import org.redcross.sar.event.IMsoLayerEventListener;
 import org.redcross.sar.event.IDiskoWpEventListener;
 import org.redcross.sar.gui.MainPanel;
 import org.redcross.sar.gui.SubMenuPanel;
@@ -17,7 +15,6 @@ import org.redcross.sar.mso.event.IMsoEventManagerIf;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -299,4 +296,20 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule
             return aKey;
         }
     }
+
+    protected void assignWpBundle(String bundleName)
+    {
+        try
+        {
+            wpBundle = ResourceBundle.getBundle(bundleName);
+        }
+        catch (java.util.MissingResourceException e)
+        {
+            System.out.println("Classname " + e.getClassName());
+            System.out.println("Key " + e.getKey());
+            e.printStackTrace();
+        }
+    }
+
+
 }

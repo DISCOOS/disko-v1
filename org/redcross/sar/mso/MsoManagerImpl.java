@@ -27,7 +27,6 @@ public class MsoManagerImpl implements IMsoManagerIf
         {
             classcode = ((IMsoObjectIf) o).getMsoClassCode();
         }
-//        System.out.println(aText + " Classcode:" + classcode + " Mask: " + e.getEventTypeMask());
     }
 
     public MsoManagerImpl(IMsoEventManagerIf anEventManager)

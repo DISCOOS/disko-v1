@@ -27,8 +27,10 @@ public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf, ISerialNu
     {
         EMPTY,
         READY,
+        INITIALIZING,
         PAUSED,
         WORKING,
+        PENDING,
         RELEASED
     }
 

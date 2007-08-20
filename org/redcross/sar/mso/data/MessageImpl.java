@@ -94,7 +94,6 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
             m_messageLines.add((IMessageLineIf) anObject);
             return;
         }
-        super.addObjectReference(anObject, aReferenceName);
         if (anObject instanceof ICommunicatorIf)
         {
             if (CONFIRMED_RECEIVERS_NAME.equals(aReferenceName))
@@ -108,6 +107,7 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
                 return;
             }
         }
+        super.addObjectReference(anObject, aReferenceName);
     }
 
     public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
@@ -122,7 +122,6 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
             m_messageLines.removeReference((IMessageLineIf) anObject);
             return;
         }
-        super.addObjectReference(anObject, aReferenceName);
         if (anObject instanceof ICommunicatorIf)
         {
             if (CONFIRMED_RECEIVERS_NAME.equals(aReferenceName))
@@ -136,7 +135,7 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
                 return;
             }
         }
-        super.addObjectReference(anObject, aReferenceName);
+        super.removeObjectReference(anObject, aReferenceName);
     }
 
     public static MessageImpl implementationOf(IMessageIf anInterface) throws MsoCastException

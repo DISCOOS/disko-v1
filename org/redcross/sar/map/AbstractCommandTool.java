@@ -1,40 +1,30 @@
 package org.redcross.sar.map;
 
+import com.esri.arcgis.display.IDisplayTransformation;
+import com.esri.arcgis.geodatabase.*;
+import com.esri.arcgis.geometry.*;
+import com.esri.arcgis.interop.AutomationException;
+import com.esri.arcgis.systemUI.ICommand;
+import com.esri.arcgis.systemUI.ITool;
+import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.map.layer.OperationAreaLayer;
+import org.redcross.sar.util.mso.GeoList;
+import org.redcross.sar.util.mso.IGeodataIf;
+
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.Properties;
 
-import org.redcross.sar.gui.DiskoDialog;
-import org.redcross.sar.map.layer.OperationAreaLayer;
-import org.redcross.sar.util.mso.GeoCollection;
-import org.redcross.sar.util.mso.IGeodataIf;
-
-import com.esri.arcgis.display.IDisplayTransformation;
-import com.esri.arcgis.geodatabase.IFeature;
-import com.esri.arcgis.geodatabase.IFeatureClass;
-import com.esri.arcgis.geodatabase.IFeatureCursor;
-import com.esri.arcgis.geodatabase.ISpatialFilter;
-import com.esri.arcgis.geodatabase.SpatialFilter;
-import com.esri.arcgis.geometry.GeometryBag;
-import com.esri.arcgis.geometry.IEnvelope;
-import com.esri.arcgis.geometry.IPoint;
-import com.esri.arcgis.geometry.IRelationalOperator;
-import com.esri.arcgis.geometry.Point;
-import com.esri.arcgis.geometry.Polygon;
-import com.esri.arcgis.interop.AutomationException;
-import com.esri.arcgis.systemUI.ICommand;
-import com.esri.arcgis.systemUI.ITool;
-
 public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool {
-	
+
 	protected DiskoMap map = null;
 	protected DiskoDialog dialog = null;
 	protected Properties properties = null;
 	protected IDisplayTransformation transform = null;
 	protected OperationAreaLayer opAreaLayer = null;
-	
-	protected IDisplayTransformation getTransform() 
+
+	protected IDisplayTransformation getTransform()
 			throws IOException, AutomationException {
 		if (transform == null) {
 			transform = map.getActiveView().getScreenDisplay().
@@ -42,27 +32,27 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 		}
 		return transform;
 	}
-	
+
 	protected Point transform(int x, int y) throws IOException, AutomationException {
 		return (Point)getTransform().toMapPoint(x,y);
 	}
-	
+
 	protected void transform(Point p) throws IOException, AutomationException {
 		p.transform(com.esri.arcgis.geometry.esriTransformDirection.esriTransformReverse, getTransform());
 	}
-	
+
 	public void toolActivated() throws IOException, AutomationException {
 		if (dialog != null) {
 			dialog.setVisible(!dialog.isVisible());
 		}
 	}
-	
+
 	public void toolDeactivated() throws IOException, AutomationException {
 		if (dialog != null) {
 			dialog.setVisible(false);
 		}
 	}
-	
+
 	public DiskoDialog getDialog() {
 		return dialog;
 	}
@@ -70,7 +60,7 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 	public DiskoMap getMap() {
 		return map;
 	}
-	
+
 	protected IFeature search(IFeatureClass fc, IPoint p) throws UnknownHostException, IOException {
 		IEnvelope env = MapUtil.getEnvelope(p, map.getActiveView().getExtent().getWidth()/50);
 		ISpatialFilter filter = new SpatialFilter();
@@ -83,7 +73,7 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 		}*/
 		return feature;
 	}
-	
+
 	protected int getGeomIndex(GeometryBag geomBag, IPoint p) throws AutomationException, IOException {
 		IEnvelope env = MapUtil.getEnvelope(p, map.getActiveView().getExtent().getWidth()/50);
 		for (int i = 0; i < geomBag.getGeometryCount(); i++) {
@@ -94,18 +84,18 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 		}
 		return -1;
 	}
-	
-	protected GeoCollection cloneGeoCollection(GeoCollection oldColl) {
-		GeoCollection newColl = new GeoCollection(null);
-		if (oldColl != null) {
-			Iterator iter = oldColl.getPositions().iterator();
+
+	protected GeoList cloneGeoList(GeoList oldList) {
+		GeoList newColl = new GeoList(null);
+		if (oldList != null) {
+			Iterator iter = oldList.getPositions().iterator();
 			while (iter.hasNext()) {
 				newColl.add((IGeodataIf)iter.next());
 			}
 		}
 		return newColl;
 	}
-	
+
 	protected boolean insideOpArea(IPoint point) throws AutomationException, IOException {
 		boolean flag = false;
 		IFeatureClass fc = opAreaLayer.getFeatureClass();

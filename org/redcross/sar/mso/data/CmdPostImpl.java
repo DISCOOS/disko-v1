@@ -6,13 +6,7 @@ import org.redcross.sar.mso.data.IUnitIf.UnitStatus;
 import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.mso.Selector;
 
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * Command, control and communication center (command post)
@@ -134,7 +128,7 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     {
     	try
     	{
-    		// Get unit resources 
+    		// Get unit resources
     		ResourceBundle unitResource = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Unit");
     		String letter = unitResource.getString("UnitType.COMMAND_POST.letter");
     		if(letter.length() == 1)
@@ -148,10 +142,10 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     	}
     	catch(MissingResourceException e)
     	{}
-    	
+
     	return 'C';
     }
-    
+
     public int getCommunicatorNumber()
     {
     	// TODO update when multiple command posts
@@ -356,11 +350,6 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
         return m_telephone3;
     }
 
-//    public void addAreaList(IAreaIf anIAreaIf) todo delete
-//    {
-//        m_areaList.add(anIAreaIf);
-//    }
-//
     /*-------------------------------------------------------------------------------------------
     * Methods for lists
     *-------------------------------------------------------------------------------------------*/
@@ -739,9 +728,9 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     {
         return m_communicatorList;
     }
-    
-    
-    private final EnumSet<UnitStatus> m_activeUnitStatusSet = EnumSet.of(UnitStatus.PAUSED, UnitStatus.READY, UnitStatus.WORKING);
+
+
+    private final EnumSet<UnitStatus> m_activeUnitStatusSet = EnumSet.range(UnitStatus.READY, UnitStatus.PENDING);
     private final EnumSet<CmdPostStatus> m_activeCmdPostStatusSet = EnumSet.of(CmdPostStatus.IDLE, CmdPostStatus.OPERATING, CmdPostStatus.PAUSED);
     private Selector<ICommunicatorIf> m_activeCommunicatorsSelector = new Selector<ICommunicatorIf>()
     {
@@ -785,7 +774,7 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
 		}
 	};
     public List<ICommunicatorIf> getActiveCommunicators()
-	{ 
+	{
 		return m_communicatorList.selectItems(m_activeCommunicatorsSelector, m_communicatorComparator);
 	}
 

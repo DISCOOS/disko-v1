@@ -1,8 +1,9 @@
 package org.redcross.sar.map;
 
-import java.io.IOException;
-import java.util.Iterator;
-
+import com.esri.arcgis.geodatabase.IFeature;
+import com.esri.arcgis.geometry.GeometryBag;
+import com.esri.arcgis.geometry.Point;
+import com.esri.arcgis.interop.AutomationException;
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.FlankDialog;
@@ -10,14 +11,12 @@ import org.redcross.sar.map.feature.FlankFeature;
 import org.redcross.sar.map.feature.MsoFeatureClass;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.mso.data.IAreaIf;
-import org.redcross.sar.util.mso.GeoCollection;
+import org.redcross.sar.util.mso.GeoList;
 import org.redcross.sar.util.mso.IGeodataIf;
 import org.redcross.sar.util.mso.Route;
 
-import com.esri.arcgis.geodatabase.IFeature;
-import com.esri.arcgis.geometry.GeometryBag;
-import com.esri.arcgis.geometry.Point;
-import com.esri.arcgis.interop.AutomationException;
+import java.io.IOException;
+import java.util.Iterator;
 
 /**
  * A custom draw tool.
@@ -28,7 +27,7 @@ public class FlankTool extends AbstractCommandTool {
 
 	private static final long serialVersionUID = 1L;
 	private Point p = null;
-	
+
 	/**
 	 * Constructs the DrawTool
 	 */
@@ -50,7 +49,7 @@ public class FlankTool extends AbstractCommandTool {
 	public void onMouseDown(int button, int shift, int x, int y)
 			throws IOException, AutomationException {
 		p.setX(x);
-		p.setY(y); 
+		p.setY(y);
 		transform(p);
 
 		IMsoFeatureLayer editLayer = map.getMapManager().getMsoLayer(
@@ -63,8 +62,8 @@ public class FlankTool extends AbstractCommandTool {
 			int index = getGeomIndex(geomBag, p);
 			if (index > -1) {
 				IAreaIf area = (IAreaIf)flankFeature.getMsoObject();
-				GeoCollection geoColl = area.getGeodata();
-				Route route = getRouteAt(geoColl, index);
+				GeoList geoList = area.getGeodata();
+				Route route = getRouteAt(geoList, index);
 				if (route != null) {
 					route.setLayout(getLayout());
 					flankFeature.msoGeometryChanged();
@@ -73,9 +72,9 @@ public class FlankTool extends AbstractCommandTool {
 			}
 		}
 	}
-	
-	private Route getRouteAt(GeoCollection geoColl, int index) {
-		Iterator iter = geoColl.getPositions().iterator();
+
+	private Route getRouteAt(GeoList geoList, int index) { // todo (vw) Use direct lookup in list in stead
+        Iterator iter = geoList.getPositions().iterator();
 		int i = 0;
 		while (iter.hasNext()) {
 			IGeodataIf geodata = (IGeodataIf) iter.next();
@@ -86,7 +85,7 @@ public class FlankTool extends AbstractCommandTool {
 		}
 		return null;
 	}
-	
+
 	private String getLayout() throws AutomationException, IOException {
 		FlankDialog flankDialog = (FlankDialog)dialog;
 		String layout = "";

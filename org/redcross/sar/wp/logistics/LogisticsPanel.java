@@ -7,8 +7,6 @@ import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.*;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent;
-import org.redcross.sar.util.except.DuplicateIdException;
-import org.redcross.sar.util.except.IllegalOperationException;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -288,41 +286,6 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
 
     public void handleMsoUpdateEvent(MsoEvent.Update e)
     {
-    }
-
-    private void moveUnit() // todo remove
-    {
-        java.util.List<IUnitIf> emptyUnits = m_unitList.selectItems(new AbstractMsoObject.StatusSelector<IUnitIf, IUnitIf.UnitStatus>(IUnitIf.UnitStatus.EMPTY),
-                null);
-        if (emptyUnits.size() > 0)
-        {
-            emptyUnits.get(0).setStatus(IUnitIf.UnitStatus.READY);
-            m_wpModule.getMsoModel().commit();
-        }
-    }
-
-    private final static AbstractMsoObject.StatusSelector<IAssignmentIf, IAssignmentIf.AssignmentStatus> m_readyAssignmentSelector = new AbstractMsoObject.StatusSelector<IAssignmentIf, IAssignmentIf.AssignmentStatus>(IAssignmentIf.AssignmentStatus.READY);
-
-    private void allocateAssignment(int aUnitNr)  // todo remove
-    {
-        IUnitIf unit = m_unitList.getUnit(aUnitNr);
-        java.util.List<IAssignmentIf> assignments = m_assignmentList.selectItems(m_readyAssignmentSelector, null);
-        if (assignments.size() > 0)
-        {
-            try
-            {
-                unit.addUnitAssignment(assignments.get(0), IAssignmentIf.AssignmentStatus.ASSIGNED);
-            }
-            catch (DuplicateIdException e)
-            {
-                e.printStackTrace();
-            }
-            catch (IllegalOperationException e)
-            {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-        }
-        m_wpModule.getMsoModel().commit();
     }
 
     public JPanel getPanel()

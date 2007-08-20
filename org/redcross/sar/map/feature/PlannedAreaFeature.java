@@ -1,38 +1,32 @@
 package org.redcross.sar.map.feature;
 
-import java.io.IOException;
-import java.util.Iterator;
-
-import org.redcross.sar.map.MapUtil;
-import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.mso.data.IAreaIf;
-import org.redcross.sar.mso.data.ICmdPostIf;
-import org.redcross.sar.mso.data.IMsoObjectIf;
-import org.redcross.sar.mso.data.IOperationAreaIf;
-import org.redcross.sar.mso.data.IPOIIf;
-import org.redcross.sar.mso.data.IPOIListIf;
-import org.redcross.sar.mso.data.IPOIIf.POIType;
-import org.redcross.sar.util.mso.GeoCollection;
-import org.redcross.sar.util.mso.IGeodataIf;
-import org.redcross.sar.util.mso.Route;
-
 import com.esri.arcgis.geometry.GeometryBag;
 import com.esri.arcgis.geometry.IPolyline;
 import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.geometry.Polyline;
 import com.esri.arcgis.interop.AutomationException;
+import org.redcross.sar.map.MapUtil;
+import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.mso.data.*;
+import org.redcross.sar.mso.data.IPOIIf.POIType;
+import org.redcross.sar.util.mso.GeoList;
+import org.redcross.sar.util.mso.IGeodataIf;
+import org.redcross.sar.util.mso.Route;
+
+import java.io.IOException;
+import java.util.Iterator;
 
 public class PlannedAreaFeature extends AbstractMsoFeature {
 
 	private static final long serialVersionUID = 1L;
-	
-	private GeoCollection geoColl = null;
+
+	private GeoList geoList = null;
 	private IMsoModelIf msoModel = null;
-	
+
 	public PlannedAreaFeature(IMsoModelIf msoModel) {
 		this.msoModel = msoModel;
 	}
-	
+
 	public boolean geometryIsChanged(IMsoObjectIf msoObj) {
 		IAreaIf area = (IAreaIf)msoObject;
 		return area.getGeodata() != null && !area.getGeodata().equals(getGeodata());
@@ -41,10 +35,10 @@ public class PlannedAreaFeature extends AbstractMsoFeature {
 	@Override
 	public void msoGeometryChanged() throws IOException, AutomationException {
 		IAreaIf area = (IAreaIf)msoObject;
-		geoColl = area.getGeodata();
-		if (geoColl != null) {
+		geoList = area.getGeodata();
+		if (geoList != null) {
 			GeometryBag geomBag = new GeometryBag();
-			Iterator iter = geoColl.getPositions().iterator();
+			Iterator iter = geoList.getPositions().iterator();
 			while (iter.hasNext()) {
 				IGeodataIf geodata = (IGeodataIf) iter.next();
 				if (geodata instanceof Route) {
@@ -59,15 +53,15 @@ public class PlannedAreaFeature extends AbstractMsoFeature {
 			geometry = null;
 		}
 	}
-	
+
 	public Object getGeodata() {
-		return geoColl;
+		return geoList;
 	}
-	
+
 	public int getGeodataCount() {
-		return geoColl != null ? geoColl.getPositions().size() : 0;
+		return geoList != null ? geoList.getPositions().size() : 0;
 	}
-	
+
 	public void updateAreaPOIs() throws IOException, AutomationException {
 		IAreaIf area = (IAreaIf)msoObject;
 		GeometryBag geomBag = (GeometryBag)getShape();
@@ -85,7 +79,7 @@ public class PlannedAreaFeature extends AbstractMsoFeature {
 		addPOI(area, stopPoint, POIType.STOP);
 	}
 
-	private void addPOI(IAreaIf area, Point point, POIType poiType) 
+	private void addPOI(IAreaIf area, Point point, POIType poiType)
 			throws IOException, AutomationException {
 		IPOIIf poi = getPOI(area, poiType);
 		if (poi == null) {

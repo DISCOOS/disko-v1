@@ -11,7 +11,6 @@ import org.redcross.sar.wp.TestData.BuildTestData;
 import javax.swing.*;
 import java.text.MessageFormat;
 import java.util.EnumSet;
-import java.util.ResourceBundle;
 
 /**
  *
@@ -34,18 +33,7 @@ public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDisk
     private void initialize()
     {
         loadProperties("properties");
-
-        try
-        {
-            wpBundle = ResourceBundle.getBundle("org.redcross.sar.wp.logistics.logistics");
-            System.out.println(wpBundle);
-        }
-        catch (java.util.MissingResourceException e)
-        {
-            System.out.println("Classname " + e.getClassName());
-            System.out.println("Key " + e.getKey());
-            e.printStackTrace();
-        }
+        assignWpBundle("org.redcross.sar.wp.logistics.logistics");
 
         m_logisticsPanel = new LogisticsPanel(this);
         layoutComponent(m_logisticsPanel.getPanel());
@@ -61,15 +49,17 @@ public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDisk
     {
         super.activated();
         NavBar navBar = getApplication().getNavBar();
-        EnumSet<NavBar.ToolCommandType> myInterests =
+        EnumSet<NavBar.ToolCommandType> myTools =
                 EnumSet.of(NavBar.ToolCommandType.ZOOM_IN_TOOL);
-        myInterests.add(NavBar.ToolCommandType.ZOOM_OUT_TOOL);
-        myInterests.add(NavBar.ToolCommandType.PAN_TOOL);
-        myInterests.add(NavBar.ToolCommandType.ZOOM_FULL_EXTENT_COMMAND);
-        myInterests.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND);
-        myInterests.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND);
-        myInterests.add(NavBar.ToolCommandType.MAP_TOGGLE_COMMAND);
-        navBar.showButtons(myInterests);
+        myTools.add(NavBar.ToolCommandType.ZOOM_OUT_TOOL);
+        myTools.add(NavBar.ToolCommandType.PAN_TOOL);
+        myTools.add(NavBar.ToolCommandType.ZOOM_FULL_EXTENT_COMMAND);
+        myTools.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND);
+        myTools.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND);
+        myTools.add(NavBar.ToolCommandType.MAP_TOGGLE_COMMAND);
+        myTools.add(NavBar.ToolCommandType.SELECT_FEATURE_TOOL);
+
+        navBar.showButtons(myTools);
     }
 
     /* (non-Javadoc)

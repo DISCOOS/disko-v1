@@ -16,7 +16,7 @@ public class POIImpl extends AbstractMsoObject implements IPOIIf
     private final AttributeImpl.MsoPosition m_position = new AttributeImpl.MsoPosition(this, "Position");
     private final AttributeImpl.MsoString m_remarks = new AttributeImpl.MsoString(this, "Remarks");
     private final AttributeImpl.MsoEnum<POIType> m_type = new AttributeImpl.MsoEnum<POIType>(this, "Type", POIType.GENERAL);
-    private final AttributeImpl.MsoInteger m_searchSequence = new AttributeImpl.MsoInteger(this, "SearchSequence");
+    private final AttributeImpl.MsoInteger m_areaSequenceNumber = new AttributeImpl.MsoInteger(this, "AreaSequenceNumber");
 
     private static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.POI");
 
@@ -52,7 +52,7 @@ public class POIImpl extends AbstractMsoObject implements IPOIIf
         addAttribute(m_position);
         addAttribute(m_remarks);
         addAttribute(m_type);
-        addAttribute(m_searchSequence);
+        addAttribute(m_areaSequenceNumber);
     }
 
     protected void defineLists()
@@ -162,24 +162,24 @@ public class POIImpl extends AbstractMsoObject implements IPOIIf
         return m_remarks;
     }
 
-    public void setSearchSequence(int aNumber)
+    public void setAreaSequenceNumber(int aNumber)
     {
-        m_searchSequence.setValue(aNumber);
+        m_areaSequenceNumber.setValue(aNumber);
     }
 
-    public int getSearchSequence()
+    public int getAreaSequenceNumber()
     {
-        return m_searchSequence.intValue();
+        return m_areaSequenceNumber.intValue();
     }
 
-    public IMsoModelIf.ModificationState getSearchSequenceState()
+    public IMsoModelIf.ModificationState getAreaSequenceNumberState()
     {
-        return m_searchSequence.getState();
+        return m_areaSequenceNumber.getState();
     }
 
-    public IAttributeIf.IMsoIntegerIf getSearchSequenceAttribute()
+    public IAttributeIf.IMsoIntegerIf getAreaSequenceNumberAttribute()
     {
-        return m_searchSequence;
+        return m_areaSequenceNumber;
     }
 
 

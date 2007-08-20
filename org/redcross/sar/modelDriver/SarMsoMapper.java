@@ -1,19 +1,16 @@
 package org.redcross.sar.modelDriver;
 
-import org.rescuenorway.saraccess.model.*;
-import org.rescuenorway.saraccess.model.TimePos;
+import no.cmr.geo.PositionOccurrence;
+import no.cmr.tools.Log;
 import org.redcross.sar.mso.data.AttributeImpl;
 import org.redcross.sar.mso.data.IAttributeIf;
 import org.redcross.sar.util.mso.*;
-import no.cmr.hrs.sar.model.FactNumerical;
-import no.cmr.hrs.sar.model.FactLocation;
-import no.cmr.geo.PositionOccurrence;
-import no.cmr.tools.Log;
+import org.rescuenorway.saraccess.model.*;
+import org.rescuenorway.saraccess.model.TimePos;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Calendar;
+import java.util.List;
 
 /**
  * Helper class userd to map between MSO object attributes and Sara facts
@@ -81,8 +78,8 @@ public class SarMsoMapper {
             List<TimePos> posList = mapTimePosListToSaraTimePos(lAttr.getTrack().getTrackTimePos());
             ((SarFactTrack) sarFact).setTrack(posList, lAttr.getTrack().getName(), lAttr.getTrack().getLayout(), distribute);
         }
-        if (msoAttr instanceof AttributeImpl.MsoGeoCollection) {
-            throw new ClassCastException("MsoGeoCollection not supported by mapper");
+        if (msoAttr instanceof AttributeImpl.MsoGeoList) {
+            throw new ClassCastException("MsoGeoList not supported by mapper");
         }
         if (msoAttr instanceof AttributeImpl.MsoEnum) {
             AttributeImpl.MsoEnum lAttr = (AttributeImpl.MsoEnum) msoAttr;
@@ -166,8 +163,8 @@ public class SarMsoMapper {
             }
             lAttr.setValue(lPoly);
 
-        } else if (msoAttr instanceof AttributeImpl.MsoGeoCollection) {
-            throw new ClassCastException("MsoGeoCollection not supported by mapper");
+        } else if (msoAttr instanceof AttributeImpl.MsoGeoList) {
+            throw new ClassCastException("MsoGeoList not supported by mapper");
         } else if (msoAttr instanceof AttributeImpl.MsoEnum) {
             AttributeImpl.MsoEnum lAttr = (AttributeImpl.MsoEnum) msoAttr;
             if(((SarFactString) sarFact).getStringValue().length()>0)

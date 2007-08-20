@@ -1,5 +1,6 @@
 package org.redcross.sar.mso.event;
 
+import no.cmr.tools.Log;
 import org.redcross.sar.mso.committer.ICommitWrapperIf;
 import org.redcross.sar.mso.data.IAttributeIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
@@ -94,8 +95,7 @@ public class MsoEventManagerImpl implements IMsoEventManagerIf
                 }
                 catch (Exception e)
                 {
-                    System.out.println("Exception in fireUpdate, listener: " + listener.toString());
-                    e.printStackTrace();
+                    Log.printStackTrace("Exception in fireUpdate, listener: " + listener.toString(),e);
                 }
             }
         }
@@ -116,8 +116,7 @@ public class MsoEventManagerImpl implements IMsoEventManagerIf
             }
             catch (Exception e)
             {
-                System.out.println("Exception in fireCommit, listener: " + listener.toString());
-                e.printStackTrace();
+                Log.printStackTrace("Exception in fireCommit, listener: " + listener.toString(),e);
             }
         }
     }
@@ -147,8 +146,7 @@ public class MsoEventManagerImpl implements IMsoEventManagerIf
             }
             catch (Exception e)
             {
-                System.out.println("Exception in notifyGisUpdate, listener: " + listener.toString());
-                e.printStackTrace();
+                Log.printStackTrace("Exception in notifyGisUpdate, listener: " + listener.toString(),e);
             }
         }
     }
@@ -178,8 +176,7 @@ public class MsoEventManagerImpl implements IMsoEventManagerIf
             }
             catch (Exception e)
             {
-                System.out.println("Exception in notifyDerivedUpdate, listener: " + listener.toString());
-                e.printStackTrace();
+                Log.printStackTrace("Exception in notifyDerivedUpdate, listener: " + listener.toString(),e);
             }
         }
     }

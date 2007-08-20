@@ -106,4 +106,25 @@ public class TrackImpl extends AbstractMsoObject implements ITrackIf
     {
         return m_remarks;
     }
+
+
+    public void setAreaSequenceNumber(int aNumber)
+    {
+        //Todo change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public int getAreaSequenceNumber()
+    {
+        return 0;  //Todo change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public IMsoModelIf.ModificationState getAreaSequenceNumberState()
+    {
+        return null;  //Todo change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public IAttributeIf.IMsoIntegerIf getAreaSequenceNumberAttribute()
+    {
+        return null;  //Todo change body of implemented methods use File | Settings | File Templates.
+    }
 }

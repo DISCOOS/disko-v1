@@ -118,4 +118,26 @@ public class RouteImpl extends AbstractMsoObject implements IRouteIf
       result = 31 * result + (m_remarks != null ? m_remarks.hashCode() : 0);
       return result;
    }
+
+
+    public void setAreaSequenceNumber(int aNumber)
+    {
+        //Todo change body of implemented methods use File | Settings | File Templates.
+    }
+
+
+    public int getAreaSequenceNumber()
+    {
+        return 0;  //Todo change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public IMsoModelIf.ModificationState getAreaSequenceNumberState()
+    {
+        return null;  //Todo change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public IAttributeIf.IMsoIntegerIf getAreaSequenceNumberAttribute()
+    {
+        return null;  //Todo change body of implemented methods use File | Settings | File Templates.
+    }
 }
