@@ -8,7 +8,6 @@ import javax.swing.table.AbstractTableModel;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IPOIIf;
-import org.redcross.sar.mso.data.IPOIIf.POIType;
 import org.redcross.sar.util.mso.DTG;
 import org.redcross.sar.util.mso.Position;
 
@@ -16,12 +15,12 @@ import org.redcross.sar.util.mso.Position;
  * @author thomasl
  * Table model for displaying message lines at top level edit panel
  */
-public class ListTableModel extends AbstractTableModel
+public class LineListTableModel extends AbstractTableModel
 {
 	protected List<IMessageLineIf> m_messageLines = null;
 	protected IDiskoWpMessageLog m_wpMessageLog = null;
 
-	public ListTableModel(IDiskoWpMessageLog wp)
+	public LineListTableModel(IDiskoWpMessageLog wp)
 	{
 		m_messageLines = new LinkedList<IMessageLineIf>();
 		
@@ -33,7 +32,6 @@ public class ListTableModel extends AbstractTableModel
 		return 1;
 	}
 	
-	@Override
 	public String getColumnName(int column)
 	{
 		return null;
@@ -67,7 +65,7 @@ public class ListTableModel extends AbstractTableModel
 				IPOIIf poi = line.getLinePOI();
 				Position pos = poi.getPosition();
 				lineText = String.format(m_wpMessageLog.getText("ListItemPOI.text"), 
-						"Enhet", pos.getPosition().x, pos.getPosition().y, // TODO 
+						"Enhet", String.format("%1$.3g", pos.getPosition().x), String.format("%1$.3g", pos.getPosition().y),
 						DTG.CalToDTG(line.getOperationTime()));
 			}
 			break;
@@ -76,9 +74,10 @@ public class ListTableModel extends AbstractTableModel
 				String type = line.getLinePOI().getTypeText();
 				Position pos = line.getLinePOI().getPosition();
 				lineText = String.format(m_wpMessageLog.getText("ListItemFinding.text"),
-						type, pos.getPosition().x, pos.getPosition().y);
-				break;
+						type, String.format("%1$.3g", pos.getPosition().x), String.format("%1$.3g", pos.getPosition().y));
+				
 			}
+			break;
 			case ASSIGNED:
 			{
 				IAssignmentIf assignment = line.getLineAssignment();

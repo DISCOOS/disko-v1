@@ -604,4 +604,11 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialog
 		
 		updateButtonSelection();
 	}
+
+	public void clearSelection()
+	{
+		m_confirmedCommunicators.clear();
+		m_selectedCommuicators.clear();
+		updateButtonSelection();
+	}
 }

@@ -169,7 +169,7 @@ public class DiskoButtonFactory
 	public static JButton createSmallButton(String string)
 	{
 		JButton button = new JButton();
-		if(string != null)
+		if(!string.isEmpty())
 		{
 			button.setText(string);
 		}
@@ -183,7 +183,7 @@ public class DiskoButtonFactory
 	
 	public static JButton createSmallButton(String name, String iconPath)
 	{
-		JButton button = createSmallButton(name);
+		JButton button = createSmallButton("");
 		try
 		{
 			button.setIcon(Utils.createImageIcon(iconPath, name));
@@ -198,7 +198,7 @@ public class DiskoButtonFactory
 	public static JToggleButton createSmallToggleButton(String string)
 	{
 		JToggleButton button = new JToggleButton();
-		if(string != null)
+		if(!string.isEmpty())
 		{
 			button.setText(string);
 		}
@@ -212,7 +212,7 @@ public class DiskoButtonFactory
 	
 	public static JToggleButton createSmallToggleButton(String name, String iconPath)
 	{
-		JToggleButton button = createSmallToggleButton(name);
+		JToggleButton button = createSmallToggleButton("");
 		
 		try
 		{
@@ -220,8 +220,7 @@ public class DiskoButtonFactory
 		} 
 		catch (Exception e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			button.setText(name);
 		}
 		
 		return button;

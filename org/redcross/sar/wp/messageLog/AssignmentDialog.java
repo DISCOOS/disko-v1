@@ -315,13 +315,5 @@ public abstract class AssignmentDialog extends DiskoDialog implements IEditMessa
 		return assignment;
 	}
 	
-	/**
-	 * Adds a started assignment message line
-	 */
-	protected void startAssignment(IAssignmentIf assignment)
-	{
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
-		IMessageLineIf messageLine = message.findMessageLine(MessageLineType.STARTED, true);
-		messageLine.setLineAssignment(assignment);
-	}
+	
 }

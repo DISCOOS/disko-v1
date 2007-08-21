@@ -154,7 +154,8 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 			}
 		});
 
-		m_showInMapButton = DiskoButtonFactory.createSmallToggleButton("Vis i kart"); // TODO internasjonaliser
+		m_showInMapButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("ShowInMapButton.text"),
+				m_wpMessageLog.getText("ShowInMapButton.icon"));
 		m_showInMapButton.setAlignmentY(JComponent.TOP_ALIGNMENT);
 		m_showInMapButton.addActionListener(new ActionListener()
 		{

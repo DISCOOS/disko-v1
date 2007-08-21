@@ -1,6 +1,8 @@
 package org.redcross.sar.wp.messageLog;
 
 import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.gui.ErrorDialog;
+import org.redcross.sar.gui.NumPadDialog;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.mso.DTG;
@@ -8,6 +10,8 @@ import org.redcross.sar.util.mso.DTG;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Calendar;
@@ -30,6 +34,10 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 	private JLabel m_timeLabel;
 	private JTextField m_timeTextField;
 	private IDiskoWpMessageLog m_wp;
+	
+	// TODO global constant if in notebook mode or not
+	private NumPadDialog m_numpad = null;
+	private static final boolean NOTEBOOK_MODE = true;
 
 	public ChangeDTGDialog(IDiskoWpMessageLog wp)
 	{
@@ -49,8 +57,21 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 					(int)(MessageLogPanel.SMALL_BUTTON_SIZE.getHeight()*1.5)));
 			m_timeTextField.requestFocus();
 		}
-		catch (java.lang.Throwable e)
+		catch (java.lang.Throwable e){}
+		
+		// Initialize numpad
+		if(NOTEBOOK_MODE)
 		{
+			m_numpad = new NumPadDialog(m_wp.getApplication().getFrame());
+			JButton okButton = m_numpad.getOkButton();
+			okButton.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent arg0)
+				{
+					saveDTG();
+				}
+			});
+			m_numpad.setTextField(m_timeTextField);
 		}
 	}
 
@@ -99,38 +120,26 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 		// Changes should be checked, and if found correct, sent to mso, not commited
 		if(ke.getKeyCode() == KeyEvent.VK_ENTER)
 		{
-			this.setVisible(false);
-			if(validDTG())
-			{
-				try
-				{
-					IMessageIf message = MessageLogTopPanel.getCurrentMessage();
-					message.setOccuredTime(DTG.DTGToCal(this.getTime()));
-				}
-				catch (IllegalMsoArgumentException e1)
-				{
-					System.err.println("Not a valid DTG format");
-				}
-				fireDialogFinished();
-			}
-			else
-			{
-				fireDialogCanceled();
-			}
+			saveDTG();
 		}
 	}
 
-	private boolean validDTG()
+	private void saveDTG()
 	{
+		this.setVisible(false);
+
 		try
 		{
-			DTG.DTGToCal(m_timeTextField.getText());
-			return true;
+			IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+			message.setOccuredTime(DTG.DTGToCal(this.getTime()));
 		}
-		catch(Exception e)
+		catch (IllegalMsoArgumentException e1)
 		{
-			return false;
+			ErrorDialog error = new ErrorDialog(m_wp.getApplication().getFrame());
+			error.showError(m_wp.getText("InvalidDTG.header"), m_wp.getText("InvalidDTG.details"));
+			fireDialogCanceled();
 		}
+		fireDialogFinished();
 	}
 
 	public boolean isFocusable()
@@ -160,11 +169,27 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 	public void hideDialog()
 	{
 		this.setVisible(false);
+		
+		if(NOTEBOOK_MODE)
+		{
+			m_numpad.setVisible(false);
+		}
 	}
 
 	public void showDialog()
 	{
 		this.setVisible(true);
+		
+		if(NOTEBOOK_MODE)
+		{
+			Point location = m_contentsPanel.getLocationOnScreen();
+			location.x += m_contentsPanel.getWidth();
+			location.y += m_contentsPanel.getHeight();
+			location.y -= m_numpad.getHeight();
+			m_numpad.setLocation(location);
+			m_numpad.setVisible(true);
+			
+		}
 	}
 
 	public void clearContents()

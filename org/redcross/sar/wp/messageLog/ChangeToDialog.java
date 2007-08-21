@@ -97,14 +97,12 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				m_broadcastButton.setSelected(false);
-				m_nbFieldDialog.showDialog();
-				m_nbListDialog.showDialog();
-				m_broadcastDialog.hideDialog();
-				m_broadcastDialog.clearContents();
 				m_broadcast = false;
 				MessageLogTopPanel.getCurrentMessage().setBroadcast(false);
-				fireDialogStateChanged();
+				
+				m_broadcastDialog.hideDialog();
+				m_broadcastDialog.clearSelection();
+				showNonBroadcast();
 			}	
 		});
 		m_nonBroadcastButton.setSelected(true);
@@ -120,19 +118,14 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				m_nonBroadcastButton.setSelected(false);
-				m_nbFieldDialog.hideDialog();
-				m_nbFieldDialog.clearContents();
-				m_nbListDialog.hideDialog();
-				m_nbListDialog.clearContents();
-				
-				Point location = m_nonBroadcastButton.getLocationOnScreen();
-				location.y += BUTTON_SIZE.height;
-				m_broadcastDialog.setLocation(location);
-				m_broadcastDialog.showDialog();
 				m_broadcast = true;
 				MessageLogTopPanel.getCurrentMessage().setBroadcast(true);
-				fireDialogStateChanged();
+				
+				m_nbFieldDialog.hideDialog();
+				m_nbListDialog.hideDialog();
+				m_nbListDialog.clearSelection();
+				
+				showBroadcast();
 			}
 		});
 		m_buttonGroup.add(m_broadcastButton);
@@ -170,7 +163,6 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 	{
 		if(m_broadcast)
 		{
-			// TODO
 			return "FA";
 		}
 		else
@@ -185,24 +177,35 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 		this.setVisible(true);
 		if(message.isBroadcast())
 		{
-			Point location = m_nonBroadcastButton.getLocationOnScreen();
-			location.y += BUTTON_SIZE.height;
-			m_broadcastDialog.setLocation(location);
-			m_broadcastDialog.showDialog();
+			showBroadcast();
 		}
 		else
 		{
-			Point location = m_nonBroadcastButton.getLocationOnScreen();
-			location.y += BUTTON_SIZE.height;
-			m_nbListDialog.setLocation(location);
-			m_nbListDialog.showDialog();
-			
-			location = m_nonBroadcastButton.getLocationOnScreen();
-			location.y -= (m_nbFieldDialog.getHeight() + BUTTON_SIZE.height + 4);
-			m_nbFieldDialog.setLocation(location);
-			m_nbFieldDialog.showDialog();
+			showNonBroadcast();
 		}
 	}
+
+	private void showNonBroadcast()
+	{
+		Point location = m_nonBroadcastButton.getLocationOnScreen();
+		location.y += BUTTON_SIZE.height;
+		m_nbListDialog.setLocation(location);
+		m_nbListDialog.showDialog();
+		
+		location = m_nonBroadcastButton.getLocationOnScreen();
+		location.y -= (m_nbFieldDialog.getHeight() + BUTTON_SIZE.height + 4);
+		m_nbFieldDialog.setLocation(location);
+		m_nbFieldDialog.showDialog();
+	}
+
+	private void showBroadcast()
+	{
+		Point location = m_nonBroadcastButton.getLocationOnScreen();
+		location.y += BUTTON_SIZE.height;
+		m_broadcastDialog.setLocation(location);
+		m_broadcastDialog.showDialog();
+	}
+	
 
 	public void clearContents()
 	{

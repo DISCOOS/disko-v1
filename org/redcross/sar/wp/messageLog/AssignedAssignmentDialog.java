@@ -3,6 +3,7 @@ package org.redcross.sar.wp.messageLog;
 import java.awt.CardLayout;
 import java.util.Calendar;
 
+import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
@@ -27,10 +28,9 @@ public class AssignedAssignmentDialog extends AssignmentDialog
 	{
 		super(wp);
 		
-		m_timeLabel.setText(m_wpMessageLog.getText("AssignedTimeLabel.text") + ": ");
+//		m_timeLabel.setText(m_wpMessageLog.getText("AssignedTimeLabel.text") + ": ");
 	}
 
-	@Override
 	public void cancelUpdate()
 	{
 		if(m_lineAdded)
@@ -41,7 +41,6 @@ public class AssignedAssignmentDialog extends AssignmentDialog
 		}
 	}
 
-	@Override
 	public void showDialog()
 	{
 		this.setVisible(true);
@@ -60,41 +59,29 @@ public class AssignedAssignmentDialog extends AssignmentDialog
 		}
 	}
 
-	@Override
 	protected void updateMessage()
 	{
-		// Assigning an assignment
-		IMessageLineIf messageLine = null;
-		
 		if(m_selectedAssignment != null)
 		{
-			IUnitIf unit = (IUnitIf)MessageLogTopPanel.getCurrentMessage().getSingleReceiver();
-			//unit.setStatus(UnitStatus.INITIALIZING); TODO initializing not a valid unit status
+			IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+			IUnitIf unit = (IUnitIf)message.getSingleReceiver();
 			
 			// Check if unit can accept assignment
-			if(!AssignmentTransferUtilities.unitCanAccept(unit, AssignmentStatus.ASSIGNED))
+			if(AssignmentTransferUtilities.unitCanAccept(unit, AssignmentStatus.ASSIGNED))
 			{
-				// TODO warning dialog?
-				System.err.println(unit.getTypeAndNumber() + " can not accept " + m_selectedAssignment.getTypeAndNumber());
+				AssignmentTransferUtilities.createAssignmentChangeMessageLines(message, MessageLineType.ASSIGNED, MessageLineType.ASSIGNED,
+						Calendar.getInstance(), m_selectedAssignment);
+				m_lineAdded = true;
+				
+				m_selectedAssignment = null;
+			}
+			else
+			{
+				ErrorDialog error = new ErrorDialog(m_wpMessageLog.getApplication().getFrame());
+				error.showError("Can not assign assignment" , 
+						unit.getTypeAndNumber() + " can not accept " + m_selectedAssignment.getTypeAndNumber());
 				return;
 			}
-			
-			// Have selected an assignment, add assignment and update unit/message
-			messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.ASSIGNED, true);
-			messageLine.setLineAssignment(m_selectedAssignment);
-			m_lineAdded = true;
-			
-			try
-			{
-				unit.addUnitAssignment(m_selectedAssignment, AssignmentStatus.ASSIGNED);
-			} 
-			catch (IllegalOperationException e)
-			{
-				e.printStackTrace();
-			}
-			
-			
-			m_selectedAssignment = null;
 			
 			// Show assignment in edit mode
 			showDialog();
@@ -102,35 +89,32 @@ public class AssignedAssignmentDialog extends AssignmentDialog
 		else
 		{
 			// Working on existing message line, update current message line
-			messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.ASSIGNED, false);
 			m_lineAdded = false;
 			fireDialogFinished();
 		}
+		
+		IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.ASSIGNED, false);
 		
 		// Set assign time
 		try
 		{
 			Calendar time = DTG.DTGToCal(m_timeTextField.getText());
-			// TODO no mso update event on setOperationTime?
 			messageLine.setOperationTime(time);
 		} 
 		catch (IllegalMsoArgumentException e1)
 		{
-			//System.err.println("Not a valid DTG format");
 			messageLine.setOperationTime(Calendar.getInstance());
 		}
 		
 		MessageLogTopPanel.showListDialog();
 	}
 
-	@Override
 	protected void showHasAssignment()
 	{
 		CardLayout layout = (CardLayout)m_cardsPanel.getLayout();
 		layout.show(m_cardsPanel, HAS_ASSIGNMENT_ID);
 	}
 
-	@Override
 	public void newMessageSelected(IMessageIf message)
 	{
 		IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.ASSIGNED, false);
@@ -143,7 +127,7 @@ public class AssignedAssignmentDialog extends AssignmentDialog
 			}
 			
 			m_timeTextField.setText(DTG.CalToDTG(messageLine.getOperationTime()));
+			m_timeLabel.setText(m_wpMessageLog.getText("AssignedTimeLabel.text") + ": ");
 		}
 	}
-
 }

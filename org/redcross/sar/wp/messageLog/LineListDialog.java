@@ -13,10 +13,10 @@ import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IMessageLineListIf;
 import org.redcross.sar.util.mso.Selector;
 
-public class ListDialog extends DiskoDialog implements IEditMessageDialogIf
+public class LineListDialog extends DiskoDialog implements IEditMessageDialogIf
 {
 	private JTable m_messageListTable;
-	private ListTableModel m_messageTableModel;
+	private LineListTableModel m_messageTableModel;
 	private JScrollPane m_textScrollPane;
 	private IDiskoWpMessageLog m_wpMessageLog;
 	private MessageLineSelectionListener m_lineSelectionListener;
@@ -37,7 +37,7 @@ public class ListDialog extends DiskoDialog implements IEditMessageDialogIf
 		}
 	};
 	
-	public ListDialog(IDiskoWpMessageLog wp)
+	public LineListDialog(IDiskoWpMessageLog wp)
 	{
 		super(wp.getApplication().getFrame());
 		
@@ -45,7 +45,7 @@ public class ListDialog extends DiskoDialog implements IEditMessageDialogIf
 		
 		setLayout(new BorderLayout());
 		
-		m_messageTableModel = new ListTableModel(m_wpMessageLog);
+		m_messageTableModel = new LineListTableModel(m_wpMessageLog);
 		m_messageListTable = new JTable(m_messageTableModel);
 		m_textScrollPane = new JScrollPane(m_messageListTable);
 		m_lineSelectionListener = new MessageLineSelectionListener(m_messageTableModel);

@@ -1,6 +1,7 @@
 package org.redcross.sar.wp.messageLog;
 
 import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.*;
 import org.redcross.sar.mso.data.ICmdPostIf.CmdPostStatus;
 import org.redcross.sar.mso.data.IUnitIf.UnitStatus;
@@ -34,7 +35,6 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	protected AbstractDerivedList<ICommunicatorIf> m_communicatorList;
 	protected List<ActionListener> m_actionListeners;
 	protected ButtonGroup m_buttonGroup = null;
-	protected JToggleButton m_currentButton = null;
 	protected boolean m_senderList = true;
 	protected HashMap<JToggleButton, ICommunicatorIf> m_buttonCommunicatorMap = null;
 	protected HashMap<ICommunicatorIf, JToggleButton> m_communicatorButtonMap = null;
@@ -43,27 +43,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	{
 		public void mouseClicked(MouseEvent me)
 		{
-			JToggleButton button = (JToggleButton)me.getSource();
-			if(button == m_currentButton)
-			{
-				IMessageIf message = MessageLogTopPanel.getCurrentMessage();
-				// TODO change default value when multiple command posts are possible
-				ICommunicatorIf commandPost = (ICommunicatorIf)m_wpMessageLog.getMsoManager().getCmdPost();
-				if(m_senderList)
-				{
-					message.setSender(commandPost);
-				}
-				else
-				{
-					message.setSingleReceiver(commandPost);
-				}
-				m_currentButton = null;
-			}
-			else
-			{
-				m_currentButton = button;
-			}
-			fireDialogFinished();
+			// TODO if current selected communicator is selected, select command post 
 		}
 
 		public void mouseEntered(MouseEvent arg0){}
@@ -159,24 +139,6 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 		}
 	};
 
-	/*
-	private Icon getUnitIcon(UnitType unitType)
-	{
-		Icon icon = null;
-		try
-		{
-			ResourceBundle resources = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Unit");
-			String iconPath = resources.getString("UnitType." + unitType.toString() + ".icon");
-			icon = Utils.createImageIcon(iconPath, unitType.toString());
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		return icon;
-	}
-	*/
-
 	private void initContentsPanel()
 	{
 		m_contentsPanel = new JPanel();
@@ -187,6 +149,9 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 		m_contentsPanel.setPreferredSize(new Dimension(PANEL_WIDTH,
 				MessageLogPanel.SMALL_BUTTON_SIZE.height*NUMBER_OF_ROWS + 6));
 		this.add(m_scrollPane);
+		
+		buildList();
+		
 		this.pack();
 	}
 
@@ -226,15 +191,11 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 
 		// Get communicator button and mark it
 		JToggleButton button = m_communicatorButtonMap.get(communicator);
-		if(button != null)
-		{
-			button.setSelected(true);
-		}
+		button.setSelected(true);
 	}
 
 	public void showDialog()
 	{
-		buildList();
 		this.setVisible(true);
 	}
 
@@ -247,9 +208,11 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 		buildList();
 	}
 
+	private final EnumSet<IMsoManagerIf.MsoClassCode> myInterests = EnumSet.of(IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGE, IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGELINE);
+	
 	public boolean hasInterestIn(IMsoObjectIf msoObject)
 	{
-		return msoObject instanceof ICommunicatorIf;
+		return myInterests.contains(msoObject.getMsoClassCode());
 	}
 
 	public UnitType getUnitTypeFilter()
@@ -334,7 +297,6 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 			}
 		});
 
-
 		buttonPanel.add(button);
 		m_buttonGroup.add(button);
 	}
@@ -372,5 +334,10 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 			button = buttons.nextElement();
 			button.addActionListener(fromDialog);
 		}
+	}
+
+	public void clearSelection()
+	{
+		m_buttonGroup.clearSelection();
 	}
 }

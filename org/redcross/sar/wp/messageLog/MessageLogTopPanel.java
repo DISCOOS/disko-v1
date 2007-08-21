@@ -103,7 +103,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	private static AssignmentDialog m_messageAssignedDialog;
 	private static AssignmentDialog m_messageStartedDialog;
 	private static AssignmentDialog m_messageCompletedDialog;
-	private static ListDialog m_messageListDialog;
+	private static LineListDialog m_messageListDialog;
 
     private JPanel m_taskPanel;
     private JLabel m_taskLabel;
@@ -152,21 +152,10 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     	return panel;
     }
 
-    private JToggleButton  createChangeButton()
+    private JToggleButton createChangeButton()
     {
-    	JToggleButton  button = new JToggleButton ();
-    	try
-		{
-			button.setIcon(Utils.createImageIcon(m_wpMessageLog.getText("ChangeButton.icon"), 
-					m_wpMessageLog.getText("ChangeButton.text")));
-		}
-    	catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-    	button.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-        button.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-        button.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
+    	JToggleButton  button = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("ChangeButton.text"),
+    			m_wpMessageLog.getText("ChangeButton.icon"));
         button.setAlignmentY(Component.BOTTOM_ALIGNMENT);
         return button;
     }
@@ -280,11 +269,11 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		
 	}
 
-    private ListDialog getMessageListDialog()
+    private LineListDialog getMessageListDialog()
     {
     	if(m_messageListDialog == null)
     	{
-    		m_messageListDialog = new ListDialog(m_wpMessageLog);
+    		m_messageListDialog = new LineListDialog(m_wpMessageLog);
     		m_messageListDialog.addDialogListener(this);
     		m_dialogs.add(m_messageListDialog);
     	}
@@ -630,8 +619,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	 */
 	public void dialogFinished(DialogEvent e)
 	{
-		//Object source = e.getSource();
-
 		// If no message is selected a new one should be created once a field is edited
 		if(m_currentMessage == null)
 		{
@@ -646,23 +633,14 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 	public void dialogStateChanged(DialogEvent e)
 	{
-		Object source = e.getSource();
-		if(source instanceof ChangeToDialog)
-		{
-			getCurrentMessage();
-			
-			// Toggle broadcast
-			m_currentMessage.setBroadcast(m_changeToDialog.getBroadcast());
-		}
 	}
 
 	private JButton createWaitEndButton()
     {
     	if(m_waitEndStatusButton == null)
     	{
-    		m_waitEndStatusButton = new JButton();
-    		//String iconPath = "icons/60x60/waitend.gif";
-    		//m_waitEndStatusButton.setIcon(createImageIcon(iconPath));
+    		m_waitEndStatusButton = DiskoButtonFactory.createSmallButton(m_wpMessageLog.getText("WaitEndButton.text")/*,
+    				m_wpMessageLog.getText("WaitEndButton.icon")*/);
     		m_waitEndStatusButton.addActionListener(new ActionListener()
     		{
 				public void actionPerformed(ActionEvent arg0)
@@ -683,9 +661,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					m_currentMessageNr = 0;
 				}
     		});
-    		m_waitEndStatusButton.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-    		m_waitEndStatusButton.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-    		m_waitEndStatusButton.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
     	}
     	return m_waitEndStatusButton;
     }
@@ -694,17 +669,9 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     {
     	if(m_finishedStatusButton == null)
     	{
-    		m_finishedStatusButton = new JButton();
-    		String iconPath = "icons/60x60/finish.gif";
-    		try
-			{
-				m_finishedStatusButton.setIcon(Utils.createImageIcon(iconPath, "Finished"));
-			}
-    		catch (Exception e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+    		m_finishedStatusButton = DiskoButtonFactory.createSmallButton(m_wpMessageLog.getText("FinishedButton.text"),
+    				m_wpMessageLog.getText("FinishedButton.icon"));
+   
     		m_finishedStatusButton.addActionListener(new ActionListener()
     		{
 				public void actionPerformed(ActionEvent arg0)
@@ -728,6 +695,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 						{
 							m_currentMessage.setStatus(MessageStatus.CONFIRMED);
 						}
+						
+						// TODO handle assignments
 
 						clearPanelContents();
 						clearDialogContents();
@@ -754,13 +723,11 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					}
 				}
     		});
-    		m_finishedStatusButton.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-    		m_finishedStatusButton.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
     	}
     	return m_finishedStatusButton;
     }
 
-    private JToggleButton  createChangeDtgButton()
+    private JToggleButton createChangeDtgButton()
     {
     	m_changeDTGButton = createChangeButton();
     	m_changeDTGButton.addActionListener(new ActionListener()
@@ -773,7 +740,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     			Point location = m_changeDTGButton.getLocationOnScreen();
     			location.y -= m_changeDTGDialog.getHeight();
     			m_changeDTGDialog.setLocation(location);
-    			m_changeDTGDialog.setVisible(true);
+    			m_changeDTGDialog.showDialog();
     		}
     	});
     	m_buttonGroup.add(m_changeDTGButton);
@@ -823,7 +790,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 					// Register listeners
 					m_fieldFromDialog.addActionListener(m_listFromDialog);
-					//m_listFromDialog.addActionListener(m_fieldFromDialog);
 				}
     		});
     		m_buttonGroup.add(m_changeFromButton);
@@ -868,7 +834,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					clearPanelContents();
 					clearDialogContents();
 
-					m_wpMessageLog.getMsoManager().rollback(); // TODO sjekk om korrekt?
+					m_wpMessageLog.getMsoManager().rollback(); // TODO sjekk om korrekt
 
 					m_currentMessage = null;
 					m_messageDirty = false;
@@ -941,8 +907,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 	private void createCompletedButton()
 	{
-		m_completedButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("CompletedButton.text"),
-				m_wpMessageLog.getText("CompletedButton.icon"));
+		m_completedButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("CompletedButton.text")/*,
+				m_wpMessageLog.getText("CompletedButton.icon")*/);
 		m_completedButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -982,8 +948,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 	private void createStartedButton()
 	{
-		m_startButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("StartedButton.text"),
-				m_wpMessageLog.getText("StartedButton.icon"));
+		m_startButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("StartedButton.text")/*,
+				m_wpMessageLog.getText("StartedButton.icon")*/);
 		m_startButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -1023,8 +989,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 	private void createAssignedButton()
 	{
-		m_assignButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("AssignedButton.text"), 
-				m_wpMessageLog.getText("AssignedButton.icon"));
+		m_assignButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("AssignedButton.text")/*, 
+				m_wpMessageLog.getText("AssignedButton.icon")*/);
 		m_assignButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)

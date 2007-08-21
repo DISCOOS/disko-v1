@@ -8,9 +8,9 @@ import org.redcross.sar.mso.data.IMessageLineIf;
 
 public class MessageLineSelectionListener implements ListSelectionListener
 {
-	protected ListTableModel m_tableModel;
+	protected LineListTableModel m_tableModel;
 	
-	public MessageLineSelectionListener(ListTableModel listTableModel)
+	public MessageLineSelectionListener(LineListTableModel listTableModel)
 	{
 		m_tableModel = listTableModel;
 	}
