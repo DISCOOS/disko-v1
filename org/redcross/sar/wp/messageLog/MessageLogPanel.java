@@ -109,8 +109,6 @@ public class MessageLogPanel
     	m_bottomPanel.setFocusCycleRoot(true);
     	m_splitter1.setRightComponent(m_bottomPanel);
 
-
-
     	m_scrollPane1 = new JScrollPane();
     	m_scrollPane1.setOpaque(false);
 
@@ -199,9 +197,18 @@ public class MessageLogPanel
         if (m_bottomPanel == null)
         {
             return;
-        }
-        CardLayout cards = (CardLayout) m_bottomPanel.getLayout();
-        cards.show(m_bottomPanel, MAP_ID);
+        } 
+       
+        
+        Runnable r = new Runnable(){
+            public void run() {
+            	
+            	 CardLayout cards = (CardLayout) m_bottomPanel.getLayout();
+                 cards.show(m_bottomPanel, MAP_ID);
+            }
+        };
+        SwingUtilities.invokeLater(r);
+        
     }
 
     public static void hideMap()
