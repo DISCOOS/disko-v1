@@ -70,6 +70,9 @@ public class UnitTableModel extends AbstractTableModel implements
 
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object[] row = (Object[]) rows[rowIndex];
-		return row[columnIndex];
+		if(row != null)
+			return row[columnIndex];
+		else
+			return null;
 	}
 }
