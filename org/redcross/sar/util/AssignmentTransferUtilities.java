@@ -5,6 +5,9 @@ import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IUnitIf;
+import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
+import org.redcross.sar.mso.data.IUnitIf.UnitStatus;
+import org.redcross.sar.util.except.IllegalOperationException;
 
 import java.util.Calendar;
 import java.util.EnumSet;
@@ -210,4 +213,78 @@ public class AssignmentTransferUtilities
     }
 
 
+    /**
+     * Assigns an assignment to some unit. All statuses are updated.
+     * @param assignment The assignment
+     * @param unit The unit to get the assignment
+     * @return Whether the assignment was successfully assigned or not
+     */
+    public static boolean assignAssignmentToUnit(IAssignmentIf assignment, IUnitIf unit)
+    {
+    	// Ensure that unit can accept assignment
+    	if(!unitCanAccept(unit, assignment.getStatus()))
+    	{
+    		return false;
+    	}
+    	
+    	try
+		{
+			assignment.setStatus(AssignmentStatus.ASSIGNED);
+		}
+    	catch (IllegalOperationException e){return false;}
+    	
+    	unit.setStatus(UnitStatus.INITIALIZING);
+    	
+    	return true;
+    }
+    
+    /**
+     * Starts an assignment, updates unit and assignment status
+     * @param unit 
+     * @param assignment
+     * @return Whether or not the assignment could be started
+     */
+    public static boolean unitStartAssignment(IUnitIf unit, IAssignmentIf assignment)
+    {
+    	// Ensure that unit can start assignment
+    	if(!unitCanAccept(unit, assignment.getStatus()))
+    	{
+    		return false;
+    	}
+    	
+    	unit.setStatus(UnitStatus.WORKING);
+    	
+    	try
+		{
+			assignment.setStatus(AssignmentStatus.EXECUTING);
+		} 
+    	catch (IllegalOperationException e){return false;}
+    	
+    	return true;
+    }
+    
+    /**
+     * Marks an assignment as completed. Unit and assignment statuses are updated
+     * @param unit
+     * @param assignment
+     * @return Whether or not that assignment could be completed by the given unit
+     */
+    public static boolean unitCompleteAssignment(IUnitIf unit, IAssignmentIf assignment)
+    {
+    	// Ensure that unit can complete assignment
+    	if(!unitCanAccept(unit, assignment.getStatus()))
+    	{
+    		return false;
+    	}
+    	
+    	unit.setStatus(UnitStatus.READY);
+    	
+    	try
+		{
+			assignment.setStatus(AssignmentStatus.FINISHED);
+		} 
+    	catch (IllegalOperationException e){return false;}
+    	
+    	return true;
+    }
 }
