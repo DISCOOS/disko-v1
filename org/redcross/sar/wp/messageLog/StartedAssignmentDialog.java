@@ -102,14 +102,14 @@ public class StartedAssignmentDialog extends AssignmentDialog
 					// Set assignment started
 					AssignmentTransferUtilities.createAssignmentChangeMessageLines(message, MessageLineType.STARTED, 
 							MessageLineType.STARTED, Calendar.getInstance(), assignment);
+					m_lineAdded = true;
 				}
 				else
 				{
 					ErrorDialog error = new ErrorDialog(m_wpMessageLog.getApplication().getFrame());
 					error.showError("Can not start assignment", unit.getTypeAndNumber() + " can not accept " + assignment.getTypeAndNumber());
 					return;
-				}	
-				m_lineAdded = true;
+				}		
 			}
 			else
 			{

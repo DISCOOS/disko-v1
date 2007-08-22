@@ -71,7 +71,8 @@ public class LineListTableModel extends AbstractTableModel
 			break;
 			case FINDING:
 			{
-				String type = line.getLinePOI().getTypeText();
+				IPOIIf poi = line.getLinePOI();
+				String type = poi.getTypeText();
 				Position pos = line.getLinePOI().getPosition();
 				lineText = String.format(m_wpMessageLog.getText("ListItemFinding.text"),
 						type, String.format("%1$.3g", pos.getPosition().x), String.format("%1$.3g", pos.getPosition().y));

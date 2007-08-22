@@ -17,6 +17,7 @@ import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
+import org.redcross.sar.util.AssignmentTransferUtilities;
 import org.redcross.sar.util.mso.DTG;
 import org.redcross.sar.util.mso.Selector;
 
@@ -697,6 +698,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 						}
 						
 						// TODO handle assignments
+						updateAssignments();
 
 						clearPanelContents();
 						clearDialogContents();
@@ -865,10 +867,28 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				{
 					IMessageLineIf line = m_currentMessage.findMessageLine(m_currentMessageLineType, false);
 					if(line != null)
-					{
+					{						
+						// If line that has other assignment lines depending on it is deleted, delete them as well
+						switch(line.getLineType())
+						{
+						case ASSIGNED:
+							IMessageLineIf startedLine = m_currentMessage.findMessageLine(MessageLineType.STARTED, false);
+							if(startedLine != null)
+							{
+								startedLine.deleteObject();
+								m_messageStartedDialog.lineRemoved();
+							}
+						case STARTED:
+							IMessageLineIf completeLine = m_currentMessage.findMessageLine(MessageLineType.COMPLETE, false);
+							if(completeLine != null)
+							{
+								completeLine.deleteObject();
+								m_messageCompletedDialog.lineRemoved();
+							}
+						}
+						
 						if(!line.deleteObject())
 						{
-							// TODO error dialog?
 							System.err.println("Couldn't delete message line");
 						}
 					}
@@ -1060,6 +1080,51 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		
 		MessageStatus status = getCurrentMessage().getStatus();
 		return (status == MessageStatus.UNCONFIRMED || status == MessageStatus.POSTPONED);
+	}
+	
+	/**
+	 * Ensures that units and assignments affected by the added message lines in the current message are
+	 * updated (status, etc.)
+	 */
+	private void updateAssignments()
+	{
+		IUnitIf unit = (IUnitIf)m_currentMessage.getSingleReceiver();
+		ErrorDialog error = new ErrorDialog(m_wpMessageLog.getApplication().getFrame());
+		
+		// Do we need to add assignment lines?
+		if(m_messageAssignedDialog.lineAdded() && unit != null)
+		{
+			IMessageLineIf assignedLine = m_currentMessage.findMessageLine(MessageLineType.ASSIGNED, false);
+			IAssignmentIf assignment = assignedLine.getLineAssignment();
+			if(!AssignmentTransferUtilities.assignAssignmentToUnit(assignment, unit))
+			{
+				error.showError(m_wpMessageLog.getText("CanNotAssignError.header"), 
+						m_wpMessageLog.getText("CanNotAssignError.details"));
+				return;
+			}
+			
+			
+			if(m_messageStartedDialog.lineAdded())
+			{
+//				IMessageLineIf startedLine = m_currentMessage.findMessageLine(MessageLineType.STARTED, false);
+				if(!AssignmentTransferUtilities.unitStartAssignment(unit, assignment))
+				{
+					error.showError(m_wpMessageLog.getText("CanNotStartError.header"),
+							m_wpMessageLog.getText("CanNotStartError.details"));
+					return;
+				}
+				if(m_messageCompletedDialog.lineAdded())
+				{
+//					IMessageLineIf completeLine = m_currentMessage.findMessageLine(MessageLineType.COMPLETE, false);
+					if(!AssignmentTransferUtilities.unitCompleteAssignment(unit, assignment))
+					{
+						error.showError(m_wpMessageLog.getText("CanNotCompleteError.header"),
+								m_wpMessageLog.getText("CanNotCompleteError.details"));
+					}
+				}
+				
+			}
+		}
 	}
 
 	private void createFindingButton()

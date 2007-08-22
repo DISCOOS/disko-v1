@@ -315,5 +315,13 @@ public abstract class AssignmentDialog extends DiskoDialog implements IEditMessa
 		return assignment;
 	}
 	
+	public boolean lineAdded()
+	{
+		return m_lineAdded;
+	}
 	
+	public void lineRemoved()
+	{
+		m_lineAdded = false;
+	}
 }

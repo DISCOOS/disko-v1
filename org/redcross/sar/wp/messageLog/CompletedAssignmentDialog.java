@@ -126,6 +126,7 @@ public class CompletedAssignmentDialog extends AssignmentDialog
 				{
 					AssignmentTransferUtilities.createAssignmentChangeMessageLines(message, MessageLineType.COMPLETE, MessageLineType.COMPLETE,
 							Calendar.getInstance(), assignment);
+					m_lineAdded = true;
 				}
 				else
 				{
@@ -138,7 +139,6 @@ public class CompletedAssignmentDialog extends AssignmentDialog
 				fireDialogCanceled();
 			}
 		}
-		
 	}
 
 	protected void updateMessage()
