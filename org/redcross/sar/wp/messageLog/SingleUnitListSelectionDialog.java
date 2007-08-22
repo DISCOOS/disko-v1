@@ -191,7 +191,11 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 
 		// Get communicator button and mark it
 		JToggleButton button = m_communicatorButtonMap.get(communicator);
-		button.setSelected(true);
+
+		// found button?
+		if(button != null) {
+			button.setSelected(true);
+		}
 	}
 
 	public void showDialog()
