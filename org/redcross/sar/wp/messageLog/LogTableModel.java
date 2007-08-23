@@ -3,6 +3,8 @@ package org.redcross.sar.wp.messageLog;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.ICommunicatorIf;
 import org.redcross.sar.mso.data.IMessageIf;
+import org.redcross.sar.mso.data.IMessageLineIf;
+import org.redcross.sar.mso.data.IMessageLineListIf;
 import org.redcross.sar.mso.data.IMessageLogIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
@@ -14,6 +16,8 @@ import org.redcross.sar.util.mso.Selector;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;

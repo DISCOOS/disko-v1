@@ -1,9 +1,11 @@
 package org.redcross.sar.wp.messageLog;
 
+import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.interop.AutomationException;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
 import org.redcross.sar.map.IDiskoMap;
+import org.redcross.sar.map.MapUtil;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
@@ -16,6 +18,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Point2D;
 import java.io.IOException;
+import java.net.UnknownHostException;
 
 /**
  * Dialog used in position and finding when editing the message log. A separate POI dialog class was created for
@@ -249,16 +252,18 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 				POIType type = (POIType)cb.getSelectedItem();
 
 				IMessageIf message = MessageLogTopPanel.getCurrentMessage();
-				IMessageLineIf messageLine = message.findMessageLine(MessageLineType.FINDING, true);
-				IPOIIf poi = messageLine.getLinePOI();
-				if(poi == null)
+				IMessageLineIf messageLine = message.findMessageLine(MessageLineType.FINDING, false);
+				if(messageLine != null)
 				{
-					poi = m_wpMessageLog.getMsoManager().createPOI();
-					messageLine.setLinePOI(poi);
-				}
+					IPOIIf poi = messageLine.getLinePOI();
+					if(poi == null)
+					{
+						poi = m_wpMessageLog.getMsoManager().createPOI();
+						messageLine.setLinePOI(poi);
+					}
 
-				poi.setType(type);
-				// TODO Fire change? Update map?
+					poi.setType(type);
+				}
 			}
 		});
 		fieldPanel.add(m_poiTypesComboBox);

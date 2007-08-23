@@ -63,20 +63,25 @@ public class LineListTableModel extends AbstractTableModel
 			case POI:
 			{
 				IPOIIf poi = line.getLinePOI();
-				Position pos = poi.getPosition();
-				lineText = String.format(m_wpMessageLog.getText("ListItemPOI.text"), 
-						"Enhet", String.format("%1$.3g", pos.getPosition().x), String.format("%1$.3g", pos.getPosition().y),
-						DTG.CalToDTG(line.getOperationTime()));
+				if(poi != null)
+				{
+					Position pos = poi.getPosition();
+					lineText = String.format(m_wpMessageLog.getText("ListItemPOI.text"), 
+							"Enhet", String.format("%1$.3g", pos.getPosition().x), String.format("%1$.3g", pos.getPosition().y),
+							DTG.CalToDTG(line.getOperationTime()));
+				}
 			}
 			break;
 			case FINDING:
 			{
 				IPOIIf poi = line.getLinePOI();
-				String type = poi.getTypeText();
-				Position pos = line.getLinePOI().getPosition();
-				lineText = String.format(m_wpMessageLog.getText("ListItemFinding.text"),
-						type, String.format("%1$.3g", pos.getPosition().x), String.format("%1$.3g", pos.getPosition().y));
-				
+				if(poi != null)
+				{
+					String type = poi.getTypeText();
+					Position pos = line.getLinePOI().getPosition();
+					lineText = String.format(m_wpMessageLog.getText("ListItemFinding.text"),
+							type, String.format("%1$.3g", pos.getPosition().x), String.format("%1$.3g", pos.getPosition().y));
+				}
 			}
 			break;
 			case ASSIGNED:

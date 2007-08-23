@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 
 import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.mso.data.IAssignmentIf;
+import org.redcross.sar.mso.data.ICommunicatorIf;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IUnitIf;
@@ -33,7 +34,7 @@ public class CompletedAssignmentDialog extends AssignmentDialog
 	{
 		super(wp);
 		
-//		m_timeLabel.setText(m_wpMessageLog.getText("CompletedTimeLabel.text") + ": ");
+		m_timeLabel.setText(m_wpMessageLog.getText("CompletedTimeLabel.text") + ": ");
 	}
 
 	public void cancelUpdate()
@@ -55,13 +56,49 @@ public class CompletedAssignmentDialog extends AssignmentDialog
 		this.setVisible(true);
 		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
 		IUnitIf unit = (IUnitIf)message.getSingleReceiver();
+		
 		IAssignmentIf assignment = null;
+		boolean hasAssigned = (messageHasAssignedAssignment() || unitHasAssignedAssignment());
+		boolean hasStarted = (messageHasStartedAssignment() || unitHasStartedAssignment());
 		
 		if(messageHasCompletedAssignment())
 		{
 			showHasAssignment();
 		}
-		else if(!messageHasAssignedAssignment())
+		else if(!hasStarted && hasAssigned)
+		{
+			// Assigned assignment might be registered in message, or unit can have a pre-existing assigned assingment
+			IMessageLineIf line = message.findMessageLine(MessageLineType.ASSIGNED, false);
+			if(line != null)
+			{
+				assignment = line.getLineAssignment();
+			}
+			else
+			{
+				assignment = unit.getAssignedAssignments().get(0);
+			}
+			
+			// Message does not have a started assignment line, or unit 
+			Object[] options = {m_wpMessageLog.getText("yes.text"), m_wpMessageLog.getText("no.text")};
+			int n = JOptionPane.showOptionDialog(m_wpMessageLog.getApplication().getFrame(), 
+					String.format(m_wpMessageLog.getText("UnitHasNotStartedAssignment.text"), unit.getTypeAndNumber(),  assignment.getTypeAndNumber()),
+					m_wpMessageLog.getText("UnitHasNotStartedAssignment.header"), 
+					JOptionPane.YES_NO_OPTION, 
+					JOptionPane.QUESTION_MESSAGE, 
+					null, 
+					options, 
+					options[0]);
+			
+			if(n == JOptionPane.YES_OPTION)
+			{
+				MessageLogTopPanel.showStartDialog();
+			}
+			else
+			{
+				fireDialogCanceled();
+			}
+		}
+		else if(!hasAssigned)
 		{
 			// Unit does not have an assignment
 			Object[] options = {m_wpMessageLog.getText("yes.text"), m_wpMessageLog.getText("no.text")};
@@ -83,33 +120,29 @@ public class CompletedAssignmentDialog extends AssignmentDialog
 				fireDialogCanceled();
 			}
 		}
-		else if(!messageHasStartedAssignment())
-		{
-			// Message does not have a started assignment line
-			assignment = message.findMessageLine(MessageLineType.ASSIGNED, false).getLineAssignment();
-			Object[] options = {m_wpMessageLog.getText("yes.text"), m_wpMessageLog.getText("no.text")};
-			int n = JOptionPane.showOptionDialog(m_wpMessageLog.getApplication().getFrame(), 
-					String.format(m_wpMessageLog.getText("UnitStartedAssignment.text"), unit.getTypeAndNumber(),  assignment.getTypeAndNumber()),
-					m_wpMessageLog.getText("UnitStartedAssignment.header"), 
-					JOptionPane.YES_NO_OPTION, 
-					JOptionPane.QUESTION_MESSAGE, 
-					null, 
-					options, 
-					options[0]);
-			
-			if(n == JOptionPane.YES_OPTION)
-			{
-				MessageLogTopPanel.showStartDialog();
-			}
-			else
-			{
-				fireDialogCanceled();
-			}
-		}
 		else
 		{
 			// Message does not have completed message line
-			assignment = message.findMessageLine(MessageLineType.STARTED, false).getLineAssignment();
+			IMessageLineIf startedLine = message.findMessageLine(MessageLineType.STARTED, false);
+			if(startedLine != null)
+			{
+				assignment = startedLine.getLineAssignment();
+			}
+			else
+			{
+				assignment = unit.getActiveAssignment();
+			}
+			
+			if(!AssignmentTransferUtilities.unitCanAccept(unit, AssignmentStatus.FINISHED))
+			{
+				ErrorDialog error = new ErrorDialog(m_wpMessageLog.getApplication().getFrame());
+				error.showError(m_wpMessageLog.getText("CanNotCompleteError.details"),
+						m_wpMessageLog.getText("CanNotCompleteError.header"));
+				this.hideDialog();
+				return;
+			}
+			this.hideDialog();
+			
 			Object[] options = {m_wpMessageLog.getText("yes.text"), m_wpMessageLog.getText("no.text")};
 			int n = JOptionPane.showOptionDialog(m_wpMessageLog.getApplication().getFrame(), 
 					String.format(m_wpMessageLog.getText("UnitCompletedAssignment.text"), unit.getTypeAndNumber(), assignment.getTypeAndNumber()),
@@ -122,17 +155,10 @@ public class CompletedAssignmentDialog extends AssignmentDialog
 			
 			if(n == JOptionPane.YES_OPTION)
 			{
-				if(AssignmentTransferUtilities.unitCanAccept(unit, assignment.getStatus()))
-				{
-					AssignmentTransferUtilities.createAssignmentChangeMessageLines(message, MessageLineType.COMPLETE, MessageLineType.COMPLETE,
-							Calendar.getInstance(), assignment);
-					m_lineAdded = true;
-				}
-				else
-				{
-					ErrorDialog error = new ErrorDialog(m_wpMessageLog.getApplication().getFrame());
-					error.showError("Can not complete assignment", "Unit can not complete assignment");
-				}
+				AssignmentTransferUtilities.createAssignmentChangeMessageLines(message, MessageLineType.COMPLETE, MessageLineType.COMPLETE,
+						Calendar.getInstance(), assignment);
+				m_lineAdded = true;
+				showDialog();
 			}
 			else
 			{
@@ -154,21 +180,40 @@ public class CompletedAssignmentDialog extends AssignmentDialog
 		layout.show(m_cardsPanel, HAS_ASSIGNMENT_ID);
 	}
 
-
 	public void newMessageSelected(IMessageIf message)
 	{
 		IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.COMPLETE, false);
+		IAssignmentIf assignment = null;
+		Calendar time = null;
+		
 		if(messageLine != null)
 		{
-			IAssignmentIf assignment = messageLine.getLineAssignment();
-			if(assignment != null)
-			{
-				m_assignmentLabel.setText(m_wpMessageLog.getText("AssignmentLabel.text") + ": " + assignment.getTypeAndNumber());
-			}
-			
-			m_timeTextField.setText(DTG.CalToDTG(messageLine.getOperationTime()));
-			m_timeLabel.setText(m_wpMessageLog.getText("CompletedTimeLabel.text") + ": ");
+			assignment = messageLine.getLineAssignment();	
+			time = messageLine.getOperationTime();
 		}
+		else
+		{
+			ICommunicatorIf communicator = message.getSingleReceiver();
+			if(communicator != null && communicator instanceof IUnitIf)
+			{
+				IUnitIf unit = (IUnitIf)communicator;
+				assignment = unit.getActiveAssignment();	
+			}
+		}
+		
+		if(assignment != null)
+		{
+			if(time == null)
+			{
+				time = assignment.getTimeAssigned();
+			}
+			m_assignmentLabel.setText(m_wpMessageLog.getText("AssignmentLabel.text") + ": " + assignment.getTypeAndNumber());
+			m_timeTextField.setText(DTG.CalToDTG(time));
+		}
+		else
+		{
+			this.hideDialog();
+		}
+		
 	}
-
 }

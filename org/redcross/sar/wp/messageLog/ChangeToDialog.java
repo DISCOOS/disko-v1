@@ -79,7 +79,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 	private void initContentsPanel()
 	{
 		m_contentsPanel = new JPanel();
-		m_contentsPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+//		m_contentsPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 		m_contentsPanel.setLayout(new BoxLayout(m_contentsPanel, BoxLayout.LINE_AXIS));
 		m_contentsPanel.setPreferredSize(new Dimension(SingleUnitListSelectionDialog.PANEL_WIDTH, BUTTON_SIZE.height));
 		this.add(m_contentsPanel);

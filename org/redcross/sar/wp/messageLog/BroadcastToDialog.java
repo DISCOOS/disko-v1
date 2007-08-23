@@ -303,10 +303,7 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialog
 		Dimension emptyAreaDimension = new Dimension(10, MessageLogPanel.SMALL_BUTTON_SIZE.height);
 		m_buttonRowPanel.add(Box.createRigidArea(emptyAreaDimension));
 
-		m_allButton = new JButton(m_wpMessageLog.getText("AllButton.text"));
-		m_allButton.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-		m_allButton.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-		m_allButton.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
+		m_allButton = DiskoButtonFactory.createSmallButton(m_wpMessageLog.getText("AllButton.text")); 
 		m_allButton.setAlignmentX(Component.LEFT_ALIGNMENT);
 		m_allButton.addActionListener(new ActionListener()
 		{

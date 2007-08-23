@@ -9,6 +9,9 @@ import javax.swing.JButton;
 import javax.swing.JToggleButton;
 
 import org.redcross.sar.app.Utils;
+import org.redcross.sar.gui.renderers.IconRenderer;
+import org.redcross.sar.gui.renderers.IconRenderer.AssignmentIcon;
+import org.redcross.sar.mso.data.AssignmentImpl;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.ICommunicatorIf;
@@ -116,12 +119,12 @@ public class DiskoButtonFactory
 			}
 		}
 		
-		button.setText(communicator.getCommunicatorNumberPrefix() + communicator.getCommunicatorNumber() +
-				"  " + communicator.getCallSign());
+		button.setText(communicator.getCommunicatorNumber() + "  " + communicator.getCallSign());
 		
 		button.setMinimumSize(LARGE_BUTTON_SIZE);
 		button.setPreferredSize(LARGE_BUTTON_SIZE);
 		button.setMaximumSize(LARGE_BUTTON_SIZE);
+		
 		return button;
 	}
 
@@ -234,12 +237,14 @@ public class DiskoButtonFactory
 		button.setPreferredSize(ASSIGNMENT_BUTTON_SIZE);
 		button.setMaximumSize(ASSIGNMENT_BUTTON_SIZE);
 		
-		button.setText(assignment.getTypeText() + " " + assignment.getNumber());
+//		button.setText(assignment.getTypeText() + " " + assignment.getNumber());
+		IconRenderer.AssignmentIcon icon = new IconRenderer.AssignmentIcon(assignment, false, null);
+		button.setIcon(icon);
 		
 		return button;
 	}
 
-	public static JToggleButton createAssignmentToggleButton(IAssignmentIf assignment)
+	public static JToggleButton createLargeToggleButton(IAssignmentIf assignment)
 	{
 		JToggleButton button = new JToggleButton();
 
@@ -248,6 +253,8 @@ public class DiskoButtonFactory
 		button.setMaximumSize(ASSIGNMENT_BUTTON_SIZE);
 
 		button.setText(assignment.getTypeText()+ " " + assignment.getNumber());
+//		IconRenderer.AssignmentIcon icon = new IconRenderer.AssignmentIcon(assignment, false, null);
+//		button.setIcon(icon);
 
 		return button;
 	}
@@ -260,8 +267,8 @@ public class DiskoButtonFactory
 		button.setPreferredSize(SMALL_BUTTON_SIZE);
 		button.setMaximumSize(SMALL_BUTTON_SIZE);
 		
-		// TODO use common label for assignments, move to UIFactory?
-		button.setText(assignment.getNumber() + " " + assignment.getTypeText());
+		IconRenderer.AssignmentIcon icon = new IconRenderer.AssignmentIcon(assignment, false, null);
+		button.setIcon(icon);
 		
 		return button;
 	}

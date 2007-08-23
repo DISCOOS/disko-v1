@@ -2,12 +2,18 @@ package org.redcross.sar.wp.messageLog;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -21,6 +27,7 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 
 import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.gui.renderers.IconRenderer;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
@@ -104,8 +111,7 @@ public abstract class AssignmentDialog extends DiskoDialog implements IEditMessa
 			{
 				cancelUpdate();
 				
-				// TODO sjekk
-				m_wpMessageLog.getMsoManager().rollback();
+//				TODO m_wpMessageLog.getMsoManager().rollback();
 				fireDialogCanceled();
 			}
 		});
@@ -153,22 +159,22 @@ public abstract class AssignmentDialog extends DiskoDialog implements IEditMessa
 		m_showAssignmentPanel.setLayout(new BoxLayout(m_showAssignmentPanel, BoxLayout.PAGE_AXIS));
 		
 		m_assignmentLabel = new JLabel(m_wpMessageLog.getText("AssignmentLabel.text"));
-		m_assignmentLabel.setAlignmentX(JComponent.LEFT_ALIGNMENT);
+//		m_assignmentLabel.setAlignmentX(JComponent.LEFT_ALIGNMENT);
 		m_showAssignmentPanel.add(m_assignmentLabel);
 		
 		JPanel assignmentTimePanel = new JPanel();
-		//assignmentTimePanel.setLayout(new BoxLayout(assignmentTimePanel, BoxLayout.LINE_AXIS));
+//		assignmentTimePanel.setLayout(new BoxLayout(assignmentTimePanel, BoxLayout.LINE_AXIS));
 		m_timeLabel = new JLabel();
-		//m_assignedTimeLabel.setAlignmentX(JComponent.LEFT_ALIGNMENT);
+//		m_timeLabel.setAlignmentX(JComponent.LEFT_ALIGNMENT);
 		assignmentTimePanel.add(m_timeLabel);
-		m_timeTextField = new JTextField(12);
-		m_timeTextField.setAlignmentX(JComponent.LEFT_ALIGNMENT);
-		//m_assignedTimeTextField.setMaximumSize(new Dimension(120, 20));
+		m_timeTextField = new JTextField(6);
+//		m_timeTextField.setAlignmentX(JComponent.LEFT_ALIGNMENT);
+//		m_timeTextField.setMaximumSize(new Dimension(60, 22));
 		assignmentTimePanel.add(m_timeTextField);
-		//assignmentTimePanel.add(Box.createHorizontalGlue());
+//		assignmentTimePanel.setAlignmentX(JComponent.LEFT_ALIGNMENT);
 		m_showAssignmentPanel.add(assignmentTimePanel);
 		
-		//m_showAssignmentPanel.add(Box.createVerticalGlue());
+//		m_showAssignmentPanel.add(Box.createVerticalGlue());
 		
 		m_cardsPanel.add(m_showAssignmentPanel, HAS_ASSIGNMENT_ID);
 	}
@@ -196,23 +202,33 @@ public abstract class AssignmentDialog extends DiskoDialog implements IEditMessa
 	protected void showAssignmentQueue()
 	{
 		m_assignmentQueuePanel.removeAll();
-		
-		for(final IAssignmentIf assignment : m_wpMessageLog.getMsoManager().getCmdPost().getAssignmentListItems())
+		Collection<IAssignmentIf> assignments = m_wpMessageLog.getMsoManager().getCmdPost().getAssignmentListItems();
+		for(final IAssignmentIf assignment : assignments)
 		{
 			JToggleButton button = DiskoButtonFactory.createSmallAssignmentToggleButton(assignment);
 			button.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent e)
 				{
+					// Select button
+					JToggleButton sourceButton = (JToggleButton)e.getSource();
+					selectAssignmentButton(sourceButton, m_assignmentQueueButtonGroup);
 					m_selectedAssignment = assignment;
 				}
 			});
 			m_assignmentQueueButtonGroup.add(button);
 			m_assignmentQueuePanel.add(button);
-			
-			// TODO Select button with highest priority
-			//m_assignmentQueueButtonGroup.getElements().nextElement().setSelected(true);
 		}
+		
+		// Select button with highest priority
+		try
+		{
+			JToggleButton selectedButton = (JToggleButton)m_assignmentQueueButtonGroup.getElements().nextElement();
+			selectAssignmentButton(selectedButton, m_assignmentQueueButtonGroup);
+			Iterator<IAssignmentIf> assignmentIt = assignments.iterator();
+			m_selectedAssignment = assignmentIt.hasNext() ? assignmentIt.next() : null;
+		}
+		catch(Exception e){}
 		
 		CardLayout layout = (CardLayout)m_cardsPanel.getLayout();
 		layout.show(m_cardsPanel, ASSIGNMENT_QUEUE_ID);
@@ -228,13 +244,17 @@ public abstract class AssignmentDialog extends DiskoDialog implements IEditMessa
 		
 		// Get assignments in receiving unit's queue
 		IUnitIf unit = (IUnitIf)MessageLogTopPanel.getCurrentMessage().getSingleReceiver();
-		for(final IAssignmentIf assignment : unit.getAllocatedAssignments())
+		List<IAssignmentIf> assignments = unit.getAllocatedAssignments();
+		for(final IAssignmentIf assignment : assignments)
 		{
-			JToggleButton button = DiskoButtonFactory.createAssignmentToggleButton(assignment);
+			JToggleButton button = DiskoButtonFactory.createLargeToggleButton(assignment);
 			button.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent e)
 				{
+					// Mark icon as selected
+					JToggleButton sourceButton = (JToggleButton)e.getSource();
+					selectAssignmentButton(sourceButton, m_nextAssignmentButtonGroup);
 					m_selectedAssignment = assignment;
 				}
 			});
@@ -242,11 +262,47 @@ public abstract class AssignmentDialog extends DiskoDialog implements IEditMessa
 			m_nextAssignmentsPanel.add(button);
 		}
 		
+		// Select button with highest priority
+		try
+		{
+			JToggleButton selectedButton = (JToggleButton)m_nextAssignmentButtonGroup.getElements().nextElement();
+			m_nextAssignmentButtonGroup.setSelected(selectedButton.getModel(), true);
+			selectAssignmentButton(selectedButton, m_nextAssignmentButtonGroup);
+			Iterator<IAssignmentIf> assignmentIt = assignments.iterator();
+			m_selectedAssignment = assignmentIt.hasNext() ? assignmentIt.next() : null;
+		}
+		catch(Exception e){}
+		
+		
 		CardLayout layout = (CardLayout)m_cardsPanel.getLayout();
 		layout.show(m_cardsPanel, NEXT_ASSIGNMENT_ID);
+	}
+	
+	/**
+	 * Updates button selection for the given button group
+	 * @param button
+	 * @param buttonGroup
+	 */
+	private void selectAssignmentButton(JToggleButton button, ButtonGroup buttonGroup)
+	{
+		// Mark one icon as selected
+		try
+		{
+			Enumeration<AbstractButton> buttons = buttonGroup.getElements();
+			JToggleButton buttonIt = null;
+			while(buttons.hasMoreElements())
+			{
+				buttonIt = (JToggleButton)buttons.nextElement();
+				IconRenderer.AssignmentIcon icon = (IconRenderer.AssignmentIcon)buttonIt.getIcon();
+				icon.setSelected(false);
+			}
+			
+			IconRenderer.AssignmentIcon icon = (IconRenderer.AssignmentIcon)button.getIcon();
+			icon.setSelected(true);
+		}
+		catch(Exception e){}
 		
-		// TODO Select button with highest priority
-		//m_assignmentQueueButtonGroup.getElements().nextElement().setSelected(true);
+		buttonGroup.setSelected(button.getModel(), true);
 	}
 
 	/**
@@ -269,7 +325,13 @@ public abstract class AssignmentDialog extends DiskoDialog implements IEditMessa
 	protected boolean unitHasAssignedAssignment()
 	{
 		IUnitIf unit = (IUnitIf)MessageLogTopPanel.getCurrentMessage().getSingleReceiver();
-		return unit.getAssignedAssignments().size() != 0; 
+		return !unit.getAssignedAssignments().isEmpty(); 
+	}
+	
+	protected boolean unitHasStartedAssignment()
+	{
+		IUnitIf unit = (IUnitIf)MessageLogTopPanel.getCurrentMessage().getSingleReceiver();
+		return !unit.getExecutingAssigment().isEmpty();
 	}
 
 	/**
@@ -277,7 +339,6 @@ public abstract class AssignmentDialog extends DiskoDialog implements IEditMessa
 	 */
 	protected boolean messageHasAssignedAssignment()
 	{
-		// TODO sjekk
 		IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.ASSIGNED, false);
 		return messageLine != null;
 	}
@@ -287,7 +348,6 @@ public abstract class AssignmentDialog extends DiskoDialog implements IEditMessa
 	 */
 	protected boolean messageHasStartedAssignment()
 	{
-		// TODO sjekk
 		IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.STARTED, false);
 		return messageLine != null;
 	}
