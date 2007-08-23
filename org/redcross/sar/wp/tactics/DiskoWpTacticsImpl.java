@@ -13,7 +13,6 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JToggleButton;
-import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -253,21 +252,6 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		}
 	}
 
-	public void onMapReplaced(MsoLayerEvent e)
-			throws IOException, AutomationException {
-		//must be done here after the map has been loaded
-		final JToggleButton button = getApplication().getNavBar().getDrawLineToggleButton();
-		Runnable r = new Runnable(){
-            public void run() {
-            	if (!button.isSelected()) {
-            		button.doClick();
-            	}
-            	isInitializing = false;
-            }
-        };
-        SwingUtilities.invokeLater(r);
-	}
-
 	public void onSelectionChanged(MsoLayerEvent e)
 			throws IOException, AutomationException {
 		try {
@@ -286,6 +270,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 						ISearchIf search = (ISearchIf)area.getOwningAssignment();
 						elementList.setSelectedValue(search.getSubType(), false);
 					}
+					drawTool.setArea(area);
 					NavBar navBar = getApplication().getNavBar();
 					navBar.getPOIToggleButton().setEnabled(true);
 				}
@@ -388,6 +373,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		hideDialogs(null);
 		isEditing = false;
 		drawTool.setMsoClassCode(null);
+		drawTool.setArea(null);
 		setLayersSelectable(true);
 		
 		callingWp = null;
