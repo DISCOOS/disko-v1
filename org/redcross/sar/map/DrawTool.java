@@ -1,6 +1,31 @@
 package org.redcross.sar.map;
 
-import com.esri.arcgis.carto.*;
+import java.awt.Toolkit;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import org.redcross.sar.app.IDiskoApplication;
+import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.gui.DrawDialog;
+import org.redcross.sar.map.index.IndexedGeometry;
+import org.redcross.sar.map.layer.IMsoFeatureLayer;
+import org.redcross.sar.map.layer.OperationAreaLayer;
+import org.redcross.sar.mso.IMsoManagerIf;
+import org.redcross.sar.mso.data.IAreaIf;
+import org.redcross.sar.mso.data.IAreaListIf;
+import org.redcross.sar.mso.data.ICmdPostIf;
+import org.redcross.sar.mso.data.IMsoObjectIf;
+import org.redcross.sar.mso.data.IOperationAreaIf;
+import org.redcross.sar.mso.data.IOperationAreaListIf;
+import org.redcross.sar.mso.data.ISearchAreaIf;
+import org.redcross.sar.mso.data.ISearchAreaListIf;
+import org.redcross.sar.util.mso.GeoList;
+
+import com.esri.arcgis.carto.IBasicMap;
+import com.esri.arcgis.carto.IFeatureLayer;
+import com.esri.arcgis.carto.ILayer;
+import com.esri.arcgis.carto.IMap;
+import com.esri.arcgis.carto.InvalidArea;
 import com.esri.arcgis.controls.IMapControlEvents2Adapter;
 import com.esri.arcgis.controls.IMapControlEvents2OnAfterScreenDrawEvent;
 import com.esri.arcgis.controls.IMapControlEvents2OnExtentUpdatedEvent;
@@ -9,24 +34,16 @@ import com.esri.arcgis.display.IScreenDisplay;
 import com.esri.arcgis.display.RgbColor;
 import com.esri.arcgis.display.SimpleLineSymbol;
 import com.esri.arcgis.display.esriScreenCache;
-import com.esri.arcgis.geometry.*;
+import com.esri.arcgis.geometry.Envelope;
+import com.esri.arcgis.geometry.GeometryBag;
+import com.esri.arcgis.geometry.IGeometry;
+import com.esri.arcgis.geometry.IPoint;
+import com.esri.arcgis.geometry.ISegmentGraphCursor;
 import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.geometry.Polygon;
+import com.esri.arcgis.geometry.Polyline;
+import com.esri.arcgis.geometry.SegmentGraph;
 import com.esri.arcgis.interop.AutomationException;
-import org.redcross.sar.app.IDiskoApplication;
-import org.redcross.sar.gui.DiskoDialog;
-import org.redcross.sar.gui.DrawDialog;
-import org.redcross.sar.map.index.IndexedGeometry;
-import org.redcross.sar.map.layer.IMsoFeatureLayer;
-import org.redcross.sar.map.layer.OperationAreaLayer;
-import org.redcross.sar.mso.IMsoManagerIf;
-import org.redcross.sar.mso.data.*;
-import org.redcross.sar.util.mso.GeoList;
-
-import javax.swing.*;
-import java.awt.*;
-import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * A custom draw tool.
@@ -143,53 +160,40 @@ public class DrawTool extends AbstractCommandTool {
 	}
 
 	public void onDblClick() throws IOException, AutomationException {
-		final Polyline polyline = pathGeometry;
-		Runnable r = new Runnable() {
-			public void run() {
-				try {
-					polyline.simplify();
-					polyline.setSpatialReferenceByRef(map.getSpatialReference());
-					ICmdPostIf cmdPost = app.getMsoModel().getMsoManager().getCmdPost();
+		Polyline polyline = pathGeometry;
+		polyline.simplify();
+		polyline.setSpatialReferenceByRef(map.getSpatialReference());
+		ICmdPostIf cmdPost = app.getMsoModel().getMsoManager().getCmdPost();
+		IMsoObjectIf msoObj = null;
 
-					if (msoClassCode == IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA) {
-						Polygon polygon = getPolygon(polyline);
-						polygon.setSpatialReferenceByRef(map.getSpatialReference());
-						IOperationAreaListIf opAreaList = cmdPost.getOperationAreaList();
-						IOperationAreaIf opArea = opAreaList.createOperationArea();
-						opArea.setGeodata(MapUtil.getMsoPolygon(polygon));
-						map.setSelected(opArea, true);
-					}
-					else if (msoClassCode == IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA) {
-						Polygon polygon = getPolygon(polyline);
-						polygon.setSpatialReferenceByRef(map.getSpatialReference());
-						ISearchAreaListIf searchAreaList = cmdPost.getSearchAreaList();
-						ISearchAreaIf searchArea = searchAreaList.createSearchArea();
-						searchArea.setGeodata(MapUtil.getMsoPolygon(polygon));
-						map.setSelected(searchArea, true);
-					}
-					else if (msoClassCode == IMsoManagerIf.MsoClassCode.CLASSCODE_AREA) {
-						if (area == null) {
-							IAreaListIf areaList = cmdPost.getAreaList();
-							area = areaList.createArea();
-							area.setGeodata(new GeoList(null));
-							map.setSelected(area, true);
-						}
-//                        IRouteIf route = cmdPost.getRouteList().createRoute(MapUtil.getMsoRoute(polyline));
-//                        area.addAreaGeodata(route);
-                      GeoList clone = cloneGeoList(area.getGeodata());
-						clone.add(MapUtil.getMsoRoute(polyline));
-						area.setGeodata(clone);
-					}
-				} catch (AutomationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+		if (msoClassCode == IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA) {
+			Polygon polygon = getPolygon(polyline);
+			polygon.setSpatialReferenceByRef(map.getSpatialReference());
+			IOperationAreaListIf opAreaList = cmdPost.getOperationAreaList();
+			IOperationAreaIf opArea = opAreaList.createOperationArea();
+			opArea.setGeodata(MapUtil.getMsoPolygon(polygon));
+			msoObj = opArea;
+		}
+		else if (msoClassCode == IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA) {
+			Polygon polygon = getPolygon(polyline);
+			polygon.setSpatialReferenceByRef(map.getSpatialReference());
+			ISearchAreaListIf searchAreaList = cmdPost.getSearchAreaList();
+			ISearchAreaIf searchArea = searchAreaList.createSearchArea();
+			searchArea.setGeodata(MapUtil.getMsoPolygon(polygon));
+			msoObj = searchArea;
+		}
+		else if (msoClassCode == IMsoManagerIf.MsoClassCode.CLASSCODE_AREA) {
+			if (area == null) {
+				IAreaListIf areaList = cmdPost.getAreaList();
+				area = areaList.createArea();
+				area.setGeodata(new GeoList(null));
 			}
-		};
-		SwingUtilities.invokeLater(r);
+			GeoList clone = cloneGeoList(area.getGeodata());
+			clone.add(MapUtil.getMsoRoute(polyline));
+			area.setGeodata(clone);
+			msoObj = area;
+		}
+		map.setSelected(msoObj, true);
 		reset();
 	}
 
