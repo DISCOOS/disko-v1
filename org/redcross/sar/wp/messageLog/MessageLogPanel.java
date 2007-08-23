@@ -59,31 +59,6 @@ public class MessageLogPanel
 
         initTopPanel();
         initBottomPanel();
-
-        /*
-        Hack/workarond for a hang-situation when using maps i card layout, show map initially, and hide it when the panel is shown the first time.
-         */
-        showMap();
-        WorkspacePanel.addComponentListener(new ComponentAdapter()
-        {
-            boolean firstTime = true;
-            @Override
-            public void componentShown(ComponentEvent e)
-            {
-                if (firstTime)
-                {
-                    firstTime = false;
-                    try
-                    {
-                        Thread.sleep(1000);
-                    }
-                    catch (InterruptedException e1)
-                    {
-                    }
-                    hideMap();
-                }
-            }
-        });
     }
 
     private void initTopPanel()
