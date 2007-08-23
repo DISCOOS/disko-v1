@@ -75,19 +75,22 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 		setShowScrollbars(false);
 		setBorderStyle(com.esri.arcgis.controls.esriControlsBorderStyle.esriNoBorder);
 		setBorder(new SoftBevelBorder(SoftBevelBorder.LOWERED));
-		setDocumentFilename(mxdDoc);
+        
+        //setDocumentFilename(mxdDoc);
+		loadMxFile(mxdDoc, null, null);
+		initLayers();
 			
 		// listen to do actions when the map is loaded
 		addIMapControlEvents2Listener(new IMapControlEvents2Adapter() {
 			private static final long serialVersionUID = 1L;
 			public void onMapReplaced(IMapControlEvents2OnMapReplacedEvent e)
                    	throws java.io.IOException, AutomationException {
-				mapLoaded();
+				initLayers();
 			}
 		});
 	}
 	
-	private void mapLoaded() throws java.io.IOException, AutomationException {
+	private void initLayers() throws java.io.IOException, AutomationException {
 		// add custom layers
 		IMap focusMap = getActiveView().getFocusMap();
 		List customLayers = mapManager.getMsoLayers();
@@ -98,10 +101,10 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 			layer.setCached(true);
 		}
 		// reactivate
-		getActiveView().deactivate();			
-		getActiveView().activate(getHWnd());			
-		getActiveView().refresh();
-		
+		/*getActiveView().deactivate();			
+				getActiveView().activate(getHWnd());			
+				getActiveView().refresh();*/
+
 		// set all featurelayers not selectabel
 		for (int i = 0; i < focusMap.getLayerCount(); i++) {
 			ILayer layer = focusMap.getLayer(i);
