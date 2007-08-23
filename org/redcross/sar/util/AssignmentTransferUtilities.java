@@ -221,19 +221,18 @@ public class AssignmentTransferUtilities
      */
     public static boolean assignAssignmentToUnit(IAssignmentIf assignment, IUnitIf unit)
     {
-    	// Ensure that unit can accept assignment
-    	if(!unitCanAccept(unit, assignment.getStatus()))
-    	{
-    		return false;
-    	}
-    	
     	try
 		{
-			assignment.setStatus(AssignmentStatus.ASSIGNED);
+			assignment.setStatusAndOwner(AssignmentStatus.ASSIGNED, unit);
+		} 
+    	catch (IllegalOperationException e1)
+		{
+			e1.printStackTrace();
+			return false;
 		}
-    	catch (IllegalOperationException e){return false;}
     	
     	unit.setStatus(UnitStatus.INITIALIZING);
+    	unit.getAssignedAssignments().add(assignment);
     	
     	return true;
     }
@@ -245,20 +244,18 @@ public class AssignmentTransferUtilities
      * @return Whether or not the assignment could be started
      */
     public static boolean unitStartAssignment(IUnitIf unit, IAssignmentIf assignment)
-    {
-    	// Ensure that unit can start assignment
-    	if(!unitCanAccept(unit, assignment.getStatus()))
-    	{
-    		return false;
-    	}
-    	
-    	unit.setStatus(UnitStatus.WORKING);
-    	
+    {   	
     	try
 		{
-			assignment.setStatus(AssignmentStatus.EXECUTING);
+			unit.addUnitAssignment(assignment, AssignmentStatus.EXECUTING);
 		} 
-    	catch (IllegalOperationException e){return false;}
+    	catch (IllegalOperationException e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+		
+		unit.setStatus(UnitStatus.WORKING);
     	
     	return true;
     }
@@ -271,19 +268,13 @@ public class AssignmentTransferUtilities
      */
     public static boolean unitCompleteAssignment(IUnitIf unit, IAssignmentIf assignment)
     {
-    	// Ensure that unit can complete assignment
-    	if(!unitCanAccept(unit, assignment.getStatus()))
-    	{
-    		return false;
-    	}
-    	
-    	unit.setStatus(UnitStatus.READY);
-    	
     	try
 		{
-			assignment.setStatus(AssignmentStatus.FINISHED);
+			assignment.setStatusAndOwner(AssignmentStatus.FINISHED, unit);
 		} 
     	catch (IllegalOperationException e){return false;}
+    	
+    	unit.setStatus(UnitStatus.READY);
     	
     	return true;
     }
