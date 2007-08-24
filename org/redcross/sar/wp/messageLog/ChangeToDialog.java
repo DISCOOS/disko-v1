@@ -1,11 +1,9 @@
 package org.redcross.sar.wp.messageLog;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -210,17 +208,12 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 	public void clearContents()
 	{
 		m_nonBroadcastButton.setSelected(true);
-		m_broadcastDialog.showDialog();
 		m_broadcastDialog.clearContents();
 		m_nbFieldDialog.clearContents();
 		m_nbListDialog.clearContents();
 	}
 
-	public void dialogCanceled(DialogEvent e)
-	{
-		// TODO Auto-generated method stub
-		
-	}
+	public void dialogCanceled(DialogEvent e){}
 
 	public void dialogFinished(DialogEvent e)
 	{
@@ -231,9 +224,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 		}
 	}
 
-	public void dialogStateChanged(DialogEvent e)
-	{
-	}
+	public void dialogStateChanged(DialogEvent e){}
 	
 	public void setBroadcast(boolean broadcast)
 	{

@@ -33,7 +33,8 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
 //        BuildTestData.createMessages(getMsoModel());
     }
 
-    public void activated()
+    @Override
+	public void activated()
     {
         super.activated();
         NavBar navBar = getApplication().getNavBar();
@@ -48,7 +49,8 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
         navBar.showButtons(myInterests);
     }
 
-    public void deactivated()
+    @Override
+	public void deactivated()
     {
     	super.deactivated();
     	m_logPanel.hideDialogs();
@@ -58,7 +60,8 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
     /* (non-Javadoc)
     * @see com.geodata.engine.disko.task.DiskoAp#getName()
     */
-    public String getName()
+    @Override
+	public String getName()
     {
         return "Sambandslogg";
     }

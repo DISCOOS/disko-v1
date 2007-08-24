@@ -24,13 +24,11 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.gui.DiskoDialog;
-import org.redcross.sar.mso.data.AbstractDerivedList;
 import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.ICommunicatorIf;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMsoListIf;
 import org.redcross.sar.mso.data.IUnitIf;
-import org.redcross.sar.mso.data.MsoListImpl;
 import org.redcross.sar.mso.data.IUnitIf.UnitType;
 
 /**
@@ -105,7 +103,7 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialog
 		m_listArea = new JPanel();
 		m_listArea.setLayout(new BoxLayout(m_listArea, BoxLayout.LINE_AXIS));
 		m_listArea.setAlignmentX(Component.LEFT_ALIGNMENT);
-		m_listArea.setAlignmentY(JComponent.TOP_ALIGNMENT);
+		m_listArea.setAlignmentY(Component.TOP_ALIGNMENT);
 		m_listArea.setPreferredSize(new Dimension(MessageLogPanel.PANEL_WIDTH, MessageLogPanel.SMALL_BUTTON_SIZE.height*NUM_ROWS_COMMUNICATOR_LIST));
 		
 		m_scrollPane = new JScrollPane(m_listArea);
@@ -211,14 +209,17 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialog
 			for(ICommunicatorIf communicator : m_wpMessageLog.getMsoManager().getCmdPost().getActiveCommunicators())
 			{
 				button = m_communicatorButtonMap.get(communicator);
-				button.setVisible(true);
-				if(m_selectedCommuicators.contains(communicator))
+				if(button != null)
 				{
-					button.setSelected(true);
-				}
-				else
-				{
-					button.setSelected(false);
+					button.setVisible(true);
+					if(m_selectedCommuicators.contains(communicator))
+					{
+						button.setSelected(true);
+					}
+					else
+					{
+						button.setSelected(false);
+					}
 				}
 			}
 		}

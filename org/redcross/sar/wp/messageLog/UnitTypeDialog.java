@@ -1,9 +1,5 @@
 package org.redcross.sar.wp.messageLog;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,10 +7,8 @@ import java.util.LinkedList;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 

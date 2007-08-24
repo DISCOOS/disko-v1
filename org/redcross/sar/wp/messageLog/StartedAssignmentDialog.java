@@ -13,10 +13,7 @@ import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
-import org.redcross.sar.mso.data.IUnitIf.UnitStatus;
 import org.redcross.sar.util.AssignmentTransferUtilities;
-import org.redcross.sar.util.except.IllegalMsoArgumentException;
-import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.util.mso.DTG;
 
 /**
@@ -35,6 +32,7 @@ public class StartedAssignmentDialog extends AssignmentDialog
 		m_timeLabel.setText(m_wpMessageLog.getText("StartedTimeLabel.text") + ": ");
 	}
 
+	@Override
 	public void cancelUpdate()
 	{
 		if(m_lineAdded)
@@ -48,6 +46,7 @@ public class StartedAssignmentDialog extends AssignmentDialog
 		}
 	}
 
+	@Override
 	public void showDialog()
 	{
 		this.setVisible(true);
@@ -138,14 +137,25 @@ public class StartedAssignmentDialog extends AssignmentDialog
 	}
 
 
+	@Override
 	protected void updateMessage()
 	{
-		// TODO update time
+		// Update time
+		IMessageLineIf line = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.STARTED, false);
+		if(line != null)
+		{
+			try
+			{
+				line.setOperationTime(DTG.DTGToCal(m_timeTextField.getText()));
+			}
+			catch(Exception e){}
+		}
 		
 		// Perform action show in list
 		MessageLogTopPanel.showListDialog();
 	}
 
+	@Override
 	protected void showHasAssignment()
 	{
 		// Must have started message line to reach this point
@@ -162,6 +172,7 @@ public class StartedAssignmentDialog extends AssignmentDialog
 		layout.show(m_cardsPanel, HAS_ASSIGNMENT_ID);
 	}
 
+	@Override
 	public void newMessageSelected(IMessageIf message)
 	{
 		IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.STARTED, false);

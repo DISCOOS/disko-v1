@@ -2,7 +2,6 @@ package org.redcross.sar.wp.messageLog;
 
 import java.awt.Dimension;
 import java.util.MissingResourceException;
-import java.util.Properties;
 import java.util.ResourceBundle;
 
 import javax.swing.JButton;
@@ -10,8 +9,6 @@ import javax.swing.JToggleButton;
 
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.gui.renderers.IconRenderer;
-import org.redcross.sar.gui.renderers.IconRenderer.AssignmentIcon;
-import org.redcross.sar.mso.data.AssignmentImpl;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.ICommunicatorIf;
@@ -269,6 +266,19 @@ public class DiskoButtonFactory
 		
 		IconRenderer.AssignmentIcon icon = new IconRenderer.AssignmentIcon(assignment, false, null);
 		button.setIcon(icon);
+		
+		return button;
+	}
+
+	public static JToggleButton createLargeToggleButton(String text)
+	{
+		JToggleButton button = new JToggleButton();
+		
+		button.setText(text);
+		
+		button.setMinimumSize(LARGE_BUTTON_SIZE);
+		button.setPreferredSize(LARGE_BUTTON_SIZE);
+		button.setMaximumSize(LARGE_BUTTON_SIZE);
 		
 		return button;
 	}

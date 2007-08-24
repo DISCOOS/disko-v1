@@ -142,6 +142,7 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 		fireDialogFinished();
 	}
 
+	@Override
 	public boolean isFocusable()
 	{
 		return true;

@@ -7,8 +7,6 @@ import javax.swing.*;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 
 /**
  * Created by IntelliJ IDEA.
@@ -67,6 +65,7 @@ public class MessageLogPanel
         m_topPanel.setWp(m_wpModule);
         m_topPanel.initialize();
         m_topPanel.setMinimumSize(new Dimension(PANEL_WIDTH, MessageLogTopPanel.PANEL_HEIGHT));
+        
         // Top panel should be informed of updates to mso model
         m_wpModule.getMmsoEventManager().addClientUpdateListener(m_topPanel);
 
@@ -96,15 +95,17 @@ public class MessageLogPanel
         m_rowSelectionListener = new MessageRowSelectionListener(m_topPanel);
         m_logTable.getSelectionModel().addListSelectionListener(m_rowSelectionListener);
 
-        final LogTableModel model = new LogTableModel(m_logTable, m_wpModule, m_messageLog);
+        final LogTableModel model = new LogTableModel(m_logTable, m_wpModule, m_messageLog, m_rowSelectionListener);
         m_rowSelectionListener.setModel(model);
-        m_rowSelectionListener.setRowMap(model.getRowMap());
         m_logTable.setModel(model);
         m_logTable.setAutoCreateColumnsFromModel(true);
         m_logTable.setShowHorizontalLines(true);
         m_logTable.setShowVerticalLines(true);
         m_logTable.setRowSelectionAllowed(true);
         m_logTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        m_logTable.setRowSelectionAllowed(true);
+        m_logTable.setRowSelectionAllowed(false);
+        m_logTable.setCellSelectionEnabled(false);
         m_logTable.setRowMargin(2);
         m_logTable.setRowHeight(22);
 

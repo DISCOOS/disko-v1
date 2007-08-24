@@ -6,6 +6,7 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import org.redcross.sar.mso.data.IAssignmentIf;
+import org.redcross.sar.mso.data.ICommunicatorIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IPOIIf;
 import org.redcross.sar.util.mso.DTG;
@@ -32,6 +33,7 @@ public class LineListTableModel extends AbstractTableModel
 		return 1;
 	}
 	
+	@Override
 	public String getColumnName(int column)
 	{
 		return null;
@@ -51,6 +53,7 @@ public class LineListTableModel extends AbstractTableModel
 		else
 		{
 			IMessageLineIf line = m_messageLines.get(rowIndex);
+			ICommunicatorIf singleReceiver = MessageLogTopPanel.getCurrentMessage().getSingleReceiver();
 			String lineText = null;
 			switch(line.getLineType())
 			{
@@ -65,9 +68,11 @@ public class LineListTableModel extends AbstractTableModel
 				IPOIIf poi = line.getLinePOI();
 				if(poi != null)
 				{
+					String receiver = singleReceiver == null ? m_wpMessageLog.getText("Unit.text") :
+						singleReceiver.getCommunicatorNumberPrefix() + " " + singleReceiver.getCommunicatorNumber();
 					Position pos = poi.getPosition();
 					lineText = String.format(m_wpMessageLog.getText("ListItemPOI.text"), 
-							"Enhet", String.format("%1$.3g", pos.getPosition().x), String.format("%1$.3g", pos.getPosition().y),
+							receiver, String.format("%1$.3g", pos.getPosition().x), String.format("%1$.3g", pos.getPosition().y), // TODO
 							DTG.CalToDTG(line.getOperationTime()));
 				}
 			}

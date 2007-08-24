@@ -43,7 +43,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	{
 		public void mouseClicked(MouseEvent me)
 		{
-			// TODO if current selected communicator is selected, select command post 
+			// TODO if current selected communicator is selected, select command post
 		}
 
 		public void mouseEntered(MouseEvent arg0){}

@@ -1,32 +1,18 @@
 package org.redcross.sar.wp.messageLog;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Comparator;
-import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.JButton;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JTextArea;
 
-import org.redcross.sar.app.Utils;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
-import org.redcross.sar.mso.data.IMessageLineListIf;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
-import org.redcross.sar.util.mso.Selector;
-
-import com.swiftmq.admin.explorer.ButtonFormatter;
 
 /**
  * @author thomasl

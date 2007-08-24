@@ -1,11 +1,9 @@
 package org.redcross.sar.wp.messageLog;
 
-import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.interop.AutomationException;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
 import org.redcross.sar.map.IDiskoMap;
-import org.redcross.sar.map.MapUtil;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
@@ -14,11 +12,12 @@ import org.redcross.sar.mso.data.IPOIIf.POIType;
 import org.redcross.sar.util.mso.Position;
 
 import javax.swing.*;
+
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Point2D;
 import java.io.IOException;
-import java.net.UnknownHostException;
 
 /**
  * Dialog used in position and finding when editing the message log. A separate POI dialog class was created for
@@ -159,7 +158,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 
 		m_showInMapButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("ShowInMapButton.text"),
 				m_wpMessageLog.getText("ShowInMapButton.icon"));
-		m_showInMapButton.setAlignmentY(JComponent.TOP_ALIGNMENT);
+		m_showInMapButton.setAlignmentY(Component.TOP_ALIGNMENT);
 		m_showInMapButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)

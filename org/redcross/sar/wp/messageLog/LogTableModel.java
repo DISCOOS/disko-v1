@@ -1,23 +1,24 @@
 package org.redcross.sar.wp.messageLog;
 
 import org.redcross.sar.mso.IMsoManagerIf;
+import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.ICommunicatorIf;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IMessageLineListIf;
 import org.redcross.sar.mso.data.IMessageLogIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
+import org.redcross.sar.mso.data.IPOIIf;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
-import org.redcross.sar.mso.event.MsoEvent;
 import org.redcross.sar.mso.event.MsoEvent.Update;
 import org.redcross.sar.util.mso.DTG;
+import org.redcross.sar.util.mso.Position;
 import org.redcross.sar.util.mso.Selector;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -36,16 +37,19 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     private IMsoEventManagerIf m_eventManager;
     IDiskoWpMessageLog m_wpModule;
 
-    private HashMap<Integer, Boolean> m_rowSelectionMap;
+    private HashMap<Integer, Boolean> m_rowExpandedMap;
+    
+    private MessageRowSelectionListener m_selectionListener = null;
 
-    public LogTableModel(JTable aTable, IDiskoWpMessageLog aModule, IMessageLogIf aMessageLog)
+    public LogTableModel(JTable aTable, IDiskoWpMessageLog aModule, IMessageLogIf aMessageLog, MessageRowSelectionListener listener)
     {
         m_table = aTable;
         m_wpModule = aModule;
         m_eventManager = aModule.getMmsoEventManager();
         m_eventManager.addClientUpdateListener(this);
         m_messageLog = aMessageLog;
-        m_rowSelectionMap = new HashMap<Integer, Boolean>();
+        m_rowExpandedMap = new HashMap<Integer, Boolean>();
+        m_selectionListener = listener;
     }
 
     public int getRowCount()
@@ -62,19 +66,27 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     {
         m_messageList = m_messageLog.selectItems(m_messageSelector, m_lineNumberComparator);
 
-        // Update hashmap
+        // Update hash map
+        HashMap<Integer, Boolean> tempMap = new HashMap<Integer, Boolean>(m_rowExpandedMap);
+        m_rowExpandedMap.clear();
         int numMessages = m_messageList.size();
         for(int i=0; i<numMessages; i++)
         {
         	int messageNr = m_messageList.get(i).getNumber();
-        	if(!m_rowSelectionMap.containsKey(Integer.valueOf(messageNr)))
+        	if(tempMap.containsKey(messageNr))
         	{
-        		m_rowSelectionMap.put(Integer.valueOf(messageNr), Boolean.valueOf(false));
+        		Boolean expanded = tempMap.get(messageNr);
+        		m_rowExpandedMap.put(messageNr, expanded);
         	}
+//        	else
+//        	{
+//        		m_rowExpandedMap.put(new Integer(messageNr), new Boolean(false));
+//        	}	
         }
     }
 
-    public Class<?> getColumnClass(int c)
+    @Override
+	public Class<?> getColumnClass(int c)
     {
     	switch(c)
     	{
@@ -93,17 +105,20 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
         switch (columnIndex)
         {
             case 0:
-            	Boolean expand = (Boolean)m_rowSelectionMap.get(message.getNumber());
+            	Boolean expanded = isMessageExtended(message.getNumber());
             	StringBuilder string = new StringBuilder(Integer.toString(message.getNumber()));
-            	string.append(" ");
-            	if(expand)
+            	if(m_selectionListener.numRows(rowIndex) > 1)
             	{
-            		string.append("-");
+            		if(!expanded)
+                	{
+                		string.append(" -");
+                	}
+                	else
+                	{
+                		string.append(" +");
+                	}
             	}
-            	else
-            	{
-            		string.append("+");
-            	}
+            	
                 return string.toString();
             case 1:
                 return DTG.CalToDTG(message.getOccuredTime());
@@ -129,9 +144,76 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
             		return receiver.getCommunicatorNumberPrefix() + " " + receiver.getCommunicatorNumber();
             	}
             case 4:
-                return message.getLines();
+            	StringBuilder stringBuilder = new StringBuilder();
+            	IMessageLineListIf lines = message.getMessageLines();
+            	ICommunicatorIf singleReceiver = message.getSingleReceiver();
+            	for(IMessageLineIf line : lines.getItems())
+            	{
+            		String lineText = "";
+            		switch(line.getLineType())
+        			{
+        			case TEXT:
+        			{
+        				lineText = String.format(m_wpModule.getText("ListItemText.text"),
+        						line.getLineText());
+        			}
+        			break;
+        			case POI:
+        			{
+        				IPOIIf poi = line.getLinePOI();
+        				if(poi != null)
+        				{
+        					String receiver = singleReceiver == null ? m_wpModule.getText("Unit.text") 
+        							: singleReceiver.getCommunicatorNumberPrefix() + " " + singleReceiver.getCommunicatorNumber();
+        					Position pos = poi.getPosition();
+        					lineText = String.format(m_wpModule.getText("ListItemPOI.text"), 
+        							receiver, 
+        							String.format("%1$.3g", pos.getPosition().x), String.format("%1$.3g", pos.getPosition().y),
+        							DTG.CalToDTG(line.getOperationTime()));
+        				}
+        			}
+        			break;
+        			case FINDING:
+        			{
+        				IPOIIf poi = line.getLinePOI();
+        				if(poi != null)
+        				{
+        					String type = poi.getTypeText();
+        					Position pos = line.getLinePOI().getPosition();
+        					lineText = String.format(m_wpModule.getText("ListItemFinding.text"),
+        							type, String.format("%1$.3g", pos.getPosition().x), String.format("%1$.3g", pos.getPosition().y));
+        				}
+        			}
+        			break;
+        			case ASSIGNED:
+        			{
+        				IAssignmentIf assignment = line.getLineAssignment();
+        				lineText = String.format(m_wpModule.getText("ListItemAssigned.text"),
+        						assignment.getTypeAndNumber(), DTG.CalToDTG(line.getOperationTime()));
+
+        			}
+        			break;
+        			case STARTED:
+        			{
+        				IAssignmentIf assignment = line.getLineAssignment();
+        				lineText = String.format(m_wpModule.getText("ListItemStarted.text"),
+        						assignment.getTypeAndNumber(), DTG.CalToDTG(line.getOperationTime()));
+        			}
+        			break;
+        			case COMPLETE:
+        			{
+        				IAssignmentIf assignment = line.getLineAssignment();
+        				lineText = String.format(m_wpModule.getText("ListItemCompleted.text"),
+        						assignment.getTypeAndNumber(), DTG.CalToDTG(line.getOperationTime()));
+        			}
+        			break;
+        			}
+            		
+            		stringBuilder.append(lineText + "LINEEND");
+            	}
+                return stringBuilder.toString().split("LINEEND");
             case 5:
-                return "";
+                return ""; // TODO return tasks
             default:
                 return message.getStatusText();
         }
@@ -141,7 +223,6 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     public String getColumnName(int column)
     {
     	return null;
-        //return m_wpModule.getText(MessageFormat.format("LogTable_hdr_{0}.text", column));
     }
 
     public void handleMsoUpdateEvent(Update e)
@@ -150,8 +231,9 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
         fireTableDataChanged();
     }
 
-    private final EnumSet<IMsoManagerIf.MsoClassCode> myInterests = EnumSet.of(IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGE, IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGELINE);
-
+    private final EnumSet<IMsoManagerIf.MsoClassCode> myInterests = EnumSet.of(
+    		IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGE,
+    		IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGELINE);
 
     public boolean hasInterestIn(IMsoObjectIf aMsoObject)
     {
@@ -173,13 +255,29 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
             return m1.getNumber() - m2.getNumber();
         }
     };
-
-	public HashMap getRowMap()
-	{
-		return m_rowSelectionMap;
-	}
-
+    
+    /**
+     * Get whether or not the message is extended in the message log table, i.e. display entire message in log
+     * @param messageNr
+     * @return
+     */
+    public boolean isMessageExtended(int messageNr)
+    {
+    	if(!m_rowExpandedMap.containsKey(messageNr))
+    	{
+    		m_rowExpandedMap.put(messageNr, true);
+    	}
+    	
+    	return m_rowExpandedMap.get(messageNr);
+    }
+    
+    /**
+     * Sets whether the message is extended in log view or not
+     * @param messageNr
+     * @param extended
+     */
+    public void setMessageExtended(int messageNr, boolean extended)
+    {
+    	m_rowExpandedMap.put(new Integer(messageNr), new Boolean(extended));
+    }
 }
-
-
-

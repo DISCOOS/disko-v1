@@ -7,8 +7,6 @@ import org.redcross.sar.map.AbstractCommandTool;
 import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.IDiskoMap;
 import org.redcross.sar.map.MapUtil;
-import org.redcross.sar.map.layer.IMsoFeatureLayer;
-import org.redcross.sar.map.layer.OperationAreaLayer;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IPOIIf;

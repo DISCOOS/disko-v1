@@ -1,9 +1,5 @@
 package org.redcross.sar.wp.messageLog;
 
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.util.HashMap;
-
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
@@ -18,7 +14,7 @@ public class MessageRowSelectionListener implements ListSelectionListener
 	protected MessageLogTopPanel m_topPanel;
 	protected JTable m_messageTable;
 	protected LogTableModel m_tableMode;
-	protected HashMap<Integer, Boolean> m_rowMap;
+	protected boolean m_msoUpdate = false;
 	
 	public MessageRowSelectionListener(MessageLogTopPanel panel) 
 	{
@@ -28,6 +24,9 @@ public class MessageRowSelectionListener implements ListSelectionListener
 	public void valueChanged(ListSelectionEvent event) 
 	{		
 		ListSelectionModel lsm = (ListSelectionModel)event.getSource();
+		
+		if(lsm.isSelectionEmpty())
+			return;
 		
 		// Get selected row index
 		Integer rowIndex = new Integer(lsm.getMinSelectionIndex());
@@ -45,38 +44,19 @@ public class MessageRowSelectionListener implements ListSelectionListener
 		String messageNrString = (String)m_tableMode.getValueAt(rowIndex, 0);
 		int messageNr = Integer.valueOf(messageNrString.split("\\s")[0]);
 		
-		// Update row status
-		Boolean expanded = (Boolean)m_rowMap.get(messageNr);
-		if(expanded == null)
-		{
-			expanded = new Boolean(true);
-		}
-		m_rowMap.put(messageNr, !expanded);
+		// Toggle expanded
+		Boolean expanded = m_tableMode.isMessageExtended(messageNr);
+		m_tableMode.setMessageExtended(messageNr, !expanded);
 		
 		// Set row height
-		int defaultRowHeight = m_messageTable.getRowHeight();
-		int rowHeight;
-		if(!expanded)
+		if(expanded)
 		{
-			// Calculate row height so that all text is visible in cell without changing column width
-			Font font = m_messageTable.getFont();
-			String[] strings = (String[])m_messageTable.getValueAt(rowIndex, 4);
-			StringBuilder stringBuilder = new StringBuilder();
-			for(int i=0; i<strings.length; i++)
-			{
-				stringBuilder.append(strings[i]);
-			}
-			int columnWidth = m_messageTable.getColumnModel().getColumn(4).getWidth();
-			FontMetrics metrics = m_messageTable.getFontMetrics(font);
-			int stringWidth = metrics.stringWidth(stringBuilder.toString());
-			int numRows = Math.max(strings.length, stringWidth / columnWidth + 1);
-			rowHeight = defaultRowHeight * numRows;
+			setRowExpanded(rowIndex);
 		}
 		else
 		{
-			rowHeight = defaultRowHeight;
+			setRowCollapsed(rowIndex);
 		}
-		m_messageTable.setRowHeight(rowIndex, rowHeight);
 		
 		// Update top message panel
 		m_topPanel.newMessageSelected(messageNr);
@@ -92,10 +72,59 @@ public class MessageRowSelectionListener implements ListSelectionListener
 	{
 		m_tableMode = model;
 	}
-
-	public void setRowMap(HashMap<Integer, Boolean> rowMap) 
+	
+	/**
+	 * Expands a row so that it encompasses all text in message lines
+	 * @param rowIndex Row identifier
+	 */
+	public void setRowExpanded(int rowIndex)
 	{
-		m_rowMap = rowMap;
+		// Calculate row height so that all text is visible in cell without changing column width
+		int defaultRowHeight = 18; //m_messageTable.getRowHeight();
+		int numRows = numRows(rowIndex);
+		int rowHeight = defaultRowHeight * numRows + (numRows - 1) * 2 + 4;
+		m_messageTable.setRowHeight(rowIndex, rowHeight);
+	}
+	
+	/**
+	 * Collapses a row to the default size
+	 * @param rowIndex Row identifier
+	 */
+	public void setRowCollapsed(int rowIndex)
+	{
+		m_messageTable.setRowHeight(rowIndex, m_messageTable.getRowHeight());
+	}
+	
+	/**
+	 * @param rowIndex Identifies the message line
+	 * @return Number of rows need to display the entire contents of the message lines
+	 */
+	public int numRows(int rowIndex)
+	{
+		int numRows = 0;
+		String[] strings = (String[])m_messageTable.getValueAt(rowIndex, 4);
+		
+		// TODO handle long single lines as well. 
+		for(int i=0; i<strings.length; i++)
+		{
+			int numLinesString = strings[i].split("\n").length;
+			numRows += Math.max(1, numLinesString);
+		}
+		
+		return numRows;
 	}
 
+//	public void handleMsoUpdateEvent(Update e)
+//	{
+//		int messageNr = MessageLogTopPanel.getCurrentMessage().getNumber();
+//		setRowExpanded(messageNr);
+//	}
+//
+//	 private final EnumSet<IMsoManagerIf.MsoClassCode> myInterests = EnumSet.of(
+//	    		IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGE,
+//	    		IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGELINE);
+//	public boolean hasInterestIn(IMsoObjectIf msoObject)
+//	{
+//		return myInterests.contains(msoObject.getMsoClassCode());
+//	}
 }

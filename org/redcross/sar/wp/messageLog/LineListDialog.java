@@ -3,7 +3,6 @@ package org.redcross.sar.wp.messageLog;
 import java.awt.BorderLayout;
 import java.util.Comparator;
 
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 

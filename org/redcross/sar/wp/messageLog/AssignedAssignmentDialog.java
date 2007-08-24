@@ -13,7 +13,6 @@ import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 import org.redcross.sar.util.AssignmentTransferUtilities;
 import org.redcross.sar.util.except.IllegalMsoArgumentException;
-import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.util.mso.DTG;
 
 /**
@@ -32,6 +31,7 @@ public class AssignedAssignmentDialog extends AssignmentDialog
 		m_timeLabel.setText(m_wpMessageLog.getText("AssignedTimeLabel.text") + ": ");
 	}
 
+	@Override
 	public void cancelUpdate()
 	{
 		if(m_lineAdded)
@@ -42,6 +42,7 @@ public class AssignedAssignmentDialog extends AssignmentDialog
 		}
 	}
 
+	@Override
 	public void showDialog()
 	{
 		if(messageHasAssignedAssignment())
@@ -60,6 +61,7 @@ public class AssignedAssignmentDialog extends AssignmentDialog
 		this.setVisible(true);
 	}
 
+	@Override
 	protected void updateMessage()
 	{
 		if(m_selectedAssignment != null)
@@ -113,12 +115,14 @@ public class AssignedAssignmentDialog extends AssignmentDialog
 		MessageLogTopPanel.showListDialog();
 	}
 
+	@Override
 	protected void showHasAssignment()
 	{	
 		CardLayout layout = (CardLayout)m_cardsPanel.getLayout();
 		layout.show(m_cardsPanel, HAS_ASSIGNMENT_ID);
 	}
 
+	@Override
 	public void newMessageSelected(IMessageIf message)
 	{
 		IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.ASSIGNED, false);
