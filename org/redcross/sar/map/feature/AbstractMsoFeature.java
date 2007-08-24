@@ -123,7 +123,6 @@ public abstract class AbstractMsoFeature implements IMsoFeature {
 
 	public void setValue(int arg0, Object arg1) throws IOException, AutomationException {
 		// TODO Auto-generated method stub
-		
 	}
 	
 	public void setSpatialReference(ISpatialReference srs) throws IOException, AutomationException {

@@ -12,7 +12,6 @@ import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.MsoFeatureClass;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
@@ -56,10 +55,11 @@ public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoD
 	protected EnumSet<IMsoManagerIf.MsoClassCode> myInterests = null;
 
 	public AbstractMsoFeatureLayer(IMsoManagerIf.MsoClassCode classCode, 
-			IMsoFeatureLayer.LayerCode layerCode, IMsoModelIf msoModel) {
+			IMsoFeatureLayer.LayerCode layerCode, IMsoModelIf msoModel, ISpatialReference srs) {
 		this.classCode = classCode;
 		this.layerCode = layerCode;
 		this.msoModel = msoModel;
+		this.srs = srs;
 		featureClass = new MsoFeatureClass();
 		name = Utils.translate(layerCode);
 		
@@ -84,17 +84,20 @@ public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoD
 			
 			if (type == EventType.ADDED_REFERENCE_EVENT.maskValue() && 
 					msoFeature == null) {
+				//System.out.println("ADDED_REFERENCE_EVENT "+classCode);
 				msoFeature = createMsoFeature(msoObj);
 				msoFC.addFeature(msoFeature);
 				//isDirty = true;
 			}
 			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && 
 					msoFeature != null && msoFeature.geometryIsChanged(msoObj)) {
+				//System.out.println("MODIFIED_DATA_EVENT "+classCode);
 				msoFeature.msoGeometryChanged();
 				isDirty = true;
 			}
 			else if (type == EventType.DELETED_OBJECT_EVENT.maskValue() && 
 					msoFeature != null) {
+				//System.out.println("DELETED_OBJECT_EVENT "+classCode);
 				msoFC.removeFeature(msoFeature);
 				isDirty = true;
 			}

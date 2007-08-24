@@ -1,20 +1,19 @@
 package org.redcross.sar.map.layer;
 
 import java.io.IOException;
-import java.util.Iterator;
+import java.net.UnknownHostException;
 
 import org.redcross.sar.map.feature.IMsoFeature;
-import org.redcross.sar.map.feature.MsoFeatureClass;
 import org.redcross.sar.map.feature.OperationAreaFeature;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 
 import com.esri.arcgis.display.IDisplay;
 import com.esri.arcgis.display.RgbColor;
 import com.esri.arcgis.display.SimpleFillSymbol;
 import com.esri.arcgis.display.SimpleLineSymbol;
+import com.esri.arcgis.geometry.ISpatialReference;
 import com.esri.arcgis.geometry.Polygon;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.system.ITrackCancel;
@@ -24,25 +23,12 @@ public class OperationAreaLayer extends AbstractMsoFeatureLayer {
 	private static final long serialVersionUID = 1L;
  	private SimpleFillSymbol symbol = null;
 	private SimpleFillSymbol selectionSymbol = null;
-	private boolean isInitiated = false;
  	
- 	public OperationAreaLayer(IMsoModelIf msoModel) {
+ 	public OperationAreaLayer(IMsoModelIf msoModel, ISpatialReference srs) {
  		super(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA, 
- 				LayerCode.OPERATION_AREA_LAYER, msoModel);
-	}
- 	
- 	private void initiate() throws IOException, AutomationException {
+ 				LayerCode.OPERATION_AREA_LAYER, msoModel, srs);
  		createSymbols();
- 		MsoFeatureClass msoFC = (MsoFeatureClass)featureClass;
- 		ICmdPostIf cmdPost = msoModel.getMsoManager().getCmdPost();
- 		Iterator iter = cmdPost.getOperationAreaListItems().iterator();
- 		while(iter.hasNext()) {
- 			IMsoObjectIf msoObj = (IMsoObjectIf)iter.next();
- 			IMsoFeature msoFeature = createMsoFeature(msoObj);
- 			msoFC.addFeature(msoFeature);
- 		}
- 		isInitiated = true;
- 	}
+	}
  	
  	protected IMsoFeature createMsoFeature(IMsoObjectIf msoObject) 
  			throws IOException, AutomationException {
@@ -58,7 +44,6 @@ public class OperationAreaLayer extends AbstractMsoFeatureLayer {
  			if (display == null || !this.isVisible) {
  				return;
  			}
- 			if (!isInitiated) initiate();
  			for (int i = 0; i < featureClass.featureCount(null); i++) {
  				IMsoFeature feature = (IMsoFeature)featureClass.getFeature(i);
  				Polygon polygon = (Polygon)feature.getShape();
@@ -75,28 +60,39 @@ public class OperationAreaLayer extends AbstractMsoFeatureLayer {
  		}
  	}
 
- 	private void createSymbols() throws IOException, AutomationException {
- 		symbol = new SimpleFillSymbol();
- 		symbol.setStyle(com.esri.arcgis.display.esriSimpleFillStyle.esriSFSNull);
+ 	private void createSymbols() {
+ 		try {
+			symbol = new SimpleFillSymbol();
+			symbol.setStyle(com.esri.arcgis.display.esriSimpleFillStyle.esriSFSNull);
 
- 		RgbColor c = new RgbColor();
- 		c.setRed(255);
- 		c.setBlue(255);
+			RgbColor c = new RgbColor();
+			c.setRed(255);
+			c.setBlue(255);
 
- 		SimpleLineSymbol outlineSymbol = new SimpleLineSymbol();	
- 		outlineSymbol.setWidth(1.5);
- 		outlineSymbol.setColor(c);
- 		symbol.setOutline(outlineSymbol);
+			SimpleLineSymbol outlineSymbol = new SimpleLineSymbol();	
+			outlineSymbol.setWidth(1.5);
+			outlineSymbol.setColor(c);
+			symbol.setOutline(outlineSymbol);
 
- 		selectionSymbol = new SimpleFillSymbol();
- 		selectionSymbol.setStyle(com.esri.arcgis.display.esriSimpleFillStyle.esriSFSNull);
- 		c = new RgbColor();
- 		c.setBlue(255);
- 		c.setGreen(255);
+			selectionSymbol = new SimpleFillSymbol();
+			selectionSymbol.setStyle(com.esri.arcgis.display.esriSimpleFillStyle.esriSFSNull);
+			c = new RgbColor();
+			c.setBlue(255);
+			c.setGreen(255);
 
- 		SimpleLineSymbol selectedOutlineSymbol = new SimpleLineSymbol();	
- 		selectedOutlineSymbol.setWidth(1.5);
- 		selectedOutlineSymbol.setColor(c);
- 		selectionSymbol.setOutline(selectedOutlineSymbol);
+			SimpleLineSymbol selectedOutlineSymbol = new SimpleLineSymbol();	
+			selectedOutlineSymbol.setWidth(1.5);
+			selectedOutlineSymbol.setColor(c);
+			selectionSymbol.setOutline(selectedOutlineSymbol);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (AutomationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
  	}
 }

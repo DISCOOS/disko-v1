@@ -39,41 +39,29 @@ public class SelectFeatureTool extends AbstractCommandTool {
 	}
 
 	public void onMouseDown(int button, int shift, int x, int y)
-			throws IOException, AutomationException {
+	throws IOException, AutomationException {
 		p.setX(x);
 		p.setY(y); 
 		transform(p);
-		Runnable r = new Runnable() {
-			public void run() {
-				try {
-					List layers = map.getMapManager().getMsoLayers();
-					for (int i = 0; i < layers.size(); i++) {
-						IMsoFeatureLayer layer = (IMsoFeatureLayer)layers.get(i);
-						if (layer.isSelectable()) {
-							layer.clearSelected();
-						}
-					}
-					for (int i = 0; i < layers.size(); i++) {
-						IMsoFeatureLayer layer = (IMsoFeatureLayer)layers.get(i);
-						if (layer.isSelectable()) {
-							MsoFeatureClass fc = (MsoFeatureClass)layer.getFeatureClass();
-							IFeature feature = search(fc, p);
-							if (feature != null && feature instanceof IMsoFeature) {
-								layer.setSelected((IMsoFeature)feature, true);
-								map.partialRefresh(layer, null);
-								break;
-							}
-						}
-					}
-				} catch (AutomationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+
+		List layers = map.getMapManager().getMsoLayers();
+		for (int i = 0; i < layers.size(); i++) {
+			IMsoFeatureLayer layer = (IMsoFeatureLayer)layers.get(i);
+			if (layer.isSelectable()) {
+				layer.clearSelected();
+			}
+		}
+		for (int i = 0; i < layers.size(); i++) {
+			IMsoFeatureLayer layer = (IMsoFeatureLayer)layers.get(i);
+			if (layer.isSelectable()) {
+				MsoFeatureClass fc = (MsoFeatureClass)layer.getFeatureClass();
+				IFeature feature = search(fc, p);
+				if (feature != null && feature instanceof IMsoFeature) {
+					layer.setSelected((IMsoFeature)feature, true);
+					map.partialRefresh(layer, null);
+					break;
 				}
 			}
-		};
-		SwingUtilities.invokeLater(r);
+		}
 	}
 }

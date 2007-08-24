@@ -21,8 +21,10 @@ import org.redcross.sar.map.layer.SearchAreaLayer;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.util.MapInfoComparator;
 
+import com.esri.arcgis.beans.map.MapBean;
 import com.esri.arcgis.carto.ILayer;
 import com.esri.arcgis.carto.IMap;
+import com.esri.arcgis.geometry.ISpatialReference;
 import com.esri.arcgis.interop.AutomationException;
 
 public class DiskoMapManagerImpl implements IDiskoMapManager {
@@ -34,19 +36,32 @@ public class DiskoMapManagerImpl implements IDiskoMapManager {
 	private String secondaryMxdDoc = null;
 	private boolean primarActive = true;
 	private ArrayList<String> sMxdPaths = new ArrayList<String>();
-
 	
 	public DiskoMapManagerImpl(IDiskoApplication app) {
 		this.app = app;
 		maps = new ArrayList<DiskoMap>();
 		
 		msoLayers = new ArrayList<AbstractMsoFeatureLayer>();
-		msoLayers.add(new POILayer(app.getMsoModel()));
-		msoLayers.add(new PlannedAreaLayer(app.getMsoModel()));
-		msoLayers.add(new FlankLayer(app.getMsoModel()));
-		msoLayers.add(new SearchAreaLayer(app.getMsoModel()));
-		msoLayers.add(new OperationAreaLayer(app.getMsoModel()));
-		msoLayers.add(new OperationAreaMaskLayer(app.getMsoModel()));
+		
+		// hack to get spatial referense before any map has been initialized
+		ISpatialReference srs = null;
+		try {
+			MapBean mapBean = new MapBean();
+			mapBean.loadMxFile(app.getProperty("MxdDocument.path"), null, null);
+			srs = mapBean.getSpatialReference();
+		} catch (AutomationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		msoLayers.add(new POILayer(app.getMsoModel(),srs));
+		msoLayers.add(new PlannedAreaLayer(app.getMsoModel(),srs));
+		msoLayers.add(new FlankLayer(app.getMsoModel(),srs));
+		msoLayers.add(new SearchAreaLayer(app.getMsoModel(),srs));
+		msoLayers.add(new OperationAreaLayer(app.getMsoModel(),srs));
+		msoLayers.add(new OperationAreaMaskLayer(app.getMsoModel(),srs));
 		setInitMxdPaths();		
 	}
 
@@ -214,7 +229,6 @@ public class DiskoMapManagerImpl implements IDiskoMapManager {
 	}
 	
 	public void initWMSLayers() throws IOException{
-		System.out.println("initWMSLayers");
 		DiskoWMSLayer wms = new DiskoWMSLayer();
 		DiskoMap map = (DiskoMap) app.getCurrentMap();
 		IMap focusMap = map.getActiveView().getFocusMap();
