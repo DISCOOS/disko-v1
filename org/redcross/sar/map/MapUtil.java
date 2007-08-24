@@ -165,4 +165,56 @@ public class MapUtil {
 		point.putCoordsFromMGRS(mgrs, esriMGRSModeEnum.esriMGRSMode_NewStyle);
 		return new Position(null, point.getX(), point.getY());
 	}
+	
+	/**
+	 * Calculate great circle distance in meters.
+	 * 
+	 * @param lat1 - Latitude of origin point in decimal degrees
+	 * @param lon1 - longitude of origin point in deceimal degrees
+	 * @param lat2 - latitude of destination point in decimal degrees
+	 * @param lon2 - longitude of destination point in decimal degrees
+	 * 
+	 * @return metricDistance - great circle distance in meters
+	 */
+	public static double greatCircleDistance(double lat1, double lon1, double lat2, double lon2) {
+		double R = 6367444.6571; // mean polar and equatorial radius (WGS84)
+		double dLat = Math.toRadians(lat2-lat1);
+		double dLon = Math.toRadians(lon2-lon1); 
+		double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+		        Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * 
+		        Math.sin(dLon/2) * Math.sin(dLon/2); 
+		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+		return R * c;
+	}
+	
+	
+	/**
+	 * Calculate Spherical Azimuth (Bearing) in degrees
+	 * 
+	 * @param lat0 - Latitude of origin point in decimal degrees
+	 * @param lon0 - longitude of origin point in deceimal degrees
+	 * @param lat  - latitude of destination point in decimal degrees
+	 * @param lon  - longitude of destination point in decimal degrees
+	 * 
+	 * @return Spherical Azimuth (Bearing) in degrees
+	 */
+	public static double sphericalAzimuth(double lat0, double lon0, double lat, double lon) {
+		double radLat0 = Math.toRadians(lat0);
+		double radLon0 = Math.toRadians(lon0);
+		double radLat  = Math.toRadians(lat);
+		double radLon  = Math.toRadians(lon);
+		double diff = radLon - radLon0;
+		double coslat = Math.cos(radLat);
+
+		return Math.toDegrees(normalizeAngle(Math.atan2(
+			coslat * Math.sin(diff),
+			(Math.cos(radLat0) * Math.sin(radLat) -
+			Math.sin(radLat0) * coslat * Math.cos(diff))
+		)));
+	}
+	
+	public static double normalizeAngle(double angle) {
+		if (angle < 0) angle = 2*Math.PI + angle;
+		return angle;
+	}
 }
