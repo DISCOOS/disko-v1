@@ -9,6 +9,7 @@ import org.redcross.sar.mso.data.IMessageLineListIf;
 import org.redcross.sar.mso.data.IMessageLogIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.IPOIIf;
+import org.redcross.sar.mso.data.IMessageIf.MessageStatus;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
@@ -66,6 +67,13 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     {
         m_messageList = m_messageLog.selectItems(m_messageSelector, m_lineNumberComparator);
 
+        for(IMessageIf message : m_messageList)
+        {
+        	if(message.getStatus() == MessageStatus.UNCONFIRMED)
+        	{
+        	}
+        }
+        
         // Update hash map
         HashMap<Integer, Boolean> tempMap = new HashMap<Integer, Boolean>(m_rowExpandedMap);
         m_rowExpandedMap.clear();
@@ -78,10 +86,6 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
         		Boolean expanded = tempMap.get(messageNr);
         		m_rowExpandedMap.put(messageNr, expanded);
         	}
-//        	else
-//        	{
-//        		m_rowExpandedMap.put(new Integer(messageNr), new Boolean(false));
-//        	}	
         }
     }
 

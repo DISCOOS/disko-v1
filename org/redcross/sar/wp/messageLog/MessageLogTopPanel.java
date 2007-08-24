@@ -654,6 +654,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					
 					m_wpMessageLog.getMsoManager().commit();
 					
+					m_messageDirty = false;
+					
 					for(IEditMessageDialogIf dialog : m_dialogs)
 					{
 						dialog.hideDialog();
@@ -700,7 +702,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 							m_currentMessage.setStatus(MessageStatus.CONFIRMED);
 						}
 						
-						// TODO handle assignments
+						// Handle assignments
 						updateAssignments();
 
 						clearPanelContents();

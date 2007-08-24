@@ -104,27 +104,15 @@ public class MessageRowSelectionListener implements ListSelectionListener
 		int numRows = 0;
 		String[] strings = (String[])m_messageTable.getValueAt(rowIndex, 4);
 		
-		// TODO handle long single lines as well. 
+		
 		for(int i=0; i<strings.length; i++)
 		{
-			int numLinesString = strings[i].split("\n").length;
+			String[] multiline = strings[i].split("\n");
+			int numLinesString = multiline.length;
+			// TODO handle long single lines as well.
 			numRows += Math.max(1, numLinesString);
 		}
 		
 		return numRows;
 	}
-
-//	public void handleMsoUpdateEvent(Update e)
-//	{
-//		int messageNr = MessageLogTopPanel.getCurrentMessage().getNumber();
-//		setRowExpanded(messageNr);
-//	}
-//
-//	 private final EnumSet<IMsoManagerIf.MsoClassCode> myInterests = EnumSet.of(
-//	    		IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGE,
-//	    		IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGELINE);
-//	public boolean hasInterestIn(IMsoObjectIf msoObject)
-//	{
-//		return myInterests.contains(msoObject.getMsoClassCode());
-//	}
 }

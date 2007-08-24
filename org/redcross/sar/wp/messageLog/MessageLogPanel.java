@@ -91,7 +91,7 @@ public class MessageLogPanel
 
         m_logTable = new JTable();
         m_scrollPane1.setViewportView(m_logTable);
-
+        
         m_rowSelectionListener = new MessageRowSelectionListener(m_topPanel);
         m_logTable.getSelectionModel().addListSelectionListener(m_rowSelectionListener);
 
@@ -129,7 +129,9 @@ public class MessageLogPanel
 
         // Init custom renderer
         column = m_logTable.getColumnModel().getColumn(4);
-        column.setCellRenderer(new MessageTableRenderer());
+        column.setCellRenderer(new MessageTableRenderer(m_messageLog));
+        m_logTable.setDefaultRenderer(m_logTable.getColumnClass(0), new MessageTableRenderer(m_messageLog));
+      
 
         JTableHeader tableHeader = m_logTable.getTableHeader();
         tableHeader.setResizingAllowed(false);

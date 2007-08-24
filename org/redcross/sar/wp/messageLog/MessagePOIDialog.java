@@ -353,8 +353,13 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 			IMessageLineIf messageLine = message.findMessageLine(MessageLineType.FINDING, false);
 			if(messageLine != null)
 			{
-				POIType type = messageLine.getLinePOI().getType();
-				m_poiTypesComboBox.setSelectedItem(type);
+				IPOIIf poi = messageLine.getLinePOI();
+				// TODO should not occur, remove test when fixed (thomas, aka gro, 24.08.07)
+				if(poi != null)
+				{
+					POIType type = messageLine.getLinePOI().getType();
+					m_poiTypesComboBox.setSelectedItem(type);
+				}
 			}
 		}
 	}
