@@ -13,7 +13,6 @@ import com.esri.arcgis.display.IDisplay;
 import com.esri.arcgis.display.RgbColor;
 import com.esri.arcgis.display.SimpleFillSymbol;
 import com.esri.arcgis.display.SimpleLineSymbol;
-import com.esri.arcgis.geometry.ISpatialReference;
 import com.esri.arcgis.geometry.Polygon;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.system.ITrackCancel;
@@ -24,9 +23,9 @@ public class OperationAreaLayer extends AbstractMsoFeatureLayer {
  	private SimpleFillSymbol symbol = null;
 	private SimpleFillSymbol selectionSymbol = null;
  	
- 	public OperationAreaLayer(IMsoModelIf msoModel, ISpatialReference srs) {
+ 	public OperationAreaLayer(IMsoModelIf msoModel) {
  		super(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA, 
- 				LayerCode.OPERATION_AREA_LAYER, msoModel, srs);
+ 				LayerCode.OPERATION_AREA_LAYER, msoModel);
  		createSymbols();
 	}
  	

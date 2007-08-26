@@ -44,6 +44,7 @@ public class FlankFeature extends AbstractMsoFeature {
 
 	@Override
 	public void msoGeometryChanged() throws IOException, AutomationException {
+		if (srs == null) return;
 		IAreaIf area = (IAreaIf)msoObject;
 		geoList = area.getGeodata();
 		if (geoList != null) {

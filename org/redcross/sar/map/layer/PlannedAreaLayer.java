@@ -23,7 +23,6 @@ import com.esri.arcgis.display.esriSimpleLineStyle;
 import com.esri.arcgis.geometry.GeometryBag;
 import com.esri.arcgis.geometry.IGeometry;
 import com.esri.arcgis.geometry.IPolyline;
-import com.esri.arcgis.geometry.ISpatialReference;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.system.ITrackCancel;
 
@@ -35,9 +34,9 @@ public class PlannedAreaLayer extends AbstractMsoFeatureLayer {
 	private SimpleLineSymbol defaultLineSymbol = null;
 	private TextSymbol textSymbol = null;
  	
- 	public PlannedAreaLayer(IMsoModelIf msoModel, ISpatialReference srs) {
+ 	public PlannedAreaLayer(IMsoModelIf msoModel) {
  		super(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA,
- 				LayerCode.AREA_LAYER, msoModel, srs);
+ 				LayerCode.AREA_LAYER, msoModel);
  		symbols = new Hashtable<SearchSubType, SimpleLineSymbol>();
  		createSymbols();
 	}

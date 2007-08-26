@@ -21,6 +21,7 @@ public class POIFeature extends AbstractMsoFeature {
 
 	@Override
 	public void msoGeometryChanged() throws IOException, AutomationException {
+		if (srs == null) return;
 		IPOIIf poi = (IPOIIf)msoObject;
 		pos = poi.getPosition();
 		if (pos != null) {

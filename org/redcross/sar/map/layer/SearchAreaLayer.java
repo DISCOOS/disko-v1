@@ -16,7 +16,6 @@ import com.esri.arcgis.display.RgbColor;
 import com.esri.arcgis.display.SimpleFillSymbol;
 import com.esri.arcgis.display.SimpleLineSymbol;
 import com.esri.arcgis.display.TextSymbol;
-import com.esri.arcgis.geometry.ISpatialReference;
 import com.esri.arcgis.geometry.Polygon;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.system.ITrackCancel;
@@ -29,9 +28,9 @@ public class SearchAreaLayer extends AbstractMsoFeatureLayer {
 	private TextSymbol textSymbol = null;
 	private String[] labels = null;
  	
- 	public SearchAreaLayer(IMsoModelIf msoModel,  ISpatialReference srs) {
+ 	public SearchAreaLayer(IMsoModelIf msoModel) {
  		super(IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA, 
- 				LayerCode.SEARCH_AREA_LAYER, msoModel, srs);
+ 				LayerCode.SEARCH_AREA_LAYER, msoModel);
  		createlabels();
  		createSymbols();
 	}

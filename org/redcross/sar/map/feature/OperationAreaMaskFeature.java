@@ -21,6 +21,7 @@ public class OperationAreaMaskFeature extends AbstractMsoFeature {
 	}
 
 	public void msoGeometryChanged() throws IOException, AutomationException {
+		if (srs == null) return;
 		IOperationAreaIf opArea = (IOperationAreaIf)msoObject;
 		polygon = opArea.getGeodata();
 		if (polygon != null) {

@@ -23,7 +23,6 @@ import com.esri.arcgis.display.SimpleMarkerSymbol;
 import com.esri.arcgis.display.TextSymbol;
 import com.esri.arcgis.display.esriSimpleMarkerStyle;
 import com.esri.arcgis.display.esriTextHorizontalAlignment;
-import com.esri.arcgis.geometry.ISpatialReference;
 import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.system.ITrackCancel;
@@ -35,9 +34,9 @@ public class POILayer extends AbstractMsoFeatureLayer {
 	private TextSymbol textSymbol = null;
 	private Hashtable<POIType, IDisplayName> symbols = null;
  	
- 	public POILayer(IMsoModelIf msoModel, ISpatialReference srs) {
+ 	public POILayer(IMsoModelIf msoModel) {
  		super(IMsoManagerIf.MsoClassCode.CLASSCODE_POI,
- 				LayerCode.POI_LAYER, msoModel, srs);
+ 				LayerCode.POI_LAYER, msoModel);
  		symbols = new Hashtable<POIType, IDisplayName>();
  		createSymbols();
 	}

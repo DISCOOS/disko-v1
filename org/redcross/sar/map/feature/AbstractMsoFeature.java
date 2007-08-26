@@ -127,6 +127,9 @@ public abstract class AbstractMsoFeature implements IMsoFeature {
 	
 	public void setSpatialReference(ISpatialReference srs) throws IOException, AutomationException {
 		this.srs = srs;
+		if (msoObject != null) {
+			msoGeometryChanged();
+		}
 	}
 
 	public ISpatialReference getSpatialReference() throws IOException, AutomationException {

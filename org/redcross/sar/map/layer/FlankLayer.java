@@ -15,7 +15,6 @@ import com.esri.arcgis.display.LineFillSymbol;
 import com.esri.arcgis.display.RgbColor;
 import com.esri.arcgis.display.SimpleLineSymbol;
 import com.esri.arcgis.geometry.IPolygon;
-import com.esri.arcgis.geometry.ISpatialReference;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.system.ITrackCancel;
 
@@ -25,9 +24,9 @@ public class FlankLayer extends AbstractMsoFeatureLayer {
 	private LineFillSymbol blueFill = null;
 	private LineFillSymbol redFill  = null;
 	
-	public FlankLayer(IMsoModelIf msoModel, ISpatialReference srs) {
+	public FlankLayer(IMsoModelIf msoModel) {
 		super(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA,
-				LayerCode.FLANK_LAYER, msoModel, srs);
+				LayerCode.FLANK_LAYER, msoModel);
 		createSymbols();
 	}
 	

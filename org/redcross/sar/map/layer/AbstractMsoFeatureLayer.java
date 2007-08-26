@@ -55,11 +55,10 @@ public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoD
 	protected EnumSet<IMsoManagerIf.MsoClassCode> myInterests = null;
 
 	public AbstractMsoFeatureLayer(IMsoManagerIf.MsoClassCode classCode, 
-			IMsoFeatureLayer.LayerCode layerCode, IMsoModelIf msoModel, ISpatialReference srs) {
+			IMsoFeatureLayer.LayerCode layerCode, IMsoModelIf msoModel) {
 		this.classCode = classCode;
 		this.layerCode = layerCode;
 		this.msoModel = msoModel;
-		this.srs = srs;
 		featureClass = new MsoFeatureClass();
 		name = Utils.translate(layerCode);
 		
@@ -171,7 +170,9 @@ public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoD
 		ArrayList<IMsoObjectIf> selection = new ArrayList<IMsoObjectIf>();
 		for (int i = 0; i < featureClass.featureCount(null); i++) {
 			IMsoFeature feature = (IMsoFeature)featureClass.getFeature(i);
-			selection.add(feature.getMsoObject());
+			if (feature.isSelected()) {
+				selection.add(feature.getMsoObject());
+			}
 		}
 		return selection;
 	}
@@ -247,6 +248,10 @@ public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoD
 	public void setSpatialReferenceByRef(ISpatialReference srs)
 			throws IOException, AutomationException {
 		this.srs = srs;
+		for (int i = 0; i < featureClass.featureCount(null); i++) {
+			IMsoFeature feature = (IMsoFeature)featureClass.getFeature(i);
+			feature.setSpatialReference(srs);
+		}
 	}
 
 	public ISpatialReference getSpatialReference() throws IOException, AutomationException {

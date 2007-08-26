@@ -10,21 +10,19 @@ import javax.swing.filechooser.FileSystemView;
 
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.map.layer.AbstractMsoFeatureLayer;
-import org.redcross.sar.map.layer.PlannedAreaLayer;
 import org.redcross.sar.map.layer.DiskoWMSLayer;
 import org.redcross.sar.map.layer.FlankLayer;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.map.layer.OperationAreaLayer;
 import org.redcross.sar.map.layer.OperationAreaMaskLayer;
 import org.redcross.sar.map.layer.POILayer;
+import org.redcross.sar.map.layer.PlannedAreaLayer;
 import org.redcross.sar.map.layer.SearchAreaLayer;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.util.MapInfoComparator;
 
-import com.esri.arcgis.beans.map.MapBean;
 import com.esri.arcgis.carto.ILayer;
 import com.esri.arcgis.carto.IMap;
-import com.esri.arcgis.geometry.ISpatialReference;
 import com.esri.arcgis.interop.AutomationException;
 
 public class DiskoMapManagerImpl implements IDiskoMapManager {
@@ -42,26 +40,12 @@ public class DiskoMapManagerImpl implements IDiskoMapManager {
 		maps = new ArrayList<DiskoMap>();
 		
 		msoLayers = new ArrayList<AbstractMsoFeatureLayer>();
-		
-		// hack to get spatial referense before any map has been initialized
-		ISpatialReference srs = null;
-		try {
-			MapBean mapBean = new MapBean();
-			mapBean.loadMxFile(app.getProperty("MxdDocument.path"), null, null);
-			srs = mapBean.getSpatialReference();
-		} catch (AutomationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		msoLayers.add(new POILayer(app.getMsoModel(),srs));
-		msoLayers.add(new PlannedAreaLayer(app.getMsoModel(),srs));
-		msoLayers.add(new FlankLayer(app.getMsoModel(),srs));
-		msoLayers.add(new SearchAreaLayer(app.getMsoModel(),srs));
-		msoLayers.add(new OperationAreaLayer(app.getMsoModel(),srs));
-		msoLayers.add(new OperationAreaMaskLayer(app.getMsoModel(),srs));
+		msoLayers.add(new POILayer(app.getMsoModel()));
+		msoLayers.add(new PlannedAreaLayer(app.getMsoModel()));
+		msoLayers.add(new FlankLayer(app.getMsoModel()));
+		msoLayers.add(new SearchAreaLayer(app.getMsoModel()));
+		msoLayers.add(new OperationAreaLayer(app.getMsoModel()));
+		msoLayers.add(new OperationAreaMaskLayer(app.getMsoModel()));
 		setInitMxdPaths();		
 	}
 

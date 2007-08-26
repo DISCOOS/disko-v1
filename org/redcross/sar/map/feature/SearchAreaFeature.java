@@ -20,6 +20,7 @@ public class SearchAreaFeature extends AbstractMsoFeature {
 
 	@Override
 	public void msoGeometryChanged() throws IOException, AutomationException {
+		if (srs == null) return;
 		ISearchAreaIf searchArea = (ISearchAreaIf)msoObject;
 		polygon = searchArea.getGeodata();
 		if (polygon != null) {
