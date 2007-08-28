@@ -333,6 +333,8 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 						e.printStackTrace();
 					}
 				}
+				JList elementList = getElementDialog().getElementList();
+				search.setSubType((ISearchIf.SearchSubType)elementList.getSelectedValue());
 				SearchRequirementDialog dialog = getSearchRequirementDialog();
 				search.setPriority(dialog.getPriority());
 				search.setRemarks(dialog.getRemarks());
