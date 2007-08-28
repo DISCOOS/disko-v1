@@ -22,6 +22,7 @@ public class UIFactory {
 	private LoginDialog loginDialog = null;
 	private NumPadDialog numPadDialog = null;
 	private MapOptionDialog mapOptionDialog = null;
+	private TaskDialog taskDialog = null;
 	
 	private Dimension largeButtonSize = null;
 	private Dimension smallButtonSize = null;
@@ -89,6 +90,13 @@ public class UIFactory {
 		
 		mapOptionDialog.setLocation(200, 200);
 		return mapOptionDialog;
+	}
+	
+	public TaskDialog getTaskDialog(){
+		if(taskDialog == null){
+			taskDialog = new TaskDialog(app.getFrame());
+		}
+		return taskDialog;
 	}
 	
 	/**
