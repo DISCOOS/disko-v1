@@ -405,6 +405,48 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		
 		this.setVisible(true);
 	}
+	
+//	/**
+//	 * Pan to current POI object in map
+//	 */
+//	private void panToPOI()
+//	{
+//		// Pan to object
+//		POIType type = getSelectedPOIType();
+//		IMessageLineIf line = null;
+//		IPOIIf poi = null;
+//		if(type == POIType.GENERAL)
+//		{
+//			line = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.POI, false);
+//		}
+//		else
+//		{
+//			line = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.FINDING, false);
+//		}
+//
+//		if(line != null)
+//		{
+//			poi = line.getLinePOI();
+//
+//			if(poi != null)
+//			{
+//				IDiskoMap map = m_wpMessageLog.getMap();
+//				try
+//				{
+//					map.zoomToMsoObject(poi);
+//					System.err.print("zoom");
+//				} 
+//				catch (AutomationException e)
+//				{
+//					e.printStackTrace();
+//				} 
+//				catch (IOException e)
+//				{
+//					e.printStackTrace();
+//				}
+//			}
+//		}
+//	}
 
 	public IDiskoWpMessageLog getWP()
 	{

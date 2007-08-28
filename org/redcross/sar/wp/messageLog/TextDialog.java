@@ -46,6 +46,8 @@ public class TextDialog extends DiskoDialog implements IEditMessageDialogIf
 		gbc.gridheight = 2;
 		gbc.weightx = 1.0;
 		m_textArea = new JTextArea();
+		m_textArea.setLineWrap(true);
+		m_textArea.setWrapStyleWord(true);
 		m_textScroll = new JScrollPane(m_textArea);
 		this.add(m_textScroll, gbc);
 	}

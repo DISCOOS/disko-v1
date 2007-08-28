@@ -172,21 +172,11 @@ public class MessageLogPanel
 
     public static void showMap()
     {
-        if (m_bottomPanel == null)
+        if (m_bottomPanel != null)
         {
-            return;
-        } 
-       
-        
-        Runnable r = new Runnable(){
-            public void run() {
-            	
-            	 CardLayout cards = (CardLayout) m_bottomPanel.getLayout();
-                 cards.show(m_bottomPanel, MAP_ID);
-            }
-        };
-        SwingUtilities.invokeLater(r);
-        
+        	CardLayout cards = (CardLayout) m_bottomPanel.getLayout();
+            cards.show(m_bottomPanel, MAP_ID);     
+        }
     }
 
     public static void hideMap()

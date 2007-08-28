@@ -17,7 +17,6 @@ import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
-import org.redcross.sar.util.AssignmentTransferUtilities;
 import org.redcross.sar.util.mso.DTG;
 import org.redcross.sar.util.mso.Selector;
 
@@ -57,6 +56,11 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			m_currentMessageNr = m_currentMessage.getNumber();
 		}
 		return m_currentMessage;
+	}
+	
+	public static boolean isNewMessage()
+	{
+		return m_newMessage;
 	}
 
 	private MessageLineType m_currentMessageLineType = null;
@@ -101,9 +105,9 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	private static TextDialog m_textDialog;
 	private static MessagePOIDialog m_messagePOIDialog;
 	private static MessagePOIDialog m_messageFindingDialog;
-	private static AssignmentDialog m_messageAssignedDialog;
-	private static AssignmentDialog m_messageStartedDialog;
-	private static AssignmentDialog m_messageCompletedDialog;
+	private static AbstractAssignmentDialog m_messageAssignedDialog;
+	private static AbstractAssignmentDialog m_messageStartedDialog;
+	private static AbstractAssignmentDialog m_messageCompletedDialog;
 	private static LineListDialog m_messageListDialog;
 
     private JPanel m_taskPanel;
@@ -885,14 +889,14 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 							if(startedLine != null)
 							{
 								startedLine.deleteObject();
-								m_messageStartedDialog.lineRemoved();
+//								m_messageStartedDialog.lineRemoved();
 							}
 						case STARTED:
 							IMessageLineIf completeLine = m_currentMessage.findMessageLine(MessageLineType.COMPLETE, false);
 							if(completeLine != null)
 							{
 								completeLine.deleteObject();
-								m_messageCompletedDialog.lineRemoved();
+//								m_messageCompletedDialog.lineRemoved();
 							}
 						}
 						
@@ -1115,81 +1119,81 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		IAssignmentIf assignment = null;
 		
 		// Keep track of which lines are added
-		boolean assignLineAdded = m_messageAssignedDialog.lineAdded();
-		boolean startedLineAdded = m_messageStartedDialog.lineAdded();
-		boolean completedLineAdded = m_messageCompletedDialog.lineAdded();
+//		boolean assignLineAdded = m_messageAssignedDialog.lineAdded();
+//		boolean startedLineAdded = m_messageStartedDialog.lineAdded();
+//		boolean completedLineAdded = m_messageCompletedDialog.lineAdded();
+//		
+//		if(m_messageAssignedDialog != null)
+//		{
+//			m_messageAssignedDialog.lineRemoved();
+//		}
+//		if(m_messageStartedDialog != null)
+//		{
+//			m_messageStartedDialog.lineRemoved();
+//		}
+//		if(m_messageCompletedDialog != null)
+//		{
+//			m_messageCompletedDialog.lineRemoved();
+//		}
 		
-		if(m_messageAssignedDialog != null)
-		{
-			m_messageAssignedDialog.lineRemoved();
-		}
-		if(m_messageStartedDialog != null)
-		{
-			m_messageStartedDialog.lineRemoved();
-		}
-		if(m_messageCompletedDialog != null)
-		{
-			m_messageCompletedDialog.lineRemoved();
-		}
-		
-		if(assignLineAdded && unit != null)
-		{
-			assignment = assignedLine.getLineAssignment();
-			if(!AssignmentTransferUtilities.assignAssignmentToUnit(assignment, unit))
-			{
-				// Remove line, as it will not be assigned, cascade to depending lines
-				assignedLine.deleteObject();
-				if(startedLineAdded)
-				{
-					startedLine.deleteObject();
-					
-					if(completedLineAdded)
-					{
-						completeLine.deleteObject();
-					}
-				}
-				
-				error.showError(m_wpMessageLog.getText("CanNotAssignError.header"), 
-						m_wpMessageLog.getText("CanNotAssignError.details"));
-				
-				return;
-			}
-		}
-		
-		if(startedLineAdded && unit != null)
-		{
-			assignment = startedLine.getLineAssignment();
-			if(!AssignmentTransferUtilities.unitStartAssignment(unit, assignment))
-			{
-				// Remove line, assignment will not be started
-				startedLine.deleteObject();
-				if(completedLineAdded)
-				{
-					completeLine.deleteObject();
-				}
-				
-				error.showError(m_wpMessageLog.getText("CanNotStartError.header"),
-						m_wpMessageLog.getText("CanNotStartError.details"));
-				
-				return;
-			}
-		}
-		
-		if(completedLineAdded && unit != null)
-		{
-			assignment = completeLine.getLineAssignment();
-			if(!AssignmentTransferUtilities.unitCompleteAssignment(unit, assignment))
-			{
-				error.showError(m_wpMessageLog.getText("CanNotCompleteError.header"),
-						m_wpMessageLog.getText("CanNotCompleteError.details"));
-				
-				// Assignment could not be completed, remove message line
-				if(completeLine != null)
-				{
-					completeLine.deleteObject();
-				}
-			}
-		}	
+//		if(assignLineAdded && unit != null)
+//		{
+//			assignment = assignedLine.getLineAssignment();
+//			if(!AssignmentTransferUtilities.assignAssignmentToUnit(assignment, unit))
+//			{
+//				// Remove line, as it will not be assigned, cascade to depending lines
+//				assignedLine.deleteObject();
+//				if(startedLineAdded)
+//				{
+//					startedLine.deleteObject();
+//					
+//					if(completedLineAdded)
+//					{
+//						completeLine.deleteObject();
+//					}
+//				}
+//				
+//				error.showError(m_wpMessageLog.getText("CanNotAssignError.header"), 
+//						m_wpMessageLog.getText("CanNotAssignError.details"));
+//				
+//				return;
+//			}
+//		}
+//		
+//		if(startedLineAdded && unit != null)
+//		{
+//			assignment = startedLine.getLineAssignment();
+//			if(!AssignmentTransferUtilities.unitStartAssignment(unit, assignment))
+//			{
+//				// Remove line, assignment will not be started
+//				startedLine.deleteObject();
+//				if(completedLineAdded)
+//				{
+//					completeLine.deleteObject();
+//				}
+//				
+//				error.showError(m_wpMessageLog.getText("CanNotStartError.header"),
+//						m_wpMessageLog.getText("CanNotStartError.details"));
+//				
+//				return;
+//			}
+//		}
+//		
+//		if(completedLineAdded && unit != null)
+//		{
+//			assignment = completeLine.getLineAssignment();
+//			if(!AssignmentTransferUtilities.unitCompleteAssignment(unit, assignment))
+//			{
+//				error.showError(m_wpMessageLog.getText("CanNotCompleteError.header"),
+//						m_wpMessageLog.getText("CanNotCompleteError.details"));
+//				
+//				// Assignment could not be completed, remove message line
+//				if(completeLine != null)
+//				{
+//					completeLine.deleteObject();
+//				}
+//			}
+//		}	
 	}
 
 	private void createFindingButton()

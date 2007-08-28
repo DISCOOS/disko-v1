@@ -1,6 +1,7 @@
 package org.redcross.sar.wp.messageLog;
 
 import java.io.IOException;
+import java.util.Calendar;
 
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.map.AbstractCommandTool;
@@ -10,6 +11,7 @@ import org.redcross.sar.map.MapUtil;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IPOIIf;
+import org.redcross.sar.mso.data.ITaskIf;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
 
@@ -75,6 +77,11 @@ public class SinglePOITool extends AbstractCommandTool
 		{
 			// Update finding in message
 			messageLine = message.findMessageLine(MessageLineType.FINDING, true);
+			
+			// Need to add task
+			ITaskIf task = m_wpMessageLog.getMsoManager().createTask(Calendar.getInstance());
+			// TODO set: title/type, priority high
+			message.addMessageTask(task);
 		}
 		
 		IPOIIf poi = messageLine.getLinePOI();

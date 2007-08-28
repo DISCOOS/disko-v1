@@ -7,7 +7,6 @@ import javax.swing.JOptionPane;
 
 import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.mso.data.IAssignmentIf;
-import org.redcross.sar.mso.data.ICommunicatorIf;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IUnitIf;
@@ -18,11 +17,11 @@ import org.redcross.sar.util.mso.DTG;
 
 /**
  * Dialog for starting an assignment
- * See {@link AssignmentDialog} for details
+ * See {@link AbstractAssignmentDialog} for details
  * 
  * @author thomasl
  */
-public class StartedAssignmentDialog extends AssignmentDialog
+public class StartedAssignmentDialog extends AbstractAssignmentDialog
 {
 
 	public StartedAssignmentDialog(IDiskoWpMessageLog wp)
@@ -32,14 +31,13 @@ public class StartedAssignmentDialog extends AssignmentDialog
 		m_timeLabel.setText(m_wpMessageLog.getText("StartedTimeLabel.text") + ": ");
 	}
 
-	@Override
 	public void cancelUpdate()
 	{
-		if(m_lineAdded)
+		if(linesAdded())
 		{
 			IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.STARTED, false);
 			messageLine.deleteObject();
-			m_lineAdded = false;
+//			m_lineAdded = false;
 			
 			// Delete assigned message line if added
 			MessageLogTopPanel.cancelAssign();
@@ -47,115 +45,14 @@ public class StartedAssignmentDialog extends AssignmentDialog
 	}
 
 	@Override
-	public void showDialog()
+	protected void updateMessageLine()
 	{
-		this.setVisible(true);
-		
-		// Started button pressed i top panel
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
-		IAssignmentIf assignment = null;
-		IUnitIf unit =  (IUnitIf)MessageLogTopPanel.getCurrentMessage().getSingleReceiver();
-		if(messageHasStartedAssignment())
-		{
-			showHasAssignment();
-		}
-		else if(!(messageHasAssignedAssignment() || unitHasAssignedAssignment()))
-		{
-			// Message does not have an assignment line. Have to assign assignment first
-			Object[] options = {m_wpMessageLog.getText("yes.text"), m_wpMessageLog.getText("no.text")};
-			// The receiving unit has an assignment, prompt user whether unit has started or not
-			int n = JOptionPane.showOptionDialog(m_wpMessageLog.getApplication().getFrame(), 
-					String.format(m_wpMessageLog.getText("UnitHasNoAssignment.text"), unit.getTypeAndNumber()), 
-					m_wpMessageLog.getText("UnitHasNoAssignment.header"), 
-					JOptionPane.YES_NO_OPTION, 
-					JOptionPane.QUESTION_MESSAGE, 
-					null, 
-					options, 
-					options[0]);
-			if(n == JOptionPane.YES_OPTION)
-			{
-				// Show assign assignment dialog
-				MessageLogTopPanel.showAssignDialog();
-			}
-			else
-			{
-				fireDialogCanceled();
-			}
-		}
-		else
-		{
-			// Has assigned line or pre-existing assigned assignment, prompt user whether unit has started or not
-			IMessageLineIf assignmentLine = message.findMessageLine(MessageLineType.ASSIGNED, false);
-			if(assignmentLine != null)
-			{
-				assignment = assignmentLine.getLineAssignment();
-			}
-			else
-			{
-				// Unit got assigned an assignment in a different message
-				assignment = unit.getActiveAssignment();
-			}
-			
-			// Check that unit can accept assignment
-			if(!AssignmentTransferUtilities.unitCanAccept(unit, AssignmentStatus.EXECUTING))
-			{
-				ErrorDialog error = new ErrorDialog(m_wpMessageLog.getApplication().getFrame());
-				error.showError(m_wpMessageLog.getText("CanNotStartError.details"),
-						 m_wpMessageLog.getText("CanNotStartError.header"));
-				this.hideDialog();
-				return;
-			}
-				
-			hideDialog();
-			
-			Object[] options = {m_wpMessageLog.getText("yes.text"), m_wpMessageLog.getText("no.text")};
-			int n = JOptionPane.showOptionDialog(m_wpMessageLog.getApplication().getFrame(), 
-					String.format(m_wpMessageLog.getText("UnitStartedAssignment.text"), unit.getTypeAndNumber(), assignment.getTypeAndNumber()), 
-					m_wpMessageLog.getText("UnitStartedAssignment.header"), 
-					JOptionPane.YES_NO_OPTION, 
-					JOptionPane.QUESTION_MESSAGE, 
-					null, 
-					options, 
-					options[0]);
-			
-			if(n == JOptionPane.YES_OPTION)
-			{
-				
-					// Set assignment started
-					AssignmentTransferUtilities.createAssignmentChangeMessageLines(message, MessageLineType.STARTED, 
-							MessageLineType.STARTED, Calendar.getInstance(), assignment);
-					m_lineAdded = true;
-					
-				showDialog();
-			}
-			else
-			{
-				fireDialogCanceled();
-			}
-		}
-		
-	}
-
-
-	@Override
-	protected void updateMessage()
-	{
-		// Update time
-		IMessageLineIf line = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.STARTED, false);
-		if(line != null)
-		{
-			try
-			{
-				line.setOperationTime(DTG.DTGToCal(m_timeTextField.getText()));
-			}
-			catch(Exception e){}
-		}
+		super.updateMessageLine();
 		
 		// Perform action show in list
 		MessageLogTopPanel.showListDialog();
 	}
 
-	@Override
 	protected void showHasAssignment()
 	{
 		// Must have started message line to reach this point
@@ -169,44 +66,89 @@ public class StartedAssignmentDialog extends AssignmentDialog
 		m_timeTextField.setText(time);
 		
 		CardLayout layout = (CardLayout)m_cardsPanel.getLayout();
-		layout.show(m_cardsPanel, HAS_ASSIGNMENT_ID);
+		layout.show(m_cardsPanel, EDIT_ASSIGNMENT_ID);
 	}
 
-	@Override
-	public void newMessageSelected(IMessageIf message)
+	protected void updateAssignmentLineList()
 	{
-		IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.STARTED, false);
+		AssignmentListModel model = (AssignmentListModel)m_assignmentLineList.getModel();
+		model.setMessageLineType(MessageLineType.STARTED);
+	}
+
+	protected void addNewMessageLine()
+	{
+		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+		IUnitIf unit = (IUnitIf)message.getSingleReceiver();
 		IAssignmentIf assignment = null;
-		Calendar time = null;
 		
-		if(messageLine != null)
+		if(unitHasAssignedAssignment())
 		{
-			assignment = messageLine.getLineAssignment();
-			messageLine.getOperationTime();
+			// If unit has assigned, ask if this is started
+			assignment = unit.getActiveAssignment();
+
+			// Check that unit can accept assignment
+			if(!AssignmentTransferUtilities.unitCanAccept(unit, AssignmentStatus.EXECUTING))
+			{
+				ErrorDialog error = new ErrorDialog(m_wpMessageLog.getApplication().getFrame());
+				error.showError(m_wpMessageLog.getText("CanNotStartError.details"),
+						m_wpMessageLog.getText("CanNotStartError.header"));
+				this.hideDialog();
+				return;
+			}
+
+			hideDialog();
+
+			Object[] options = {m_wpMessageLog.getText("yes.text"), m_wpMessageLog.getText("no.text")};
+			int n = JOptionPane.showOptionDialog(m_wpMessageLog.getApplication().getFrame(), 
+					String.format(m_wpMessageLog.getText("UnitStartedAssignment.text"), unit.getTypeAndNumber(), assignment.getTypeAndNumber()), 
+					m_wpMessageLog.getText("UnitStartedAssignment.header"), 
+					JOptionPane.YES_NO_OPTION, 
+					JOptionPane.QUESTION_MESSAGE, 
+					null, 
+					options, 
+					options[0]);
+
+			if(n == JOptionPane.YES_OPTION)
+			{
+
+				// Set assignment started
+				AssignmentTransferUtilities.createAssignmentChangeMessageLines(message, MessageLineType.STARTED, 
+						MessageLineType.STARTED, Calendar.getInstance(), assignment);
+				// TODO Keep track of added lines
+
+				showDialog();
+
+			}
+			else
+			{
+				fireDialogCanceled();
+			}
+		}
+		else if(unitHasNextAssignment())
+		{
+			// TODO Else unit could have started from allocated buffer
+			showNextAssignment();
 		}
 		else
 		{
-			ICommunicatorIf communicator = message.getSingleReceiver();
-			if(communicator != null && communicator instanceof IUnitIf)
-			{
-				IUnitIf unit = (IUnitIf)communicator;
-				assignment = unit.getExecutingAssigment().isEmpty() ? null : unit.getExecutingAssigment().get(0);
-			}
+			// TODO Unit could have started from assignment pool
+			showAssignmentPool();
+		}
+	}
+
+	protected void addSelectedAssignment()
+	{
+		if(m_selectedAssignment != null)
+		{
+			IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+			// TODO Add started line with selected assignment
+			AssignmentTransferUtilities.createAssignmentChangeMessageLines(message, 
+					MessageLineType.ASSIGNED, 
+					MessageLineType.STARTED, 
+					Calendar.getInstance(), 
+					m_selectedAssignment);
 		}
 		
-		if(assignment != null)
-		{
-			if(time == null)
-			{
-				time = assignment.getTimeAssigned();
-			}
-			
-			m_assignmentLabel.setText(m_wpMessageLog.getText("AssignmentLabel.text") + ": " + assignment.getTypeAndNumber());
-			m_timeTextField.setText(DTG.CalToDTG(time));
-		}
-		else
-		{
-			this.hideDialog();
-		}
+		MessageLogTopPanel.showStartDialog();
 	}
 }
