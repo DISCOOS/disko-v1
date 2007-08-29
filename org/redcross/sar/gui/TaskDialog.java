@@ -89,7 +89,7 @@ public class TaskDialog extends DiskoDialog
 		addComponent(0, m_application.getProperty("TaskPriority.text"), m_priorityComboBox, 0, gbc);
 		
 		// Due
-		m_dueTextField = new JTextField();
+		m_dueTextField = new JTextField(3);
 		m_dueTextField.setText(String.valueOf(30));
 		addComponent(2, m_application.getProperty("TaskDue.text"), m_dueTextField, 1, gbc);
 		
@@ -99,7 +99,7 @@ public class TaskDialog extends DiskoDialog
 		addComponent(0, "Ansvarlig", m_responsibleComboBox, 0, gbc);
 		
 		// Alert
-		m_alertTextField = new JTextField();
+		m_alertTextField = new JTextField(3);
 		m_alertTextField.setText(String.valueOf(5));
 		addComponent(2, m_application.getProperty("TaskAlert.text"), m_alertTextField, 1, gbc);
 		
@@ -113,7 +113,7 @@ public class TaskDialog extends DiskoDialog
 		addComponent(0, m_application.getProperty("TaskStatus.text"), m_statusComboBox, 0, gbc);
 		
 		// Progress
-		m_progressTextField = new JTextField();
+		m_progressTextField = new JTextField(3);
 		m_progressTextField.setText(String.valueOf(0));
 		addComponent(2, m_application.getProperty("TaskProgress.text"), m_progressTextField, 1, gbc);
 		
