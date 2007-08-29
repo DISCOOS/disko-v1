@@ -1,6 +1,6 @@
 package org.redcross.sar.gui;
 
-import java.awt.Frame;
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -8,7 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -18,6 +17,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
 
+import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.mso.data.ITaskIf;
 import org.redcross.sar.wp.messageLog.DiskoButtonFactory;
 
@@ -29,6 +29,7 @@ import org.redcross.sar.wp.messageLog.DiskoButtonFactory;
 public class TaskDialog extends DiskoDialog
 {
 	private static final long serialVersionUID = 1L;
+	private IDiskoApplication m_application = null;
 	private JPanel m_contentsPanel = null;
 	
 	private ITaskIf m_currentTask = null;
@@ -39,17 +40,18 @@ public class TaskDialog extends DiskoDialog
 	private JTextField m_taskTextField = null;
 	private JComboBox m_typeComboBox = null;
 	private JComboBox m_priorityComboBox = null;
-	private JComboBox m_dueComboBox = null;
+	private JTextField m_dueTextField = null;
 	private JComboBox m_responsibleComboBox = null;
-	private JComboBox m_warningComboBox = null;
+	private JTextField m_alertTextField = null;
 	private JComboBox m_statusComboBox = null;
 	private JTextField m_progressTextField = null;
 	private JTextArea m_descriptionTextArea = null;
 	private JTextArea m_sourceTextArea = null;
 	
-	public TaskDialog(Frame owner)
+	public TaskDialog(IDiskoApplication application)
 	{
-		super(owner);
+		super(application.getFrame());
+		m_application = application;
 		initialize();
 	}
 	
@@ -66,59 +68,72 @@ public class TaskDialog extends DiskoDialog
 		// Task
 		m_taskTextField = new JTextField();
 		gbc.gridwidth = 3;
-		addComponent(0, "Oppgave", m_taskTextField, 1, gbc);
+		addComponent(0, m_application.getProperty("Task.text"), m_taskTextField, 1, gbc);
 		
 		// Type
-		Object[] types = {"Transport", "Ressurs", 
-				"Etterretning", "Generell"}; // TODO Update
+		Object[] types = {m_application.getProperty("TaskType.TRANSPORT.text"),
+				m_application.getProperty("TaskType.RESOURCE.text"), 
+				m_application.getProperty("TaskType.INTELLIGENCE.text"), 
+				m_application.getProperty("TaskType.GENERAL.text")};
 		m_typeComboBox = new JComboBox(types);
+		m_typeComboBox.setSelectedIndex(3);
 		gbc.gridwidth = 3;
-		addComponent(0, "Type", m_typeComboBox, 1, gbc);
+		addComponent(0, m_application.getProperty("TaskType.text"), m_typeComboBox, 1, gbc);
 		
 		// Priority
-		Object[] priorities = {"Høg", "Normal", "Lav"}; // TODO update
+		Object[] priorities = {m_application.getProperty("TaskPriority.HIGH.text"),
+				m_application.getProperty("TaskPriority.NORMAL.text"),
+				m_application.getProperty("TaskPriority.LOW.text")};
 		m_priorityComboBox = new JComboBox(priorities);
-		addComponent(0, "Prioritet", m_priorityComboBox, 0, gbc);
+		m_priorityComboBox.setSelectedIndex(1);
+		addComponent(0, m_application.getProperty("TaskPriority.text"), m_priorityComboBox, 0, gbc);
 		
 		// Due
-		Object[] dueTimes = {"5 min", "10 min", "30 min"}; // TODO
-		m_dueComboBox = new JComboBox(dueTimes);
-		addComponent(2, "Forfall", m_dueComboBox, 1, gbc);
+		m_dueTextField = new JTextField();
+		m_dueTextField.setText(String.valueOf(30));
+		addComponent(2, m_application.getProperty("TaskDue.text"), m_dueTextField, 1, gbc);
 		
 		// Responsible
-		Object[] responsible = {"NK", "SL"}; // TODO
+		Object[] responsible = {}; // TODO Get roles from current task wp?
 		m_responsibleComboBox = new JComboBox(responsible);
 		addComponent(0, "Ansvarlig", m_responsibleComboBox, 0, gbc);
 		
-		// Warning
-		Object[] warnings = {"5 min" , "10 min", "30 min"}; // TODO
-		m_warningComboBox = new JComboBox(warnings);
-		addComponent(2, "Varsel", m_warningComboBox, 1, gbc);
+		// Alert
+		m_alertTextField = new JTextField();
+		m_alertTextField.setText(String.valueOf(5));
+		addComponent(2, m_application.getProperty("TaskAlert.text"), m_alertTextField, 1, gbc);
 		
 		// Status
-		Object[] statuses = {"Ubehandlet", "Startet", "Utsatt", "Ferdig"}; // TODO
+		Object[] statuses = {m_application.getProperty("TaskStatus.UNTREATED.text"), 
+				m_application.getProperty("TaskStatus.STARTED.text"), 
+				m_application.getProperty("TaskStatus.POSTPONED.text"), 
+				m_application.getProperty("TaskStatus.FINISHED.text")};
 		m_statusComboBox = new JComboBox(statuses);
-		addComponent(0, "Status", m_statusComboBox, 0, gbc);
+		m_statusComboBox.setSelectedIndex(0);
+		addComponent(0, m_application.getProperty("TaskStatus.text"), m_statusComboBox, 0, gbc);
 		
 		// Progress
 		m_progressTextField = new JTextField();
-		addComponent(2, "Fremdrift", m_progressTextField, 1, gbc);
+		m_progressTextField.setText(String.valueOf(0));
+		addComponent(2, m_application.getProperty("TaskProgress.text"), m_progressTextField, 1, gbc);
 		
 		// Description
 		m_descriptionTextArea = new JTextArea();
-		m_descriptionTextArea.setRows(4);
+		m_descriptionTextArea.setRows(10);
+		m_descriptionTextArea.setBorder(BorderFactory.createLineBorder(Color.lightGray));
 		gbc.gridwidth = 3;
-		addComponent(0, "Beskrivelse", m_descriptionTextArea, 4, gbc);
+		addComponent(0, m_application.getProperty("TaskDescription.text"), m_descriptionTextArea, 10, gbc);
 		
 		// Source
 		m_sourceTextArea = new JTextArea();
 		m_sourceTextArea.setRows(4);
+		m_sourceTextArea.setBorder(BorderFactory.createLineBorder(Color.lightGray));
 		gbc.gridwidth = 3;
-		addComponent(0, "Kilde", m_sourceTextArea, 4, gbc);
+		addComponent(0, m_application.getProperty("TaskSource.text"), m_sourceTextArea, 4, gbc);
 		
 		// Finish button
 		JPanel actionButtonPanel = new JPanel();
-		m_finishedButton = DiskoButtonFactory.createSmallButton("Ferdig");
+		m_finishedButton = DiskoButtonFactory.createSmallButton(m_application.getProperty("ApplyButton.text"));
 		m_finishedButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -130,7 +145,7 @@ public class TaskDialog extends DiskoDialog
 		actionButtonPanel.add(m_finishedButton);
 		
 		// Cancel button
-		m_cancelButton = DiskoButtonFactory.createSmallButton("Avbryt");
+		m_cancelButton = DiskoButtonFactory.createSmallButton(m_application.getProperty("CancelButton.text"));
 		m_cancelButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -182,6 +197,6 @@ public class TaskDialog extends DiskoDialog
 	 */
 	private void updateFields()
 	{
-		
+		// TODO
 	}
 }
