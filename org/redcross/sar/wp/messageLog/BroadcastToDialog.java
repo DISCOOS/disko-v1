@@ -14,7 +14,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -39,6 +38,9 @@ import org.redcross.sar.mso.data.IUnitIf.UnitType;
  */
 public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialogIf
 {
+
+	private static final long serialVersionUID = 1L;
+
 	protected final int NUM_ROWS_COMMUNICATOR_LIST = 6;
 	
 	protected IDiskoWpMessageLog m_wpMessageLog = null;
@@ -117,6 +119,7 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialog
 	 * Builds buttons based on which communicators are present in the command post. Also stores mapping between these buttons and 
 	 * the communicator in a hash map
 	 */
+	@SuppressWarnings("null")
 	private void updateCommunicatorList()
 	{
 		m_listArea.removeAll();
@@ -144,8 +147,8 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialog
 				{
 					// Update message receiver lists. Toggle buttons gets updated through newMessageSelected, triggered by mso update
 					IMessageIf message = MessageLogTopPanel.getCurrentMessage();
-					JToggleButton button = (JToggleButton)e.getSource();
-					if(!button.isSelected())
+					JToggleButton toggleButton = (JToggleButton)e.getSource();
+					if(!toggleButton.isSelected())
 					{
 						// Button has been unselected
 						if(m_selectionMode)

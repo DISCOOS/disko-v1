@@ -24,6 +24,8 @@ import java.util.Calendar;
  */
 public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMessageDialogIf
 {
+	private static final long serialVersionUID = 1L;
+
 	private JPanel m_contentsPanel = null;
 
 	private JPanel m_createdPanel;

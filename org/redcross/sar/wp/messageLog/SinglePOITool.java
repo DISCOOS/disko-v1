@@ -28,7 +28,8 @@ import com.esri.arcgis.interop.AutomationException;
  */
 public class SinglePOITool extends AbstractCommandTool
 {
-
+	private static final long serialVersionUID = 1L;
+	
 	protected IDiskoApplication m_app;
 	protected IDiskoWpMessageLog m_wpMessageLog;
 

@@ -32,6 +32,8 @@ import java.util.List;
 
 public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, IDialogEventListener
 {
+	private static final long serialVersionUID = 1L;
+	
 	public final static int PANEL_HEIGHT = (MessageLogPanel.SMALL_BUTTON_SIZE.height) * 3 + 20;
 	public final static int SMALL_PANEL_WIDTH = 60;
 
@@ -1103,21 +1105,21 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	 */
 	private void updateAssignments()
 	{
-		ErrorDialog error = new ErrorDialog(m_wpMessageLog.getApplication().getFrame());
-		
-		IUnitIf unit = null;
-		ICommunicatorIf communicator = MessageLogTopPanel.getCurrentMessage().getSingleReceiver();
-		if(communicator != null && communicator instanceof IUnitIf)
-		{
-			unit = (IUnitIf)communicator;
-		}
-		
-		IMessageLineIf assignedLine = m_currentMessage.findMessageLine(MessageLineType.ASSIGNED, false);
-		IMessageLineIf startedLine = m_currentMessage.findMessageLine(MessageLineType.STARTED, false);
-		IMessageLineIf completeLine = m_currentMessage.findMessageLine(MessageLineType.COMPLETE, false);
-		
-		IAssignmentIf assignment = null;
-		
+//		ErrorDialog error = new ErrorDialog(m_wpMessageLog.getApplication().getFrame());
+//		
+//		IUnitIf unit = null;
+//		ICommunicatorIf communicator = MessageLogTopPanel.getCurrentMessage().getSingleReceiver();
+//		if(communicator != null && communicator instanceof IUnitIf)
+//		{
+//			unit = (IUnitIf)communicator;
+//		}
+//		
+//		IMessageLineIf assignedLine = m_currentMessage.findMessageLine(MessageLineType.ASSIGNED, false);
+//		IMessageLineIf startedLine = m_currentMessage.findMessageLine(MessageLineType.STARTED, false);
+//		IMessageLineIf completeLine = m_currentMessage.findMessageLine(MessageLineType.COMPLETE, false);
+//		
+//		IAssignmentIf assignment = null;
+//		
 		// Keep track of which lines are added
 //		boolean assignLineAdded = m_messageAssignedDialog.lineAdded();
 //		boolean startedLineAdded = m_messageStartedDialog.lineAdded();
@@ -1325,5 +1327,10 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	public static void cancelStarted()
 	{
 		m_messageStartedDialog.cancelUpdate();
+	}
+
+	public static boolean isMessageDirty()
+	{
+		return m_messageDirty;
 	}
 }

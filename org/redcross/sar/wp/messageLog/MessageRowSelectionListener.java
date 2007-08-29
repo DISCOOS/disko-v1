@@ -45,8 +45,18 @@ public class MessageRowSelectionListener implements ListSelectionListener
 		int messageNr = Integer.valueOf(messageNrString.split("\\s")[0]);
 		
 		// Toggle expanded
-		Boolean expanded = m_tableMode.isMessageExtended(messageNr);
-		m_tableMode.setMessageExtended(messageNr, !expanded);
+		Boolean expanded = m_tableMode.isMessageExpanded(messageNr);
+		if(expanded == null)
+		{
+			expanded = new Boolean(true);
+			m_tableMode.setMessageExpanded(messageNr, expanded);
+		}
+		else
+		{
+			expanded = !expanded;
+			m_tableMode.setMessageExpanded(messageNr, expanded);
+		}
+	
 		
 		// Set row height
 		if(expanded)

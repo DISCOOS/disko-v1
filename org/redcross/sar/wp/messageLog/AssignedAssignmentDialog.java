@@ -16,6 +16,7 @@ import org.redcross.sar.util.AssignmentTransferUtilities;
  */
 public class AssignedAssignmentDialog extends AbstractAssignmentDialog
 {
+	private static final long serialVersionUID = 1L;
 
 	public AssignedAssignmentDialog(IDiskoWpMessageLog wp)
 	{

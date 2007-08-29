@@ -49,9 +49,27 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
         navBar.showButtons(myInterests);
     }
 
-    @Override
+    @Override 
 	public void deactivated()
     {
+    	// Warn user that it work processes can't be changed if message is not committed
+//    	if(MessageLogTopPanel.isMessageDirty())
+//    	{
+//    		Object[] dialogOptions = {getText("yes.text"), getText("no.text")};
+//    		int n = JOptionPane.showOptionDialog(this.getApplication().getFrame(), 
+//    				getText("DirtyMessageWarning.text"), 
+//    				getText("DirtyMessageWarning.header"), 
+//    				JOptionPane.YES_NO_OPTION, 
+//    				JOptionPane.QUESTION_MESSAGE, 
+//    				null, 
+//    				dialogOptions, 
+//    				dialogOptions[0]);
+//    		if(n == JOptionPane.NO_OPTION)
+//    		{
+//    			return;
+//    		}
+//    	}
+//    	
     	super.deactivated();
     	m_logPanel.hideDialogs();
     	m_logPanel.clearSelection();
@@ -81,6 +99,6 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
     {
         // TODO Auto-generated method stub
     }
-    private String[] options = null;
+//    private String[] options = null;
 
 }

@@ -5,7 +5,6 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Calendar;
@@ -186,25 +185,33 @@ public abstract class AbstractAssignmentDialog extends DiskoDialog implements IE
 	protected void initEditAssignmentPanel()
 	{
 		m_editAssignmentPanel = new JPanel();
-		m_editAssignmentPanel.setLayout(new BoxLayout(m_editAssignmentPanel, BoxLayout.LINE_AXIS));
+		m_editAssignmentPanel.setLayout(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.weightx = 1.0;
+		gbc.weighty = 1.0;
 		
-		JPanel fieldPanel = new JPanel(new GridLayout(2, 2));
-		fieldPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		m_assignmentLabel = new JLabel(m_wpMessageLog.getText("AssignmentLabel.text") + ":");
-		fieldPanel.add(m_assignmentLabel);
+		m_editAssignmentPanel.add(m_assignmentLabel, gbc);
 		
+		gbc.gridx++;
 		m_assignmentTextLabel = new JLabel();
-		fieldPanel.add(m_assignmentTextLabel);
+		m_editAssignmentPanel.add(m_assignmentTextLabel, gbc);
 
+		gbc.gridx--;
+		gbc.gridy++;
 		m_timeLabel = new JLabel();
-		fieldPanel.add(m_timeLabel);
+		m_editAssignmentPanel.add(m_timeLabel, gbc);
 		
+		gbc.gridx++;
 		m_timeTextField = new JTextField(6);
-		fieldPanel.add(m_timeTextField);
-		m_editAssignmentPanel.add(fieldPanel);
+		m_editAssignmentPanel.add(m_timeTextField, gbc);
 		
-		JPanel actionButtonPanel = new JPanel();
-		actionButtonPanel.setLayout(new BoxLayout(actionButtonPanel, BoxLayout.PAGE_AXIS));
+		gbc.weightx = 0.0;
+		gbc.weighty = 0.0;
+		gbc.gridy--;
+		gbc.gridx++;
 		m_cancelEditButton = DiskoButtonFactory.createSmallCancelButton();
 		m_cancelEditButton.addActionListener(new ActionListener()
 		{
@@ -213,8 +220,9 @@ public abstract class AbstractAssignmentDialog extends DiskoDialog implements IE
 				fireDialogCanceled();
 			}
 		});
-		actionButtonPanel.add(m_cancelEditButton);
+		m_editAssignmentPanel.add(m_cancelEditButton, gbc);
 		
+		gbc.gridy++;
 		m_okEditButton = DiskoButtonFactory.createSmallOKButton();
 		m_okEditButton.addActionListener(new ActionListener()
 		{
@@ -223,8 +231,7 @@ public abstract class AbstractAssignmentDialog extends DiskoDialog implements IE
 				updateMessageLine();
 			}
 		});
-		actionButtonPanel.add(m_okEditButton);
-		m_editAssignmentPanel.add(actionButtonPanel);
+		m_editAssignmentPanel.add(m_okEditButton, gbc);
 		
 		m_cardsPanel.add(m_editAssignmentPanel, EDIT_ASSIGNMENT_ID);
 	}

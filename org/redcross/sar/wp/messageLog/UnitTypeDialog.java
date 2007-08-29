@@ -25,9 +25,9 @@ import org.redcross.sar.mso.data.IUnitIf.UnitType;
  */
 public class UnitTypeDialog extends DiskoDialog implements IEditMessageDialogIf
 {
-	private IDiskoWpMessageLog m_wp;
-	private JPanel m_contentsPanel = null;
+	private static final long serialVersionUID = 1L;
 	
+	private JPanel m_contentsPanel = null;
 	
 	private JButton m_aircraftButton = null;
 	private JButton m_boatButton = null;
@@ -41,7 +41,6 @@ public class UnitTypeDialog extends DiskoDialog implements IEditMessageDialogIf
 	public UnitTypeDialog(IDiskoWpMessageLog wp, JTextField textField)
 	{
 		super(wp.getApplication().getFrame());
-		m_wp = wp;
 	
 		m_textField = textField;
 		

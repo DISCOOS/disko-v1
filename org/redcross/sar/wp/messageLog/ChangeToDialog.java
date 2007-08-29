@@ -25,6 +25,8 @@ import org.redcross.sar.mso.data.IMessageIf;
  */
 public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf, IDialogEventListener
 {
+	private static final long serialVersionUID = 1L;
+	
 	protected JToggleButton m_broadcastButton;
 	protected JToggleButton m_nonBroadcastButton;
 	protected ButtonGroup m_buttonGroup;

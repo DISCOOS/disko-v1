@@ -14,6 +14,8 @@ import org.redcross.sar.util.mso.Selector;
 
 public class LineListDialog extends DiskoDialog implements IEditMessageDialogIf
 {
+	private static final long serialVersionUID = 1L;
+	
 	private JTable m_messageListTable;
 	private LineListTableModel m_messageTableModel;
 	private JScrollPane m_textScrollPane;

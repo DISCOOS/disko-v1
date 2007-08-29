@@ -15,6 +15,8 @@ import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
  */
 public class AssignmentListModel extends AbstractListModel
 {
+	private static final long serialVersionUID = 1L;
+	
 	protected IDiskoWpMessageLog m_wpMessageLog = null;
 	protected MessageLineType m_lineType = null;
 	protected List<IMessageLineIf> m_messageLines = null;

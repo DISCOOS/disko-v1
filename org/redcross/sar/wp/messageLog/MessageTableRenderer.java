@@ -11,7 +11,9 @@ import java.awt.*;
 
 public class MessageTableRenderer extends JTextArea implements TableCellRenderer
 {
-    private IMessageLogIf m_log = null;
+	private static final long serialVersionUID = 1L;
+	
+	private IMessageLogIf m_log = null;
 
 	public MessageTableRenderer()
     {
@@ -32,13 +34,30 @@ public class MessageTableRenderer extends JTextArea implements TableCellRenderer
         // Contents
         if(value instanceof String[])
         {
+        	LogTableModel model = (LogTableModel)table.getModel();
+        	Boolean extended = model.isMessageExpanded(row+1);
         	StringBuilder messageString = new StringBuilder();
         	String[] messageLines = (String[]) value;
-            for (int i = 0; i < messageLines.length; i++)
-            {
-                messageString.append(messageLines[i]);
-                messageString.append("\n");
-            }
+      
+        	if(extended)
+        	{
+        		// Show lines in expanded mode
+        		for (int i = 0; i < messageLines.length; i++)
+                {
+                    messageString.append(messageLines[i]);
+                    messageString.append("\n");
+                }
+        	}
+        	else
+        	{
+        		// Show lines in compressed mode
+        		for (int i = 0; i < messageLines.length; i++)
+                {
+                    messageString.append(messageLines[i]);
+                    messageString.append(" ");
+                }
+        	}
+        	
             setText(messageString.toString());
             setForeground(table.getForeground());
             

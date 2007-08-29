@@ -31,7 +31,9 @@ import java.util.List;
 
 public class LogTableModel extends AbstractTableModel implements IMsoUpdateListenerIf
 {
-    IMessageLogIf m_messageLog;
+	private static final long serialVersionUID = 1L;
+	
+	IMessageLogIf m_messageLog;
     List<IMessageIf> m_messageList;
     JTable m_table;
 
@@ -86,6 +88,10 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
         		Boolean expanded = tempMap.get(messageNr);
         		m_rowExpandedMap.put(messageNr, expanded);
         	}
+        	else
+        	{
+        		m_rowExpandedMap.put(messageNr, new Boolean(false));
+        	}
         }
     }
 
@@ -109,11 +115,11 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
         switch (columnIndex)
         {
             case 0:
-            	Boolean expanded = isMessageExtended(message.getNumber());
+            	Boolean expanded = isMessageExpanded(message.getNumber());
             	StringBuilder string = new StringBuilder(Integer.toString(message.getNumber()));
             	if(m_selectionListener.numRows(rowIndex) > 1)
             	{
-            		if(!expanded)
+            		if(expanded)
                 	{
                 		string.append(" -");
                 	}
@@ -265,23 +271,18 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
      * @param messageNr
      * @return
      */
-    public boolean isMessageExtended(int messageNr)
+    public Boolean isMessageExpanded(int messageNr)
     {
-    	if(!m_rowExpandedMap.containsKey(messageNr))
-    	{
-    		m_rowExpandedMap.put(messageNr, true);
-    	}
-    	
     	return m_rowExpandedMap.get(messageNr);
     }
     
     /**
      * Sets whether the message is extended in log view or not
      * @param messageNr
-     * @param extended
+     * @param expanded
      */
-    public void setMessageExtended(int messageNr, boolean extended)
+    public void setMessageExpanded(int messageNr, boolean expanded)
     {
-    	m_rowExpandedMap.put(new Integer(messageNr), new Boolean(extended));
+    	m_rowExpandedMap.put(new Integer(messageNr), new Boolean(expanded));
     }
 }

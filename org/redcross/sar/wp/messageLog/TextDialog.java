@@ -21,6 +21,8 @@ import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
  */
 public class TextDialog extends DiskoDialog implements IEditMessageDialogIf
 {
+	private static final long serialVersionUID = 1L;
+	
 	private JScrollPane m_textScroll;
 	private JTextArea m_textArea;
 	private JButton m_cancelButton;

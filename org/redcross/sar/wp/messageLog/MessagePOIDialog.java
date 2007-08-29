@@ -28,6 +28,8 @@ import java.io.IOException;
  */
 public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogIf
 {
+	private static final long serialVersionUID = 1L;
+	
 	protected JPanel m_contentsPanel = null;
 	protected JButton m_okButton = null;
 	protected JButton m_cancelButton = null;

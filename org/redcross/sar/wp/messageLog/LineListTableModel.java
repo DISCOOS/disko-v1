@@ -18,6 +18,8 @@ import org.redcross.sar.util.mso.Position;
  */
 public class LineListTableModel extends AbstractTableModel
 {
+	private static final long serialVersionUID = 1L;
+	
 	protected List<IMessageLineIf> m_messageLines = null;
 	protected IDiskoWpMessageLog m_wpMessageLog = null;
 

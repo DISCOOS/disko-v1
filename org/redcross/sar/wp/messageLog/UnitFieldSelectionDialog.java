@@ -38,6 +38,8 @@ import org.redcross.sar.util.mso.Selector;
 
 public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessageDialogIf, KeyListener, ActionListener
 {
+	private static final long serialVersionUID = 1L;
+
 	private JPanel m_contentsPanel = null;
 	
 	private JPanel m_unitTypePanel = null;

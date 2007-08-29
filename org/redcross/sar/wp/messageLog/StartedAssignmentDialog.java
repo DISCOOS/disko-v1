@@ -23,6 +23,7 @@ import org.redcross.sar.util.mso.DTG;
  */
 public class StartedAssignmentDialog extends AbstractAssignmentDialog
 {
+	private static final long serialVersionUID = 1L;
 
 	public StartedAssignmentDialog(IDiskoWpMessageLog wp)
 	{

@@ -27,6 +27,8 @@ import java.util.List;
  */
 public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditMessageDialogIf, IMsoUpdateListenerIf, ActionListener
 {
+	private static final long serialVersionUID = 1L;
+	
 	protected JPanel m_contentsPanel = null;
 	protected JScrollPane m_scrollPane = null;
 	protected IDiskoWpMessageLog m_wpMessageLog;
