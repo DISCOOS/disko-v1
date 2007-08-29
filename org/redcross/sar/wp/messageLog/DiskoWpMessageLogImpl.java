@@ -6,6 +6,8 @@ import org.redcross.sar.wp.AbstractDiskoWpModule;
 
 import java.util.EnumSet;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  */
@@ -53,23 +55,29 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
 	public void deactivated()
     {
     	// Warn user that it work processes can't be changed if message is not committed
-//    	if(MessageLogTopPanel.isMessageDirty())
-//    	{
-//    		Object[] dialogOptions = {getText("yes.text"), getText("no.text")};
-//    		int n = JOptionPane.showOptionDialog(this.getApplication().getFrame(), 
-//    				getText("DirtyMessageWarning.text"), 
-//    				getText("DirtyMessageWarning.header"), 
-//    				JOptionPane.YES_NO_OPTION, 
-//    				JOptionPane.QUESTION_MESSAGE, 
-//    				null, 
-//    				dialogOptions, 
-//    				dialogOptions[0]);
-//    		if(n == JOptionPane.NO_OPTION)
-//    		{
-//    			return;
-//    		}
-//    	}
-//    	
+    	if(MessageLogTopPanel.isMessageDirty())
+    	{
+    		Object[] dialogOptions = {getText("yes.text"), getText("no.text")};
+    		int n = JOptionPane.showOptionDialog(this.getApplication().getFrame(), 
+    				getText("DirtyMessageWarning.text"), 
+    				getText("DirtyMessageWarning.header"), 
+    				JOptionPane.YES_NO_OPTION, 
+    				JOptionPane.QUESTION_MESSAGE, 
+    				null, 
+    				dialogOptions, 
+    				dialogOptions[0]);
+    		if(n == JOptionPane.NO_OPTION)
+    		{
+    			// Continue in message log
+    			return;
+    		}
+    		else
+    		{
+    			// Delete current message, change work process
+    			MessageLogTopPanel.clearCurrentMessage();
+    		}
+    	}
+    	
     	super.deactivated();
     	m_logPanel.hideDialogs();
     	m_logPanel.clearSelection();

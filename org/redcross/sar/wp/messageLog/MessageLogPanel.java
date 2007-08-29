@@ -162,7 +162,7 @@ public class MessageLogPanel
 
     public void hideDialogs()
     {
-        m_topPanel.hideDialogs();
+        m_topPanel.hideEditPanels();
     }
 
     public void clearSelection()

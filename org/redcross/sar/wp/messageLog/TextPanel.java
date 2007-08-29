@@ -1,6 +1,5 @@
 package org.redcross.sar.wp.messageLog;
 
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -31,7 +30,6 @@ public class TextPanel extends JPanel implements IEditMessageComponentIf
 	public TextPanel(IDiskoWpMessageLog wp) 
 	{
 		this.setLayout(new GridBagLayout());
-		this.setPreferredSize(new Dimension(600, 120));
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 0;

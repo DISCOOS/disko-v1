@@ -389,8 +389,6 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageCompon
 		m_buttonRowPanel.add(Box.createRigidArea(emptyAreaDimension));
 		
 		m_unitTypePanel = new JPanel();
-//		m_unitTypePanel.setMinimumSize(new Dimension(MessageLogPanel.SMALL_BUTTON_SIZE.width*6, MessageLogPanel.SMALL_BUTTON_SIZE.height));
-//		m_unitTypePanel.setPreferredSize(new Dimension(MessageLogPanel.SMALL_BUTTON_SIZE.width*6, MessageLogPanel.SMALL_BUTTON_SIZE.height));
 		m_unitTypePanel.setLayout(new BoxLayout(m_unitTypePanel, BoxLayout.LINE_AXIS));
 		
 		m_teamButton = createUnitButton(UnitType.TEAM);
@@ -443,7 +441,7 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageCompon
 	private void initContentsPanel()
 	{
 		m_contentsPanel = new JPanel();
-		m_contentsPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+		m_contentsPanel.setBorder(BorderFactory.createLineBorder(Color.lightGray));
 		m_contentsPanel.setLayout(new BoxLayout(m_contentsPanel, BoxLayout.PAGE_AXIS));
 		m_contentsPanel.setPreferredSize(new Dimension(SingleUnitListSelectionDialog.PANEL_WIDTH, 
 				MessageLogPanel.SMALL_BUTTON_SIZE.height*(NUM_ROWS_COMMUNICATOR_LIST+1)+6));

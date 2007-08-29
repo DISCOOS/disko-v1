@@ -1,9 +1,12 @@
 package org.redcross.sar.wp.messageLog;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -79,7 +82,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 	private void initContentsPanel()
 	{
 		m_contentsPanel = new JPanel();
-//		m_contentsPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+		m_contentsPanel.setBorder(BorderFactory.createLineBorder(Color.lightGray));
 		m_contentsPanel.setLayout(new BoxLayout(m_contentsPanel, BoxLayout.LINE_AXIS));
 		m_contentsPanel.setPreferredSize(new Dimension(SingleUnitListSelectionDialog.PANEL_WIDTH, BUTTON_SIZE.height));
 		this.add(m_contentsPanel);
@@ -188,12 +191,14 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 	private void showNonBroadcast()
 	{
 		Point location = m_nonBroadcastButton.getLocationOnScreen();
-		location.y += BUTTON_SIZE.height;
+		location.y += BUTTON_SIZE.height - 1;
+		location.x--;
 		m_nbListDialog.setLocation(location);
 		m_nbListDialog.showComponent();
 		
 		location = m_nonBroadcastButton.getLocationOnScreen();
-		location.y -= (m_nbFieldDialog.getHeight() + BUTTON_SIZE.height + 4);
+		location.y -= (m_nbFieldDialog.getHeight() + BUTTON_SIZE.height + 5);
+		location.x--;
 		m_nbFieldDialog.setLocation(location);
 		m_nbFieldDialog.showComponent();
 	}
@@ -201,7 +206,8 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 	private void showBroadcast()
 	{
 		Point location = m_nonBroadcastButton.getLocationOnScreen();
-		location.y += BUTTON_SIZE.height;
+		location.y += BUTTON_SIZE.height - 1;
+		location.x--;
 		m_broadcastDialog.setLocation(location);
 		m_broadcastDialog.showComponent();
 	}

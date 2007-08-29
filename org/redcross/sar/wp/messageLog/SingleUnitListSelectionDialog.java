@@ -56,7 +56,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 
 	final private static Dimension BUTTON_SIZE = new Dimension(MessageLogPanel.SMALL_BUTTON_SIZE.width*3,
 			MessageLogPanel.SMALL_BUTTON_SIZE.height);
-	final public static int PANEL_WIDTH = BUTTON_SIZE.width * 5 + 6;
+	final public static int PANEL_WIDTH = BUTTON_SIZE.width * 5 - 30;
 	private final int NUMBER_OF_ROWS = 7;
 
 	/**
@@ -248,13 +248,13 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 		m_communicatorButtonMap.clear();
 
 		// Set contents panel size in order to enable scroll pane
-		int numberOfColumns = m_communicatorList.selectItems(m_communicatorSelector, m_communicatorComparator).size() / NUMBER_OF_ROWS + 1;
-		m_contentsPanel.setMinimumSize(new Dimension(numberOfColumns * BUTTON_SIZE.width,
-				NUMBER_OF_ROWS * BUTTON_SIZE.height));
-		m_contentsPanel.setPreferredSize(new Dimension(numberOfColumns * BUTTON_SIZE.width,
-				NUMBER_OF_ROWS * BUTTON_SIZE.height));
-		m_contentsPanel.setMaximumSize(new Dimension(numberOfColumns * BUTTON_SIZE.width,
-				NUMBER_OF_ROWS * BUTTON_SIZE.height));
+//		int numberOfColumns = m_communicatorList.selectItems(m_communicatorSelector, m_communicatorComparator).size() / NUMBER_OF_ROWS + 1;
+//		m_contentsPanel.setMinimumSize(new Dimension(numberOfColumns * BUTTON_SIZE.width,
+//				NUMBER_OF_ROWS * BUTTON_SIZE.height));
+//		m_contentsPanel.setPreferredSize(new Dimension(numberOfColumns * BUTTON_SIZE.width,
+//				NUMBER_OF_ROWS * BUTTON_SIZE.height));
+//		m_contentsPanel.setMaximumSize(new Dimension(numberOfColumns * BUTTON_SIZE.width,
+//				NUMBER_OF_ROWS * BUTTON_SIZE.height));
 
 		JPanel panel = null;
 		int i = 0;

@@ -74,26 +74,26 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 	private MessageLineType m_currentMessageLineType = null;
 
-	List<IEditMessageComponentIf> m_editComponents;
+	static List<IEditMessageComponentIf> m_editComponents;
 
-	private ButtonGroup m_buttonGroup;
+	private static ButtonGroup m_buttonGroup;
 
 	private JPanel m_nrPanel;
-	private JLabel m_nrLabel;
+	private static JLabel m_nrLabel;
 
 	private JPanel m_dtgPanel;
-	private JLabel m_dtgLabel;
+	private static JLabel m_dtgLabel;
 	private ChangeDTGDialog m_changeDTGDialog;
     private JToggleButton m_changeDTGButton;
 
     private JPanel m_fromPanel;
-    private JLabel m_fromLabel;
+    private static JLabel m_fromLabel;
     private UnitFieldSelectionDialog m_fieldFromDialog;
     private SingleUnitListSelectionDialog m_listFromDialog;
     private JToggleButton  m_changeFromButton;
 
     private JPanel m_toPanel;
-    private JLabel m_toLabel;
+    private static JLabel m_toLabel;
     private ChangeToDialog m_changeToDialog;
     private JToggleButton  m_changeToButton;
 
@@ -121,7 +121,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	private static LineListPanel m_messageListPanel;
 
     private JPanel m_taskPanel;
-    private JLabel m_taskLabel;
+    private static JLabel m_taskLabel;
     private ChangeTasksDialog m_changeTasksDialog;
     private JToggleButton  m_changeTasksButton;
 
@@ -225,6 +225,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     	if(m_textPanel == null)
     	{
     		m_textPanel = new TextPanel(m_wpMessageLog);
+    		m_editComponents.add(m_textPanel);
     		m_cardsPanel.add(m_textPanel, TEXT_PANEL_ID);
     	}
     	return m_textPanel;
@@ -305,20 +306,17 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		return m_changeTasksDialog;
 	}
 
-    protected void clearPanelContents()
+    protected static void clearPanelContents()
 	{
     	m_nrLabel.setText("");
 		m_dtgLabel.setText("");
 		m_fromLabel.setText("");
 		m_toLabel.setText("");
 		m_taskLabel.setText("");
-	}
-
-	protected void clearDialogContents()
-	{
-		for(IEditMessageComponentIf dialog : m_editComponents)
+		
+		for(IEditMessageComponentIf component : m_editComponents)
 		{
-			dialog.clearContents();
+			component.clearContents();
 		}
 	}
 
@@ -621,7 +619,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	{
 		//Object sender = e.getSource();
 		m_buttonGroup.clearSelection();
-		hideDialogs();
+		hideEditPanels();
 	}
 
 	private boolean validMessage()
@@ -642,7 +640,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			getCurrentMessage();
 		}
 		
-		hideDialogs();
+		hideEditPanels();
 		m_buttonGroup.clearSelection();
 		updateMessageGUI();
 		m_messageDirty = true;
@@ -676,7 +674,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					}
 					
 					m_buttonGroup.clearSelection();
-					clearDialogContents();
 					clearPanelContents();
 					m_currentMessageNr = 0;
 				}
@@ -720,7 +717,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 						updateAssignments();
 
 						clearPanelContents();
-						clearDialogContents();
 
 						// Commit changes
 						m_wpMessageLog.getMsoManager().commit();
@@ -756,7 +752,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     		// Display the change DTG dialog when button is pressed
     		public void actionPerformed(ActionEvent e)
     		{
-    			hideDialogs();
+    			hideEditPanels();
     			getChangeDTGDialog();
     			Point location = m_changeDTGButton.getLocationOnScreen();
     			location.y -= m_changeDTGDialog.getHeight();
@@ -778,7 +774,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				public void actionPerformed(ActionEvent e)
 				{
 					getChangeTasksDialog();
-					hideDialogs();
+					hideEditPanels();
 					Point location = m_changeTasksButton.getLocationOnScreen();
 	    			location.y += m_changeTasksButton.getHeight();
 	    			location.x -= DiskoButtonFactory.LARGE_BUTTON_SIZE.width;
@@ -801,7 +797,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				public void actionPerformed(ActionEvent arg0)
 				{
 					getFieldChangeFromDialog();
-					hideDialogs();
+					hideEditPanels();
 					Point location = m_changeDTGButton.getLocationOnScreen();
 	    			location.y -= m_fieldFromDialog.getHeight();
 	    			m_fieldFromDialog.setLocation(location);
@@ -832,7 +828,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				public void actionPerformed(ActionEvent e)
 				{
 					getChangeToDialog();
-					hideDialogs();
+					hideEditPanels();
 					Point location = m_changeDTGButton.getLocationOnScreen();
 					location.y += MessageLogPanel.SMALL_BUTTON_SIZE.height;
 					m_changeToDialog.setLocation(location);
@@ -855,22 +851,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     		{
 				public void actionPerformed(ActionEvent e)
 				{
-					// Remove current message from panel
-					clearPanelContents();
-					clearDialogContents();
-
-					m_wpMessageLog.getMsoManager().rollback(); // TODO sjekk om korrekt
-
-					m_currentMessage = null;
-					m_messageDirty = false;
-					m_currentMessageNr = 0;
-					
-					for(IEditMessageComponentIf dialog : m_editComponents)
-					{
-						dialog.hideComponent();
-					}
-					
-					m_buttonGroup.clearSelection();
+					clearCurrentMessage();
 				}
     		});
     	}
@@ -899,14 +880,14 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 							if(startedLine != null)
 							{
 								startedLine.deleteObject();
-//								m_messageStartedDialog.lineRemoved();
+//								TODO m_messageStartedDialog.lineRemoved();
 							}
 						case STARTED:
 							IMessageLineIf completeLine = m_currentMessage.findMessageLine(MessageLineType.COMPLETE, false);
 							if(completeLine != null)
 							{
 								completeLine.deleteObject();
-//								m_messageCompletedDialog.lineRemoved();
+//								TODO m_messageCompletedDialog.lineRemoved();
 							}
 						}
 						
@@ -936,7 +917,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			{
 				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelListLabel.text"));
 				getMessageListPanel();
-				hideDialogs();
+				hideEditPanels();
 				
 				CardLayout layout = (CardLayout)m_cardsPanel.getLayout();
 				layout.show(m_cardsPanel, LIST_PANEL_ID);
@@ -958,7 +939,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			public void actionPerformed(ActionEvent e)
 			{
 				ErrorDialog errorDialog = Utils.getErrorDialog();
-				hideDialogs();
+				hideEditPanels();
 				
 				if(getCurrentMessage().isBroadcast())
 				{
@@ -1002,7 +983,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			public void actionPerformed(ActionEvent e)
 			{
 				ErrorDialog errorDialog = Utils.getErrorDialog();
-				hideDialogs();
+				hideEditPanels();
 				
 				if(getCurrentMessage().isBroadcast())
 				{
@@ -1046,7 +1027,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			public void actionPerformed(ActionEvent e)
 			{
 				ErrorDialog errorDialog = Utils.getErrorDialog();
-				hideDialogs();
+				hideEditPanels();
 				
 				if(getCurrentMessage().isBroadcast())
 				{
@@ -1224,7 +1205,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			{
 				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelFindingLabel.text"));
 				getMessageFindingPanel();
-				hideDialogs();
+				hideEditPanels();
 				m_currentMessageLineType = MessageLineType.FINDING;
 				m_messageFindingPanel.setMapTool();
 				
@@ -1248,7 +1229,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			{
 				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelPositionLabel.text"));
 				getMessagePOIPanel();
-				hideDialogs();
+				hideEditPanels();
 				m_currentMessageLineType = MessageLineType.POI;
 				m_messagePOIPanel.setMapTool();
 				
@@ -1272,7 +1253,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			{
 				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelTextLabel.text"));
 				getMessageTextPanel();
-				hideDialogs();
+				hideEditPanels();
 				m_currentMessageLineType = MessageLineType.TEXT;
 				
 				CardLayout layout = (CardLayout)m_cardsPanel.getLayout();
@@ -1285,18 +1266,10 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		m_buttonRow.add(m_textButton);
 	}
 
-//	private void positionDialogInArea(DiskoDialog dialog)
-//	{
-//		Point location = m_dialogArea.getLocationOnScreen();
-//		Dimension dimension = m_dialogArea.getSize();
-//		dialog.setLocation(location);
-//		dialog.setSize(dimension);
-//	}
-
 	/**
-	 * Hides all dialogs in panel
+	 * Hides all panels
 	 */
-	public void hideDialogs()
+	public void hideEditPanels()
 	{
 		for(int i=0; i<m_editComponents.size(); i++)
 		{
@@ -1357,5 +1330,31 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	public static boolean isMessageDirty()
 	{
 		return m_messageDirty;
+	}
+
+	/**
+	 * Remove any changes since last commit. Clear panel contents
+	 */
+	public static void clearCurrentMessage()
+	{
+		if(m_newMessage)
+		{
+			m_currentMessage.deleteObject();
+		}
+
+		m_wpMessageLog.getMsoManager().rollback();
+
+		m_currentMessage = null;
+		m_messageDirty = false;
+		m_currentMessageNr = 0;
+		
+		for(IEditMessageComponentIf dialog : m_editComponents)
+		{
+			dialog.hideComponent();
+		}
+		
+		m_buttonGroup.clearSelection();
+		
+		clearPanelContents();
 	}
 }
