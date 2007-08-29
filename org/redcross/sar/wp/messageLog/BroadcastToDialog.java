@@ -36,7 +36,7 @@ import org.redcross.sar.mso.data.IUnitIf.UnitType;
  * @author thomasl
  *
  */
-public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialogIf
+public class BroadcastToDialog extends DiskoDialog implements IEditMessageComponentIf
 {
 
 	private static final long serialVersionUID = 1L;
@@ -458,7 +458,7 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialog
 		updateButtonSelection();
 	}
 
-	public void hideDialog()
+	public void hideComponent()
 	{
 		this.setVisible(false);
 		
@@ -575,7 +575,7 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageDialog
 		m_confirmationStatusLabel.setVisible(true);
 	}
 
-	public void showDialog()
+	public void showComponent()
 	{
 		// If there exists unconfirmed receivers in the message, go to confirmation mode, most efficient work flow
 		IMessageIf message = MessageLogTopPanel.getCurrentMessage();

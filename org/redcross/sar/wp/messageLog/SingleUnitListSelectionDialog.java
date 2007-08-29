@@ -25,7 +25,7 @@ import java.util.List;
  *
  * Dialog containing a list of all units  in command post communicator list
  */
-public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditMessageDialogIf, IMsoUpdateListenerIf, ActionListener
+public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditMessageComponentIf, IMsoUpdateListenerIf, ActionListener
 {
 	private static final long serialVersionUID = 1L;
 	
@@ -161,7 +161,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	{
 	}
 
-	public void hideDialog()
+	public void hideComponent()
 	{
 		this.setVisible(false);
 	}
@@ -200,7 +200,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 		}
 	}
 
-	public void showDialog()
+	public void showComponent()
 	{
 		this.setVisible(true);
 	}

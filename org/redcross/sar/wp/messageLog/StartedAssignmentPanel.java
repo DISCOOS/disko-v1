@@ -16,16 +16,16 @@ import org.redcross.sar.util.AssignmentTransferUtilities;
 import org.redcross.sar.util.mso.DTG;
 
 /**
- * Dialog for starting an assignment
- * See {@link AbstractAssignmentDialog} for details
+ * Panel for starting an assignment
+ * See {@link AbstractAssignmentPanel} for details
  * 
  * @author thomasl
  */
-public class StartedAssignmentDialog extends AbstractAssignmentDialog
+public class StartedAssignmentPanel extends AbstractAssignmentPanel
 {
 	private static final long serialVersionUID = 1L;
 
-	public StartedAssignmentDialog(IDiskoWpMessageLog wp)
+	public StartedAssignmentPanel(IDiskoWpMessageLog wp)
 	{
 		super(wp);
 		
@@ -93,11 +93,11 @@ public class StartedAssignmentDialog extends AbstractAssignmentDialog
 				ErrorDialog error = new ErrorDialog(m_wpMessageLog.getApplication().getFrame());
 				error.showError(m_wpMessageLog.getText("CanNotStartError.details"),
 						m_wpMessageLog.getText("CanNotStartError.header"));
-				this.hideDialog();
+				this.hideComponent();
 				return;
 			}
 
-			hideDialog();
+			hideComponent();
 
 			Object[] options = {m_wpMessageLog.getText("yes.text"), m_wpMessageLog.getText("no.text")};
 			int n = JOptionPane.showOptionDialog(m_wpMessageLog.getApplication().getFrame(), 
@@ -117,12 +117,12 @@ public class StartedAssignmentDialog extends AbstractAssignmentDialog
 						MessageLineType.STARTED, Calendar.getInstance(), assignment);
 				// TODO Keep track of added lines
 
-				showDialog();
+				showComponent();
 
 			}
 			else
 			{
-				fireDialogCanceled();
+				// TODO
 			}
 		}
 		else if(unitHasNextAssignment())

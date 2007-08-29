@@ -38,12 +38,12 @@ import org.redcross.sar.util.mso.DTG;
 
 
 /**
- * Abstract dialog handling all updates to assignment. Template pattern. 
+ * Abstract panel handling all updates to assignment. Template pattern. 
  * 
  * @author thomasl
  *
  */
-public abstract class AbstractAssignmentDialog extends DiskoDialog implements IEditMessageDialogIf
+public abstract class AbstractAssignmentPanel extends JPanel implements IEditMessageComponentIf
 {
 	protected static final String ASSIGNMENT_OVERVIEW_ID = "ASSIGNMENT OVERVIEW";
 	protected static final String EDIT_ASSIGNMENT_ID = "EDIT ASSIGNMENT";
@@ -52,7 +52,6 @@ public abstract class AbstractAssignmentDialog extends DiskoDialog implements IE
 	
 	protected IDiskoWpMessageLog m_wpMessageLog = null;
 	
-	protected JPanel m_contentsPanel = null;
 	protected JPanel m_cardsPanel = null;
 	
 	protected JPanel m_overviewPanel = null;
@@ -86,10 +85,8 @@ public abstract class AbstractAssignmentDialog extends DiskoDialog implements IE
 	
 	protected List<IMessageLineIf> m_addedLines = null;
 	
-	public AbstractAssignmentDialog(IDiskoWpMessageLog wp)
+	public AbstractAssignmentPanel(IDiskoWpMessageLog wp)
 	{
-		super(wp.getApplication().getFrame());
-		
 		m_wpMessageLog = wp;
 		
 		initialize();
@@ -97,7 +94,7 @@ public abstract class AbstractAssignmentDialog extends DiskoDialog implements IE
 	
 	protected void initialize()
 	{
-		m_contentsPanel = new JPanel(new BorderLayout());
+		this.setLayout(new BorderLayout());
 		m_cardsPanel = new JPanel(new CardLayout());
 		
 		initAssignmentOverviewPanel();
@@ -105,8 +102,7 @@ public abstract class AbstractAssignmentDialog extends DiskoDialog implements IE
 		initNextAssignmentPanel();
 		initAssignmentPoolPanel();
 		
-		m_contentsPanel.add(m_cardsPanel, BorderLayout.CENTER);
-		this.add(m_contentsPanel);
+		this.add(m_cardsPanel, BorderLayout.CENTER);
 	}
 	
 	/**
@@ -217,7 +213,7 @@ public abstract class AbstractAssignmentDialog extends DiskoDialog implements IE
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				fireDialogCanceled();
+				// TODO
 			}
 		});
 		m_editAssignmentPanel.add(m_cancelEditButton, gbc);
@@ -254,7 +250,7 @@ public abstract class AbstractAssignmentDialog extends DiskoDialog implements IE
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				fireDialogCanceled();
+				// TODO 
 			}
 		});
 		actionButtonPanel.add(		m_cancelAddNextAssignmentButton);
@@ -292,7 +288,7 @@ public abstract class AbstractAssignmentDialog extends DiskoDialog implements IE
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				fireDialogCanceled();				
+				// TODO				
 			}
 		});
 		actionButtonPanel.add(m_cancelAddPoolAssignmentButton);
@@ -315,7 +311,7 @@ public abstract class AbstractAssignmentDialog extends DiskoDialog implements IE
 		// TODO Auto-generated method stub
 	}
 
-	public void hideDialog()
+	public void hideComponent()
 	{
 		this.setVisible(false);
 	}
@@ -328,7 +324,7 @@ public abstract class AbstractAssignmentDialog extends DiskoDialog implements IE
 	/**
 	 * Determine which UI elements that should be displayed, varies with assignment action
 	 */
-	public void showDialog()
+	public void showComponent()
 	{
 		this.setVisible(true);
 		CardLayout layout = (CardLayout)m_cardsPanel.getLayout();

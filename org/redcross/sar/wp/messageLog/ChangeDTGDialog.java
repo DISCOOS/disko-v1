@@ -22,7 +22,7 @@ import java.util.Calendar;
  *
  * Creates the dialog for changing DTG in message log edit mode.
  */
-public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMessageDialogIf
+public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMessageComponentIf
 {
 	private static final long serialVersionUID = 1L;
 
@@ -169,7 +169,7 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 		m_timeTextField.setText(DTG.CalToDTG(calendar));
 	}
 
-	public void hideDialog()
+	public void hideComponent()
 	{
 		this.setVisible(false);
 		
@@ -179,7 +179,7 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 		}
 	}
 
-	public void showDialog()
+	public void showComponent()
 	{
 		this.setVisible(true);
 		

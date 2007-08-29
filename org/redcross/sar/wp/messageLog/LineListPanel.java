@@ -3,16 +3,16 @@ package org.redcross.sar.wp.messageLog;
 import java.awt.BorderLayout;
 import java.util.Comparator;
 
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
-import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IMessageLineListIf;
 import org.redcross.sar.util.mso.Selector;
 
-public class LineListDialog extends DiskoDialog implements IEditMessageDialogIf
+public class LineListPanel extends JPanel implements IEditMessageComponentIf
 {
 	private static final long serialVersionUID = 1L;
 	
@@ -38,10 +38,8 @@ public class LineListDialog extends DiskoDialog implements IEditMessageDialogIf
 		}
 	};
 	
-	public LineListDialog(IDiskoWpMessageLog wp)
+	public LineListPanel(IDiskoWpMessageLog wp)
 	{
-		super(wp.getApplication().getFrame());
-		
 		m_wpMessageLog = wp;
 		
 		setLayout(new BorderLayout());
@@ -76,12 +74,12 @@ public class LineListDialog extends DiskoDialog implements IEditMessageDialogIf
 		m_messageTableModel.fireTableDataChanged();
 	}
 
-	public void showDialog()
+	public void showComponent()
 	{
 		this.setVisible(true);
 	}
 	
-	public void hideDialog()
+	public void hideComponent()
 	{
 		this.setVisible(false);
 	}

@@ -1,7 +1,6 @@
 package org.redcross.sar.wp.messageLog;
 
 import com.esri.arcgis.interop.AutomationException;
-import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
 import org.redcross.sar.map.IDiskoMap;
 import org.redcross.sar.mso.data.IMessageIf;
@@ -14,6 +13,8 @@ import org.redcross.sar.util.mso.Position;
 import javax.swing.*;
 
 import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Point2D;
@@ -26,11 +27,11 @@ import java.io.IOException;
  * @author thomasl
  *
  */
-public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogIf
+public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 {
 	private static final long serialVersionUID = 1L;
 	
-	protected JPanel m_contentsPanel = null;
+//	protected JPanel m_contentsPanel = null;
 	protected JButton m_okButton = null;
 	protected JButton m_cancelButton = null;
 	protected JToggleButton m_showInMapButton = null;
@@ -44,10 +45,8 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 	protected IDiskoWpMessageLog m_wpMessageLog = null;
 	protected SinglePOITool m_tool = null;
 
-	public MessagePOIDialog(IDiskoWpMessageLog wp, POIType[] poiTypes)
+	public MessagePOIPanel(IDiskoWpMessageLog wp, POIType[] poiTypes)
 	{
-		super(wp.getApplication().getFrame());
-
 		m_wpMessageLog = wp;
 		
 		m_poiTypes = poiTypes;
@@ -64,7 +63,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 
 		try
 		{
-			m_tool = new SinglePOITool(m_wpMessageLog.getApplication(), this);
+			m_tool = new SinglePOITool(m_wpMessageLog, this);
 		}
 		catch (IOException e)
 		{
@@ -73,7 +72,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 
 		m_tool.setMap(m_wpMessageLog.getMap());
 
-		this.hideDialog();
+		this.hideComponent();
 	}
 
 	private void updatePOI()
@@ -145,7 +144,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 			{
 
 				updatePOI();
-				fireDialogFinished();
+//				fireDialogFinished();
 			}
 		});
 
@@ -154,7 +153,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				fireDialogCanceled();
+//				fireDialogCanceled();
 			}
 		});
 
@@ -203,19 +202,20 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 	}
 
 	private void initContents()
-	{
-		m_contentsPanel = new JPanel();
-		m_contentsPanel.setLayout(new BoxLayout(m_contentsPanel, BoxLayout.LINE_AXIS));
-
-		JPanel labelPanel = new JPanel();
-		labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.PAGE_AXIS));
-
-		JPanel fieldPanel = new JPanel();
-		fieldPanel.setLayout(new BoxLayout(fieldPanel, BoxLayout.PAGE_AXIS));
+	{	
+//		m_contentsPanel = new JPanel();
+		this.setLayout(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.weightx = 1.0;
+		gbc.weighty = 1.0;
 
 		// X
-		m_xLabel = new JLabel("X    ");
-		labelPanel.add(m_xLabel);
+		JPanel xPanel = new JPanel();
+		m_xLabel = new JLabel("X");
+		xPanel.add(m_xLabel);
 		m_xField = new JTextField(12);
 		m_xField.addActionListener(new ActionListener()
 		{
@@ -224,11 +224,14 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 				updatePOI();
 			}
 		});
-		fieldPanel.add(m_xField);
+		xPanel.add(m_xField, gbc);
+		this.add(xPanel, gbc);
 
 		// Y
-		m_yLabel = new JLabel("Y    ");
-		labelPanel.add(m_yLabel);
+		gbc.gridy++;
+		JPanel yPanel = new JPanel();
+		m_yLabel = new JLabel("Y");
+		yPanel.add(m_yLabel);
 		m_yField = new JTextField(12);
 		m_yField.addActionListener(new ActionListener()
 		{
@@ -237,11 +240,14 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 				updatePOI();
 			}
 		});
-		fieldPanel.add(m_yField);
+		yPanel.add(m_yField, gbc);
+		this.add(yPanel, gbc);
 
 		// Combo box
-		m_poiTypeLabel = new JLabel("Type "); // TODO internasjonaliser
-		labelPanel.add(m_poiTypeLabel);
+		gbc.gridy++;
+		JPanel typePanel = new JPanel();
+		m_poiTypeLabel = new JLabel("Type");
+		typePanel.add(m_poiTypeLabel);
 		m_poiTypesComboBox = new JComboBox();
 		m_poiTypesComboBox.setRenderer(new SimpleListCellRenderer());
 		m_poiTypesComboBox.addActionListener(new ActionListener()
@@ -267,29 +273,26 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 				}
 			}
 		});
-		fieldPanel.add(m_poiTypesComboBox);
+		typePanel.add(m_poiTypesComboBox);
+		this.add(typePanel, gbc);
 		updatePOITypes();
 
-		JPanel fieldsPanel = new JPanel();
-		fieldsPanel.setLayout(new BoxLayout(fieldsPanel, BoxLayout.LINE_AXIS));
-		fieldsPanel.add(labelPanel);
-		fieldsPanel.add(fieldPanel);
-
-		JPanel completePOIPanel = new JPanel();
-		completePOIPanel.add(fieldsPanel);
-		completePOIPanel.add(m_showInMapButton);
-
-		m_contentsPanel.add(completePOIPanel);
-
-		// Dialog buttons
-		JPanel dialogButtonsPane = new JPanel();
-		dialogButtonsPane.setLayout(new BoxLayout(dialogButtonsPane, BoxLayout.PAGE_AXIS));
-		dialogButtonsPane.add(m_cancelButton);
-		dialogButtonsPane.add(m_okButton);
-		m_contentsPanel.add(dialogButtonsPane);
-
-		this.add(m_contentsPanel);
-		this.pack();
+		gbc.weightx = 0.0;
+		gbc.weighty = 0.0;
+		gbc.gridy = 0;
+		gbc.gridx++;
+		gbc.gridheight = 3;
+		JPanel showInMapPanel = new JPanel();
+		showInMapPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 20));
+		showInMapPanel.add(m_showInMapButton);
+		this.add(showInMapPanel, gbc);
+		
+		// Action buttons
+		gbc.gridheight = 2;
+		gbc.gridx++;
+		this.add(m_cancelButton, gbc);
+		gbc.gridy += 2;
+		this.add(m_okButton, gbc);
 	}
 
 	public void clearContents()
@@ -298,7 +301,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		m_yField.setText("");
 	}
 
-	public void hideDialog()
+	public void hideComponent()
 	{
 		this.setVisible(false);
         MessageLogPanel.hideMap();
@@ -398,7 +401,7 @@ public class MessagePOIDialog extends DiskoDialog implements IEditMessageDialogI
 		}
 	}
 
-	public void showDialog()
+	public void showComponent()
 	{
 		if(m_showInMapButton.isSelected())
 		{

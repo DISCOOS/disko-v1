@@ -36,7 +36,7 @@ import org.redcross.sar.util.mso.Selector;
  * Dialog loads unit information from resource file {@link org.redcross.sar.mso.data.properties.Unit.properties}
  */
 
-public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessageDialogIf, KeyListener, ActionListener
+public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessageComponentIf, KeyListener, ActionListener
 {
 	private static final long serialVersionUID = 1L;
 
@@ -340,7 +340,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		}
 	}
 
-	public void showDialog()
+	public void showComponent()
 	{
 		this.setVisible(true);
 		
@@ -357,7 +357,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		}
 	}
 	
-	public void hideDialog()
+	public void hideComponent()
 	{
 		this.setVisible(false);
 		

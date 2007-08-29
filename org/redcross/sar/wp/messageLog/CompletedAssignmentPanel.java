@@ -15,16 +15,16 @@ import org.redcross.sar.util.AssignmentTransferUtilities;
 
 /**
  * Dialog for setting assignment to complete
- * See {@link AbstractAssignmentDialog} for details
+ * See {@link AbstractAssignmentPanel} for details
  * 
  * @author thomasl
  *
  */
-public class CompletedAssignmentDialog extends AbstractAssignmentDialog
+public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 {
 	private static final long serialVersionUID = 1L;
 
-	public CompletedAssignmentDialog(IDiskoWpMessageLog wp)
+	public CompletedAssignmentPanel(IDiskoWpMessageLog wp)
 	{
 		super(wp);
 		
@@ -78,11 +78,11 @@ public class CompletedAssignmentDialog extends AbstractAssignmentDialog
 				ErrorDialog error = new ErrorDialog(m_wpMessageLog.getApplication().getFrame());
 				error.showError(m_wpMessageLog.getText("CanNotCompleteError.details"),
 						m_wpMessageLog.getText("CanNotCompleteError.header"));
-				this.hideDialog();
+				this.hideComponent();
 				return;
 			}
 			
-			this.hideDialog();
+			this.hideComponent();
 
 			Object[] options = {m_wpMessageLog.getText("yes.text"), m_wpMessageLog.getText("no.text")};
 			int n = JOptionPane.showOptionDialog(m_wpMessageLog.getApplication().getFrame(), 
@@ -99,11 +99,11 @@ public class CompletedAssignmentDialog extends AbstractAssignmentDialog
 				AssignmentTransferUtilities.createAssignmentChangeMessageLines(message, MessageLineType.COMPLETE, MessageLineType.COMPLETE,
 						Calendar.getInstance(), assignment);
 //				m_lineAdded = true;
-				showDialog();
+				showComponent();
 			}
 			else
 			{
-				fireDialogCanceled();
+				// TODO
 			}
 		}
 		else if(unitHasNextAssignment())

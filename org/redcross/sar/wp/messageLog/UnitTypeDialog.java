@@ -23,7 +23,7 @@ import org.redcross.sar.mso.data.IUnitIf.UnitType;
  *
  * Dialog for selecting unit type
  */
-public class UnitTypeDialog extends DiskoDialog implements IEditMessageDialogIf
+public class UnitTypeDialog extends DiskoDialog implements IEditMessageComponentIf
 {
 	private static final long serialVersionUID = 1L;
 	
@@ -153,7 +153,7 @@ public class UnitTypeDialog extends DiskoDialog implements IEditMessageDialogIf
 	public void clearContents()
 	{
 	}
-	public void hideDialog()
+	public void hideComponent()
 	{
 		this.setVisible(false);
 	}
@@ -164,7 +164,7 @@ public class UnitTypeDialog extends DiskoDialog implements IEditMessageDialogIf
 		
 	}
 
-	public void showDialog()
+	public void showComponent()
 	{
 		this.setVisible(true);
 	}

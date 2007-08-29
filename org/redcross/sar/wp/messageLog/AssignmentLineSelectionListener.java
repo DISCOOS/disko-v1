@@ -10,10 +10,10 @@ import javax.swing.event.ListSelectionListener;
  */
 public class AssignmentLineSelectionListener implements ListSelectionListener
 {
-	AbstractAssignmentDialog m_dialog = null;
+	AbstractAssignmentPanel m_dialog = null;
 	JList m_list = null;
 	
-	public AssignmentLineSelectionListener(JList list, AbstractAssignmentDialog dialog)
+	public AssignmentLineSelectionListener(JList list, AbstractAssignmentPanel dialog)
 	{
 		m_list = list;
 		m_dialog = dialog;

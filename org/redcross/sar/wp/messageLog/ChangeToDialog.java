@@ -23,7 +23,7 @@ import org.redcross.sar.mso.data.IMessageIf;
  * @author thomasl
  *
  */
-public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf, IDialogEventListener
+public class ChangeToDialog extends DiskoDialog implements IEditMessageComponentIf, IDialogEventListener
 {
 	private static final long serialVersionUID = 1L;
 	
@@ -100,7 +100,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 				m_broadcast = false;
 				MessageLogTopPanel.getCurrentMessage().setBroadcast(false);
 				
-				m_broadcastDialog.hideDialog();
+				m_broadcastDialog.hideComponent();
 				m_broadcastDialog.clearSelection();
 				showNonBroadcast();
 			}	
@@ -121,8 +121,8 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 				m_broadcast = true;
 				MessageLogTopPanel.getCurrentMessage().setBroadcast(true);
 				
-				m_nbFieldDialog.hideDialog();
-				m_nbListDialog.hideDialog();
+				m_nbFieldDialog.hideComponent();
+				m_nbListDialog.hideComponent();
 				m_nbListDialog.clearSelection();
 				
 				showBroadcast();
@@ -134,12 +134,12 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 		m_contentsPanel.add(Box.createHorizontalGlue());
 	}
 	
-	public void hideDialog()
+	public void hideComponent()
 	{
 		this.setVisible(false);
-		m_nbListDialog.hideDialog();
-		m_nbFieldDialog.hideDialog();
-		m_broadcastDialog.hideDialog();
+		m_nbListDialog.hideComponent();
+		m_nbFieldDialog.hideComponent();
+		m_broadcastDialog.hideComponent();
 	}
 
 	public void newMessageSelected(IMessageIf message)
@@ -171,7 +171,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 		}
 	}
 
-	public void showDialog()
+	public void showComponent()
 	{
 		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
 		this.setVisible(true);
@@ -190,12 +190,12 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 		Point location = m_nonBroadcastButton.getLocationOnScreen();
 		location.y += BUTTON_SIZE.height;
 		m_nbListDialog.setLocation(location);
-		m_nbListDialog.showDialog();
+		m_nbListDialog.showComponent();
 		
 		location = m_nonBroadcastButton.getLocationOnScreen();
 		location.y -= (m_nbFieldDialog.getHeight() + BUTTON_SIZE.height + 4);
 		m_nbFieldDialog.setLocation(location);
-		m_nbFieldDialog.showDialog();
+		m_nbFieldDialog.showComponent();
 	}
 
 	private void showBroadcast()
@@ -203,7 +203,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageDialogIf,
 		Point location = m_nonBroadcastButton.getLocationOnScreen();
 		location.y += BUTTON_SIZE.height;
 		m_broadcastDialog.setLocation(location);
-		m_broadcastDialog.showDialog();
+		m_broadcastDialog.showComponent();
 	}
 	
 

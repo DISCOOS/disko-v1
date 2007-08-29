@@ -10,15 +10,15 @@ import org.redcross.sar.util.AssignmentTransferUtilities;
 
 /**
  * Dialog for assigning unit an assignment
- * See {@link AbstractAssignmentDialog}
+ * See {@link AbstractAssignmentPanel}
  * @author thomasl
  *
  */
-public class AssignedAssignmentDialog extends AbstractAssignmentDialog
+public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 {
 	private static final long serialVersionUID = 1L;
 
-	public AssignedAssignmentDialog(IDiskoWpMessageLog wp)
+	public AssignedAssignmentPanel(IDiskoWpMessageLog wp)
 	{
 		super(wp);
 		

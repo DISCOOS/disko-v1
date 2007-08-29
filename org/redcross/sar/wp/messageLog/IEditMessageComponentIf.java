@@ -3,12 +3,12 @@ package org.redcross.sar.wp.messageLog;
 import org.redcross.sar.mso.data.IMessageIf;
 
 /**
- * Implemented by all dialogs editing messages. Needed for updating dialogs, showing, hiding, etc.
+ * Implemented by all components editing messages. Needed for updating, showing, hiding, etc.
  * 
  * @author thomasl
  *
  */
-public interface IEditMessageDialogIf
+public interface IEditMessageComponentIf
 {
 	/**
 	 * Updates the contents of a dialog when a new message is selected, or an old one is changed
@@ -16,9 +16,9 @@ public interface IEditMessageDialogIf
 	 */
 	public void newMessageSelected(IMessageIf message);
 	
-	public void showDialog();
+	public void showComponent();
 	
-	public void hideDialog();
+	public void hideComponent();
 	
 	public void clearContents();
 }

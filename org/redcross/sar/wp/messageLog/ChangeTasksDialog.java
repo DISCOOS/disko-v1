@@ -19,7 +19,7 @@ import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.ITaskIf;
 import org.redcross.sar.mso.data.ITaskListIf;
 
-public class ChangeTasksDialog extends DiskoDialog implements IEditMessageDialogIf
+public class ChangeTasksDialog extends DiskoDialog implements IEditMessageComponentIf
 {
 	private static final long serialVersionUID = 1L;
 
@@ -165,7 +165,7 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageDialog
 		m_taskDialog.setVisible(true);
 	}
 
-	public void hideDialog()
+	public void hideComponent()
 	{
 		this.setVisible(false);
 	}
@@ -183,7 +183,7 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageDialog
 		}	
 	}
 
-	public void showDialog()
+	public void showComponent()
 	{
 		this.setVisible(true);
 	}

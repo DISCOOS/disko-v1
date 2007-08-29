@@ -6,10 +6,10 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
@@ -19,7 +19,7 @@ import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
  *
  * Displays the message text in the top panel in the message log
  */
-public class TextDialog extends DiskoDialog implements IEditMessageDialogIf
+public class TextPanel extends JPanel implements IEditMessageComponentIf
 {
 	private static final long serialVersionUID = 1L;
 	
@@ -28,9 +28,8 @@ public class TextDialog extends DiskoDialog implements IEditMessageDialogIf
 	private JButton m_cancelButton;
 	private JButton m_okButton;
 	
-	public TextDialog(IDiskoWpMessageLog wp) 
+	public TextPanel(IDiskoWpMessageLog wp) 
 	{
-		super(wp.getApplication().getFrame());
 		this.setLayout(new GridBagLayout());
 		this.setPreferredSize(new Dimension(600, 120));
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -40,7 +39,6 @@ public class TextDialog extends DiskoDialog implements IEditMessageDialogIf
 		gbc.fill = GridBagConstraints.BOTH;
 		initTextArea(gbc);
 		initButtons(gbc);
-		this.pack();
 	}
 
 	private void initTextArea(GridBagConstraints gbc)
@@ -66,7 +64,7 @@ public class TextDialog extends DiskoDialog implements IEditMessageDialogIf
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				fireDialogCanceled();
+//				fireDialogCanceled();
 			}
 		});
 		this.add(m_cancelButton, gbc);
@@ -81,14 +79,12 @@ public class TextDialog extends DiskoDialog implements IEditMessageDialogIf
 				IMessageIf message = MessageLogTopPanel.getCurrentMessage();
 				IMessageLineIf textLine = message.findMessageLine(MessageLineType.TEXT, true);
 				textLine.setLineText(m_textArea.getText());
-				
-				fireDialogFinished();
 			}	
 		});
 		this.add(m_okButton, gbc);
 	}
 
-	public void hideDialog()
+	public void hideComponent()
 	{
 		this.setVisible(false);
 	}
@@ -106,7 +102,7 @@ public class TextDialog extends DiskoDialog implements IEditMessageDialogIf
 		}
 	}
 
-	public void showDialog()
+	public void showComponent()
 	{
 		this.setVisible(true);
 	}

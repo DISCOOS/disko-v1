@@ -32,13 +32,13 @@ public class SinglePOITool extends AbstractCommandTool
 	
 	protected IDiskoApplication m_app;
 	protected IDiskoWpMessageLog m_wpMessageLog;
+	protected MessagePOIPanel m_panel;
 
-	public SinglePOITool(IDiskoApplication app, MessagePOIDialog dialog) throws IOException
+	public SinglePOITool(IDiskoWpMessageLog wp, MessagePOIPanel panel) throws IOException
 	{
-		this.m_app = app;
-		m_wpMessageLog = dialog.getWP();
-		
-		this.dialog = dialog;
+		m_wpMessageLog = wp;
+		this.m_app = wp.getApplication();
+		m_panel = panel;
 	}
 	
 	public void setMap(IDiskoMap map)
@@ -68,7 +68,7 @@ public class SinglePOITool extends AbstractCommandTool
 		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
 		IMessageLineIf messageLine;
 		
-		POIType type = ((MessagePOIDialog)dialog).getSelectedPOIType();
+		POIType type = m_panel.getSelectedPOIType();
 		if(type == POIType.GENERAL)
 		{
 			// Update/add POI in current message
