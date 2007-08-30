@@ -76,7 +76,8 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageCompon
 	protected HashMap<ICommunicatorIf, JToggleButton> m_communicatorButtonMap = null;
 	
 	/**
-	 * @param wp - Reference to message log work process
+	 * Constructor
+	 * @param wp Reference to message log work process
 	 */
 	public BroadcastToDialog(IDiskoWpMessageLog wp)
 	{
@@ -106,7 +107,7 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageCompon
 		m_listArea.setLayout(new BoxLayout(m_listArea, BoxLayout.LINE_AXIS));
 		m_listArea.setAlignmentX(Component.LEFT_ALIGNMENT);
 		m_listArea.setAlignmentY(Component.TOP_ALIGNMENT);
-		m_listArea.setPreferredSize(new Dimension(MessageLogPanel.PANEL_WIDTH, MessageLogPanel.SMALL_BUTTON_SIZE.height*NUM_ROWS_COMMUNICATOR_LIST));
+		m_listArea.setPreferredSize(new Dimension(MessageLogPanel.PANEL_WIDTH+2, MessageLogPanel.SMALL_BUTTON_SIZE.height*NUM_ROWS_COMMUNICATOR_LIST));
 		
 		m_scrollPane = new JScrollPane(m_listArea);
 		m_scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -261,7 +262,6 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageCompon
 		m_buttonRowPanel.setPreferredSize(new Dimension(SingleUnitListSelectionDialog.PANEL_WIDTH, 
 				MessageLogPanel.SMALL_BUTTON_SIZE.height));
 		m_buttonRowPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		//m_buttonRowPanel.setLayout(new BoxLayout(m_buttonRowPanel, BoxLayout.LINE_AXIS));
 		
 		m_buttonGroup = new ButtonGroup();
 		
@@ -443,11 +443,14 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageCompon
 		m_contentsPanel = new JPanel();
 		m_contentsPanel.setBorder(BorderFactory.createLineBorder(Color.lightGray));
 		m_contentsPanel.setLayout(new BoxLayout(m_contentsPanel, BoxLayout.PAGE_AXIS));
-		m_contentsPanel.setPreferredSize(new Dimension(SingleUnitListSelectionDialog.PANEL_WIDTH, 
+		m_contentsPanel.setPreferredSize(new Dimension(SingleUnitListSelectionDialog.PANEL_WIDTH + 2, 
 				MessageLogPanel.SMALL_BUTTON_SIZE.height*(NUM_ROWS_COMMUNICATOR_LIST+1)+6));
 		this.add(m_contentsPanel);
 	}
 
+	/**
+	 * {@link IEditMessageComponentIf#clearContents()}
+	 */
 	public void clearContents()
 	{
 		m_selectionMode = true;
@@ -456,10 +459,12 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageCompon
 		updateButtonSelection();
 	}
 
+	/**
+	 * {@link IEditMessageComponentIf#hideComponent()}
+	 */
 	public void hideComponent()
 	{
 		this.setVisible(false);
-		
 	}
 	
 	/**
@@ -511,6 +516,9 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageCompon
 		}
 	}
 
+	/**
+	 * {@link IEditMessageComponentIf#newMessageSelected(IMessageIf)}
+	 */
 	public void newMessageSelected(IMessageIf message)
 	{
 		if(!message.isBroadcast())
@@ -553,6 +561,9 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageCompon
 		updateStatusLabel();
 	}
 	
+	/**
+	 * Displays the part of the dialog where receivers are chosen 
+	 */
 	public void setSelectionMode()
 	{
 		m_confirmButton.setSelected(false);
@@ -563,6 +574,9 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageCompon
 		m_confirmationStatusLabel.setVisible(false);
 	}
 	
+	/**
+	 * Displays the part of the dialog where receivers are confirmed
+	 */
 	public void setConfirmationMode()
 	{
 		m_selectionButton.setSelected(false);
@@ -573,6 +587,9 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageCompon
 		m_confirmationStatusLabel.setVisible(true);
 	}
 
+	/**
+	 * {@link IEditMessageComponentIf#showComponent()}
+	 */
 	public void showComponent()
 	{
 		// If there exists unconfirmed receivers in the message, go to confirmation mode, most efficient work flow
@@ -604,6 +621,9 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageCompon
 		updateButtonSelection();
 	}
 
+	/**
+	 * Deselect buttons
+	 */
 	public void clearSelection()
 	{
 		m_confirmedCommunicators.clear();

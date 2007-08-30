@@ -10,15 +10,23 @@ import javax.swing.event.ListSelectionListener;
  */
 public class AssignmentLineSelectionListener implements ListSelectionListener
 {
-	AbstractAssignmentPanel m_dialog = null;
+	AbstractAssignmentPanel m_panel = null;
 	JList m_list = null;
 	
-	public AssignmentLineSelectionListener(JList list, AbstractAssignmentPanel dialog)
+	/**
+	 * Constructor
+	 * @param list List generating the event
+	 * @param panel Panel displaying assignment fields
+	 */
+	public AssignmentLineSelectionListener(JList list, AbstractAssignmentPanel panel)
 	{
 		m_list = list;
-		m_dialog = dialog;
+		m_panel = panel;
 	}
 	
+	/**
+	 * {@link ListSelectionListener#valueChanged(ListSelectionEvent)}
+	 */
 	public void valueChanged(ListSelectionEvent e)
 	{
 		int selectedLine = m_list.getSelectedIndex();
@@ -30,6 +38,6 @@ public class AssignmentLineSelectionListener implements ListSelectionListener
 		m_list.clearSelection();
 		
 		// Show selected assignment in edit mode
-		m_dialog.showEditAssignment(selectedLine);
+		m_panel.showEditAssignment(selectedLine);
 	}
 }

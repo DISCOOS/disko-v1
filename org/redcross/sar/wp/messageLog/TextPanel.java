@@ -14,9 +14,8 @@ import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 
 /**
- * @author thomasl
- *
  * Displays the message text in the top panel in the message log
+ * @author thomasl
  */
 public class TextPanel extends JPanel implements IEditMessageComponentIf
 {
@@ -27,6 +26,10 @@ public class TextPanel extends JPanel implements IEditMessageComponentIf
 	private JButton m_cancelButton;
 	private JButton m_okButton;
 	
+	/**
+	 * Constructor
+	 * @param wp Message log work process
+	 */
 	public TextPanel(IDiskoWpMessageLog wp) 
 	{
 		this.setLayout(new GridBagLayout());
@@ -86,18 +89,23 @@ public class TextPanel extends JPanel implements IEditMessageComponentIf
 				// Store text in current message
 				IMessageIf message = MessageLogTopPanel.getCurrentMessage();
 				IMessageLineIf textLine = message.findMessageLine(MessageLineType.TEXT, true);
-				System.err.println(m_textArea.getText());
 				textLine.setLineText(m_textArea.getText());
 			}	
 		});
 		this.add(m_okButton, gbc);
 	}
 
+	/**
+	 * {@link AbstractAssignmentPanel#hideComponent()}
+	 */
 	public void hideComponent()
 	{
 		this.setVisible(false);
 	}
 
+	/**
+	 * {@link AbstractAssignmentPanel#newMessageSelected(IMessageIf)}
+	 */
 	public void newMessageSelected(IMessageIf message)
 	{
 		IMessageLineIf textMessageLine = message.findMessageLine(MessageLineType.TEXT, false);
@@ -111,11 +119,17 @@ public class TextPanel extends JPanel implements IEditMessageComponentIf
 		}
 	}
 
+	/**
+	 * {@link AbstractAssignmentPanel#showComponent()}
+	 */
 	public void showComponent()
 	{
 		this.setVisible(true);
 	}
 
+	/**
+	 * {@link AbstractAssignmentPanel#clearContents()}
+	 */
 	public void clearContents()
 	{
 		m_textArea.setText("");

@@ -24,7 +24,6 @@ import com.esri.arcgis.interop.AutomationException;
  * 				Common abstract class for tool property dialogs, should not be bound to POIDialog layout/contents
  * 
  * @author thomasl
- *
  */
 public class SinglePOITool extends AbstractCommandTool
 {
@@ -34,6 +33,12 @@ public class SinglePOITool extends AbstractCommandTool
 	protected IDiskoWpMessageLog m_wpMessageLog;
 	protected MessagePOIPanel m_panel;
 
+	/**
+	 * Constructor
+	 * @param wp Message log work process
+	 * @param panel Panel controlling tool options
+	 * @throws IOException
+	 */
 	public SinglePOITool(IDiskoWpMessageLog wp, MessagePOIPanel panel) throws IOException
 	{
 		m_wpMessageLog = wp;
@@ -41,11 +46,18 @@ public class SinglePOITool extends AbstractCommandTool
 		m_panel = panel;
 	}
 	
+	/**
+	 * Set map tool is operating on
+	 * @param map
+	 */
 	public void setMap(IDiskoMap map)
 	{
 		this.map = (DiskoMap)map; 
 	}
 	
+	/**
+	 * {@link AbstractCommandTool#onCreate(Object)}
+	 */
 	@Override
 	public void onCreate(Object obj) throws IOException, AutomationException 
 	{
@@ -54,12 +66,16 @@ public class SinglePOITool extends AbstractCommandTool
 		}
 	}
 	
+	/**
+	 * {@link AbstractCommandTool#onMouseDown(int, int, int, int)}
+	 */
 	@Override
 	public void onMouseDown(int button, int shift, int x, int y) throws IOException, AutomationException {}	
 	
 	/**
 	 * Update message POI(s) when map position is clicked. Event causes relevant dialogs to update, no need for
 	 * explicit update
+	 * {@link AbstractCommandTool#onMouseUp(int, int, int, int)}
 	 */
 	@Override
 	public void onMouseUp(int button, int shift, int x, int y) throws IOException, AutomationException 

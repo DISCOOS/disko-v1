@@ -16,7 +16,7 @@ import java.awt.*;
  */
 
 /**
- *
+ * Panel containing all of message log work process
  */
 public class MessageLogPanel
 {
@@ -39,6 +39,10 @@ public class MessageLogPanel
 
     public static Dimension SMALL_BUTTON_SIZE = new Dimension(60, 60);
 
+    /**
+     * Constructor
+     * @param aWp Message log work process
+     */
     public MessageLogPanel(IDiskoWpMessageLog aWp)
     {
         m_wpModule = aWp;
@@ -138,6 +142,9 @@ public class MessageLogPanel
         tableHeader.setReorderingAllowed(false);
     }
 
+    /**
+     * @return Reference to entire panel
+     */
     public JPanel getPanel()
     {
         setTableData();
@@ -150,26 +157,35 @@ public class MessageLogPanel
         ltm.buildTable();
     }
 
-    public void setSmallButtonSize(Dimension smallButtonSize)
-    {
-        SMALL_BUTTON_SIZE = smallButtonSize;
-    }
+//    public void setSmallButtonSize(Dimension smallButtonSize)
+//    {
+//        SMALL_BUTTON_SIZE = smallButtonSize;
+//    }
 
-    public void setWpMessageLog(DiskoWpMessageLogImpl diskoWpMessageLogImpl)
-    {
-        m_wpModule = diskoWpMessageLogImpl;
-    }
+//    public void setWpMessageLog(DiskoWpMessageLogImpl diskoWpMessageLogImpl)
+//    {
+//        m_wpModule = diskoWpMessageLogImpl;
+//    }
 
-    public void hideDialogs()
+    /**
+     * Hide all components
+     */
+    public void hidePanels()
     {
         m_topPanel.hideEditPanels();
     }
 
+    /**
+     * Clear all button selections
+     */
     public void clearSelection()
     {
         m_topPanel.clearSelection();
     }
 
+    /**
+     * Makes map in bottom panel visible
+     */
     public static void showMap()
     {
         if (m_bottomPanel != null)
@@ -179,6 +195,9 @@ public class MessageLogPanel
         }
     }
 
+    /**
+     * Hides bottom map behind message log table
+     */
     public static void hideMap()
     {
         if (m_bottomPanel == null)
@@ -189,6 +208,9 @@ public class MessageLogPanel
         cards.show(m_bottomPanel, LOG_ID);
     }
 
+    /**
+     * @return Work process map
+     */
     public static IDiskoMap getMap()
     {
         return m_map;

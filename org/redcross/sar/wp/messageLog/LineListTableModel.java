@@ -4,17 +4,19 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
 
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.ICommunicatorIf;
+import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IPOIIf;
 import org.redcross.sar.util.mso.DTG;
 import org.redcross.sar.util.mso.Position;
 
 /**
- * @author thomasl
  * Table model for displaying message lines at top level edit panel
+ * @author thomasl
  */
 public class LineListTableModel extends AbstractTableModel
 {
@@ -23,6 +25,10 @@ public class LineListTableModel extends AbstractTableModel
 	protected List<IMessageLineIf> m_messageLines = null;
 	protected IDiskoWpMessageLog m_wpMessageLog = null;
 
+	/**
+	 * Constructor
+	 * @param wp Message log work process
+	 */
 	public LineListTableModel(IDiskoWpMessageLog wp)
 	{
 		m_messageLines = new LinkedList<IMessageLineIf>();
@@ -30,22 +36,34 @@ public class LineListTableModel extends AbstractTableModel
 		m_wpMessageLog = wp;
 	}
 	
+	/**
+	 * {@link TableModel#getColumnCount()}
+	 */
 	public int getColumnCount() 
 	{
 		return 1;
 	}
 	
+	/**
+	 * {@link AbstractTableModel#getColumnName(int)}
+	 */
 	@Override
 	public String getColumnName(int column)
 	{
 		return null;
 	}
 
+	/**
+	 * {@link TableModel#getRowCount()}
+	 */
 	public int getRowCount() 
 	{
 		return m_messageLines.size();
 	}
 
+	/**
+	 * {@link TableModel#getValueAt(int, int)}
+	 */
 	public Object getValueAt(int rowIndex, int coulumnIndex) 
 	{
 		if(m_messageLines.isEmpty())
@@ -54,8 +72,9 @@ public class LineListTableModel extends AbstractTableModel
 		}
 		else
 		{
+			IMessageIf message = MessageLogTopPanel.getCurrentMessage();
 			IMessageLineIf line = m_messageLines.get(rowIndex);
-			ICommunicatorIf singleReceiver = MessageLogTopPanel.getCurrentMessage().getSingleReceiver();
+			ICommunicatorIf singleReceiver = message.getSingleReceiver();
 			String lineText = null;
 			switch(line.getLineType())
 			{
@@ -70,7 +89,7 @@ public class LineListTableModel extends AbstractTableModel
 				IPOIIf poi = line.getLinePOI();
 				if(poi != null)
 				{
-					String receiver = singleReceiver == null ? m_wpMessageLog.getText("Unit.text") :
+					String receiver = message.isBroadcast() || singleReceiver == null ? m_wpMessageLog.getText("Unit.text") :
 						singleReceiver.getCommunicatorNumberPrefix() + " " + singleReceiver.getCommunicatorNumber();
 					Position pos = poi.getPosition();
 					lineText = String.format(m_wpMessageLog.getText("ListItemPOI.text"), 
@@ -119,16 +138,28 @@ public class LineListTableModel extends AbstractTableModel
 		}
 	}
 
+	/**
+	 * Remove all message lines from line list model
+	 */
 	public void clearMessageLines()
 	{
 		m_messageLines.clear();
 	}
 
+	/**
+	 * Add a message line to the list model
+	 * @param messageLine
+	 */
 	public void addMessageLine(IMessageLineIf messageLine)
 	{
 		m_messageLines.add(messageLine);
 	}
 	
+	/**
+	 * Get a message line from the list model
+	 * @param index Line number
+	 * @return The message line
+	 */
 	public IMessageLineIf getMessageLine(int index)
 	{
 		return m_messageLines.get(index);

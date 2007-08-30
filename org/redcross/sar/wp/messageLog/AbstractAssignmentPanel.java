@@ -42,7 +42,7 @@ import org.redcross.sar.util.mso.DTG;
 
 
 /**
- * Abstract panel handling all updates to assignment. Template pattern. 
+ * Abstract panel handling all updates to assignment. Implemented as template pattern. 
  * 
  * @author thomasl
  *
@@ -362,23 +362,29 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 		m_cardsPanel.add(m_assignmentPoolPanel, ASSIGNMENT_POOL_ID);
 	}
 
+	/**
+	 * {@link IEditMessageComponentIf#clearContents()}
+	 */
 	public void clearContents()
 	{
 	}
 
+	/**
+	 * {@link IEditMessageComponentIf#hideComponent()}
+	 */
 	public void hideComponent()
 	{
 		this.setVisible(false);
 	}
 
+	/**
+	 * {@link IEditMessageComponentIf#newMessageSelected(IMessageIf)}
+	 */
 	public void newMessageSelected(IMessageIf message)
 	{
 		updateAssignmentLineList();
 	}
 
-	/**
-	 * Determine which UI elements that should be displayed, varies with assignment action
-	 */
 	public void showComponent()
 	{
 		this.setVisible(true);

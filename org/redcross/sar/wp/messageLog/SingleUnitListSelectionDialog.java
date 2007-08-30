@@ -14,16 +14,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.*;
 import java.util.List;
 
 /**
- *
- * @author thomasl
- *
  * Dialog containing a list of all units  in command post communicator list
+ * @author thomasl
  */
 public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditMessageComponentIf, IMsoUpdateListenerIf, ActionListener
 {
@@ -40,19 +36,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	protected boolean m_senderList = true;
 	protected HashMap<JToggleButton, ICommunicatorIf> m_buttonCommunicatorMap = null;
 	protected HashMap<ICommunicatorIf, JToggleButton> m_communicatorButtonMap = null;
-
-	protected MouseListener m_buttonMouseListener = new MouseListener()
-	{
-		public void mouseClicked(MouseEvent me)
-		{
-			// TODO if current selected communicator is selected, select command post
-		}
-
-		public void mouseEntered(MouseEvent arg0){}
-		public void mouseExited(MouseEvent arg0){}
-		public void mousePressed(MouseEvent arg0){}
-		public void mouseReleased(MouseEvent arg0){}
-	};
+	protected JToggleButton m_currentButton = null;
 
 	final private static Dimension BUTTON_SIZE = new Dimension(MessageLogPanel.SMALL_BUTTON_SIZE.width*3,
 			MessageLogPanel.SMALL_BUTTON_SIZE.height);
@@ -61,7 +45,8 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 
 	/**
 	 * Constructor
-	 * @param wp
+	 * @param wp Message log work process
+	 * @param senderList Whether dialog is changing the sender field of a message or not
 	 */
 	public SingleUnitListSelectionDialog(IDiskoWpMessageLog wp, boolean senderList)
 	{
@@ -135,7 +120,6 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 			}
 			else
 			{
-				// TODO add possible extensions here, should not be reached for the time being
 				return false;
 			}
 		}
@@ -157,10 +141,16 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 		this.pack();
 	}
 
+	/**
+	 * {@link IEditMessageComponentIf#clearContents()}
+	 */
 	public void clearContents()
 	{
 	}
 
+	/**
+	 * {@link IEditMessageComponentIf#hideComponent()}
+	 */
 	public void hideComponent()
 	{
 		this.setVisible(false);
@@ -194,12 +184,13 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 		// Get communicator button and mark it
 		JToggleButton button = m_communicatorButtonMap.get(communicator);
 
-		// found button?
-		if(button != null) {
-			button.setSelected(true);
-		}
+		button.setSelected(true);
+		m_currentButton = button;
 	}
 
+	/**
+	 *  {@link IEditMessageComponentIf#showComponent()}
+	 */
 	public void showComponent()
 	{
 		this.setVisible(true);
@@ -215,12 +206,18 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	}
 
 	private final EnumSet<IMsoManagerIf.MsoClassCode> myInterests = EnumSet.of(IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGE, IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGELINE);
-	
+	/**
+	 * {@link IMsoUpdateListenerIf#hasInterestIn(IMsoObjectIf)}
+	 */
 	public boolean hasInterestIn(IMsoObjectIf msoObject)
 	{
 		return myInterests.contains(msoObject.getMsoClassCode());
 	}
 
+	/**
+	 * Gets which unit type the filter is set to
+	 * @return Type
+	 */
 	public UnitType getUnitTypeFilter()
 	{
 		return m_unitTypeFilter;
@@ -246,15 +243,6 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 
 		m_buttonCommunicatorMap.clear();
 		m_communicatorButtonMap.clear();
-
-		// Set contents panel size in order to enable scroll pane
-//		int numberOfColumns = m_communicatorList.selectItems(m_communicatorSelector, m_communicatorComparator).size() / NUMBER_OF_ROWS + 1;
-//		m_contentsPanel.setMinimumSize(new Dimension(numberOfColumns * BUTTON_SIZE.width,
-//				NUMBER_OF_ROWS * BUTTON_SIZE.height));
-//		m_contentsPanel.setPreferredSize(new Dimension(numberOfColumns * BUTTON_SIZE.width,
-//				NUMBER_OF_ROWS * BUTTON_SIZE.height));
-//		m_contentsPanel.setMaximumSize(new Dimension(numberOfColumns * BUTTON_SIZE.width,
-//				NUMBER_OF_ROWS * BUTTON_SIZE.height));
 
 		JPanel panel = null;
 		int i = 0;
@@ -282,23 +270,33 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 		m_buttonCommunicatorMap.put(button, communicator);
 		m_communicatorButtonMap.put(communicator, button);
 
-		// De-selecting a button should result in standard sender value being used
-		button.addMouseListener(m_buttonMouseListener);
-
 		button.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				IMessageIf message = MessageLogTopPanel.getCurrentMessage();
-
-				if(m_senderList)
+				JToggleButton sourceButton  = (JToggleButton)arg0.getSource();
+				if(m_currentButton == sourceButton)
 				{
-					message.setSender(communicator);
+					// Deselecting a button should result in standard sender value being used
+					m_currentButton = null;
+					ICommunicatorIf newCommunicator = m_wpMessageLog.getMsoManager().getCmdPostCommunicator();
+					m_communicatorButtonMap.get(newCommunicator).doClick();
 				}
 				else
 				{
-					message.setSingleReceiver(communicator);
-				}
+					m_currentButton = sourceButton;
+					// Select communicator
+					IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+					if(m_senderList)
+					{
+						message.setSender(communicator);
+					}
+					else
+					{
+						message.setSingleReceiver(communicator);
+					}
+				}				
+				
 				fireDialogFinished();
 			}
 		});
@@ -330,6 +328,10 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 		return m_buttonGroup.getElements();
 	}
 
+	/**
+	 * Registers a unit field dialog so it can listen to selection changes and update itself accordingly
+	 * @param fromDialog
+	 */
 	public void addActionListener(UnitFieldSelectionDialog fromDialog)
 	{
 		m_actionListeners.add(fromDialog);
@@ -342,6 +344,9 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 		}
 	}
 
+	/**
+	 * Deselect buttons
+	 */
 	public void clearSelection()
 	{
 		m_buttonGroup.clearSelection();

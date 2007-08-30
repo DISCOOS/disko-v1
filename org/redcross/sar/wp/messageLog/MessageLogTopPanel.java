@@ -1,7 +1,3 @@
-/*
- * Author: Thomas Landvik
- * Created: 27.06.07
- */
 package org.redcross.sar.wp.messageLog;
 
 import no.cmr.view.JOptionPaneExt;
@@ -29,6 +25,10 @@ import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Top edit panel
+ * @author thomasl
+ */
 public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, IDialogEventListener
 {
 	private static final long serialVersionUID = 1L;
@@ -54,6 +54,10 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	private static boolean m_newMessage;
 	private static IMessageIf m_currentMessage = null;
 	private static boolean m_messageDirty = false;
+	/**
+	 * Get current message, Singleton
+	 * @return The message
+	 */
 	public static IMessageIf getCurrentMessage()
 	{
 		if(m_currentMessage == null)
@@ -68,6 +72,10 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		return m_currentMessage;
 	}
 	
+	/**
+	 * 
+	 * @return Whether the current message is new or not, i.e. not stored in MSO
+	 */
 	public static boolean isNewMessage()
 	{
 		return m_newMessage;
@@ -100,7 +108,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
     private JPanel m_messagePanel;
     private JLabel m_messagePanelTopLabel;
-//    private JComponent m_dialogArea;
     
     private JPanel m_buttonRow;
 	private static JToggleButton  m_textButton;
@@ -131,6 +138,10 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     private JButton m_waitEndStatusButton;
     private JButton m_finishedStatusButton;
 
+    /**
+     * Constructor
+     * @param messageLog Message log reference
+     */
     public MessageLogTopPanel(IMessageLogIf messageLog)
     {
     	m_messageLog = messageLog;
@@ -321,7 +332,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		}
 	}
 
-    public void initPanels()
+    private void initPanels()
     {
     	this.setLayout(new GridBagLayout());
     	GridBagConstraints gbc = new GridBagConstraints();
@@ -440,7 +451,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
         this.add(m_statusPanel, gbc);
     }
 
-    public void initComponents()
+    private void initComponents()
     {
     	getChangeDTGDialog();
     	getFieldChangeFromDialog();
@@ -456,7 +467,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
     }
 
-    public void initButtons()
+    private void initButtons()
     {
     	m_buttonRow = new JPanel(new FlowLayout(FlowLayout.LEADING, 4, 0));
     	m_buttonGroup = new ButtonGroup();
@@ -480,7 +491,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
     /**
      * An existing message is selected in the message log for editing.
-     * @param messageNr
+     * @param messageNr The number of the selected message
      */
 	public void newMessageSelected(int messageNr)
 	{
@@ -503,7 +514,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			else
 			{
 				// Roll back any changes made to the message
-				// TODO sjekk med vinjar/stian
 				if(m_newMessage)
 				{
 					m_currentMessage.deleteObject();
@@ -599,14 +609,20 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
         }
     };
 
+    /**
+     * Set the message log reference
+     * @param wp
+     */
 	public void setWp(IDiskoWpMessageLog wp)
 	{
 		m_wpMessageLog = wp;
 	}
 
+	/**
+	 * {@link IMsoUpdateListenerIf#handleMsoUpdateEvent(Update)}
+	 */
 	public void handleMsoUpdateEvent(Update e)
 	{
-		// TODO update dialogs or warnings?
 		updateMessageGUI();
 	}
 
@@ -615,11 +631,17 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGELINE,
 			IMsoManagerIf.MsoClassCode.CLASSCODE_POI);
 
+	/**
+	 * {@link IMsoUpdateListenerIf#hasInterestIn(IMsoObjectIf)}
+	 */
 	public boolean hasInterestIn(IMsoObjectIf msoObject)
 	{
 		 return myInterests.contains(msoObject.getMsoClassCode());
 	}
 
+	/**
+	 * {@link IDialogEventListener#dialogCanceled(DialogEvent)}
+	 */
 	public void dialogCanceled(DialogEvent e)
 	{
 		//Object sender = e.getSource();
@@ -1282,6 +1304,9 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		}
 	}
 
+	/**
+	 * Unselect all field edit buttons
+	 */
 	public void clearSelection()
 	{
 		m_buttonGroup.clearSelection();

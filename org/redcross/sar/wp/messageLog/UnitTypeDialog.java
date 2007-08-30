@@ -18,10 +18,8 @@ import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IUnitIf.UnitType;
 
 /**
- * 
- * @author thomasl
- *
  * Dialog for selecting unit type
+ * @author thomasl
  */
 public class UnitTypeDialog extends DiskoDialog implements IEditMessageComponentIf
 {
@@ -38,6 +36,11 @@ public class UnitTypeDialog extends DiskoDialog implements IEditMessageComponent
 	private JTextField m_textField = null;
 	private LinkedList<JButton> m_buttons;
 	
+	/**
+	 * Constructor
+	 * @param wp
+	 * @param textField
+	 */
 	public UnitTypeDialog(IDiskoWpMessageLog wp, JTextField textField)
 	{
 		super(wp.getApplication().getFrame());
@@ -150,20 +153,31 @@ public class UnitTypeDialog extends DiskoDialog implements IEditMessageComponent
 		return m_buttons;
 	}
 
+	/**
+	 * {@link IEditMessageComponentIf#clearContents()}
+	 */
 	public void clearContents()
 	{
 	}
+	
+	/**
+	 * {@link IEditMessageComponentIf#hideComponent()}
+	 */
 	public void hideComponent()
 	{
 		this.setVisible(false);
 	}
 
+	/**
+	 * {@link IEditMessageComponentIf#newMessageSelected(IMessageIf)}
+	 */
 	public void newMessageSelected(IMessageIf message)
-	{
-		// TODO Auto-generated method stub
-		
+	{		
 	}
 
+	/**
+	 * {@link IEditMessageComponentIf#showComponent()}
+	 */
 	public void showComponent()
 	{
 		this.setVisible(true);

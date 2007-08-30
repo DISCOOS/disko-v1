@@ -28,15 +28,12 @@ import java.io.IOException;
 /**
  * Dialog used in position and finding when editing the message log. A separate POI dialog class was created for
  * the message log, should be merged with POIDialog / extract a common super class, if this should prove beneficial
- *
  * @author thomasl
- *
  */
 public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 {
 	private static final long serialVersionUID = 1L;
 	
-//	protected JPanel m_contentsPanel = null;
 	protected JButton m_okButton = null;
 	protected JButton m_cancelButton = null;
 	protected JToggleButton m_showInMapButton = null;
@@ -51,19 +48,20 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 	protected SinglePOITool m_tool = null;
 	protected boolean m_notebookMode = true;
 
+	/**
+	 * Constructor
+	 * @param wp Message log work process
+	 * @param poiTypes Which POI types are valid in panel
+	 */
 	public MessagePOIPanel(IDiskoWpMessageLog wp, POIType[] poiTypes)
 	{
 		m_wpMessageLog = wp;
-		
 		m_poiTypes = poiTypes;
-		
 		initialize();
 	}
 
 	private void initialize()
 	{
-		// TODO numpads?
-
 		initButtons();
 		initContents();
 
@@ -139,7 +137,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 	}
 	
 	/**
-	 * 
+	 * Reverts contents of text fields to what is stored in MSO
 	 */
 	private void revertPOI()
 	{
@@ -232,7 +230,6 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 
 	private void initContents()
 	{	
-//		m_contentsPanel = new JPanel();
 		this.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
@@ -458,6 +455,9 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 		}
 	}
 
+	/**
+	 * {@link IEditMessageComponentIf#newMessageSelected(IMessageIf)}
+	 */
 	public void newMessageSelected(IMessageIf message)
 	{
 		// Update dialog
@@ -490,6 +490,9 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 		}
 	}
 
+	/**
+	 * {@link IEditMessageComponentIf#showComponent()}
+	 */
 	public void showComponent()
 	{
 		if(m_showInMapButton.isSelected())
@@ -542,11 +545,17 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 //		}
 //	}
 
+	/**
+	 * Get the message log work process
+	 */
 	public IDiskoWpMessageLog getWP()
 	{
 		return m_wpMessageLog;
 	}
 
+	/**
+	 * @return POI type selected in combo box
+	 */
 	public POIType getSelectedPOIType()
 	{
 		if(m_poiTypes == null)
@@ -560,7 +569,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 	}
 	
 	/**
-	 * Set the tool for the current wp map
+	 * Set the tool for the current work process map
 	 */
 	public void setMapTool()
 	{

@@ -29,13 +29,10 @@ import org.redcross.sar.mso.data.IUnitIf.UnitType;
 import org.redcross.sar.util.mso.Selector;
 
 /**
- * 
- * @author thomasl
- *
  * The dialog for selecting unit type and number.
  * Dialog loads unit information from resource file {@link org.redcross.sar.mso.data.properties.Unit.properties}
+ * @author thomasl
  */
-
 public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessageComponentIf, KeyListener, ActionListener
 {
 	private static final long serialVersionUID = 1L;
@@ -60,6 +57,11 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 	
 	protected ResourceBundle m_unitResources;
 	
+	/**
+	 * Constructor
+	 * @param messageLog Message log work process
+	 * @param senderUnit Whether or not dialog is editing sender field of the current message
+	 */
 	public UnitFieldSelectionDialog(IDiskoWpMessageLog messageLog, boolean senderUnit)
 	{
 		super(messageLog.getApplication().getFrame());
@@ -357,6 +359,9 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		}
 	}
 	
+	/**
+	 * {@link IEditMessageComponentIf#hideComponent()}
+	 */
 	public void hideComponent()
 	{
 		this.setVisible(false);
@@ -368,6 +373,9 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		}
 	}
 
+	/**
+	 * {@link IEditMessageComponentIf#newMessageSelected(IMessageIf)}
+	 */
 	public void newMessageSelected(IMessageIf message)
 	{
 		ICommunicatorIf communicator = null;
@@ -406,6 +414,9 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		}
 	}
 
+	/**
+	 * {@link KeyListener#keyPressed(KeyEvent)}
+	 */
 	public void keyPressed(KeyEvent ke)
 	{
 		if(ke.getKeyCode() == KeyEvent.VK_ENTER)
@@ -475,6 +486,10 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 	public void keyReleased(KeyEvent arg0){}
 	public void keyTyped(KeyEvent arg0){}
 
+	/**
+	 * Get unit text
+	 * @return
+	 */
 	public String getText()
 	{
 		return m_unitTypeField.getText() + " " + m_unitNumberField.getText();
@@ -497,6 +512,9 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		}
 	}
 
+	/**
+	 * {@link IEditMessageComponentIf#clearContents()}
+	 */
 	public void clearContents()
 	{
 		m_unitNumberField.setText("");
@@ -508,6 +526,10 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		return m_unitNumberPad.getOkButton();
 	}
 
+	/**
+	 * Adds action listener, updates field in other dialog based on selection in this
+	 * @param fromDialog
+	 */
 	public void addActionListener(SingleUnitListSelectionDialog fromDialog)
 	{
 		LinkedList<JButton> buttons = m_unitTypePad.getButtons();

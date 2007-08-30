@@ -27,12 +27,7 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
         assignWpBundle("org.redcross.sar.wp.messageLog.messageLog");
 
         m_logPanel = new MessageLogPanel(this);
-        m_logPanel.setSmallButtonSize(getApplication().getUIFactory().getSmallButtonSize());
-        m_logPanel.setWpMessageLog(this);
         layoutComponent(m_logPanel.getPanel());
-
-//        BuildTestData.createUnitsAndAssignments(getMsoModel());
-//        BuildTestData.createMessages(getMsoModel());
     }
 
     @Override
@@ -79,7 +74,7 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
     	}
     	
     	super.deactivated();
-    	m_logPanel.hideDialogs();
+    	m_logPanel.hidePanels();
     	m_logPanel.clearSelection();
     }
 

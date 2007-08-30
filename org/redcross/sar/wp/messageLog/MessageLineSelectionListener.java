@@ -6,15 +6,26 @@ import javax.swing.event.ListSelectionListener;
 
 import org.redcross.sar.mso.data.IMessageLineIf;
 
+/**
+ * Shows fields in edit mode based on which elements are selected in the message line list
+ * @author thomasl
+ */
 public class MessageLineSelectionListener implements ListSelectionListener
 {
 	protected LineListTableModel m_tableModel;
 	
+	/**
+	 * Constructor
+	 * @param listTableModel Line table model {@link LineListTableModel}
+	 */
 	public MessageLineSelectionListener(LineListTableModel listTableModel)
 	{
 		m_tableModel = listTableModel;
 	}
 	
+	/**
+	 * {@link ListSelectionListener#valueChanged(ListSelectionEvent)}
+	 */
 	public void valueChanged(ListSelectionEvent e)
 	{
 		ListSelectionModel lsm = (ListSelectionModel)e.getSource();

@@ -12,6 +12,10 @@ import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IMessageLineListIf;
 import org.redcross.sar.util.mso.Selector;
 
+/**
+ * Panel displaying message lines in the currently selected message
+ * @author thomasl
+ */
 public class LineListPanel extends JPanel implements IEditMessageComponentIf
 {
 	private static final long serialVersionUID = 1L;
@@ -27,7 +31,7 @@ public class LineListPanel extends JPanel implements IEditMessageComponentIf
 		public int compare(IMessageLineIf arg0, IMessageLineIf arg1)
 		{
 			return arg0.getLineNumber() - arg1.getLineNumber();
-		}
+		} 
 	};
 	
 	private Selector<IMessageLineIf> m_messageLineSelector = new Selector<IMessageLineIf>()
@@ -38,6 +42,10 @@ public class LineListPanel extends JPanel implements IEditMessageComponentIf
 		}
 	};
 	
+	/**
+	 * Constructor
+	 * @param wp Message log work process
+	 */
 	public LineListPanel(IDiskoWpMessageLog wp)
 	{
 		m_wpMessageLog = wp;
@@ -57,6 +65,9 @@ public class LineListPanel extends JPanel implements IEditMessageComponentIf
 		this.add(m_textScrollPane, BorderLayout.CENTER);
 	}
 
+	/**
+	 * {@link IEditMessageComponentIf#newMessageSelected(IMessageIf)}
+	 */
 	public void newMessageSelected(IMessageIf message)
 	{
 		m_messageTableModel.clearMessageLines();
@@ -74,11 +85,17 @@ public class LineListPanel extends JPanel implements IEditMessageComponentIf
 		m_messageTableModel.fireTableDataChanged();
 	}
 
+	/**
+	 * {@link IEditMessageComponentIf#showComponent()}
+	 */
 	public void showComponent()
 	{
 		this.setVisible(true);
 	}
 	
+	/**
+	 * {@link IEditMessageComponentIf#hideComponent()}
+	 */
 	public void hideComponent()
 	{
 		this.setVisible(false);

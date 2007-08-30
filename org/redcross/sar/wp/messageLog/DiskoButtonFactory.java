@@ -8,6 +8,7 @@ import javax.swing.JButton;
 import javax.swing.JToggleButton;
 
 import org.redcross.sar.app.Utils;
+import org.redcross.sar.gui.UIFactory;
 import org.redcross.sar.gui.renderers.IconRenderer;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.ICmdPostIf;
@@ -16,9 +17,8 @@ import org.redcross.sar.mso.data.IUnitIf;
 
 /**
  * Creates buttons. 
- * TODO Methods should probably be moved to some GUI factory class later on
+ * TODO Methods should probably be moved to {@link UIFactory} later on
  * @author thomasl
- *
  */
 public class DiskoButtonFactory
 {

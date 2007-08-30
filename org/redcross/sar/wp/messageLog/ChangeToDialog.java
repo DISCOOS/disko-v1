@@ -47,7 +47,10 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 	public static final Dimension BUTTON_SIZE = new Dimension(MessageLogPanel.SMALL_BUTTON_SIZE.width*3, 
 			MessageLogPanel.SMALL_BUTTON_SIZE.height);
 	
-	
+	/**
+	 * Constructor 
+	 * @param wp Message log work process reference
+	 */
 	public ChangeToDialog(IDiskoWpMessageLog wp)
 	{
 		super(wp.getApplication().getFrame());
@@ -84,7 +87,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 		m_contentsPanel = new JPanel();
 		m_contentsPanel.setBorder(BorderFactory.createLineBorder(Color.lightGray));
 		m_contentsPanel.setLayout(new BoxLayout(m_contentsPanel, BoxLayout.LINE_AXIS));
-		m_contentsPanel.setPreferredSize(new Dimension(SingleUnitListSelectionDialog.PANEL_WIDTH, BUTTON_SIZE.height));
+		m_contentsPanel.setPreferredSize(new Dimension(SingleUnitListSelectionDialog.PANEL_WIDTH+2, BUTTON_SIZE.height));
 		this.add(m_contentsPanel);
 	}
 	
@@ -137,6 +140,9 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 		m_contentsPanel.add(Box.createHorizontalGlue());
 	}
 	
+	/**
+	 * {@link IEditMessageComponentIf#hideComponent()}
+	 */
 	public void hideComponent()
 	{
 		this.setVisible(false);
@@ -145,6 +151,9 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 		m_broadcastDialog.hideComponent();
 	}
 
+	/**
+	 * {@link IEditMessageComponentIf#newMessageSelected(IMessageIf)}
+	 */
 	public void newMessageSelected(IMessageIf message)
 	{
 		m_broadcast = message.isBroadcast();
@@ -174,6 +183,9 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 		}
 	}
 
+	/**
+	 * {@link IEditMessageComponentIf#showComponent()}
+	 */
 	public void showComponent()
 	{
 		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
@@ -212,7 +224,9 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 		m_broadcastDialog.showComponent();
 	}
 	
-
+	/**
+	 * {@link IEditMessageComponentIf#clearContents()}
+	 */
 	public void clearContents()
 	{
 		m_nonBroadcastButton.setSelected(true);
@@ -221,8 +235,14 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 		m_nbListDialog.clearContents();
 	}
 
+	/**
+	 * {@link IDialogEventListener#dialogCanceled(DialogEvent)}
+	 */
 	public void dialogCanceled(DialogEvent e){}
 
+	/**
+	 * {@link IDialogEventListener#dialogFinished(DialogEvent)}
+	 */
 	public void dialogFinished(DialogEvent e)
 	{
 		Object source = e.getSource();
@@ -232,13 +252,23 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 		}
 	}
 
+	/**
+	 * {@link IDialogEventListener#dialogStateChanged(DialogEvent)}
+	 */
 	public void dialogStateChanged(DialogEvent e){}
 	
+	/**
+	 * Keep track of broadcast or not
+	 * @param broadcast
+	 */
 	public void setBroadcast(boolean broadcast)
 	{
 		m_broadcast = broadcast;
 	}
 	
+	/**
+	 * @return Whether in broadcast mode or not
+	 */
 	public boolean getBroadcast()
 	{
 		return m_broadcast;

@@ -25,6 +25,10 @@ public class StartedAssignmentPanel extends AbstractAssignmentPanel
 {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Constructor
+	 * @param wp Message log work process
+	 */
 	public StartedAssignmentPanel(IDiskoWpMessageLog wp)
 	{
 		super(wp);
@@ -32,19 +36,25 @@ public class StartedAssignmentPanel extends AbstractAssignmentPanel
 		m_timeLabel.setText(m_wpMessageLog.getText("StartedTimeLabel.text") + ": ");
 	}
 
+	/**
+	 * {@link AbstractAssignmentPanel#cancelUpdate()}
+	 */
 	public void cancelUpdate()
 	{
 		if(linesAdded())
 		{
 			IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.STARTED, false);
 			messageLine.deleteObject();
-//			m_lineAdded = false;
+//			TODO m_lineAdded = false;
 			
 			// Delete assigned message line if added
 			MessageLogTopPanel.cancelAssign();
 		}
 	}
 
+	/**
+	 * {@link AbstractAssignmentPanel#updateMessageLine()}
+	 */
 	@Override
 	protected void updateMessageLine()
 	{

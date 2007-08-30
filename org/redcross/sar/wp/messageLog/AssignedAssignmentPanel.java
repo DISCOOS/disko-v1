@@ -3,7 +3,6 @@ package org.redcross.sar.wp.messageLog;
 import java.util.Calendar;
 
 import org.redcross.sar.mso.data.IMessageIf;
-import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
@@ -19,6 +18,10 @@ public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Constructor
+	 * @param wp Message log work process
+	 */
 	public AssignedAssignmentPanel(IDiskoWpMessageLog wp)
 	{
 		super(wp);
@@ -26,6 +29,9 @@ public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 		m_timeLabel.setText(m_wpMessageLog.getText("AssignedTimeLabel.text") + ": ");
 	}
 
+	/**
+	 * {@link AbstractAssignmentPanel#cancelUpdate()}
+	 */
 	public void cancelUpdate()
 	{
 		if(linesAdded())
@@ -37,6 +43,9 @@ public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 	}
 
 
+	/**
+	 * {@link AbstractAssignmentPanel#updateMessageLine()}
+	 */
 	@Override
 	protected void updateMessageLine()
 	{
@@ -44,50 +53,18 @@ public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 		MessageLogTopPanel.showListDialog();
 	}
 
-//	public void newMessageSelected(IMessageIf message)
-//	{
-//		IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.ASSIGNED, false);
-//		IAssignmentIf assignment = null;
-//		Calendar time = null;
-//		if(messageLine != null)
-//		{
-//			assignment = messageLine.getLineAssignment();
-//			time = messageLine.getOperationTime();
-//		}
-//		else
-//		{
-//			ICommunicatorIf communicator = MessageLogTopPanel.getCurrentMessage().getSingleReceiver();
-//			if(communicator != null && communicator instanceof IUnitIf)
-//			{
-//				IUnitIf unit = (IUnitIf)communicator;
-//				if(!unit.getAssignedAssignments().isEmpty())
-//				{
-//					assignment = unit.getActiveAssignment();
-//					time = assignment.getTimeAssigned();
-//				}
-//			}
-//		}
-//		
-//		if(assignment != null)
-//		{
-//			m_assignmentTextLabel.setText(assignment.getTypeAndNumber());
-//		}
-//		else
-//		{
-//			// No assign message line, receiving unit doesn't have an assignment assigned
-//			this.setVisible(false);
-//		}
-//		
-//		m_timeTextField.setText(DTG.CalToDTG(time));
-		
-//	}
-
+	/**
+	 * {@link AbstractAssignmentPanel#updateAssignmentLineList()}
+	 */
 	protected void updateAssignmentLineList()
 	{
 		AssignmentListModel model = (AssignmentListModel)m_assignmentLineList.getModel();
 		model.setMessageLineType(MessageLineType.ASSIGNED);
 	}
 
+	/**
+	 * {@link AbstractAssignmentPanel#addNewMessageLine()}
+	 */
 	protected void addNewMessageLine()
 	{
 		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
@@ -114,6 +91,9 @@ public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 		}
 	}
 
+	/**
+	 * {@link AbstractAssignmentPanel#addSelectedAssignment()}
+	 */
 	protected void addSelectedAssignment()
 	{
 		if(m_selectedAssignment != null)

@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
+import javax.swing.ListModel;
 
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
@@ -21,6 +22,10 @@ public class AssignmentListModel extends AbstractListModel
 	protected MessageLineType m_lineType = null;
 	protected List<IMessageLineIf> m_messageLines = null;
 	
+	/**
+	 * Constructor
+	 * @param wp Message log work process
+	 */
 	public AssignmentListModel(IDiskoWpMessageLog wp)
 	{
 		m_wpMessageLog = wp;
@@ -28,6 +33,10 @@ public class AssignmentListModel extends AbstractListModel
 		m_messageLines = new LinkedList<IMessageLineIf>();
 	}
 	
+	/**
+	 * Sets the assignment line type and updates assignment list
+	 * @param lineType The line type
+	 */
 	public void setMessageLineType(MessageLineType lineType)
 	{
 		m_lineType = lineType;
@@ -47,11 +56,17 @@ public class AssignmentListModel extends AbstractListModel
 		fireContentsChanged(this, 0, m_messageLines.size()-1);
 	}
 	
+	/**
+	 * {@link ListModel#getElementAt(int)}
+	 */
 	public Object getElementAt(int index)
 	{
 		return m_messageLines.size()-1 < index ? null : m_messageLines.get(index);
 	}
 
+	/**
+	 * {@link ListModel#getSize()}
+	 */
 	public int getSize()
 	{
 		return m_messageLines.size();

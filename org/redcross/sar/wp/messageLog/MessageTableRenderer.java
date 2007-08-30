@@ -9,18 +9,29 @@ import org.redcross.sar.mso.data.IMessageIf.MessageStatus;
 
 import java.awt.*;
 
+/**
+ * 
+ * @author vinjar/thomasl
+ */
 public class MessageTableRenderer extends JTextArea implements TableCellRenderer
 {
 	private static final long serialVersionUID = 1L;
 	
 	private IMessageLogIf m_log = null;
 
+	/**
+	 * Constructor
+	 */
 	public MessageTableRenderer()
     {
         setLineWrap(true);
         setWrapStyleWord(true);
     }
 
+	/**
+	 * Constructor
+	 * @param log
+	 */
     public MessageTableRenderer(IMessageLogIf log)
 	{
     	setLineWrap(true);
@@ -29,6 +40,9 @@ public class MessageTableRenderer extends JTextArea implements TableCellRenderer
         m_log  = log;
 	}
 
+    /**
+     * {@link TableCellRenderer#getTableCellRendererComponent(JTable, Object, boolean, boolean, int, int)}
+     */
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
     {
         // Contents
@@ -77,7 +91,6 @@ public class MessageTableRenderer extends JTextArea implements TableCellRenderer
         {
         	for(IMessageIf message : m_log.getItems())
             {
-            	// TODO is message number and row always consistent?
             	if(message.getNumber() == (row+1) && message.getStatus() == MessageStatus.POSTPONED)
             	{
             		setBackground(Color.pink);

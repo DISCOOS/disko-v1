@@ -37,10 +37,13 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 	private JTextField m_timeTextField;
 	private IDiskoWpMessageLog m_wp;
 	
-	// TODO global constant if in notebook mode or not
 	private NumPadDialog m_numpad = null;
 	private static final boolean NOTEBOOK_MODE = true;
 
+	/**
+	 * Constructor
+	 * @param wp Message log work process reference
+	 */
 	public ChangeDTGDialog(IDiskoWpMessageLog wp)
 	{
 		super(wp.getApplication().getFrame());
@@ -112,11 +115,17 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 		return m_contentsPanel;
 	}
 
+	/**
+	 * @return Text in time text field
+	 */
 	public String getTime()
 	{
 		return m_timeTextField.getText();
 	}
 
+	/**
+	 * {@link KeyListener#keyPressed(KeyEvent)}
+	 */
 	public void keyPressed(KeyEvent ke)
 	{
 		// Changes should be checked, and if found correct, sent to mso, not commited
@@ -153,22 +162,36 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 	public void keyReleased(KeyEvent arg0){}
 	public void keyTyped(KeyEvent arg0){}
 
+	/**
+	 * {@link IEditMessageComponentIf#newMessageSelected(IMessageIf)}
+	 */
 	public void newMessageSelected(IMessageIf message)
 	{
 		setCreated(message.getCreated());
 		m_timeTextField.setText(DTG.CalToDTG(message.getOccuredTime()));
 	}
 
+	/**
+	 * Sets the created text field
+	 * @param created
+	 */
 	public void setCreated(Calendar created)
 	{
 		m_createdTextField.setText(DTG.CalToDTG(created));
 	}
 
+	/**
+	 * Sets the time text field
+	 * @param calendar
+	 */
 	public void setTime(Calendar calendar)
 	{
 		m_timeTextField.setText(DTG.CalToDTG(calendar));
 	}
 
+	/**
+	 * {@link IEditMessageComponentIf#hideComponent()}
+	 */
 	public void hideComponent()
 	{
 		this.setVisible(false);
@@ -195,6 +218,9 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 		}
 	}
 
+	/**
+	 * {@link IEditMessageComponentIf#clearContents()}
+	 */
 	public void clearContents()
 	{
 		m_createdTextField.setText("");

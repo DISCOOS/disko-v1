@@ -24,6 +24,10 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Constructor
+	 * @param wp Message log work process
+	 */
 	public CompletedAssignmentPanel(IDiskoWpMessageLog wp)
 	{
 		super(wp);
@@ -31,6 +35,9 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 		m_timeLabel.setText(m_wpMessageLog.getText("CompletedTimeLabel.text") + ": ");
 	}
 
+	/**
+	 * {@link AbstractAssignmentPanel#cancelUpdate()}
+	 */
 	public void cancelUpdate()
 	{
 		if(linesAdded())
@@ -48,6 +55,9 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 		}
 	}
 
+	/**
+	 * {@link AbstractAssignmentPanel#updateMessageLine()}
+	 */
 	@Override
 	protected void updateMessageLine()
 	{	
@@ -57,12 +67,18 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 		MessageLogTopPanel.showListDialog();
 	}
 
+	/**
+	 * {@link AbstractAssignmentPanel#updateAssignmentLineList()}
+	 */
 	protected void updateAssignmentLineList()
 	{
 		AssignmentListModel model = (AssignmentListModel)m_assignmentLineList.getModel();
 		model.setMessageLineType(MessageLineType.COMPLETE);
 	}
 
+	/**
+	 * {@link AbstractAssignmentPanel#addNewMessageLine()}
+	 */
 	protected void addNewMessageLine()
 	{
 		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
@@ -118,6 +134,9 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 		}
 	}
 
+	/**
+	 * {@link AbstractAssignmentPanel#addSelectedAssignment()}
+	 */
 	protected void addSelectedAssignment()
 	{
 		if(m_selectedAssignment != null)

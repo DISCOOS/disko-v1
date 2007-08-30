@@ -9,7 +9,6 @@ import org.redcross.sar.mso.data.IMessageLineListIf;
 import org.redcross.sar.mso.data.IMessageLogIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.IPOIIf;
-import org.redcross.sar.mso.data.IMessageIf.MessageStatus;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
@@ -19,6 +18,7 @@ import org.redcross.sar.util.mso.Selector;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
 
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -26,9 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- *
+ * Table model providing log table with data
  */
-
 public class LogTableModel extends AbstractTableModel implements IMsoUpdateListenerIf
 {
 	private static final long serialVersionUID = 1L;
@@ -44,6 +43,13 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     
     private MessageRowSelectionListener m_selectionListener = null;
 
+    /**
+     * Constructor
+     * @param aTable Log table
+     * @param aModule Message log work process
+     * @param aMessageLog Message log reference
+     * @param listener Selection listener
+     */
     public LogTableModel(JTable aTable, IDiskoWpMessageLog aModule, IMessageLogIf aMessageLog, MessageRowSelectionListener listener)
     {
         m_table = aTable;
@@ -55,26 +61,35 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
         m_selectionListener = listener;
     }
 
+    /**
+     * {@link TableModel#getRowCount()}
+     */
     public int getRowCount()
     {
         return m_messageList.size();
     }
 
+    /**
+     * {@link TableModel#getColumnCount()}
+     */
     public int getColumnCount()
     {
         return 7;
     }
 
+    /**
+     * Get messages, update expanded hash map 
+     */
     void buildTable()
     {
         m_messageList = m_messageLog.selectItems(m_messageSelector, m_lineNumberComparator);
 
-        for(IMessageIf message : m_messageList)
-        {
-        	if(message.getStatus() == MessageStatus.UNCONFIRMED)
-        	{
-        	}
-        }
+//        for(IMessageIf message : m_messageList)
+//        {
+//        	if(message.getStatus() == MessageStatus.UNCONFIRMED)
+//        	{
+//        	}
+//        }
         
         // Update hash map
         HashMap<Integer, Boolean> tempMap = new HashMap<Integer, Boolean>(m_rowExpandedMap);
@@ -95,6 +110,9 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
         }
     }
 
+    /**
+     * {@link TableModel#getColumnClass(int)}
+     */
     @Override
 	public Class<?> getColumnClass(int c)
     {
@@ -108,6 +126,9 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     	}
     }
 
+    /**
+     * {@link TableModel#getValueAt(int, int)}
+     */
     public Object getValueAt(int rowIndex, int columnIndex)
     {
         IMessageIf message = m_messageList.get(rowIndex);
@@ -173,7 +194,7 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
         				IPOIIf poi = line.getLinePOI();
         				if(poi != null)
         				{
-        					String receiver = singleReceiver == null ? m_wpModule.getText("Unit.text") 
+        					String receiver = message.isBroadcast() || singleReceiver == null ? m_wpModule.getText("Unit.text") 
         							: singleReceiver.getCommunicatorNumberPrefix() + " " + singleReceiver.getCommunicatorNumber();
         					Position pos = poi.getPosition();
         					lineText = String.format(m_wpModule.getText("ListItemPOI.text"), 
@@ -229,12 +250,18 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
         }
     }
 
+    /**
+     * {@link TableModel#getColumnName(int)}
+     */
     @Override
     public String getColumnName(int column)
     {
     	return null;
     }
 
+    /**
+     * {@link IMsoUpdateListenerIf#handleMsoUpdateEvent(Update)}
+     */
     public void handleMsoUpdateEvent(Update e)
     {
         buildTable();
@@ -245,6 +272,9 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     		IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGE,
     		IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGELINE);
 
+    /**
+     * {@link IMsoUpdateListenerIf#hasInterestIn(IMsoObjectIf)}
+     */
     public boolean hasInterestIn(IMsoObjectIf aMsoObject)
     {
         return myInterests.contains(aMsoObject.getMsoClassCode());
