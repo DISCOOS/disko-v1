@@ -3,10 +3,14 @@ package org.redcross.sar.wp.messageLog;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -26,6 +30,7 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.ListSelectionModel;
 
+import org.redcross.sar.gui.NumPadDialog;
 import org.redcross.sar.gui.renderers.IconRenderer;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IMessageIf;
@@ -83,6 +88,8 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 	protected IMessageLineIf m_editingLine = null;
 	
 	protected List<IMessageLineIf> m_addedLines = null;
+	
+	protected boolean m_notebookMode = true;
 	
 	public AbstractAssignmentPanel(IDiskoWpMessageLog wp)
 	{
@@ -144,6 +151,32 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 	 */
 	protected abstract void addSelectedAssignment();
 	
+	/**
+	 * Revert edit panel to current MSO
+	 */
+	protected void revertEditPanel()
+	{
+		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+		IMessageLineIf line = null;
+		if(this instanceof AssignedAssignmentPanel)
+		{
+			line = message.findMessageLine(MessageLineType.ASSIGNED, false);
+		}
+		else if(this instanceof StartedAssignmentPanel)
+		{
+			line = message.findMessageLine(MessageLineType.STARTED, false);
+		}
+		else if(this instanceof CompletedAssignmentPanel)
+		{
+			line = message.findMessageLine(MessageLineType.COMPLETE, false);
+		}
+		
+		if(line != null)
+		{
+			m_timeTextField.setText(DTG.CalToDTG(line.getOperationTime()));
+		}
+	}
+	
 	protected void initAssignmentOverviewPanel()
 	{
 		m_overviewPanel = new JPanel(new GridBagLayout());
@@ -201,6 +234,29 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 		
 		gbc.gridx++;
 		m_timeTextField = new JTextField(6);
+		if(m_notebookMode)
+		{
+			m_timeTextField.addFocusListener(new FocusListener()
+			{
+				public void focusGained(FocusEvent e)
+				{
+					NumPadDialog numPad = m_wpMessageLog.getApplication().getUIFactory().getNumPadDialog();
+					// Don't display dialog again if returning from it
+					Component component = e.getOppositeComponent();
+					if(component != numPad.getOkButton())
+					{
+						numPad.setTextField(m_timeTextField);
+						Point location = m_timeTextField.getLocationOnScreen();
+						location.x += m_timeTextField.getWidth();
+						numPad.setLocation(location);
+						numPad.setVisible(true);
+					}
+				}
+
+				public void focusLost(FocusEvent e)	{}
+			});				
+		}
+		
 		m_editAssignmentPanel.add(m_timeTextField, gbc);
 		
 		gbc.weightx = 0.0;
@@ -212,7 +268,8 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				// TODO
+				//Revert to values stored in MSO
+				revertEditPanel();
 			}
 		});
 		m_editAssignmentPanel.add(m_cancelEditButton, gbc);
@@ -249,10 +306,10 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				// TODO 
+				showComponent();
 			}
 		});
-		actionButtonPanel.add(		m_cancelAddNextAssignmentButton);
+		actionButtonPanel.add(m_cancelAddNextAssignmentButton);
 		
 		m_okAddNextAssignmentButton = DiskoButtonFactory.createSmallOKButton();
 		m_okAddNextAssignmentButton.addActionListener(new ActionListener()
@@ -287,7 +344,7 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				// TODO				
+				showComponent();
 			}
 		});
 		actionButtonPanel.add(m_cancelAddPoolAssignmentButton);
@@ -307,7 +364,6 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 
 	public void clearContents()
 	{
-		// TODO Auto-generated method stub
 	}
 
 	public void hideComponent()

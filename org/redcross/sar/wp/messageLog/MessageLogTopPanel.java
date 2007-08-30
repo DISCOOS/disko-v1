@@ -36,6 +36,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	public final static int PANEL_HEIGHT = (MessageLogPanel.SMALL_BUTTON_SIZE.height) * 3 + 20;
 	public final static int SMALL_PANEL_WIDTH = 60;
 	
+	private final static String EMPTY_PANEL_ID = "EMPTY_PANEL";
 	private final static String TEXT_PANEL_ID = "TEXT_PANEL";
 	private final static String POSITION_PANEL_ID = "POSITION_PANEL";
 	private final static String FINDING_PANEL_ID = "FINDING_PANEL";
@@ -147,7 +148,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	{
 		initButtons();
     	initPanels();
-    	initDialogs();
+    	initComponents();
 	}
 
     private JPanel createPanel(int width, int height, String labelString)
@@ -396,7 +397,11 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
         m_cardsPanel.setLayout(new CardLayout());
         m_cardsPanel.setPreferredSize(new Dimension(600, 120));
         m_cardsPanel.setAlignmentX(0.0f);
+        m_cardsPanel.add(new JPanel(), EMPTY_PANEL_ID);
+        CardLayout layout = (CardLayout)m_cardsPanel.getLayout();
+        layout.show(m_cardsPanel, EMPTY_PANEL_ID);
         m_messagePanel.add(m_cardsPanel);
+        
         m_buttonRow.setAlignmentY(Component.BOTTOM_ALIGNMENT);
         m_buttonRow.setMaximumSize(new Dimension(SMALL_PANEL_WIDTH*9, (int)MessageLogPanel.SMALL_BUTTON_SIZE.getHeight()));
         m_buttonRow.setAlignmentX(0.0f);
@@ -435,7 +440,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
         this.add(m_statusPanel, gbc);
     }
 
-    public void initDialogs()
+    public void initComponents()
     {
     	getChangeDTGDialog();
     	getFieldChangeFromDialog();

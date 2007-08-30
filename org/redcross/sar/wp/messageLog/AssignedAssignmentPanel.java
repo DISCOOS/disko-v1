@@ -3,6 +3,7 @@ package org.redcross.sar.wp.messageLog;
 import java.util.Calendar;
 
 import org.redcross.sar.mso.data.IMessageIf;
+import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;

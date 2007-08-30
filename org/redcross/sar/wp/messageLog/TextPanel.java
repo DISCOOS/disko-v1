@@ -62,7 +62,17 @@ public class TextPanel extends JPanel implements IEditMessageComponentIf
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-//				fireDialogCanceled();
+				// Reset components to what is currently stored in MSO
+				IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+				IMessageLineIf line = message.findMessageLine(MessageLineType.TEXT, false);
+				if(line != null)
+				{
+					m_textArea.setText(line.getLineText());
+				}
+				else
+				{
+					m_textArea.setText("");
+				}
 			}
 		});
 		this.add(m_cancelButton, gbc);
@@ -76,6 +86,7 @@ public class TextPanel extends JPanel implements IEditMessageComponentIf
 				// Store text in current message
 				IMessageIf message = MessageLogTopPanel.getCurrentMessage();
 				IMessageLineIf textLine = message.findMessageLine(MessageLineType.TEXT, true);
+				System.err.println(m_textArea.getText());
 				textLine.setLineText(m_textArea.getText());
 			}	
 		});
@@ -92,11 +103,11 @@ public class TextPanel extends JPanel implements IEditMessageComponentIf
 		IMessageLineIf textMessageLine = message.findMessageLine(MessageLineType.TEXT, false);
 		if(textMessageLine != null)
 		{
-			m_textArea.setText(textMessageLine.getLineText());
-		}
-		else
-		{
-			m_textArea.setText("");
+			String text = textMessageLine.getLineText();
+			if(!text.equals(""))
+			{
+				m_textArea.setText(textMessageLine.getLineText());
+			}
 		}
 	}
 

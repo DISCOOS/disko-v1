@@ -1,6 +1,8 @@
 package org.redcross.sar.wp.messageLog;
 
 import com.esri.arcgis.interop.AutomationException;
+
+import org.redcross.sar.gui.NumPadDialog;
 import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
 import org.redcross.sar.map.IDiskoMap;
 import org.redcross.sar.mso.data.IMessageIf;
@@ -15,8 +17,11 @@ import javax.swing.*;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 
@@ -44,6 +49,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 	protected POIType[] m_poiTypes = null;
 	protected IDiskoWpMessageLog m_wpMessageLog = null;
 	protected SinglePOITool m_tool = null;
+	protected boolean m_notebookMode = true;
 
 	public MessagePOIPanel(IDiskoWpMessageLog wp, POIType[] poiTypes)
 	{
@@ -131,6 +137,30 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 			position.setPosition(xCoordinate, yCoordinate);
 		}
 	}
+	
+	/**
+	 * 
+	 */
+	private void revertPOI()
+	{
+		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+		IMessageLineIf line = null;
+		if(m_poiTypes == null)
+		{
+			line = message.findMessageLine(MessageLineType.POI, false);
+		}
+		else
+		{
+			line = message.findMessageLine(MessageLineType.FINDING, false);
+		}
+		
+		if(line != null)
+		{
+			IPOIIf poi = line.getLinePOI();
+			Position position = poi.getPosition();
+			setPositionFields(position.getPosition());
+		}
+	}
 
 	private void initButtons()
 	{
@@ -144,7 +174,6 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 			{
 
 				updatePOI();
-//				fireDialogFinished();
 			}
 		});
 
@@ -153,7 +182,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-//				fireDialogCanceled();
+				revertPOI();
 			}
 		});
 
@@ -216,7 +245,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 		JPanel xPanel = new JPanel();
 		m_xLabel = new JLabel("X");
 		xPanel.add(m_xLabel);
-		m_xField = new JTextField(12);
+		m_xField = new JTextField(8);
 		m_xField.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent arg0)
@@ -224,6 +253,32 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 				updatePOI();
 			}
 		});
+		// If in notebook mode, display num pad on field focus
+		if(m_notebookMode)
+		{
+			m_xField.addFocusListener(new FocusListener()
+			{
+				public void focusGained(FocusEvent arg0)
+				{
+					NumPadDialog numPad = m_wpMessageLog.getApplication().getUIFactory().getNumPadDialog();
+					// Don't display dialog again if returning from it
+					Component component = arg0.getOppositeComponent();
+					if(component != numPad.getOkButton())
+					{
+						numPad.setTextField(m_xField);
+						Point location = m_xField.getLocationOnScreen();
+						location.x += m_xField.getWidth();
+						numPad.setLocation(location);
+						numPad.setVisible(true);
+					}
+				}
+
+				public void focusLost(FocusEvent arg0)
+				{			
+					
+				}
+			});
+		}
 		xPanel.add(m_xField, gbc);
 		this.add(xPanel, gbc);
 
@@ -232,7 +287,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 		JPanel yPanel = new JPanel();
 		m_yLabel = new JLabel("Y");
 		yPanel.add(m_yLabel);
-		m_yField = new JTextField(12);
+		m_yField = new JTextField(8);
 		m_yField.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent arg0)
@@ -240,6 +295,31 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 				updatePOI();
 			}
 		});
+		// If in notebook mode, display num pad on field focus
+		if(m_notebookMode)
+		{
+			m_yField.addFocusListener(new FocusListener()
+			{
+				public void focusGained(FocusEvent arg0)
+				{
+					NumPadDialog numPad = m_wpMessageLog.getApplication().getUIFactory().getNumPadDialog();
+					// Don't display dialog again if returning from it
+					Component component = arg0.getOppositeComponent();
+					if(component != numPad.getOkButton())
+					{
+						numPad.setTextField(m_yField);
+						Point location = m_yField.getLocationOnScreen();
+						location.x += m_yField.getWidth();
+						numPad.setLocation(location);
+						numPad.setVisible(true);
+					}
+				}
+
+				public void focusLost(FocusEvent arg0)
+				{			
+				}
+			});
+		}
 		yPanel.add(m_yField, gbc);
 		this.add(yPanel, gbc);
 
@@ -303,6 +383,8 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 
 	public void hideComponent()
 	{
+		NumPadDialog numPad = m_wpMessageLog.getApplication().getUIFactory().getNumPadDialog();
+		numPad.setVisible(false);
 		this.setVisible(false);
         MessageLogPanel.hideMap();
     }
@@ -341,14 +423,22 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 					}
 					else
 					{
-						Point2D.Double point = position.getPosition();
-						m_xField.setText(String.valueOf(point.x));
-						m_yField.setText(String.valueOf(point.y));
+						setPositionFields(position.getPosition());
 					}
 				}
 			}
 		}
 		catch(Exception e){}
+	}
+	
+	private void setPositionFields(Point2D.Double point)
+	{
+		String[] x = String.valueOf(point.x).split("\\.");
+		String[] y = String.valueOf(point.y).split("\\.");
+		int length = Math.min(3, x[1].length());
+		m_xField.setText(x[0] + "." + x[1].substring(0, length));
+		m_yField.setText(y[0] + "." + y[1].subSequence(0, length));
+		
 	}
 
 	private void updateComboBox(IMessageIf message)
@@ -359,7 +449,6 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 			if(messageLine != null)
 			{
 				IPOIIf poi = messageLine.getLinePOI();
-				// TODO should not occur, remove test when fixed (thomas, aka gro, 24.08.07)
 				if(poi != null)
 				{
 					POIType type = messageLine.getLinePOI().getType();
