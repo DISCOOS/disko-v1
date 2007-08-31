@@ -26,7 +26,6 @@ public class StartedAssignmentPanel extends AbstractAssignmentPanel
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Constructor
 	 * @param wp Message log work process
 	 */
 	public StartedAssignmentPanel(IDiskoWpMessageLog wp)
@@ -37,7 +36,7 @@ public class StartedAssignmentPanel extends AbstractAssignmentPanel
 	}
 
 	/**
-	 * {@link AbstractAssignmentPanel#cancelUpdate()}
+	 * Remove added message lines of type started. If any assigned lines were added, these are removed as well
 	 */
 	public void cancelUpdate()
 	{
@@ -53,7 +52,7 @@ public class StartedAssignmentPanel extends AbstractAssignmentPanel
 	}
 
 	/**
-	 * {@link AbstractAssignmentPanel#updateMessageLine()}
+	 *
 	 */
 	@Override
 	protected void updateMessageLine()
@@ -137,12 +136,12 @@ public class StartedAssignmentPanel extends AbstractAssignmentPanel
 		}
 		else if(unitHasNextAssignment())
 		{
-			// TODO Else unit could have started from allocated buffer
+			// Else unit could have started from allocated buffer
 			showNextAssignment();
 		}
 		else
 		{
-			// TODO Unit could have started from assignment pool
+			// Unit could have started from assignment pool
 			showAssignmentPool();
 		}
 	}

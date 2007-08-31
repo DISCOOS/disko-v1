@@ -12,7 +12,6 @@ import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 /**
  * Data model for assignment lines, used to retrieve list depending on action (assign, start, complete)
  * @author thomasl
- *
  */
 public class AssignmentListModel extends AbstractListModel
 {
@@ -23,7 +22,6 @@ public class AssignmentListModel extends AbstractListModel
 	protected List<IMessageLineIf> m_messageLines = null;
 	
 	/**
-	 * Constructor
 	 * @param wp Message log work process
 	 */
 	public AssignmentListModel(IDiskoWpMessageLog wp)
@@ -57,7 +55,8 @@ public class AssignmentListModel extends AbstractListModel
 	}
 	
 	/**
-	 * {@link ListModel#getElementAt(int)}
+	 * Returns list element
+	 * @param index Index of element to retrieve
 	 */
 	public Object getElementAt(int index)
 	{
@@ -65,7 +64,7 @@ public class AssignmentListModel extends AbstractListModel
 	}
 
 	/**
-	 * {@link ListModel#getSize()}
+	 * Return length of list
 	 */
 	public int getSize()
 	{

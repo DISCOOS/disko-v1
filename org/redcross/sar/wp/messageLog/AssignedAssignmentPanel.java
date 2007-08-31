@@ -19,7 +19,6 @@ public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Constructor
 	 * @param wp Message log work process
 	 */
 	public AssignedAssignmentPanel(IDiskoWpMessageLog wp)
@@ -30,7 +29,7 @@ public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 	}
 
 	/**
-	 * {@link AbstractAssignmentPanel#cancelUpdate()}
+	 * Deletes all message lines of type assign that was added since last commit
 	 */
 	public void cancelUpdate()
 	{
@@ -44,7 +43,7 @@ public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 
 
 	/**
-	 * {@link AbstractAssignmentPanel#updateMessageLine()}
+	 * 
 	 */
 	@Override
 	protected void updateMessageLine()
@@ -54,7 +53,7 @@ public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 	}
 
 	/**
-	 * {@link AbstractAssignmentPanel#updateAssignmentLineList()}
+	 * Sets the line type to {@link MessageLineType#ASSIGNED} in list mode, which in turn causes list to update.
 	 */
 	protected void updateAssignmentLineList()
 	{
@@ -63,7 +62,8 @@ public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 	}
 
 	/**
-	 * {@link AbstractAssignmentPanel#addNewMessageLine()}
+	 * Adds a new assigned message line to message. If unit has assignments in buffer these are shown, 
+	 * else all available assignments are shown
 	 */
 	protected void addNewMessageLine()
 	{
@@ -92,7 +92,7 @@ public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 	}
 
 	/**
-	 * {@link AbstractAssignmentPanel#addSelectedAssignment()}
+	 * Adds the selected assignment as an assign message line in the current message
 	 */
 	protected void addSelectedAssignment()
 	{

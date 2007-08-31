@@ -19,6 +19,7 @@ import java.util.List;
 
 /**
  * Dialog containing a list of all units  in command post communicator list
+ * 
  * @author thomasl
  */
 public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditMessageComponentIf, IMsoUpdateListenerIf, ActionListener
@@ -44,7 +45,6 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	private final int NUMBER_OF_ROWS = 7;
 
 	/**
-	 * Constructor
 	 * @param wp Message log work process
 	 * @param senderList Whether dialog is changing the sender field of a message or not
 	 */
@@ -142,14 +142,14 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	}
 
 	/**
-	 * {@link IEditMessageComponentIf#clearContents()}
+	 * 
 	 */
 	public void clearContents()
 	{
 	}
 
 	/**
-	 * {@link IEditMessageComponentIf#hideComponent()}
+	 *
 	 */
 	public void hideComponent()
 	{
@@ -189,7 +189,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	}
 
 	/**
-	 *  {@link IEditMessageComponentIf#showComponent()}
+	 * 
 	 */
 	public void showComponent()
 	{
@@ -197,7 +197,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	}
 
 	/**
-	 * Updates unit list based on mso communicator events
+	 * Updates unit list based on MSO communicator events
 	 * @see org.redcross.sar.mso.event.IMsoUpdateListenerIf#handleMsoUpdateEvent(org.redcross.sar.mso.event.MsoEvent.Update)
 	 */
 	public void handleMsoUpdateEvent(Update e)
@@ -207,7 +207,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 
 	private final EnumSet<IMsoManagerIf.MsoClassCode> myInterests = EnumSet.of(IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGE, IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGELINE);
 	/**
-	 * {@link IMsoUpdateListenerIf#hasInterestIn(IMsoObjectIf)}
+	 * Interested in message and message line updates
 	 */
 	public boolean hasInterestIn(IMsoObjectIf msoObject)
 	{

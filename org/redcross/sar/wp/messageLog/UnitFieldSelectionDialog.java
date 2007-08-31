@@ -31,6 +31,7 @@ import org.redcross.sar.util.mso.Selector;
 /**
  * The dialog for selecting unit type and number.
  * Dialog loads unit information from resource file {@link org.redcross.sar.mso.data.properties.Unit.properties}
+ * 
  * @author thomasl
  */
 public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessageComponentIf, KeyListener, ActionListener
@@ -58,7 +59,6 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 	protected ResourceBundle m_unitResources;
 	
 	/**
-	 * Constructor
 	 * @param messageLog Message log work process
 	 * @param senderUnit Whether or not dialog is editing sender field of the current message
 	 */
@@ -360,7 +360,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 	}
 	
 	/**
-	 * {@link IEditMessageComponentIf#hideComponent()}
+	 * Hides unit type and numpad if in notebook mode
 	 */
 	public void hideComponent()
 	{
@@ -374,7 +374,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 	}
 
 	/**
-	 * {@link IEditMessageComponentIf#newMessageSelected(IMessageIf)}
+	 * Update dialog contents with new message
 	 */
 	public void newMessageSelected(IMessageIf message)
 	{
@@ -415,7 +415,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 	}
 
 	/**
-	 * {@link KeyListener#keyPressed(KeyEvent)}
+	 * If enter is pressed unit is checked and set
 	 */
 	public void keyPressed(KeyEvent ke)
 	{
@@ -513,7 +513,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 	}
 
 	/**
-	 * {@link IEditMessageComponentIf#clearContents()}
+	 *
 	 */
 	public void clearContents()
 	{
@@ -549,16 +549,27 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		m_unitNumberField.setText(command[1]);
 	}
 
+	/**
+	 * @param communicatorNumberPrefix
+	 */
 	public void setCommunicatorNumberPrefix(char communicatorNumberPrefix)
 	{
 		m_unitTypeField.setText(String.valueOf(communicatorNumberPrefix));
 	}
 
+	/**
+	 * 
+	 * @param communicatorNumber
+	 */
 	public void setCommunicatorNumber(int communicatorNumber)
 	{
 		m_unitNumberField.setText(String.valueOf(communicatorNumber));
 	}
 
+	/**
+	 * 
+	 * @return Communicator number and prefix
+	 */
 	public String getCommunicatorText()
 	{
 		return m_unitTypeField.getText() + " " + m_unitNumberField.getText();

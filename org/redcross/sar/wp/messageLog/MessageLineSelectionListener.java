@@ -15,7 +15,6 @@ public class MessageLineSelectionListener implements ListSelectionListener
 	protected LineListTableModel m_tableModel;
 	
 	/**
-	 * Constructor
 	 * @param listTableModel Line table model {@link LineListTableModel}
 	 */
 	public MessageLineSelectionListener(LineListTableModel listTableModel)
@@ -24,7 +23,7 @@ public class MessageLineSelectionListener implements ListSelectionListener
 	}
 	
 	/**
-	 * {@link ListSelectionListener#valueChanged(ListSelectionEvent)}
+	 * Display selected message line in edit mode
 	 */
 	public void valueChanged(ListSelectionEvent e)
 	{

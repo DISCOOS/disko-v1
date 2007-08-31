@@ -27,6 +27,7 @@ import java.util.List;
 
 /**
  * Top edit panel
+ * 
  * @author thomasl
  */
 public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, IDialogEventListener
@@ -429,6 +430,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
         m_taskPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
         m_taskLabel = new JLabel();
         m_taskPanel.add(m_taskLabel);
+        m_taskPanel.add(Box.createVerticalGlue());
         m_taskPanel.add(m_changeTasksButton);
         gbc.gridx++;
         this.add(m_taskPanel, gbc);
@@ -473,7 +475,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     	getCompletedPanel();
     	getChangeTasksDialog();
     	getMessageListPanel();
-
     }
 
     private void initButtons()

@@ -18,14 +18,12 @@ import org.redcross.sar.util.AssignmentTransferUtilities;
  * See {@link AbstractAssignmentPanel} for details
  * 
  * @author thomasl
- *
  */
 public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Constructor
 	 * @param wp Message log work process
 	 */
 	public CompletedAssignmentPanel(IDiskoWpMessageLog wp)
@@ -36,7 +34,8 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 	}
 
 	/**
-	 * {@link AbstractAssignmentPanel#cancelUpdate()}
+	 * Removes completed lines added to message since last commit. 
+	 * If assign and/or started lines were added, these will be removed as well 
 	 */
 	public void cancelUpdate()
 	{
@@ -56,7 +55,7 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 	}
 
 	/**
-	 * {@link AbstractAssignmentPanel#updateMessageLine()}
+	 *
 	 */
 	@Override
 	protected void updateMessageLine()
@@ -68,7 +67,7 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 	}
 
 	/**
-	 * {@link AbstractAssignmentPanel#updateAssignmentLineList()}
+	 * Sets message line type to complete in message line list model, list is updated accordingly
 	 */
 	protected void updateAssignmentLineList()
 	{
@@ -77,7 +76,8 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 	}
 
 	/**
-	 * {@link AbstractAssignmentPanel#addNewMessageLine()}
+	 * Add new started message line. If unit has started or assigned assignment this is completed, else unit
+	 * assignment queue is shown, if this is empty assignment pool is shown
 	 */
 	protected void addNewMessageLine()
 	{
@@ -135,7 +135,7 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 	}
 
 	/**
-	 * {@link AbstractAssignmentPanel#addSelectedAssignment()}
+	 * Add completed assignment line to current message, sets assignment to the previously selected assignment
 	 */
 	protected void addSelectedAssignment()
 	{

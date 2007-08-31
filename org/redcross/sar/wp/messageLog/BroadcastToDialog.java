@@ -32,9 +32,7 @@ import org.redcross.sar.mso.data.IUnitIf.UnitType;
 
 /**
  * Dialog shown when setting the to field of a message in broadcast mode
- * 
  * @author thomasl
- *
  */
 public class BroadcastToDialog extends DiskoDialog implements IEditMessageComponentIf
 {
@@ -76,7 +74,6 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageCompon
 	protected HashMap<ICommunicatorIf, JToggleButton> m_communicatorButtonMap = null;
 	
 	/**
-	 * Constructor
 	 * @param wp Reference to message log work process
 	 */
 	public BroadcastToDialog(IDiskoWpMessageLog wp)
@@ -449,7 +446,7 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageCompon
 	}
 
 	/**
-	 * {@link IEditMessageComponentIf#clearContents()}
+	 * Resets button selection
 	 */
 	public void clearContents()
 	{
@@ -460,7 +457,7 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageCompon
 	}
 
 	/**
-	 * {@link IEditMessageComponentIf#hideComponent()}
+	 * 
 	 */
 	public void hideComponent()
 	{
@@ -517,7 +514,8 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageCompon
 	}
 
 	/**
-	 * {@link IEditMessageComponentIf#newMessageSelected(IMessageIf)}
+	 * Makes button selection based on which receivers are confirmed/unconfirmed
+	 * @param message Message in question
 	 */
 	public void newMessageSelected(IMessageIf message)
 	{
@@ -588,7 +586,8 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageCompon
 	}
 
 	/**
-	 * {@link IEditMessageComponentIf#showComponent()}
+	 * Displays the dialog. If there are unconfirmed receivers go to confirmation mode, 
+	 * else display in selection mode (select receivers)
 	 */
 	public void showComponent()
 	{

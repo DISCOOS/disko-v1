@@ -16,6 +16,7 @@ import org.redcross.sar.util.mso.Position;
 
 /**
  * Table model for displaying message lines at top level edit panel
+ * 
  * @author thomasl
  */
 public class LineListTableModel extends AbstractTableModel
@@ -26,7 +27,6 @@ public class LineListTableModel extends AbstractTableModel
 	protected IDiskoWpMessageLog m_wpMessageLog = null;
 
 	/**
-	 * Constructor
 	 * @param wp Message log work process
 	 */
 	public LineListTableModel(IDiskoWpMessageLog wp)
@@ -37,7 +37,7 @@ public class LineListTableModel extends AbstractTableModel
 	}
 	
 	/**
-	 * {@link TableModel#getColumnCount()}
+	 * Returns number of columns, always 1
 	 */
 	public int getColumnCount() 
 	{
@@ -45,7 +45,7 @@ public class LineListTableModel extends AbstractTableModel
 	}
 	
 	/**
-	 * {@link AbstractTableModel#getColumnName(int)}
+	 * 
 	 */
 	@Override
 	public String getColumnName(int column)
@@ -54,7 +54,7 @@ public class LineListTableModel extends AbstractTableModel
 	}
 
 	/**
-	 * {@link TableModel#getRowCount()}
+	 * Returns number of rows, which is the number of message lines in the model
 	 */
 	public int getRowCount() 
 	{

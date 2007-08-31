@@ -15,6 +15,7 @@ import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 
 /**
  * Displays the message text in the top panel in the message log
+ * 
  * @author thomasl
  */
 public class TextPanel extends JPanel implements IEditMessageComponentIf
@@ -27,7 +28,6 @@ public class TextPanel extends JPanel implements IEditMessageComponentIf
 	private JButton m_okButton;
 	
 	/**
-	 * Constructor
 	 * @param wp Message log work process
 	 */
 	public TextPanel(IDiskoWpMessageLog wp) 
@@ -96,7 +96,7 @@ public class TextPanel extends JPanel implements IEditMessageComponentIf
 	}
 
 	/**
-	 * {@link AbstractAssignmentPanel#hideComponent()}
+	 * 
 	 */
 	public void hideComponent()
 	{
@@ -104,7 +104,7 @@ public class TextPanel extends JPanel implements IEditMessageComponentIf
 	}
 
 	/**
-	 * {@link AbstractAssignmentPanel#newMessageSelected(IMessageIf)}
+	 * If message has text message line, set contents in text area to text in that line
 	 */
 	public void newMessageSelected(IMessageIf message)
 	{
@@ -120,7 +120,7 @@ public class TextPanel extends JPanel implements IEditMessageComponentIf
 	}
 
 	/**
-	 * {@link AbstractAssignmentPanel#showComponent()}
+	 * 
 	 */
 	public void showComponent()
 	{
@@ -128,7 +128,7 @@ public class TextPanel extends JPanel implements IEditMessageComponentIf
 	}
 
 	/**
-	 * {@link AbstractAssignmentPanel#clearContents()}
+	 * 
 	 */
 	public void clearContents()
 	{

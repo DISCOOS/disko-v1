@@ -19,6 +19,7 @@ import org.redcross.sar.mso.data.IUnitIf.UnitType;
 
 /**
  * Dialog for selecting unit type
+ * 
  * @author thomasl
  */
 public class UnitTypeDialog extends DiskoDialog implements IEditMessageComponentIf
@@ -37,9 +38,8 @@ public class UnitTypeDialog extends DiskoDialog implements IEditMessageComponent
 	private LinkedList<JButton> m_buttons;
 	
 	/**
-	 * Constructor
-	 * @param wp
-	 * @param textField
+	 * @param wp Message log work process
+	 * @param textField Text field displaying communicator number prefix
 	 */
 	public UnitTypeDialog(IDiskoWpMessageLog wp, JTextField textField)
 	{
@@ -154,14 +154,14 @@ public class UnitTypeDialog extends DiskoDialog implements IEditMessageComponent
 	}
 
 	/**
-	 * {@link IEditMessageComponentIf#clearContents()}
+	 *
 	 */
 	public void clearContents()
 	{
 	}
 	
 	/**
-	 * {@link IEditMessageComponentIf#hideComponent()}
+	 * {
 	 */
 	public void hideComponent()
 	{
@@ -169,14 +169,14 @@ public class UnitTypeDialog extends DiskoDialog implements IEditMessageComponent
 	}
 
 	/**
-	 * {@link IEditMessageComponentIf#newMessageSelected(IMessageIf)}
+	 * 
 	 */
 	public void newMessageSelected(IMessageIf message)
 	{		
 	}
 
 	/**
-	 * {@link IEditMessageComponentIf#showComponent()}
+	 *
 	 */
 	public void showComponent()
 	{

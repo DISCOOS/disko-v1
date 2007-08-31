@@ -25,7 +25,6 @@ import org.redcross.sar.mso.data.ITaskListIf;
  * Dialog for changing task in current message. 
  * Initializes and shows a {@link TaskDialog} when changing task fields
  * @author thomasl
- *
  */
 public class ChangeTasksDialog extends DiskoDialog implements IEditMessageComponentIf
 {
@@ -58,7 +57,6 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	protected TaskDialog m_taskDialog = null;
 	
 	/**
-	 * Constructor
 	 * @param wp Message log work process reference
 	 */
 	public ChangeTasksDialog(IDiskoWpMessageLog wp)

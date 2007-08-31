@@ -24,7 +24,6 @@ import org.redcross.sar.mso.data.IMessageIf;
  * such as field based unit selection, list unit selection and the broadcast dialogs
  * 
  * @author thomasl
- *
  */
 public class ChangeToDialog extends DiskoDialog implements IEditMessageComponentIf, IDialogEventListener
 {
@@ -48,7 +47,6 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 			MessageLogPanel.SMALL_BUTTON_SIZE.height);
 	
 	/**
-	 * Constructor 
 	 * @param wp Message log work process reference
 	 */
 	public ChangeToDialog(IDiskoWpMessageLog wp)
@@ -141,7 +139,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 	}
 	
 	/**
-	 * {@link IEditMessageComponentIf#hideComponent()}
+	 * Hides dialogs
 	 */
 	public void hideComponent()
 	{
@@ -152,7 +150,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 	}
 
 	/**
-	 * {@link IEditMessageComponentIf#newMessageSelected(IMessageIf)}
+	 * Set broadcast mode if message is broadcast message
 	 */
 	public void newMessageSelected(IMessageIf message)
 	{
@@ -184,7 +182,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 	}
 
 	/**
-	 * {@link IEditMessageComponentIf#showComponent()}
+	 * If broadcast message broadcast dialogs are shown, else single receiver mode dialogs are shown
 	 */
 	public void showComponent()
 	{

@@ -10,6 +10,7 @@ import org.redcross.sar.mso.data.IMessageIf.MessageStatus;
 import java.awt.*;
 
 /**
+ * Custom cell renderer for message log table
  * 
  * @author vinjar/thomasl
  */
@@ -20,7 +21,6 @@ public class MessageTableRenderer extends JTextArea implements TableCellRenderer
 	private IMessageLogIf m_log = null;
 
 	/**
-	 * Constructor
 	 */
 	public MessageTableRenderer()
     {
@@ -29,7 +29,6 @@ public class MessageTableRenderer extends JTextArea implements TableCellRenderer
     }
 
 	/**
-	 * Constructor
 	 * @param log
 	 */
     public MessageTableRenderer(IMessageLogIf log)
@@ -41,7 +40,7 @@ public class MessageTableRenderer extends JTextArea implements TableCellRenderer
 	}
 
     /**
-     * {@link TableCellRenderer#getTableCellRendererComponent(JTable, Object, boolean, boolean, int, int)}
+     * Get cell component. Message lines with status postponed have pink background 
      */
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
     {

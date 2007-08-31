@@ -40,7 +40,6 @@ public class MessageLogPanel
     public static Dimension SMALL_BUTTON_SIZE = new Dimension(60, 60);
 
     /**
-     * Constructor
      * @param aWp Message log work process
      */
     public MessageLogPanel(IDiskoWpMessageLog aWp)

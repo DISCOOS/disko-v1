@@ -34,7 +34,6 @@ public class SinglePOITool extends AbstractCommandTool
 	protected MessagePOIPanel m_panel;
 
 	/**
-	 * Constructor
 	 * @param wp Message log work process
 	 * @param panel Panel controlling tool options
 	 * @throws IOException
@@ -56,7 +55,7 @@ public class SinglePOITool extends AbstractCommandTool
 	}
 	
 	/**
-	 * {@link AbstractCommandTool#onCreate(Object)}
+	 * 
 	 */
 	@Override
 	public void onCreate(Object obj) throws IOException, AutomationException 
@@ -67,7 +66,7 @@ public class SinglePOITool extends AbstractCommandTool
 	}
 	
 	/**
-	 * {@link AbstractCommandTool#onMouseDown(int, int, int, int)}
+	 * 
 	 */
 	@Override
 	public void onMouseDown(int button, int shift, int x, int y) throws IOException, AutomationException {}	
@@ -75,7 +74,6 @@ public class SinglePOITool extends AbstractCommandTool
 	/**
 	 * Update message POI(s) when map position is clicked. Event causes relevant dialogs to update, no need for
 	 * explicit update
-	 * {@link AbstractCommandTool#onMouseUp(int, int, int, int)}
 	 */
 	@Override
 	public void onMouseUp(int button, int shift, int x, int y) throws IOException, AutomationException 

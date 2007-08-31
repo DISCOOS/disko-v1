@@ -8,6 +8,7 @@ import javax.swing.event.ListSelectionListener;
 /**
  * This class listens for row selections in {@link MessageLogPanel#m_logTable} 
  * and updates the top panel GUI accordingly
+ * 
  * @author Thomas
  */
 public class MessageRowSelectionListener implements ListSelectionListener
@@ -18,7 +19,6 @@ public class MessageRowSelectionListener implements ListSelectionListener
 	protected boolean m_msoUpdate = false;
 	
 	/**
-	 * Constructor
 	 * @param panel Reference to top panel
 	 */
 	public MessageRowSelectionListener(MessageLogTopPanel panel) 
@@ -27,7 +27,7 @@ public class MessageRowSelectionListener implements ListSelectionListener
 	}
 
 	/**
-	 * {@link ListSelectionListener#valueChanged(ListSelectionEvent)}
+	 * Expand/collapse rows based on selection in message log table
 	 */
 	public void valueChanged(ListSelectionEvent event) 
 	{		

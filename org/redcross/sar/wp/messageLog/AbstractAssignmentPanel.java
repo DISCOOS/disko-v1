@@ -131,7 +131,7 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 	}
 	
 	/**
-	 * Overridden by sub-classes in order to revert the correct changes. This includes removing any 
+	 * Overridden by sub-classes in order to revert the changes. This includes removing any 
 	 * message lines added
 	 */
 	public abstract void cancelUpdate();
@@ -153,7 +153,7 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 	protected abstract void addSelectedAssignment();
 	
 	/**
-	 * Revert edit panel to current MSO
+	 * Revert edit panel content to current MSO
 	 */
 	protected void revertEditPanel()
 	{
@@ -364,14 +364,14 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 	}
 
 	/**
-	 * {@link IEditMessageComponentIf#clearContents()}
+	 * 
 	 */
 	public void clearContents()
 	{
 	}
 
 	/**
-	 * {@link IEditMessageComponentIf#hideComponent()}
+	 * 
 	 */
 	public void hideComponent()
 	{
@@ -379,7 +379,7 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 	}
 
 	/**
-	 * {@link IEditMessageComponentIf#newMessageSelected(IMessageIf)}
+	 * Updates list of assignments based on message line type {@link #updateAssignmentLineList()}
 	 */
 	public void newMessageSelected(IMessageIf message)
 	{

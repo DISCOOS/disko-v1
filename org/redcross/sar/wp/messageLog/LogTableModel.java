@@ -44,7 +44,6 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     private MessageRowSelectionListener m_selectionListener = null;
 
     /**
-     * Constructor
      * @param aTable Log table
      * @param aModule Message log work process
      * @param aMessageLog Message log reference
@@ -62,7 +61,7 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     }
 
     /**
-     * {@link TableModel#getRowCount()}
+     * 
      */
     public int getRowCount()
     {
@@ -70,7 +69,7 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     }
 
     /**
-     * {@link TableModel#getColumnCount()}
+     *
      */
     public int getColumnCount()
     {
@@ -111,7 +110,7 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     }
 
     /**
-     * {@link TableModel#getColumnClass(int)}
+     * 
      */
     @Override
 	public Class<?> getColumnClass(int c)
@@ -127,7 +126,9 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     }
 
     /**
-     * {@link TableModel#getValueAt(int, int)}
+     * Get value of message field
+     * @param rowIndex Message number
+     * @param columnIndex Index of field
      */
     public Object getValueAt(int rowIndex, int columnIndex)
     {
@@ -251,7 +252,7 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     }
 
     /**
-     * {@link TableModel#getColumnName(int)}
+     *
      */
     @Override
     public String getColumnName(int column)
@@ -260,7 +261,7 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     }
 
     /**
-     * {@link IMsoUpdateListenerIf#handleMsoUpdateEvent(Update)}
+     * Rebuild table data model when MSO changes
      */
     public void handleMsoUpdateEvent(Update e)
     {
@@ -273,7 +274,7 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     		IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGELINE);
 
     /**
-     * {@link IMsoUpdateListenerIf#hasInterestIn(IMsoObjectIf)}
+     * Interested in when messages and message lines updates
      */
     public boolean hasInterestIn(IMsoObjectIf aMsoObject)
     {
@@ -297,9 +298,8 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     };
     
     /**
-     * Get whether or not the message is extended in the message log table, i.e. display entire message in log
      * @param messageNr
-     * @return
+     * @return Whether or not the message is extended in the message log table, i.e. display entire message in log
      */
     public Boolean isMessageExpanded(int messageNr)
     {

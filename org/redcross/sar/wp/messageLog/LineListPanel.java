@@ -14,6 +14,7 @@ import org.redcross.sar.util.mso.Selector;
 
 /**
  * Panel displaying message lines in the currently selected message
+ * 
  * @author thomasl
  */
 public class LineListPanel extends JPanel implements IEditMessageComponentIf
@@ -43,7 +44,6 @@ public class LineListPanel extends JPanel implements IEditMessageComponentIf
 	};
 	
 	/**
-	 * Constructor
 	 * @param wp Message log work process
 	 */
 	public LineListPanel(IDiskoWpMessageLog wp)
@@ -66,7 +66,7 @@ public class LineListPanel extends JPanel implements IEditMessageComponentIf
 	}
 
 	/**
-	 * {@link IEditMessageComponentIf#newMessageSelected(IMessageIf)}
+	 * Updates message line list model with message lines in message
 	 */
 	public void newMessageSelected(IMessageIf message)
 	{
@@ -86,7 +86,7 @@ public class LineListPanel extends JPanel implements IEditMessageComponentIf
 	}
 
 	/**
-	 * {@link IEditMessageComponentIf#showComponent()}
+	 * 
 	 */
 	public void showComponent()
 	{
@@ -94,13 +94,16 @@ public class LineListPanel extends JPanel implements IEditMessageComponentIf
 	}
 	
 	/**
-	 * {@link IEditMessageComponentIf#hideComponent()}
+	 * 
 	 */
 	public void hideComponent()
 	{
 		this.setVisible(false);
 	}
 
+	/**
+	 * 
+	 */
 	public void clearContents()
 	{
 		m_messageTableModel.clearMessageLines();

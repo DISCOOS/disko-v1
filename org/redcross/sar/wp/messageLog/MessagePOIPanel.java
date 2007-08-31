@@ -28,6 +28,7 @@ import java.io.IOException;
 /**
  * Dialog used in position and finding when editing the message log. A separate POI dialog class was created for
  * the message log, should be merged with POIDialog / extract a common super class, if this should prove beneficial
+ * 
  * @author thomasl
  */
 public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
@@ -49,7 +50,6 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 	protected boolean m_notebookMode = true;
 
 	/**
-	 * Constructor
 	 * @param wp Message log work process
 	 * @param poiTypes Which POI types are valid in panel
 	 */
@@ -456,7 +456,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 	}
 
 	/**
-	 * {@link IEditMessageComponentIf#newMessageSelected(IMessageIf)}
+	 * Update position fields with message POI position. Zoom to POI
 	 */
 	public void newMessageSelected(IMessageIf message)
 	{
@@ -491,7 +491,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 	}
 
 	/**
-	 * {@link IEditMessageComponentIf#showComponent()}
+	 * Show map if show in map button is selected
 	 */
 	public void showComponent()
 	{

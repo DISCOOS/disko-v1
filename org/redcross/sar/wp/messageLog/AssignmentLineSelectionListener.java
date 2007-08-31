@@ -14,7 +14,6 @@ public class AssignmentLineSelectionListener implements ListSelectionListener
 	JList m_list = null;
 	
 	/**
-	 * Constructor
 	 * @param list List generating the event
 	 * @param panel Panel displaying assignment fields
 	 */
@@ -25,7 +24,7 @@ public class AssignmentLineSelectionListener implements ListSelectionListener
 	}
 	
 	/**
-	 * {@link ListSelectionListener#valueChanged(ListSelectionEvent)}
+	 * Displays the selected message line in edit mode
 	 */
 	public void valueChanged(ListSelectionEvent e)
 	{

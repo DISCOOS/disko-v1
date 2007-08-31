@@ -17,10 +17,8 @@ import java.awt.event.KeyListener;
 import java.util.Calendar;
 
 /**
- *
- * @author thomasl
- *
  * Creates the dialog for changing DTG in message log edit mode.
+ * @author thomasl
  */
 public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMessageComponentIf
 {
@@ -41,7 +39,6 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 	private static final boolean NOTEBOOK_MODE = true;
 
 	/**
-	 * Constructor
 	 * @param wp Message log work process reference
 	 */
 	public ChangeDTGDialog(IDiskoWpMessageLog wp)
@@ -124,7 +121,7 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 	}
 
 	/**
-	 * {@link KeyListener#keyPressed(KeyEvent)}
+	 * Saves DTG if key is enter
 	 */
 	public void keyPressed(KeyEvent ke)
 	{
@@ -163,7 +160,7 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 	public void keyTyped(KeyEvent arg0){}
 
 	/**
-	 * {@link IEditMessageComponentIf#newMessageSelected(IMessageIf)}
+	 * Sets the DTG field, get it from the message
 	 */
 	public void newMessageSelected(IMessageIf message)
 	{
@@ -190,7 +187,7 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 	}
 
 	/**
-	 * {@link IEditMessageComponentIf#hideComponent()}
+	 * Hides the numpad if in notebook mode
 	 */
 	public void hideComponent()
 	{
@@ -202,6 +199,9 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 		}
 	}
 
+	/**
+	 * Displays the numpad if in notebook mode
+	 */
 	public void showComponent()
 	{
 		this.setVisible(true);
@@ -219,7 +219,7 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 	}
 
 	/**
-	 * {@link IEditMessageComponentIf#clearContents()}
+	 * Reset created and time fields
 	 */
 	public void clearContents()
 	{
