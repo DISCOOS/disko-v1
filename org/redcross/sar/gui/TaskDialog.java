@@ -94,9 +94,18 @@ public class TaskDialog extends DiskoDialog
 		addComponent(2, m_application.getProperty("TaskDue.text"), m_dueTextField, 1, gbc);
 		
 		// Responsible
-		Object[] responsible = {}; // TODO Get roles from current task wp?
+		Object[] responsible = {};
+		try
+		{
+			 // TODO Get roles that has task work process
+			responsible = m_application.getDiskoModuleLoader().getRoleTitles();
+		} 
+		catch (Exception e1)
+		{
+			e1.printStackTrace();
+		}
 		m_responsibleComboBox = new JComboBox(responsible);
-		addComponent(0, "Ansvarlig", m_responsibleComboBox, 0, gbc);
+		addComponent(0, m_application.getProperty("TaskResponsible.text"), m_responsibleComboBox, 0, gbc);
 		
 		// Alert
 		m_alertTextField = new JTextField(3);
