@@ -87,7 +87,7 @@ public class MessageLogPanel
     	m_bottomPanel.setFocusCycleRoot(true);
     	m_splitter1.setRightComponent(m_bottomPanel);
 
-    	m_scrollPane1 = new JScrollPane();
+    	m_scrollPane1 = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
     	m_scrollPane1.setOpaque(false);
 
         m_bottomPanel.add(m_scrollPane1, LOG_ID);
@@ -129,7 +129,7 @@ public class MessageLogPanel
         column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH * 2);
         column.setMinWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH * 2);
         column = m_logTable.getColumnModel().getColumn(6);
-        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH - 1);
+        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH);
 
         // Init custom renderer
         column = m_logTable.getColumnModel().getColumn(4);

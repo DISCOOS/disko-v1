@@ -131,7 +131,8 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 	}
 	
 	/**
-	 * Overridden by sub-classes in order to revert the correct changes
+	 * Overridden by sub-classes in order to revert the correct changes. This includes removing any 
+	 * message lines added
 	 */
 	public abstract void cancelUpdate();
 	

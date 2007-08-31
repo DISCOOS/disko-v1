@@ -123,13 +123,12 @@ public class MessageRowSelectionListener implements ListSelectionListener
 	
 	/**
 	 * @param rowIndex Identifies the message line
-	 * @return Number of rows need to display the entire contents of the message lines
+	 * @return Number of rows in the table need to display the entire contents of the message lines
 	 */
 	public int numRows(int rowIndex)
 	{
 		int numRows = 0;
 		String[] strings = (String[])m_messageTable.getValueAt(rowIndex, 4);
-		
 		
 		for(int i=0; i<strings.length; i++)
 		{

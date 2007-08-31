@@ -11,7 +11,9 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.JToggleButton;
+import javax.swing.SwingConstants;
 
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.TaskDialog;
@@ -112,7 +114,7 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 		m_changeSilentWitnessButton = createChangeButton();
 		addButtonPair(m_silentWitnessButton, m_changeSilentWitnessButton);
 		
-//		m_contentsPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
+		m_contentsPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
 		
 		// General
 		m_generalTaskButton = createToggleButton(m_wpMessageLog.getText("GeneralTask.text"));
@@ -176,7 +178,7 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	}
 
 	/**
-	 * {@link IEditMessageComponentIf#hideComponent()}
+	 *
 	 */
 	public void hideComponent()
 	{
@@ -185,7 +187,6 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 
 	/**
 	 * Updates button selection based on which tasks exists in the new message
-	 * {@link IEditMessageComponentIf#newMessageSelected(IMessageIf)}
 	 */
 	public void newMessageSelected(IMessageIf message)
 	{
@@ -198,7 +199,7 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	}
 
 	/**
-	 * {@link IEditMessageComponentIf#showComponent()}
+	 *
 	 */
 	public void showComponent()
 	{
@@ -206,7 +207,7 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	}
 
 	/**
-	 * {@link IEditMessageComponentIf#clearContents()}
+	 * 
 	 */
 	public void clearContents()
 	{
@@ -231,6 +232,7 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	}
 	
 	/**
+	 * Creates a button that toggles a task in the current message
 	 * @param text Button text
 	 * @return Toggle button that add/remove task from current message
 	 */

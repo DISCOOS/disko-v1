@@ -28,7 +28,6 @@ public class DiskoButtonFactory
 	
 	/**
 	 * Creates a small JToggleButton based on the communicator
-	 * TODO should be moved to some utility class
 	 */
 	public static JToggleButton createSmallToggleButton(ICommunicatorIf communicator)
 	{
@@ -71,6 +70,7 @@ public class DiskoButtonFactory
 		button.setMinimumSize(SMALL_BUTTON_SIZE);
 		button.setPreferredSize(SMALL_BUTTON_SIZE);
 		button.setMaximumSize(SMALL_BUTTON_SIZE);
+		
 		return button;
 	}
 	

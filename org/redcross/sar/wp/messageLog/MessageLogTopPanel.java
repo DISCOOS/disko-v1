@@ -436,6 +436,16 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
         this.add(new JSeparator(SwingConstants.VERTICAL), gbc);
 
         // Status panel
+        JPanel borderPanel = new JPanel();
+        borderPanel.setLayout(new BoxLayout(borderPanel, BoxLayout.PAGE_AXIS));
+        borderPanel.setMinimumSize(new Dimension(18, PANEL_HEIGHT));
+        borderPanel.setPreferredSize(new Dimension(18, PANEL_HEIGHT));
+        borderPanel.setMaximumSize(new Dimension(18, PANEL_HEIGHT));
+        borderPanel.add(new JLabel(" "));
+        borderPanel.add(new JSeparator(JSeparator.HORIZONTAL));
+        borderPanel.add(Box.createVerticalGlue());
+        gbc.gridx++;
+        this.add(borderPanel);
         m_statusPanel = new JPanel();
         m_statusPanel.setLayout(new BoxLayout(m_statusPanel, BoxLayout.Y_AXIS));
         m_statusPanel.setMinimumSize(new Dimension(SMALL_PANEL_WIDTH, PANEL_HEIGHT));
@@ -443,7 +453,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
         m_statusPanel.setMaximumSize(new Dimension(SMALL_PANEL_WIDTH, PANEL_HEIGHT));
         m_statusPanel.add(new JLabel(" "));
         m_statusPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
-        m_statusPanel.add(Box.createVerticalGlue());
         m_statusPanel.add(m_cancelStatusButton);
         m_statusPanel.add(m_waitEndStatusButton);
         m_statusPanel.add(m_finishedStatusButton);
@@ -926,7 +935,9 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				}
 				else
 				{
-					// TODO warning?
+					ErrorDialog error = new ErrorDialog(m_wpMessageLog.getApplication().getFrame());
+					error.showError(m_wpMessageLog.getText("CanNotDeleteMessageLine.header"), 
+							m_wpMessageLog.getText("CanNotDeleteMessageLine.details"));
 				}
 			}
 		});
