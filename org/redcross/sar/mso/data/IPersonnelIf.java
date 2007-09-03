@@ -73,6 +73,8 @@ public interface IPersonnelIf extends IPersonIf
     public void setStatus(String aStatus);
 
     public PersonnelStatus getStatus();
+    
+    public String getStatusText();
 
     public IMsoModelIf.ModificationState getStatusState();
 
@@ -83,6 +85,8 @@ public interface IPersonnelIf extends IPersonIf
     public void setType(String aType);
 
     public PersonnelType getType();
+    
+    public String getTypeText();
 
     public IMsoModelIf.ModificationState getTypeState();
 

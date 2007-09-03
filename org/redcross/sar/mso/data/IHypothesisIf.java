@@ -28,6 +28,8 @@ public interface IHypothesisIf extends IMsoObjectIf, ISerialNumberedIf
     public void setStatus(String aStatus);
 
     public HypothesisStatus getStatus();
+    
+    public String getStatusText();
 
     public IMsoModelIf.ModificationState getStatusState();
 

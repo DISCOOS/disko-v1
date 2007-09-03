@@ -28,6 +28,8 @@ public interface ICmdPostIf extends IMsoObjectIf
     public void setStatus(String aStatus);
 
     public CmdPostStatus getStatus();
+    
+    public String getStatusText();
 
     public IMsoModelIf.ModificationState getStatusState();
 

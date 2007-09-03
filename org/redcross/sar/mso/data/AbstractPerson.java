@@ -1,9 +1,11 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.mso.Position;
 
 import java.util.Calendar;
+import java.util.ResourceBundle;
 
 public abstract class AbstractPerson extends AbstractMsoObject implements IPersonIf
 {
@@ -18,6 +20,8 @@ public abstract class AbstractPerson extends AbstractMsoObject implements IPerso
     private final AttributeImpl.MsoString m_telephone3 = new AttributeImpl.MsoString(this, "Telephone3");
 
     private final AttributeImpl.MsoEnum<PersonGender> m_gender = new AttributeImpl.MsoEnum<PersonGender>(this, "Gender", PersonGender.UNKNOWN);
+    
+    private final static ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Person");
 
     public AbstractPerson(IMsoObjectIf.IObjectIdIf anObjectId)
     {
@@ -247,6 +251,11 @@ public abstract class AbstractPerson extends AbstractMsoObject implements IPerso
     public PersonGender getGender()
     {
         return m_gender.getValue();
+    }
+    
+    public String getGenderText()
+    {
+    	return Internationalization.getEnumText(bundle, m_gender.getValue());
     }
 
     public IMsoModelIf.ModificationState getGenderState()

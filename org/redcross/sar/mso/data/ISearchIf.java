@@ -31,6 +31,8 @@ public interface ISearchIf extends IAssignmentIf
     public void setSubType(String aSubType);
 
     public SearchSubType getSubType();
+    
+    public String getSubTypeText();
 
     public IMsoModelIf.ModificationState getSubTypeState();
 

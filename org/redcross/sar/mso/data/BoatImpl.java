@@ -1,6 +1,7 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.MsoCastException;
 
 
@@ -116,7 +117,7 @@ public class BoatImpl extends AbstractTransportUnit implements IBoatIf
 
     public String getSubTypeName()
     {
-        return getSubType().name();
+        return Internationalization.getEnumText(bundle, m_subType.getValue());
     }
 
     /*-------------------------------------------------------------------------------------------

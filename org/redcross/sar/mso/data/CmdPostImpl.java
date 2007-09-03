@@ -3,6 +3,7 @@ package org.redcross.sar.mso.data;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.IUnitIf.UnitStatus;
+import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.mso.Selector;
 
@@ -49,6 +50,8 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     private final TaskListImpl m_taskList = new TaskListImpl(this, "TaskList", true, 100);
     private final TrackListImpl m_trackList = new TrackListImpl(this, "TrackList", true, 100);
     private final UnitListImpl m_unitList = new UnitListImpl(this, "UnitList", true, 100);
+    
+    private final static ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.CmdPost");
 
     public CmdPostImpl(IMsoObjectIf.IObjectIdIf anObjectId)
     {
@@ -194,6 +197,11 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     public CmdPostStatus getStatus()
     {
         return m_status.getValue();
+    }
+    
+    public String getStatusText()
+    {
+    	return Internationalization.getEnumText(bundle, m_status.getValue());
     }
 
     public IMsoModelIf.ModificationState getStatusState()

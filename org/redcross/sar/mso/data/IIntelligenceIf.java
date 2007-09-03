@@ -27,6 +27,8 @@ public interface IIntelligenceIf extends IMsoObjectIf
     public void setStatus(String aStatus);
 
     public IntelligenceStatus getStatus();
+    
+    public String getStatusText();
 
     public IMsoModelIf.ModificationState getStatusState();
 

@@ -1,7 +1,10 @@
 package org.redcross.sar.mso.data;
 
+import java.util.ResourceBundle;
+
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.MsoCastException;
 
 public class HypothesisImpl extends AbstractMsoObject implements IHypothesisIf
@@ -12,6 +15,7 @@ public class HypothesisImpl extends AbstractMsoObject implements IHypothesisIf
 
     private final AttributeImpl.MsoEnum<HypothesisStatus> m_status = new AttributeImpl.MsoEnum<HypothesisStatus>(this, "Status", HypothesisStatus.ACTIVE);
 
+    private final static ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Hypothesis");
 
     public HypothesisImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
     {
@@ -77,6 +81,11 @@ public class HypothesisImpl extends AbstractMsoObject implements IHypothesisIf
     public HypothesisStatus getStatus()
     {
         return m_status.getValue();
+    }
+    
+    public String getStatusText()
+    {
+    	return Internationalization.getEnumText(bundle, m_status.getValue());
     }
 
     public IMsoModelIf.ModificationState getStatusState()

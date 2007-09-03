@@ -22,6 +22,8 @@ public interface ISearchAreaIf extends IMsoObjectIf
     public void setStatus(String aStatus);
 
     public SearchAreaStatus getStatus();
+    
+    public String getStatusText();
 
     public IMsoModelIf.ModificationState getStatusState();
 

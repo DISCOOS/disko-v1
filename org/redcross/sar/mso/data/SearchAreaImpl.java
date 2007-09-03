@@ -1,7 +1,10 @@
 package org.redcross.sar.mso.data;
 
+import java.util.ResourceBundle;
+
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.mso.Polygon;
 
@@ -15,6 +18,7 @@ public class SearchAreaImpl extends AbstractMsoObject implements ISearchAreaIf
 
     private final MsoReferenceImpl<IHypothesisIf> m_searchAreaHypothesis = new MsoReferenceImpl<IHypothesisIf>(this, "SearchAreaHypothesis", false);
 
+    private final static ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.SearchArea");
 
     public SearchAreaImpl(IMsoObjectIf.IObjectIdIf anObjectId)
     {
@@ -80,6 +84,11 @@ public class SearchAreaImpl extends AbstractMsoObject implements ISearchAreaIf
     public SearchAreaStatus getStatus()
     {
         return m_status.getValue();
+    }
+    
+    public String getStatusText()
+    {
+    	return Internationalization.getEnumText(bundle, m_status.getValue());
     }
 
     public IMsoModelIf.ModificationState getStatusState()

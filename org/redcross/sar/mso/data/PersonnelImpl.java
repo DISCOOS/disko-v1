@@ -2,9 +2,11 @@ package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.MsoCastException;
 
 import java.util.Calendar;
+import java.util.ResourceBundle;
 
 public class PersonnelImpl extends AbstractPerson implements IPersonnelIf
 {
@@ -20,6 +22,8 @@ public class PersonnelImpl extends AbstractPerson implements IPersonnelIf
     private final AttributeImpl.MsoEnum<PersonnelType> m_type = new AttributeImpl.MsoEnum<PersonnelType>(this,"Type", PersonnelType.VOLUNTEER);
 
     private final MsoReferenceImpl<IDataSourceIf> m_dataSourceName = new MsoReferenceImpl<IDataSourceIf>(this,"DataSourceName",true);
+    
+    private final static ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Personnel");
 
     public PersonnelImpl(IMsoObjectIf.IObjectIdIf anObjectId)
     {
@@ -85,8 +89,18 @@ public class PersonnelImpl extends AbstractPerson implements IPersonnelIf
     public void setReleased(Calendar aReleased){m_released.setValue(aReleased);} public Calendar getReleased(){return m_released.getCalendar();} public IMsoModelIf.ModificationState getReleasedState(){return m_released.getState();}public IAttributeIf.IMsoCalendarIf getReleasedAttribute(){return m_released;}
     public void setRemarks(String aRemarks){m_remarks.setValue(aRemarks);} public String getRemarks(){return m_remarks.getString();} public IMsoModelIf.ModificationState getRemarksState(){return m_remarks.getState();}public IAttributeIf.IMsoStringIf getRemarksAttribute(){return m_remarks;}
     public void setStatus(PersonnelStatus aStatus){m_status.setValue(aStatus);} public void setStatus(String aStatus){m_status.setValue(aStatus);} public PersonnelStatus getStatus(){return m_status.getValue();} public IMsoModelIf.ModificationState getStatusState(){return m_status.getState();}public IAttributeIf.IMsoEnumIf<PersonnelStatus> getStatusAttribute(){return m_status;}
+   
+    public String getStatusText()
+    {
+    	return Internationalization.getEnumText(bundle, m_status.getValue());
+    }
+    
     public void setType(PersonnelType aType){m_type.setValue(aType);} public void setType(String aType){m_type.setValue(aType);} public PersonnelType getType(){return m_type.getValue();} public IMsoModelIf.ModificationState getTypeState(){return m_type.getState();}public IAttributeIf.IMsoEnumIf<PersonnelType> getTypeAttribute(){return m_type;}
 
+    public String getTypeText()
+    {
+    	return Internationalization.getEnumText(bundle, m_type.getValue());
+    }
     public void setDataSourceName(IDataSourceIf aDataSource){m_dataSourceName.setReference(aDataSource);} public IDataSourceIf getDataSourceName(){return m_dataSourceName.getReference();} public IMsoModelIf.ModificationState getDataSourceNameState(){return m_dataSourceName.getState();}public IMsoReferenceIf<IDataSourceIf > getDataSourceNameAttribute(){return m_dataSourceName;}
 
     public IMsoManagerIf.MsoClassCode getMsoClassCode()

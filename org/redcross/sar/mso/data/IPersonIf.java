@@ -96,6 +96,8 @@ public interface IPersonIf extends IMsoObjectIf
     public void setGender(String aGender);
 
     public PersonGender getGender();
+    
+    public String getGenderText();
 
     public IMsoModelIf.ModificationState getGenderState();
 

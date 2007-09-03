@@ -34,7 +34,7 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
     private final MsoReferenceImpl<IHierarchicalUnitIf> m_superiorUnit = new MsoReferenceImpl<IHierarchicalUnitIf>(this, "SuperiorUnit", false);
     private final MsoReferenceImpl<IPersonnelIf> m_unitLeader = new MsoReferenceImpl<IPersonnelIf>(this, "UnitLeader", true);
 
-    private static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Unit");
+    protected static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Unit");
 
     public static String getText(String aKey)
     {
