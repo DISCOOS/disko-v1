@@ -16,6 +16,7 @@ SmallButton.height=64
 Taktikk.icon=icons/60x60/tactic.gif
 Logistikk.icon=icons/60x60/logistics.gif
 Sambandslogg.icon=icons/60x60/log.gif
+Tasks.icon=icons/60x60/task.gif
 Kart.icon=icons/60x60/map.gif
 
 NAV.icon=icons/60x60/navigation.gif
@@ -173,6 +174,7 @@ TaskPriority.HIGH.text=Høy
 TaskPriority.NORMAL.text=Normal
 TaskPriority.LOW.text=Lav
 TaskDue.text=Forfall (min)
+TaskResponsible.text=Ansvarlig
 TaskAlert.text=Varsel (min)
 TaskStatus.text=Status
 TaskStatus.STARTED.text=Startet

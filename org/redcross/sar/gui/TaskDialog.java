@@ -13,6 +13,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
@@ -44,7 +45,7 @@ public class TaskDialog extends DiskoDialog
 	private JComboBox m_responsibleComboBox = null;
 	private JTextField m_alertTextField = null;
 	private JComboBox m_statusComboBox = null;
-	private JTextField m_progressTextField = null;
+	private JSpinner m_progressSpinner = null;
 	private JTextArea m_descriptionTextArea = null;
 	private JTextArea m_sourceTextArea = null;
 	
@@ -122,9 +123,9 @@ public class TaskDialog extends DiskoDialog
 		addComponent(0, m_application.getProperty("TaskStatus.text"), m_statusComboBox, 0, gbc);
 		
 		// Progress
-		m_progressTextField = new JTextField(3);
-		m_progressTextField.setText(String.valueOf(0));
-		addComponent(2, m_application.getProperty("TaskProgress.text"), m_progressTextField, 1, gbc);
+		m_progressSpinner = new JSpinner();
+//		m_progressTextField.setText(String.valueOf(0));
+		addComponent(2, m_application.getProperty("TaskProgress.text"), m_progressSpinner, 1, gbc);
 		
 		// Description
 		m_descriptionTextArea = new JTextArea();
