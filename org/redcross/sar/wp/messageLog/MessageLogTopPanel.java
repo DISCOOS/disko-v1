@@ -1,6 +1,5 @@
 package org.redcross.sar.wp.messageLog;
 
-import no.cmr.view.JOptionPaneExt;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.event.DialogEvent;
 import org.redcross.sar.event.IDialogEventListener;
@@ -515,8 +514,16 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		if(m_messageDirty)
 		{
 
-			int n = JOptionPaneExt.showConfirmDialog(this, m_wpMessageLog.getText("MessageDirtySaveWarning.text"),
-					m_wpMessageLog.getText("MessageDirtySaveHeader.text"), true, JOptionPane.YES_NO_OPTION);
+			Object[] options = {m_wpMessageLog.getText("yes.text"), m_wpMessageLog.getText("no.text")};
+			int n = JOptionPane.showOptionDialog(m_wpMessageLog.getApplication().getFrame(), 
+					m_wpMessageLog.getText("DirtyMessageWarning.text"), 
+					m_wpMessageLog.getText("DirtyMessageWarning.header"), 
+					JOptionPane.YES_NO_OPTION, 
+					JOptionPane.QUESTION_MESSAGE, 
+					null, 
+					options, 
+					options[0]);
+					
 			if(n == JOptionPane.NO_OPTION)
 			{
 				return;

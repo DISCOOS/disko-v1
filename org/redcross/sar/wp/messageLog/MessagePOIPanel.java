@@ -122,7 +122,6 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 		}
 
 		// Update POI
-		poi.setType(getSelectedPOIType());
 		Position position = poi.getPosition();
 		if(position == null)
 		{
@@ -134,6 +133,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 		{
 			position.setPosition(xCoordinate, yCoordinate);
 		}
+		poi.setType(getSelectedPOIType());	
 	}
 	
 	/**
@@ -170,7 +170,8 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 			 */
 			public void actionPerformed(ActionEvent e)
 			{
-
+				NumPadDialog numPad = m_wpMessageLog.getApplication().getUIFactory().getNumPadDialog();
+				numPad.setVisible(false);
 				updatePOI();
 			}
 		});
@@ -180,6 +181,8 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 		{
 			public void actionPerformed(ActionEvent e)
 			{
+				NumPadDialog numPad = m_wpMessageLog.getApplication().getUIFactory().getNumPadDialog();
+				numPad.setVisible(false);
 				revertPOI();
 			}
 		});
@@ -196,6 +199,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 				if(button.isSelected())
 				{
 					MessageLogPanel.showMap();
+					//TODO Explicitly set POI in map
 				}
 				else
 				{
@@ -206,7 +210,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 	}
 
 	/**
-	 * Set GUI according to poi types
+	 * Set GUI according to POI types
 	 */
 	private void updatePOITypes()
 	{
@@ -250,7 +254,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 				updatePOI();
 			}
 		});
-		// If in notebook mode, display num pad on field focus
+		// If in notebook mode, display numpad on field focus
 		if(m_notebookMode)
 		{
 			m_xField.addFocusListener(new FocusListener()

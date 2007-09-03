@@ -18,13 +18,14 @@ import org.redcross.sar.mso.data.IUnitIf;
 /**
  * Creates buttons. 
  * TODO Methods should probably be moved to {@link UIFactory} later on
+ * 
  * @author thomasl
  */
 public class DiskoButtonFactory
 {
 	public final static Dimension SMALL_BUTTON_SIZE = new Dimension(60, 60);
 	public final static Dimension LARGE_BUTTON_SIZE = new Dimension(180, 60);
-	public final static Dimension ASSIGNMENT_BUTTON_SIZE = new Dimension(200, 60);
+//	public final static Dimension ASSIGNMENT_BUTTON_SIZE = new Dimension(200, 60);
 	
 	/**
 	 * Creates a small JToggleButton based on the communicator
@@ -230,9 +231,9 @@ public class DiskoButtonFactory
 	{
 		JButton button = new JButton();
 		
-		button.setMinimumSize(ASSIGNMENT_BUTTON_SIZE);
-		button.setPreferredSize(ASSIGNMENT_BUTTON_SIZE);
-		button.setMaximumSize(ASSIGNMENT_BUTTON_SIZE);
+		button.setMinimumSize(LARGE_BUTTON_SIZE);
+		button.setPreferredSize(LARGE_BUTTON_SIZE);
+		button.setMaximumSize(LARGE_BUTTON_SIZE);
 		
 //		button.setText(assignment.getTypeText() + " " + assignment.getNumber());
 		IconRenderer.AssignmentIcon icon = new IconRenderer.AssignmentIcon(assignment, false, null);
@@ -245,9 +246,9 @@ public class DiskoButtonFactory
 	{
 		JToggleButton button = new JToggleButton();
 
-		button.setMinimumSize(ASSIGNMENT_BUTTON_SIZE);
-		button.setPreferredSize(ASSIGNMENT_BUTTON_SIZE);
-		button.setMaximumSize(ASSIGNMENT_BUTTON_SIZE);
+		button.setMinimumSize(LARGE_BUTTON_SIZE);
+		button.setPreferredSize(LARGE_BUTTON_SIZE);
+		button.setMaximumSize(LARGE_BUTTON_SIZE);
 
 		button.setText(assignment.getTypeText()+ " " + assignment.getNumber());
 //		IconRenderer.AssignmentIcon icon = new IconRenderer.AssignmentIcon(assignment, false, null);

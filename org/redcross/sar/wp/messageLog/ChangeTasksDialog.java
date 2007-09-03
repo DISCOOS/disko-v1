@@ -24,6 +24,7 @@ import org.redcross.sar.mso.data.ITaskListIf;
 /**
  * Dialog for changing task in current message. 
  * Initializes and shows a {@link TaskDialog} when changing task fields
+ * 
  * @author thomasl
  */
 public class ChangeTasksDialog extends DiskoDialog implements IEditMessageComponentIf

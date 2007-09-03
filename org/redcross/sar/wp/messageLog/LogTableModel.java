@@ -9,6 +9,7 @@ import org.redcross.sar.mso.data.IMessageLineListIf;
 import org.redcross.sar.mso.data.IMessageLogIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.IPOIIf;
+import org.redcross.sar.mso.data.ITaskIf;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
@@ -18,7 +19,6 @@ import org.redcross.sar.util.mso.Selector;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableModel;
 
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -82,13 +82,6 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     void buildTable()
     {
         m_messageList = m_messageLog.selectItems(m_messageSelector, m_lineNumberComparator);
-
-//        for(IMessageIf message : m_messageList)
-//        {
-//        	if(message.getStatus() == MessageStatus.UNCONFIRMED)
-//        	{
-//        	}
-//        }
         
         // Update hash map
         HashMap<Integer, Boolean> tempMap = new HashMap<Integer, Boolean>(m_rowExpandedMap);
@@ -139,7 +132,7 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
             case 0:
             	Boolean expanded = isMessageExpanded(message.getNumber());
             	StringBuilder string = new StringBuilder(Integer.toString(message.getNumber()));
-            	if(m_selectionListener.numRows(rowIndex) > 1)
+            	if(numRows(rowIndex) > 1)
             	{
             		if(expanded)
                 	{
@@ -245,7 +238,13 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
             	}
                 return stringBuilder.toString().split("LINEEND");
             case 5:
-                return ""; // TODO return tasks
+            	StringBuilder taskBuilder = new StringBuilder();
+            	for(ITaskIf task : message.getMessageTasksItems())
+            	{
+            		taskBuilder.append(task.toString()); // TODO 
+            		taskBuilder.append("\n");
+            	}
+                return taskBuilder.toString();
             default:
                 return message.getStatusText();
         }
@@ -267,6 +266,7 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     {
         buildTable();
         fireTableDataChanged();
+        updateRowHeights();
     }
 
     private final EnumSet<IMsoManagerIf.MsoClassCode> myInterests = EnumSet.of(
@@ -315,4 +315,64 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     {
     	m_rowExpandedMap.put(new Integer(messageNr), new Boolean(expanded));
     }
+
+	public void updateRowHeights()
+	{
+		for(int i = 0; i < m_messageList.size(); i++)
+		{
+			IMessageIf message = m_messageList.get(i);
+			Boolean expanded = m_rowExpandedMap.get(message.getNumber());
+			
+			if(expanded)
+			{
+				setRowExpanded(i);
+			}
+			else
+			{
+				setRowCollapsed(i);
+			}
+		}
+	}
+	
+	/**
+	 * Expands a row so that it encompasses all text in message lines
+	 * @param rowIndex Row identifier
+	 */
+	public void setRowExpanded(int rowIndex)
+	{
+		// Calculate row height so that all text is visible in cell without changing column width
+		int defaultRowHeight = 18; //m_messageTable.getRowHeight();
+		int numRows = numRows(rowIndex);
+		int rowHeight = defaultRowHeight * numRows + (numRows - 1) * 2 + 4;
+		m_table.setRowHeight(rowIndex, rowHeight);
+	}
+	
+	/**
+	 * Collapses a row to the default size
+	 * @param rowIndex Row identifier
+	 */
+	public void setRowCollapsed(int rowIndex)
+	{
+		m_table.setRowHeight(rowIndex, m_table.getRowHeight());
+	}
+	
+	/**
+	 * @param rowIndex Identifies the message line
+	 * @return Number of rows in the table need to display the entire contents of the message lines
+	 */
+	public int numRows(int rowIndex)
+	{
+		int numRows = 0;
+		String[] strings = (String[])m_table.getValueAt(rowIndex, 4);
+		
+		for(int i=0; i<strings.length; i++)
+		{
+			String[] multiline = strings[i].split("\n");
+			int numLinesString = multiline.length;
+			// TODO handle long single lines as well.
+			numRows += Math.max(1, numLinesString);
+		}
+		
+		return numRows;
+	}
 }

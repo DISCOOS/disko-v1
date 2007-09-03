@@ -10,7 +10,7 @@ import org.redcross.sar.util.AssignmentTransferUtilities;
 
 /**
  * Dialog for assigning unit an assignment
- * See {@link AbstractAssignmentPanel}
+ *
  * @author thomasl
  *
  */
@@ -105,7 +105,6 @@ public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 					MessageLineType.ASSIGNED, 
 					Calendar.getInstance(),
 					m_selectedAssignment);
-			
 		}
 		
 		MessageLogTopPanel.showAssignDialog();

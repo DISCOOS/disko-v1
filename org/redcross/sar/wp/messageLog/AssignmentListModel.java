@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
-import javax.swing.ListModel;
 
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;

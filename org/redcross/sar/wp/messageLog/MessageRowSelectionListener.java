@@ -15,7 +15,7 @@ public class MessageRowSelectionListener implements ListSelectionListener
 {
 	protected MessageLogTopPanel m_topPanel;
 	protected JTable m_messageTable;
-	protected LogTableModel m_tableMode;
+	protected LogTableModel m_tableModel;
 	protected boolean m_msoUpdate = false;
 	
 	/**
@@ -32,9 +32,8 @@ public class MessageRowSelectionListener implements ListSelectionListener
 	public void valueChanged(ListSelectionEvent event) 
 	{		
 		ListSelectionModel lsm = (ListSelectionModel)event.getSource();
-		
-		if(lsm.isSelectionEmpty())
-			return;
+//		if(lsm.isSelectionEmpty())
+//			return;
 		
 		// Get selected row index
 		Integer rowIndex = new Integer(lsm.getMinSelectionIndex());
@@ -49,32 +48,24 @@ public class MessageRowSelectionListener implements ListSelectionListener
 		}
 		
 		// Get message number
-		String messageNrString = (String)m_tableMode.getValueAt(rowIndex, 0);
+		String messageNrString = (String)m_tableModel.getValueAt(rowIndex, 0);
 		int messageNr = Integer.valueOf(messageNrString.split("\\s")[0]);
 		
 		// Toggle expanded
-		Boolean expanded = m_tableMode.isMessageExpanded(messageNr);
+		Boolean expanded = m_tableModel.isMessageExpanded(messageNr);
 		if(expanded == null)
 		{
 			expanded = new Boolean(true);
-			m_tableMode.setMessageExpanded(messageNr, expanded);
+			m_tableModel.setMessageExpanded(messageNr, expanded);
 		}
 		else
 		{
 			expanded = !expanded;
-			m_tableMode.setMessageExpanded(messageNr, expanded);
+			m_tableModel.setMessageExpanded(messageNr, expanded);
 		}
-	
 		
 		// Set row height
-		if(expanded)
-		{
-			setRowExpanded(rowIndex);
-		}
-		else
-		{
-			setRowCollapsed(rowIndex);
-		}
+		m_tableModel.updateRowHeights();
 		
 		// Update top message panel
 		m_topPanel.newMessageSelected(messageNr);
@@ -96,48 +87,6 @@ public class MessageRowSelectionListener implements ListSelectionListener
 	 */
 	public void setModel(LogTableModel model) 
 	{
-		m_tableMode = model;
-	}
-	
-	/**
-	 * Expands a row so that it encompasses all text in message lines
-	 * @param rowIndex Row identifier
-	 */
-	public void setRowExpanded(int rowIndex)
-	{
-		// Calculate row height so that all text is visible in cell without changing column width
-		int defaultRowHeight = 18; //m_messageTable.getRowHeight();
-		int numRows = numRows(rowIndex);
-		int rowHeight = defaultRowHeight * numRows + (numRows - 1) * 2 + 4;
-		m_messageTable.setRowHeight(rowIndex, rowHeight);
-	}
-	
-	/**
-	 * Collapses a row to the default size
-	 * @param rowIndex Row identifier
-	 */
-	public void setRowCollapsed(int rowIndex)
-	{
-		m_messageTable.setRowHeight(rowIndex, m_messageTable.getRowHeight());
-	}
-	
-	/**
-	 * @param rowIndex Identifies the message line
-	 * @return Number of rows in the table need to display the entire contents of the message lines
-	 */
-	public int numRows(int rowIndex)
-	{
-		int numRows = 0;
-		String[] strings = (String[])m_messageTable.getValueAt(rowIndex, 4);
-		
-		for(int i=0; i<strings.length; i++)
-		{
-			String[] multiline = strings[i].split("\n");
-			int numLinesString = multiline.length;
-			// TODO handle long single lines as well.
-			numRows += Math.max(1, numLinesString);
-		}
-		
-		return numRows;
+		m_tableModel = model;
 	}
 }
