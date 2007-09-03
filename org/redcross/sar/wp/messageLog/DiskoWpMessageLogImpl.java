@@ -49,6 +49,7 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
     @Override 
 	public void deactivated()
     {
+    	super.deactivated();
     	// Warn user that it work processes can't be changed if message is not committed
     	if(MessageLogTopPanel.isMessageDirty())
     	{
@@ -73,7 +74,6 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
     		}
     	}
     	
-    	super.deactivated();
     	m_logPanel.hidePanels();
     	m_logPanel.clearSelection();
     }
