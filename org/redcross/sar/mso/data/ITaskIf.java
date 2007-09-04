@@ -24,6 +24,15 @@ public interface ITaskIf extends ITimeItemIf, ISerialNumberedIf, IEnumStatusHold
         HIGH
     }
 
+    public enum TaskType
+    {
+        TRANSPORT,
+        RESOURCE,
+        INTELLIGENCE,
+        GENERAL
+    }
+
+
     public void setDescription(String aDescription);
 
     public String getDescription();
@@ -39,6 +48,17 @@ public interface ITaskIf extends ITimeItemIf, ISerialNumberedIf, IEnumStatusHold
     public IMsoModelIf.ModificationState getNumberState();
 
     public IAttributeIf.IMsoIntegerIf getNumberAttribute();
+
+
+    public void setType(TaskType aType);
+
+    public void setType(String aType);
+
+    public TaskType getType();
+
+    public IMsoModelIf.ModificationState getTypeState();
+
+    public IAttributeIf.IMsoEnumIf<TaskType> getTypeAttribute();
 
     public void setProgress(int aProgress);
 

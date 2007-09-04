@@ -17,10 +17,11 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
     private final AttributeImpl.MsoString m_responsibleRole = new AttributeImpl.MsoString(this, "ResponsibleRole");
     private final AttributeImpl.MsoString m_taskText = new AttributeImpl.MsoString(this, "TaskText");
     private final AttributeImpl.MsoEnum<TaskStatus> m_status = new AttributeImpl.MsoEnum<TaskStatus>(this, "Status", TaskStatus.IDLE);
+    private final AttributeImpl.MsoEnum<TaskPriority> m_priority = new AttributeImpl.MsoEnum<TaskPriority>(this, "Priority", TaskPriority.LOW);
+    private final AttributeImpl.MsoEnum<TaskType> m_type = new AttributeImpl.MsoEnum<TaskType>(this, "Type", TaskType.TRANSPORT);
 
     private final MsoReferenceImpl<IEventIf> m_createdEvent = new MsoReferenceImpl<IEventIf>(this, "CreatedEvent", true);
 
-    private final AttributeImpl.MsoEnum<TaskPriority> m_priority = new AttributeImpl.MsoEnum<TaskPriority>(this, "Priority", TaskPriority.LOW);
 
     private static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Task");
 
@@ -55,6 +56,7 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
         addAttribute(m_taskText);
         addAttribute(m_priority);
         addAttribute(m_status);
+        addAttribute(m_type);
     }
 
     @Override
@@ -137,6 +139,31 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
     public IAttributeIf.IMsoIntegerIf getNumberAttribute()
     {
         return m_number;
+    }
+
+    public void setType(TaskType aType)
+    {
+        m_type.setValue(aType);
+    }
+
+    public void setType(String aType)
+    {
+        m_type.setValue(aType);
+    }
+
+    public TaskType getType()
+    {
+        return m_type.getValue();
+    }
+
+    public IMsoModelIf.ModificationState getTypeState()
+    {
+        return m_type.getState();
+    }
+
+    public IAttributeIf.IMsoEnumIf<TaskType> getTypeAttribute()
+    {
+        return m_type;
     }
 
     public void setProgress(int aProgress)
@@ -234,7 +261,7 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
         m_status.setValue(aStatus);
     }
 
-    public void setStatus(String aStatus)  throws IllegalOperationException
+    public void setStatus(String aStatus) throws IllegalOperationException
     {
         m_status.setValue(aStatus);
     }
