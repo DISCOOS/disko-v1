@@ -2,7 +2,9 @@ package org.redcross.sar.wp.messageLog;
 
 import com.esri.arcgis.interop.AutomationException;
 
+import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.NumPadDialog;
+import org.redcross.sar.gui.DiskoButtonFactory.ButtonType;
 import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
 import org.redcross.sar.map.IDiskoMap;
 import org.redcross.sar.mso.data.IMessageIf;
@@ -162,7 +164,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 
 	private void initButtons()
 	{
-		m_okButton = DiskoButtonFactory.createSmallOKButton();
+		m_okButton = DiskoButtonFactory.createSmallButton(ButtonType.OkButton);
 		m_okButton.addActionListener(new ActionListener()
 		{
 			/**
@@ -176,7 +178,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 			}
 		});
 
-		m_cancelButton = DiskoButtonFactory.createSmallCancelButton();
+		m_cancelButton = DiskoButtonFactory.createSmallButton(ButtonType.CancelButton);
 		m_cancelButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)

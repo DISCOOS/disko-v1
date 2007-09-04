@@ -30,7 +30,9 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.ListSelectionModel;
 
+import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.NumPadDialog;
+import org.redcross.sar.gui.DiskoButtonFactory.ButtonType;
 import org.redcross.sar.gui.renderers.IconRenderer;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IMessageIf;
@@ -264,7 +266,7 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 		gbc.weighty = 0.0;
 		gbc.gridy--;
 		gbc.gridx++;
-		m_cancelEditButton = DiskoButtonFactory.createSmallCancelButton();
+		m_cancelEditButton = DiskoButtonFactory.createSmallButton(ButtonType.CancelButton);
 		m_cancelEditButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -276,7 +278,7 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 		m_editAssignmentPanel.add(m_cancelEditButton, gbc);
 		
 		gbc.gridy++;
-		m_okEditButton = DiskoButtonFactory.createSmallOKButton();
+		m_okEditButton = DiskoButtonFactory.createSmallButton(ButtonType.OkButton);
 		m_okEditButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -302,7 +304,7 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 		JPanel actionButtonPanel = new JPanel();
 		actionButtonPanel.setLayout(new BoxLayout(actionButtonPanel, BoxLayout.PAGE_AXIS));
 		
-		m_cancelAddNextAssignmentButton = DiskoButtonFactory.createSmallCancelButton();
+		m_cancelAddNextAssignmentButton = DiskoButtonFactory.createSmallButton(ButtonType.CancelButton);
 		m_cancelAddNextAssignmentButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent arg0)
@@ -312,7 +314,7 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 		});
 		actionButtonPanel.add(m_cancelAddNextAssignmentButton);
 		
-		m_okAddNextAssignmentButton = DiskoButtonFactory.createSmallOKButton();
+		m_okAddNextAssignmentButton = DiskoButtonFactory.createSmallButton(ButtonType.OkButton);
 		m_okAddNextAssignmentButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -340,7 +342,7 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 		
 		JPanel actionButtonPanel = new JPanel();
 		actionButtonPanel.setLayout(new BoxLayout(actionButtonPanel, BoxLayout.PAGE_AXIS));
-		m_cancelAddPoolAssignmentButton = DiskoButtonFactory.createSmallCancelButton();
+		m_cancelAddPoolAssignmentButton = DiskoButtonFactory.createSmallButton(ButtonType.CancelButton);
 		m_cancelAddPoolAssignmentButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -349,7 +351,7 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 			}
 		});
 		actionButtonPanel.add(m_cancelAddPoolAssignmentButton);
-		m_okAddPoolAssignmentButton = DiskoButtonFactory.createSmallOKButton();
+		m_okAddPoolAssignmentButton = DiskoButtonFactory.createSmallButton(ButtonType.OkButton);
 		m_okAddPoolAssignmentButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)

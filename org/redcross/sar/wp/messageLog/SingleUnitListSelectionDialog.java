@@ -1,5 +1,6 @@
 package org.redcross.sar.wp.messageLog;
 
+import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.*;

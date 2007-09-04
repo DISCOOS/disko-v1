@@ -3,6 +3,7 @@ package org.redcross.sar.wp.messageLog;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.event.DialogEvent;
 import org.redcross.sar.event.IDialogEventListener;
+import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.*;

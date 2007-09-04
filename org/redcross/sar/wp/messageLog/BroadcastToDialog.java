@@ -22,6 +22,7 @@ import javax.swing.JToggleButton;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import org.redcross.sar.app.Utils;
+import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.ICommunicatorIf;

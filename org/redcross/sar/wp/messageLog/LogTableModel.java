@@ -41,7 +41,7 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
 
     private HashMap<Integer, Boolean> m_rowExpandedMap;
     
-    private MessageRowSelectionListener m_selectionListener = null;
+//    private MessageRowSelectionListener m_selectionListener = null;
 
     /**
      * @param aTable Log table
@@ -57,7 +57,7 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
         m_eventManager.addClientUpdateListener(this);
         m_messageLog = aMessageLog;
         m_rowExpandedMap = new HashMap<Integer, Boolean>();
-        m_selectionListener = listener;
+//        m_selectionListener = listener;
     }
 
     /**

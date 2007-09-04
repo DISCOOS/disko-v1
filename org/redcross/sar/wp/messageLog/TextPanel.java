@@ -9,6 +9,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import org.redcross.sar.gui.DiskoButtonFactory;
+import org.redcross.sar.gui.DiskoButtonFactory.ButtonType;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
@@ -59,7 +61,7 @@ public class TextPanel extends JPanel implements IEditMessageComponentIf
 		gbc.gridx++;
 		gbc.weightx = 0.0;
 		
-		m_cancelButton = DiskoButtonFactory.createSmallCancelButton();
+		m_cancelButton = DiskoButtonFactory.createSmallButton(ButtonType.CancelButton);
 		
 		m_cancelButton.addActionListener(new ActionListener()
 		{
@@ -81,7 +83,7 @@ public class TextPanel extends JPanel implements IEditMessageComponentIf
 		this.add(m_cancelButton, gbc);
 		
 		gbc.gridy = 1;
-		m_okButton = DiskoButtonFactory.createSmallOKButton();
+		m_okButton = DiskoButtonFactory.createSmallButton(ButtonType.OkButton);
 		m_okButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
