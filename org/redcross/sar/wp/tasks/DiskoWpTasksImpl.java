@@ -12,15 +12,15 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableRowSorter;
 
 import org.redcross.sar.app.IDiskoRole;
+import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.SubMenuPanel;
 import org.redcross.sar.gui.TaskDialog;
 import org.redcross.sar.mso.data.ITaskIf;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
-import org.redcross.sar.wp.messageLog.DiskoButtonFactory;
 
 /**
  * Implementation of the tasks work process
@@ -30,7 +30,10 @@ import org.redcross.sar.wp.messageLog.DiskoButtonFactory;
 public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpTasks
 {
 	private JPanel m_contentsPanel;
+	
 	private JTable m_taskTable;
+	private TableRowSorter<TaskTableModel> m_rowSorter;
+	
 	private JButton m_newButton;
 	private JButton m_changeButton;
 	private JButton m_deleteButton;
@@ -117,25 +120,25 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 	private void initTable()
 	{
 		m_taskTable = new JTable();
-		m_taskTable.setModel(new TaskTableModel(this));
+		m_taskTable.setModel(new TaskTableModel(this, m_taskTable));
+		
+		TableColumn column = m_taskTable.getColumnModel().getColumn(0);
+		column.setMaxWidth(75);
+		column = m_taskTable.getColumnModel().getColumn(1);
+		column.setMaxWidth(150);
+		column = m_taskTable.getColumnModel().getColumn(3);
+		column.setPreferredWidth(100);
+		column.setMaxWidth(100);
+		column = m_taskTable.getColumnModel().getColumn(4);
+		column.setPreferredWidth(150);
+		column.setMaxWidth(150);
+		column = m_taskTable.getColumnModel().getColumn(5);
+		column.setPreferredWidth(150);
+		column.setMaxWidth(150);
 		
 		JTableHeader tableHeader = m_taskTable.getTableHeader();
         tableHeader.setResizingAllowed(false);
         tableHeader.setReorderingAllowed(false);
-       
-        TableColumnModel columnModel = m_taskTable.getColumnModel();
-        TableColumn column = columnModel.getColumn(0);
-        column.setWidth(15);
-        column = columnModel.getColumn(1);
-        column.setWidth(20);
-        column = columnModel.getColumn(2);
-        column.setWidth(60);
-        column = columnModel.getColumn(3);
-        column.setWidth(20);
-        column = columnModel.getColumn(4);
-        column.setWidth(40);
-        column = columnModel.getColumn(5);
-        column.setWidth(50);
         
 		JScrollPane tableScrollPane = new JScrollPane(m_taskTable);
 		tableScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -194,6 +197,7 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 	private void deleteTask()
 	{
 		hideDialogs();
+		m_deleteTaskDialog.setLocationRelativeTo(m_contentsPanel, DiskoDialog.POS_CENTER, false);
 		m_deleteTaskDialog.setVisible(true);
 	}
 	
@@ -203,6 +207,10 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 	 */
 	private void performedTask()
 	{
+		if(m_currentTask != null)
+		{
+			// TODO Set task status to performed
+		}
 		hideDialogs();
 	}
 

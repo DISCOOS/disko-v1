@@ -16,11 +16,12 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.border.BevelBorder;
 
 import org.redcross.sar.app.IDiskoApplication;
+import org.redcross.sar.gui.DiskoButtonFactory.ButtonType;
 import org.redcross.sar.mso.data.ITaskIf;
-import org.redcross.sar.wp.messageLog.DiskoButtonFactory;
 
 /**
  * 
@@ -41,9 +42,9 @@ public class TaskDialog extends DiskoDialog
 	private JTextField m_taskTextField = null;
 	private JComboBox m_typeComboBox = null;
 	private JComboBox m_priorityComboBox = null;
-	private JTextField m_dueTextField = null;
+	private JComboBox m_dueComboBox = null;
 	private JComboBox m_responsibleComboBox = null;
-	private JTextField m_alertTextField = null;
+	private JComboBox m_alertComboBox = null;
 	private JComboBox m_statusComboBox = null;
 	private JSpinner m_progressSpinner = null;
 	private JTextArea m_descriptionTextArea = null;
@@ -90,9 +91,11 @@ public class TaskDialog extends DiskoDialog
 		addComponent(0, m_application.getProperty("TaskPriority.text"), m_priorityComboBox, 0, gbc);
 		
 		// Due
-		m_dueTextField = new JTextField(3);
-		m_dueTextField.setText(String.valueOf(30));
-		addComponent(2, m_application.getProperty("TaskDue.text"), m_dueTextField, 1, gbc);
+		Object[] dueItems = {"15", "30", "45", "60"};
+		m_dueComboBox = new JComboBox(dueItems);
+		m_dueComboBox.setEditable(true);
+		m_dueComboBox.setSelectedIndex(1);
+		addComponent(2, m_application.getProperty("TaskDue.text"), m_dueComboBox, 1, gbc);
 		
 		// Responsible
 		Object[] responsible = {};
@@ -109,9 +112,11 @@ public class TaskDialog extends DiskoDialog
 		addComponent(0, m_application.getProperty("TaskResponsible.text"), m_responsibleComboBox, 0, gbc);
 		
 		// Alert
-		m_alertTextField = new JTextField(3);
-		m_alertTextField.setText(String.valueOf(5));
-		addComponent(2, m_application.getProperty("TaskAlert.text"), m_alertTextField, 1, gbc);
+		Object[] alertItems = {"5", "10", "15", "20"};
+		m_alertComboBox = new JComboBox(alertItems);
+		m_alertComboBox.setEditable(true);
+		m_alertComboBox.setSelectedIndex(0);
+		addComponent(2, m_application.getProperty("TaskAlert.text"), m_alertComboBox, 1, gbc);
 		
 		// Status
 		Object[] statuses = {m_application.getProperty("TaskStatus.UNTREATED.text"), 
@@ -124,6 +129,7 @@ public class TaskDialog extends DiskoDialog
 		
 		// Progress
 		m_progressSpinner = new JSpinner();
+		m_progressSpinner.setModel(new SpinnerNumberModel(0, 0, 100, 1));
 //		m_progressTextField.setText(String.valueOf(0));
 		addComponent(2, m_application.getProperty("TaskProgress.text"), m_progressSpinner, 1, gbc);
 		
@@ -131,6 +137,8 @@ public class TaskDialog extends DiskoDialog
 		m_descriptionTextArea = new JTextArea();
 		m_descriptionTextArea.setRows(10);
 		m_descriptionTextArea.setBorder(BorderFactory.createLineBorder(Color.lightGray));
+		m_descriptionTextArea.setLineWrap(true);
+		m_descriptionTextArea.setWrapStyleWord(true);
 		gbc.gridwidth = 3;
 		addComponent(0, m_application.getProperty("TaskDescription.text"), m_descriptionTextArea, 10, gbc);
 		
@@ -138,12 +146,14 @@ public class TaskDialog extends DiskoDialog
 		m_sourceTextArea = new JTextArea();
 		m_sourceTextArea.setRows(4);
 		m_sourceTextArea.setBorder(BorderFactory.createLineBorder(Color.lightGray));
+		m_sourceTextArea.setLineWrap(true);
+		m_sourceTextArea.setWrapStyleWord(true);
 		gbc.gridwidth = 3;
 		addComponent(0, m_application.getProperty("TaskSource.text"), m_sourceTextArea, 4, gbc);
 		
 		// Finish button
 		JPanel actionButtonPanel = new JPanel();
-		m_finishedButton = DiskoButtonFactory.createSmallButton(m_application.getProperty("ApplyButton.text"));
+		m_finishedButton = DiskoButtonFactory.createSmallButton(ButtonType.FinishedButton);
 		m_finishedButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -155,7 +165,7 @@ public class TaskDialog extends DiskoDialog
 		actionButtonPanel.add(m_finishedButton);
 		
 		// Cancel button
-		m_cancelButton = DiskoButtonFactory.createSmallButton(m_application.getProperty("CancelButton.text"));
+		m_cancelButton = DiskoButtonFactory.createSmallButton(ButtonType.CancelButton);
 		m_cancelButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)

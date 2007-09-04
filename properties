@@ -36,8 +36,15 @@ PointSearch.icon=icons/60x60/point.gif
 PathSearch.icon=icons/path.gif
 
 ApplyButton.text=Utfør
+ApplyButton.icon=icons/
+FinishedButton.text=Ferdig
+FinishedButton.icon=icons/60x60/finish.gif
 OkButton.text=OK
+OkButton.icon=OK
 CancelButton.text=Avbryt
+CancelButton.icon=icons/60x60/abort.gif
+DeleteButton.text=Slett
+DeleteButton.icon=icons/60x60/delete.gif
 
 ToolCommandType.POI_TOOL.icon=icons/60x60/poi.gif
 ToolCommandType.FLANK_TOOL.icon=icons/60x60/edge.gif
