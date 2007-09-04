@@ -20,6 +20,8 @@ import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.SubMenuPanel;
 import org.redcross.sar.gui.TaskDialog;
 import org.redcross.sar.mso.data.ITaskIf;
+import org.redcross.sar.mso.data.ITaskIf.TaskStatus;
+import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
 
 /**
@@ -120,7 +122,9 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 	private void initTable()
 	{
 		m_taskTable = new JTable();
-		m_taskTable.setModel(new TaskTableModel(this, m_taskTable));
+		TaskTableModel model = new TaskTableModel(this, m_taskTable);
+		m_taskTable.setModel(model);
+		m_taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionListener(this, model));
 		
 		TableColumn column = m_taskTable.getColumnModel().getColumn(0);
 		column.setMaxWidth(75);
@@ -175,6 +179,7 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 		TaskDialog taskDialog = this.getApplication().getUIFactory().getTaskDialog();
 		taskDialog.setLocationRelativeTo(m_contentsPanel, DiskoDialog.POS_CENTER, false);
 		taskDialog.setVisible(true);
+		taskDialog.setTask(null);
 	}
 	
 	/**
@@ -188,6 +193,7 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 			TaskDialog taskDialog = this.getApplication().getUIFactory().getTaskDialog();
 			taskDialog.setLocationRelativeTo(m_contentsPanel, DiskoDialog.POS_CENTER, false);
 			taskDialog.setVisible(true);
+			taskDialog.setTask(m_currentTask);
 		}
 	}
 	
@@ -196,9 +202,13 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 	 */
 	private void deleteTask()
 	{
-		hideDialogs();
-		m_deleteTaskDialog.setLocationRelativeTo(m_contentsPanel, DiskoDialog.POS_CENTER, false);
-		m_deleteTaskDialog.setVisible(true);
+		if(m_currentTask != null)
+		{
+			hideDialogs();
+			m_deleteTaskDialog.setCurrentTask(m_currentTask);
+			m_deleteTaskDialog.setLocationRelativeTo(m_contentsPanel, DiskoDialog.POS_CENTER, false);
+			m_deleteTaskDialog.setVisible(true);
+		}
 	}
 	
 	/**
@@ -209,7 +219,14 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 	{
 		if(m_currentTask != null)
 		{
-			// TODO Set task status to performed
+			try
+			{
+				m_currentTask.setStatus(TaskStatus.FINISHED);
+			} 
+			catch (IllegalOperationException e)
+			{
+				e.printStackTrace();
+			}
 		}
 		hideDialogs();
 	}

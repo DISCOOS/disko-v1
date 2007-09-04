@@ -35,6 +35,7 @@ import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.TaskListImpl;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
+import org.redcross.sar.util.mso.DTG;
 import org.redcross.sar.util.mso.Selector;
 import org.redcross.sar.wp.logistics.UnitTableModel;
 
@@ -123,17 +124,17 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 		switch(column)
 		{
 		case 0:
-			return "1";
+			return task.getNumber();
 		case 1:
-			return "2";
+			return task.getPriorityState();
 		case 2:
-			return task.toString();
+			return task.getDescription();
 		case 3:
-			return "4";
+			return task.getResponsibleRole();
 		case 4:
-			return "5";
+			return DTG.CalToDTG(task.getDueTime());
 		case 5:
-			return "6";
+			return task.getStatus();
 		}
 		
 		return null;
@@ -213,6 +214,8 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
         	// Task pop-up menu
         	addMenuCheckBox(2, m_wpTasks.getText("AllRolesCheckBox.text"), ALL_TASKS_COMMAND, true);
         	addMenuCheckBox(2, m_wpTasks.getText("OwnTasksCheckBox.text"), OWN_TASKS_COMMAND, false);
+        	
+        	// Status pop-up menu
         }
         
         private void addMenuCheckBox(int menu, String label, String command, boolean selected)
@@ -257,4 +260,9 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
             return m_menus[realIndex];
 		}
     }
+
+	public ITaskIf getTask(int index)
+	{
+		return m_tasks.get(index);
+	}
 }

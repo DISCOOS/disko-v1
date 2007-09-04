@@ -118,6 +118,7 @@ public class DeleteTaskDialog extends DiskoDialog
 	 */
 	private void cancelDelete()
 	{
+		m_currentTask = null;
 		this.setVisible(false);
 	}
 	
@@ -128,8 +129,20 @@ public class DeleteTaskDialog extends DiskoDialog
 	{
 		if(m_currentTask != null)
 		{
-			// TODO Delete selected task
+			if(!m_currentTask.deleteObject())
+			{
+				System.err.println("Task not deleted");
+			}
+			else
+			{
+				m_currentTask = null;
+			}
 		}
 		this.setVisible(false);
+	}
+
+	public void setCurrentTask(ITaskIf task)
+	{
+		m_currentTask = task;
 	}
 }
