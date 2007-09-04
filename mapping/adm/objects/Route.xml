@@ -6,4 +6,7 @@
 <fact comp="n" edit="y" id="00000000178" label="Geodata" pos1="999" pos2="999" relTo="00000000176" version="1">
 <track_fact attached_to="" speed="0"/>
 </fact>
+<fact comp="n" edit="y" id="00000000179" label="AreaSequenceNumber" pos1="999" pos2="999" relTo="00000000176" version="1">
+<num_fact antdec="0" max="1.0E8" min="0.0"/>
+</fact>
 </object>

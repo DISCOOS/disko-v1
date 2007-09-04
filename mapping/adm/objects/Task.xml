@@ -1,12 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<object id="00000000216" name="Task" objectType="test" pos="32">
-<fact comp="n" edit="y" id="00000000217" label="TimeStamp" pos1="999" pos2="999" relTo="00000000216" version="1">
+<object id="00000000217" name="Task" objectType="test" pos="32">
+<fact comp="n" edit="y" id="00000000218" label="TimeStamp" pos1="999" pos2="999" relTo="00000000217" version="1">
 <date_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000218" label="Visible" pos1="999" pos2="999" relTo="00000000216" version="1">
+<fact comp="n" edit="y" id="00000000219" label="Visible" pos1="999" pos2="999" relTo="00000000217" version="1">
 <num_fact antdec="0" max="1.0" min="0.0"/>
 </fact>
-<fact comp="n" edit="y" id="00000000219" label="DueTime" pos1="999" pos2="999" relTo="00000000216" version="1">
+<fact comp="n" edit="y" id="00000000220" label="Number" pos1="999" pos2="999" relTo="00000000217" version="1">
+<num_fact antdec="0" max="1.0E8" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000221" label="Progress" pos1="999" pos2="999" relTo="00000000217" version="1">
+<num_fact antdec="0" max="1.0E8" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000222" label="ResponsibleRole" pos1="999" pos2="999" relTo="00000000217" version="1">
+<str_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000223" label="TaskText" pos1="999" pos2="999" relTo="00000000217" version="1">
+<str_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000224" label="DueTime" pos1="999" pos2="999" relTo="00000000217" version="1">
 <date_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000225" label="Priority" pos1="999" pos2="999" relTo="00000000217" version="1">
+<str_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000226" label="Description" pos1="999" pos2="999" relTo="00000000217" version="1">
+<str_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000227" label="Status" pos1="999" pos2="999" relTo="00000000217" version="1">
+<str_fact/>
 </fact>
 </object>

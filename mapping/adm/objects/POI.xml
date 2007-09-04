@@ -3,7 +3,7 @@
 <fact comp="n" edit="y" id="00000000172" label="Remarks" pos1="999" pos2="999" relTo="00000000171" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000173" label="SearchSequence" pos1="999" pos2="999" relTo="00000000171" version="1">
+<fact comp="n" edit="y" id="00000000173" label="AreaSequenceNumber" pos1="999" pos2="999" relTo="00000000171" version="1">
 <num_fact antdec="0" max="1.0E8" min="0.0"/>
 </fact>
 <fact comp="n" edit="y" id="00000000174" label="Position" pos1="999" pos2="999" relTo="00000000171" version="1">
