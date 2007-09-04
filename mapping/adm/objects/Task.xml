@@ -30,4 +30,7 @@
 <fact comp="n" edit="y" id="00000000227" label="Status" pos1="999" pos2="999" relTo="00000000217" version="1">
 <str_fact/>
 </fact>
+<fact comp="n" edit="y" id="00000000228" label="Type" pos1="999" pos2="999" relTo="00000000217" version="1">
+<str_fact/>
+</fact>
 </object>
