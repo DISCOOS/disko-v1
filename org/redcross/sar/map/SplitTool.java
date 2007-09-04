@@ -7,13 +7,13 @@ import com.esri.arcgis.interop.AutomationException;
 import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.MsoFeatureClass;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
+import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.mso.data.IAreaIf;
-import org.redcross.sar.util.mso.GeoList;
-import org.redcross.sar.util.mso.IGeodataIf;
+import org.redcross.sar.mso.data.ICmdPostIf;
+import org.redcross.sar.mso.data.IRouteIf;
 
 import java.awt.*;
 import java.io.IOException;
-import java.util.Vector;
 
 /**
  * A custom draw tool.
@@ -60,12 +60,17 @@ public class SplitTool extends AbstractCommandTool {
 					if (subGeom instanceof Polyline) {
 						Polyline[] result = split((Polyline)subGeom, p);
 						IAreaIf area = (IAreaIf)editFeature.getMsoObject();
-						GeoList clone = cloneGeoList(area.getGeodata());
-						((Vector<IGeodataIf>)clone.getPositions()).set(index,
-								MapUtil.getMsoRoute(result[0]));
-						clone.add(MapUtil.getMsoRoute(result[1]));
-						area.setGeodata(clone);
-					}
+//						GeoList clone = cloneGeoList(area.getGeodata());
+//						((Vector<IGeodataIf>)clone.getPositions()).set(index,
+//								MapUtil.getMsoRoute(result[0]));
+//						clone.add(MapUtil.getMsoRoute(result[1]));
+//						area.setGeodata(clone);
+                        ICmdPostIf cmdPost = MsoModelImpl.getInstance().getMsoManager().getCmdPost();      // todo sjekk etter endring av GeoCollection
+                        IRouteIf route = cmdPost.getRouteList().createRoute(MapUtil.getMsoRoute(result[0]));
+                        area.setAreaGeodataItem(index,route);
+                        route = cmdPost.getRouteList().createRoute(MapUtil.getMsoRoute(result[1]));
+                        area.addAreaGeodata(route);
+                    }
 				}
 			}
 			else {

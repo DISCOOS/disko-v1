@@ -30,7 +30,7 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
     public enum AssignmentPriority
     {
         HIGH,
-        MEDIUM,
+        NORMAL,
         LOW
     }
 
@@ -80,7 +80,7 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
     public IAttributeIf.IMsoEnumIf<AssignmentType> getTypeAttribute();
 
     public String getTypeText();
-    
+
     public String getTypeAndNumber();
 
     /*-------------------------------------------------------------------------------------------

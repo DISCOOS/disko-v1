@@ -3,8 +3,10 @@ package org.redcross.sar.mso.data;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.util.mso.GeoList;
+import org.redcross.sar.util.mso.IGeodataIf;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 public interface IAreaIf extends IMsoObjectIf
 {
@@ -42,6 +44,10 @@ public interface IAreaIf extends IMsoObjectIf
 
     public void addAreaGeodata(IMsoObjectIf anMsoObjectIf);
 
+    public void addAreaGeodata(int aNr, IMsoObjectIf anMsoObjectIf);
+
+    void setAreaGeodataItem(int index, IMsoObjectIf anMsoObjectIf);
+
     public IMsoListIf<IMsoObjectIf> getAreaGeodata();
 
     public IMsoModelIf.ModificationState getAreaGeodataState(IMsoObjectIf anMsoObjectIf);
@@ -61,4 +67,8 @@ public interface IAreaIf extends IMsoObjectIf
      * @throws IllegalOperationException If the assignment cannot be done (verification failed).
      */
     public void verifyAssignable(IAssignmentIf anAssignment) throws IllegalOperationException;
+
+    public IMsoObjectIf getGeodataAt(int anIndex);
+
+    public Iterator<IGeodataIf> getAreaGeodataIterator();
 }

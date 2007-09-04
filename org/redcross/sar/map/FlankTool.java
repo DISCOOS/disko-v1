@@ -11,6 +11,8 @@ import org.redcross.sar.map.feature.FlankFeature;
 import org.redcross.sar.map.feature.MsoFeatureClass;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.mso.data.IAreaIf;
+import org.redcross.sar.mso.data.IMsoObjectIf;
+import org.redcross.sar.mso.data.IRouteIf;
 import org.redcross.sar.util.mso.GeoList;
 import org.redcross.sar.util.mso.IGeodataIf;
 import org.redcross.sar.util.mso.Route;
@@ -62,14 +64,19 @@ public class FlankTool extends AbstractCommandTool {
 			int index = getGeomIndex(geomBag, p);
 			if (index > -1) {
 				IAreaIf area = (IAreaIf)flankFeature.getMsoObject();
-				GeoList geoList = area.getGeodata();
-				Route route = getRouteAt(geoList, index);
-				if (route != null) {
-					route.setLayout(getLayout());
-					flankFeature.msoGeometryChanged();
-					map.partialRefresh(editLayer, null);
-				}
-			}
+//CMR			GeoList geoList = area.getGeodata();
+//CMR			Route route = getRouteAt(geoList, index);
+				IMsoObjectIf msoObject = area.getGeodataAt(index);         // todo sjekk etter endring av GeoCollection
+                if (msoObject != null && msoObject instanceof IRouteIf)
+                {
+                    Route route = ((IRouteIf)msoObject).getGeodata();
+                    if (route != null) {
+	    				route.setLayout(getLayout());
+		    			flankFeature.msoGeometryChanged();
+			    		map.partialRefresh(editLayer, null);
+				    }
+                }
+            }
 		}
 	}
 

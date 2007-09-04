@@ -9,7 +9,6 @@ import org.redcross.sar.map.MapUtil;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.*;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
-import org.redcross.sar.util.mso.GeoList;
 import org.redcross.sar.util.mso.IGeodataIf;
 import org.redcross.sar.util.mso.Route;
 
@@ -20,8 +19,9 @@ public class PlannedAreaFeature extends AbstractMsoFeature {
 
 	private static final long serialVersionUID = 1L;
 
-	private GeoList geoList = null;
-	private IMsoModelIf msoModel = null;
+//CMR	private GeoList geoList = null;
+    private IMsoListIf<IMsoObjectIf>  geoList = null;
+    private IMsoModelIf msoModel = null;
 
 	public PlannedAreaFeature(IMsoModelIf msoModel) {
 		this.msoModel = msoModel;
@@ -33,15 +33,19 @@ public class PlannedAreaFeature extends AbstractMsoFeature {
 	}
 
 	@Override
-	public void msoGeometryChanged() throws IOException, AutomationException {
+    public void msoGeometryChanged() throws IOException, AutomationException {       // todo sjekk etter endring av GeoCollection
 		if (srs == null) return;
 		IAreaIf area = (IAreaIf)msoObject;
-		geoList = area.getGeodata();
-		if (geoList != null) {
+//CMR		geoList = area.getGeodata();
+//CMR      if (geoList != null) {
+        geoList = area.getAreaGeodata();
+        if (geoList != null && geoList.size() > 0) {
 			GeometryBag geomBag = new GeometryBag();
-			Iterator iter = geoList.getPositions().iterator();
-			while (iter.hasNext()) {
-				IGeodataIf geodata = (IGeodataIf) iter.next();
+//CMR			Iterator iter = geoList.getPositions().iterator();
+            Iterator<IGeodataIf> iter = area.getAreaGeodataIterator();
+            while (iter.hasNext()) {
+//CMR				IGeodataIf geodata = (IGeodataIf) iter.next();
+				IGeodataIf geodata = iter.next();
 				if (geodata instanceof Route) {
 					Polyline polyline = MapUtil.getEsriPolyline((Route)geodata, srs);
 					geomBag.addGeometry(polyline, null, null);
@@ -60,8 +64,10 @@ public class PlannedAreaFeature extends AbstractMsoFeature {
 	}
 
 	public int getGeodataCount() {
-		return geoList != null ? geoList.getPositions().size() : 0;
-	}
+//CMR		return geoList != null ? geoList.getPositions().size() : 0;
+        return geoList != null ? geoList.size() : 0;                      // todo sjekk etter endring av GeoCollection
+
+    }
 
 	public void updateAreaPOIs() throws IOException, AutomationException {
 		IAreaIf area = (IAreaIf)msoObject;

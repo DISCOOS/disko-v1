@@ -2,10 +2,10 @@ package org.redcross.sar.util;
 
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.IAssignmentIf;
+import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IUnitIf;
-import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
 import org.redcross.sar.mso.data.IUnitIf.UnitStatus;
 import org.redcross.sar.util.except.IllegalOperationException;
 
@@ -110,7 +110,7 @@ public class AssignmentTransferUtilities
         {
             if (t.ordinal() >= firstLineType.ordinal() && t.ordinal() <= lastLineType.ordinal())
             {
-                IMessageLineIf line = message.findMessageLine(t, true);
+                IMessageLineIf line = message.findMessageLine(t, anAssignment, true);
                 if (line != null)
                 {
                     line.setOperationTime(aDTG);
@@ -224,42 +224,42 @@ public class AssignmentTransferUtilities
     	try
 		{
 			assignment.setStatusAndOwner(AssignmentStatus.ASSIGNED, unit);
-		} 
+		}
     	catch (IllegalOperationException e1)
 		{
 			e1.printStackTrace();
 			return false;
 		}
-    	
+
     	unit.setStatus(UnitStatus.INITIALIZING);
     	unit.getAssignedAssignments().add(assignment);
-    	
+
     	return true;
     }
-    
+
     /**
      * Starts an assignment, updates unit and assignment status
-     * @param unit 
+     * @param unit
      * @param assignment
      * @return Whether or not the assignment could be started
      */
     public static boolean unitStartAssignment(IUnitIf unit, IAssignmentIf assignment)
-    {   	
+    {
     	try
 		{
 			unit.addUnitAssignment(assignment, AssignmentStatus.EXECUTING);
-		} 
+		}
     	catch (IllegalOperationException e)
 		{
 			e.printStackTrace();
 			return false;
 		}
-		
+
 		unit.setStatus(UnitStatus.WORKING);
-    	
+
     	return true;
     }
-    
+
     /**
      * Marks an assignment as completed. Unit and assignment statuses are updated
      * @param unit
@@ -271,11 +271,11 @@ public class AssignmentTransferUtilities
     	try
 		{
 			assignment.setStatusAndOwner(AssignmentStatus.FINISHED, unit);
-		} 
+		}
     	catch (IllegalOperationException e){return false;}
-    	
+
     	unit.setStatus(UnitStatus.READY);
-    	
+
     	return true;
     }
 }

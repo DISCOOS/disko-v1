@@ -4,6 +4,7 @@ import org.redcross.sar.mso.IMsoModelIf;
 
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.List;
 
 public interface IMessageIf extends ITimeItemIf, ISerialNumberedIf
 {
@@ -140,7 +141,6 @@ public interface IMessageIf extends ITimeItemIf, ISerialNumberedIf
 
 	public ICommunicatorIf getSingleReceiver();
 
-
     /**
      * Find a (optionally create a new) message line of given type.
      *
@@ -149,6 +149,25 @@ public interface IMessageIf extends ITimeItemIf, ISerialNumberedIf
      * @return Actual line if found or created, otherwise null.
      */
     public IMessageLineIf findMessageLine(IMessageLineIf.MessageLineType aType, boolean makeNewLine);
+
+
+    /**
+     * Find a (optionally create a new) message line of given type (and corresponding assignment for certain line types).
+     *
+     * @param aType       Type of line to create.
+     * @param anAssignment Associated assigment for certain line types.
+     * @param makeNewLine If set, create a new line if non-existing.
+     * @return Actual line if found or created, otherwise null.
+     */
+    public IMessageLineIf findMessageLine(IMessageLineIf.MessageLineType aType, IAssignmentIf anAssignment, boolean makeNewLine);
+
+    /**
+     * Get all message lines of a given type.
+     *
+     * @param aType       Type of line to create.
+     * @return List of lines, sorted by line number.
+     */
+    public List<IMessageLineIf> getTypeMessageLines(IMessageLineIf.MessageLineType aType);
 
     /**
      * Delete a line

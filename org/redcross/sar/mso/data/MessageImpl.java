@@ -34,12 +34,12 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
 
     public static String getText(String aKey)
     {
-        return Internationalization.getFullBundleText(bundle,aKey);
+        return Internationalization.getFullBundleText(bundle, aKey);
     }
 
     public String getStatusText()
     {
-        return Internationalization.getEnumText(bundle,getStatus());
+        return Internationalization.getEnumText(bundle, getStatus());
     }
 
     public MessageImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
@@ -423,17 +423,17 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
     }
 
     public ICommunicatorIf getSingleReceiver()
-	{
-		return m_confirmedReceivers.getItem();
-	}
+    {
+        return m_confirmedReceivers.getItem();
+    }
 
-	public void setSingleReceiver(ICommunicatorIf communicator)
-	{
-		m_broadcast.set(false);
-		m_unconfirmedReceivers.clear();
-		m_confirmedReceivers.clear();
-		m_confirmedReceivers.add(communicator);
-	}
+    public void setSingleReceiver(ICommunicatorIf communicator)
+    {
+        m_broadcast.set(false);
+        m_unconfirmedReceivers.clear();
+        m_confirmedReceivers.clear();
+        m_confirmedReceivers.add(communicator);
+    }
 
     private int getNextLineNumber()
     {
@@ -512,30 +512,57 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
         return retVal;
     }
 
+    private static EnumSet<IMessageLineIf.MessageLineType> assignmentLines = EnumSet.of(MessageLineImpl.MessageLineType.ASSIGNED,
+            MessageLineImpl.MessageLineType.STARTED, MessageLineImpl.MessageLineType.COMPLETE);
+
     public IMessageLineIf findMessageLine(IMessageLineIf.MessageLineType aType, boolean makeNewLine)
+    {
+        return findMessageLine(aType, null, makeNewLine);
+    }
+
+
+    public IMessageLineIf findMessageLine(IMessageLineIf.MessageLineType aType, IAssignmentIf anAssignment, boolean makeNewLine)
     {
         for (IMessageLineIf ml : m_messageLines.getItems())
         {
             if (ml.getLineType() == aType)
             {
-                return ml;
+                if (assignmentLines.contains(ml.getLineType()))
+                {
+                    if (anAssignment == ml.getLineAssignment())
+                    {
+                        return ml;
+                    }
+                } else
+                {
+                    return ml;
+                }
             }
         }
         if (makeNewLine)
         {
-            return createMessageLine(aType);
+            IMessageLineIf retVal = createMessageLine(aType);
+            retVal.setLineAssignment(anAssignment);
+            return retVal;
         }
         return null;
     }
 
+    public List<IMessageLineIf> getTypeMessageLines(IMessageLineIf.MessageLineType aType)
+    {
+        m_lineTypeSelector.setLineType(aType);
+        return m_messageLines.selectItems(m_lineTypeSelector, m_lineNumberComparator);
+    }
+
+
     public String[] getLines()
     {
-    	List<IMessageLineIf> lines =  m_messageLines.selectItems(m_messageLineSelector,m_lineNumberComparator);
-    	int numLines = lines.size();
+        List<IMessageLineIf> lines = m_messageLines.selectItems(m_messageLineSelector, m_lineNumberComparator);
+        int numLines = lines.size();
         String[] lineArray = new String[numLines];
-        for(int i=0; i<numLines; i++)
+        for (int i = 0; i < numLines; i++)
         {
-        	lineArray[i] = lines.get(i).toString();
+            lineArray[i] = lines.get(i).toString();
         }
         return lineArray;
     }
@@ -553,6 +580,38 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
         public int compare(IMessageLineIf m1, IMessageLineIf m2)
         {
             return m1.getLineNumber() - m2.getLineNumber();
+        }
+    };
+
+    private Selector<IMessageLineIf> m_typeSelector = new Selector<IMessageLineIf>()
+    {
+       private IMessageLineIf.MessageLineType m_testLineType;
+
+        public void setLineType(IMessageLineIf.MessageLineType aLineType)
+        {
+            m_testLineType = aLineType;
+        }
+
+        public boolean select(IMessageLineIf anObject)
+        {
+            return anObject.getLineType() == m_testLineType;
+        }
+    };
+
+    private final typeSelector m_lineTypeSelector = new typeSelector();
+
+    private class typeSelector implements Selector<IMessageLineIf>
+    {
+       private IMessageLineIf.MessageLineType m_testLineType;
+
+        void setLineType(IMessageLineIf.MessageLineType aLineType)
+        {
+            m_testLineType = aLineType;
+        }
+
+        public boolean select(IMessageLineIf anObject)
+        {
+            return anObject.getLineType() == m_testLineType;
         }
     };
 }

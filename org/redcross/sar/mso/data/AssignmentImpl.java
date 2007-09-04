@@ -195,6 +195,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
 
         if (aUnit != null)
         {
+            // todo 21.08.07 Change unit status, use method in AssignmentTransferUtilities
             if (changeOwner)
             {
                 aUnit.addUnitReference(this);
@@ -281,7 +282,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
     {
         return getEnumText(getType());
     }
-    
+
     public String getTypeAndNumber()
     {
     	return getTypeText() + " " + getNumber();

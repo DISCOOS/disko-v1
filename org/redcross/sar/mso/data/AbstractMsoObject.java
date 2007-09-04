@@ -867,6 +867,9 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
     }
 
+    /**
+     * Selector where selection is based on comparisons with a specific object
+     */
     public abstract static class SelfSelector<T extends IMsoObjectIf, M extends IMsoObjectIf> implements Selector<M>
     {
         T m_object;

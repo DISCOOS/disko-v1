@@ -137,7 +137,8 @@ public class SaraObjectCreator
       {
          //Ignore DTG, type Long and references to other mso objects handled by named reference
          if (field[0].equals("")||field[0].equals("DTG") && field[1].equals("java.lang.Long")||
-               (field[1].startsWith("org.redcross.sar.mso.data.I")&& field[1].endsWith("If")))
+               (field[1].startsWith("org.redcross.sar.mso.data.I")&& field[1].endsWith("If"))||
+                 field[1].endsWith("Enum"))
          {
             continue;
          }
@@ -226,6 +227,7 @@ public class SaraObjectCreator
       {
          return createStringFact(objId, name);
       }
+
       else if (type.equalsIgnoreCase("java.util.Calendar"))
       {
          return createDateFact(objId, name);

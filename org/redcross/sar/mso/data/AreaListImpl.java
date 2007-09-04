@@ -1,10 +1,7 @@
 package org.redcross.sar.mso.data;
 
-import org.redcross.sar.util.except.DuplicateIdException;
-
 public class AreaListImpl extends MsoListImpl<IAreaIf> implements IAreaListIf
 {
-
     public AreaListImpl(IMsoObjectIf anOwner, String theName, boolean isMain)
     {
         super(anOwner, theName, isMain);
@@ -27,6 +24,4 @@ public class AreaListImpl extends MsoListImpl<IAreaIf> implements IAreaListIf
         IAreaIf retVal = getItem(anObjectId);
         return retVal != null ? retVal : createdItem(new AreaImpl(anObjectId));
     }
-
-
 }

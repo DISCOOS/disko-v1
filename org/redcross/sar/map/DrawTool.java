@@ -1,31 +1,6 @@
 package org.redcross.sar.map;
 
-import java.awt.Toolkit;
-import java.io.IOException;
-import java.util.ArrayList;
-
-import org.redcross.sar.app.IDiskoApplication;
-import org.redcross.sar.gui.DiskoDialog;
-import org.redcross.sar.gui.DrawDialog;
-import org.redcross.sar.map.index.IndexedGeometry;
-import org.redcross.sar.map.layer.IMsoFeatureLayer;
-import org.redcross.sar.map.layer.OperationAreaLayer;
-import org.redcross.sar.mso.IMsoManagerIf;
-import org.redcross.sar.mso.data.IAreaIf;
-import org.redcross.sar.mso.data.IAreaListIf;
-import org.redcross.sar.mso.data.ICmdPostIf;
-import org.redcross.sar.mso.data.IMsoObjectIf;
-import org.redcross.sar.mso.data.IOperationAreaIf;
-import org.redcross.sar.mso.data.IOperationAreaListIf;
-import org.redcross.sar.mso.data.ISearchAreaIf;
-import org.redcross.sar.mso.data.ISearchAreaListIf;
-import org.redcross.sar.util.mso.GeoList;
-
-import com.esri.arcgis.carto.IBasicMap;
-import com.esri.arcgis.carto.IFeatureLayer;
-import com.esri.arcgis.carto.ILayer;
-import com.esri.arcgis.carto.IMap;
-import com.esri.arcgis.carto.InvalidArea;
+import com.esri.arcgis.carto.*;
 import com.esri.arcgis.controls.IMapControlEvents2Adapter;
 import com.esri.arcgis.controls.IMapControlEvents2OnAfterScreenDrawEvent;
 import com.esri.arcgis.controls.IMapControlEvents2OnExtentUpdatedEvent;
@@ -34,16 +9,22 @@ import com.esri.arcgis.display.IScreenDisplay;
 import com.esri.arcgis.display.RgbColor;
 import com.esri.arcgis.display.SimpleLineSymbol;
 import com.esri.arcgis.display.esriScreenCache;
-import com.esri.arcgis.geometry.Envelope;
-import com.esri.arcgis.geometry.GeometryBag;
-import com.esri.arcgis.geometry.IGeometry;
-import com.esri.arcgis.geometry.IPoint;
-import com.esri.arcgis.geometry.ISegmentGraphCursor;
+import com.esri.arcgis.geometry.*;
 import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.geometry.Polygon;
-import com.esri.arcgis.geometry.Polyline;
-import com.esri.arcgis.geometry.SegmentGraph;
 import com.esri.arcgis.interop.AutomationException;
+import org.redcross.sar.app.IDiskoApplication;
+import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.gui.DrawDialog;
+import org.redcross.sar.map.index.IndexedGeometry;
+import org.redcross.sar.map.layer.IMsoFeatureLayer;
+import org.redcross.sar.map.layer.OperationAreaLayer;
+import org.redcross.sar.mso.IMsoManagerIf;
+import org.redcross.sar.mso.data.*;
+
+import java.awt.*;
+import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * A custom draw tool.
@@ -182,15 +163,17 @@ public class DrawTool extends AbstractCommandTool {
 			searchArea.setGeodata(MapUtil.getMsoPolygon(polygon));
 			msoObj = searchArea;
 		}
-		else if (msoClassCode == IMsoManagerIf.MsoClassCode.CLASSCODE_AREA) {
+		else if (msoClassCode == IMsoManagerIf.MsoClassCode.CLASSCODE_AREA) {     // todo sjekk etter endring av GeoCollection
 			if (area == null) {
 				IAreaListIf areaList = cmdPost.getAreaList();
 				area = areaList.createArea();
-				area.setGeodata(new GeoList(null));
+//CMR				area.setGeodata(new GeoList(null));
 			}
-			GeoList clone = cloneGeoList(area.getGeodata());
-			clone.add(MapUtil.getMsoRoute(polyline));
-			area.setGeodata(clone);
+//CMR			GeoList clone = cloneGeoList(area.getGeodata());
+//CMR			clone.add(MapUtil.getMsoRoute(polyline));
+//CMR			area.setGeodata(clone);
+            IRouteIf route = cmdPost.getRouteList().createRoute(MapUtil.getMsoRoute(polyline));
+            area.addAreaGeodata(route);
 			msoObj = area;
 		}
 		map.setSelected(msoObj, true);

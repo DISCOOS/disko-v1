@@ -797,7 +797,7 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
             E anEnum = enumValue(aName);
             if (anEnum == null)
             {
-                //throw new MsoException("Cannot set enum value " + aName + " to " + this);
+                //throw new MsoException("Cannot set enum value " + aName + " to " + this); // todo sjekk !!!!!
             }
             super.setAttrValue(enumValue(aName));
         }

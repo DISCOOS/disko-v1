@@ -165,7 +165,6 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
 
     private String hoursSince(Calendar aTime)
     {
-        String time;
         if (aTime != null)
         {
             Calendar now = Calendar.getInstance();

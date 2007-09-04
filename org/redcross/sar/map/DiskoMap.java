@@ -1,12 +1,17 @@
 package org.redcross.sar.map;
 
-import java.io.IOException;
-import java.util.EnumSet;
-import java.util.List;
-
-import javax.swing.SwingUtilities;
-import javax.swing.border.SoftBevelBorder;
-
+import com.esri.arcgis.beans.map.MapBean;
+import com.esri.arcgis.carto.*;
+import com.esri.arcgis.controls.IMapControlEvents2Adapter;
+import com.esri.arcgis.controls.IMapControlEvents2OnMapReplacedEvent;
+import com.esri.arcgis.geodatabase.Feature;
+import com.esri.arcgis.geodatabase.IEnumIDs;
+import com.esri.arcgis.geodatabase.IFeature;
+import com.esri.arcgis.geodatabase.QueryFilter;
+import com.esri.arcgis.geometry.Envelope;
+import com.esri.arcgis.geometry.IEnvelope;
+import com.esri.arcgis.interop.AutomationException;
+import com.esri.arcgis.systemUI.ITool;
 import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.MsoFeatureClass;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
@@ -18,36 +23,25 @@ import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
 
-import com.esri.arcgis.beans.map.MapBean;
-import com.esri.arcgis.carto.FeatureLayer;
-import com.esri.arcgis.carto.IFeatureLayer;
-import com.esri.arcgis.carto.ILayer;
-import com.esri.arcgis.carto.IMap;
-import com.esri.arcgis.carto.esriViewDrawPhase;
-import com.esri.arcgis.controls.IMapControlEvents2Adapter;
-import com.esri.arcgis.controls.IMapControlEvents2OnMapReplacedEvent;
-import com.esri.arcgis.geodatabase.Feature;
-import com.esri.arcgis.geodatabase.IEnumIDs;
-import com.esri.arcgis.geodatabase.IFeature;
-import com.esri.arcgis.geodatabase.QueryFilter;
-import com.esri.arcgis.geometry.Envelope;
-import com.esri.arcgis.geometry.IEnvelope;
-import com.esri.arcgis.interop.AutomationException;
-import com.esri.arcgis.systemUI.ITool;
+import javax.swing.*;
+import javax.swing.border.SoftBevelBorder;
+import java.io.IOException;
+import java.util.EnumSet;
+import java.util.List;
 
 /**
- * This calls extends AbstractDiskoApUi to provide userinterface for all map 
+ * This calls extends AbstractDiskoApUi to provide userinterface for all map
  * related tasks (arbeidsprosesser)
  * @author geira
  *
  */
 public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateListenerIf {
-	
+
 	private static final long serialVersionUID = 1L;
 	private String mxdDoc = null;
 	private IDiskoMapManager mapManager = null;
 	private MsoLayerSelectionModel msoLayerSelectionModel = null;
-	private WMSLayerSelectionModel wmsLayerSelectionModel = null;	
+	private WMSLayerSelectionModel wmsLayerSelectionModel = null;
 	private DefaultMapLayerSelectionModel defaultMapLayerSelectionModel = null;
 	private IDiskoTool currentTool = null;
 	private boolean supressDrawing = false;
@@ -56,30 +50,32 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	/**
 	 * Default constructor
 	 */
-	public DiskoMap(String mxdDoc, IDiskoMapManager mapManager, IMsoModelIf msoModel)  
+	public DiskoMap(String mxdDoc, IDiskoMapManager mapManager, IMsoModelIf msoModel)
 			throws IOException, AutomationException {
 		this.mxdDoc = mxdDoc;
 		this.mapManager = mapManager;
-		
+
 		myInterests = EnumSet.of(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
 		myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA);
 		myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA);
 		myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_POI);
+        myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_ROUTE);
+        myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_TRACK);
 		IMsoEventManagerIf msoEventManager = msoModel.getEventManager();
 		msoEventManager.addClientUpdateListener(this);
 		initialize();
 	}
-	
+
 	private void initialize() throws IOException, AutomationException {
-		setName("diskoMap");			
+		setName("diskoMap");
 		setShowScrollbars(false);
 		setBorderStyle(com.esri.arcgis.controls.esriControlsBorderStyle.esriNoBorder);
 		setBorder(new SoftBevelBorder(SoftBevelBorder.LOWERED));
-        
+
         //setDocumentFilename(mxdDoc);
 		loadMxFile(mxdDoc, null, null);
 		initLayers();
-			
+
 		// listen to do actions when the map is loaded
 		addIMapControlEvents2Listener(new IMapControlEvents2Adapter() {
 			private static final long serialVersionUID = 1L;
@@ -89,7 +85,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 			}
 		});
 	}
-	
+
 	private void initLayers() throws java.io.IOException, AutomationException {
 		// add custom layers
 		IMap focusMap = getActiveView().getFocusMap();
@@ -101,8 +97,8 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 			layer.setCached(true);
 		}
 		// reactivate
-		/*getActiveView().deactivate();			
-				getActiveView().activate(getHWnd());			
+		/*getActiveView().deactivate();
+				getActiveView().activate(getHWnd());
 				getActiveView().refresh();*/
 
 		// set all featurelayers not selectabel
@@ -116,7 +112,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 			}
 		}
 	}
-	
+
 	public void handleMsoUpdateEvent(Update e) {
 		if (supressDrawing) {
 			return;
@@ -128,7 +124,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 			partialRefresh(flayer, null);
 		}
 	}
-	
+
 	public void refreshMsoLayers() {
 		List msoLayers = mapManager.getMsoLayers();
 		for (int i = 0; i < msoLayers.size(); i++) {
@@ -138,7 +134,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 			}
 		}
 	}
-	
+
 	public void refreshMsoLayers(IMsoManagerIf.MsoClassCode classCode) {
 		List msoLayers = mapManager.getMsoLayers(classCode);
 		for (int i = 0; i < msoLayers.size(); i++) {
@@ -148,96 +144,96 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 			}
 		}
 	}
-	
+
 	public void setSupressDrawing(boolean supress) {
 		supressDrawing = supress;
 	}
-	
+
 	public boolean hasInterestIn(IMsoObjectIf aMsoObject) {
 		return myInterests.contains(aMsoObject.getMsoClassCode());
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#setCurrentToolByRef(com.esri.arcgis.systemUI.ITool)
 	 */
-	public void setCurrentToolByRef(ITool tool) 
+	public void setCurrentToolByRef(ITool tool)
 			throws IOException, AutomationException {
 		super.setCurrentToolByRef(tool);
 		setActiveTool(tool);
 	}
-	
-	public void setActiveTool(ITool tool) 
+
+	public void setActiveTool(ITool tool)
 			throws IOException, AutomationException {
-		if (currentTool instanceof IDiskoTool && 
+		if (currentTool instanceof IDiskoTool &&
 				currentTool != null && tool != currentTool) {
 			currentTool.toolDeactivated();
 		}
 		if (tool instanceof IDiskoTool) {
 			currentTool = (IDiskoTool)tool;
 			currentTool.toolActivated();
-		}	
+		}
 		else {
 			currentTool = null;
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
 	 */
-	public void setMsoLayerSelectionModel() 
+	public void setMsoLayerSelectionModel()
 		throws IOException, AutomationException{
 		msoLayerSelectionModel = new MsoLayerSelectionModel(this);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
 	 */
-	public MsoLayerSelectionModel getMsoLayerSelectionModel() 
+	public MsoLayerSelectionModel getMsoLayerSelectionModel()
 			throws IOException, AutomationException {
 		if (msoLayerSelectionModel == null) {
 			msoLayerSelectionModel = new MsoLayerSelectionModel(this);
 		}
 		return msoLayerSelectionModel;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
 	 */
-	public void setWMSLayerSelectionModel()  
+	public void setWMSLayerSelectionModel()
 		throws IOException, AutomationException {
 		wmsLayerSelectionModel = new WMSLayerSelectionModel(this);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
 	 */
-	public WMSLayerSelectionModel getWMSLayerSelectionModel() 
+	public WMSLayerSelectionModel getWMSLayerSelectionModel()
 			throws IOException, AutomationException {
 		if (wmsLayerSelectionModel == null) {
 			wmsLayerSelectionModel = new WMSLayerSelectionModel(this);
 		}
 		return wmsLayerSelectionModel;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
 	 */
-	public void setDefaultMapLayerSelectionModel()   
+	public void setDefaultMapLayerSelectionModel()
 		throws IOException, AutomationException {
 		defaultMapLayerSelectionModel = new DefaultMapLayerSelectionModel(this);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()
 	 */
-	public DefaultMapLayerSelectionModel getDefaultMapLayerSelectionModel() 
+	public DefaultMapLayerSelectionModel getDefaultMapLayerSelectionModel()
 			throws IOException, AutomationException {
 		if (defaultMapLayerSelectionModel == null) {
 			defaultMapLayerSelectionModel = new DefaultMapLayerSelectionModel(this);
 		}
 		return defaultMapLayerSelectionModel;
 	}
-	
+
 	public IDiskoMapManager getMapManager() {
 		return mapManager;
 	}
@@ -263,11 +259,11 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 						oid = enumID.next();
 					}
 				}
-			}	
+			}
 		}
 		return selection;
 	}
-	
+
 	public IEnvelope getSelectionExtent() throws IOException, AutomationException {
 		Feature[] selection = getSelection();
 		if (selection != null && selection.length > 0) {
@@ -279,19 +275,19 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 		}
 		return null;
 	}
-	
+
 	public void zoomToSelected() throws IOException, AutomationException {
 		IEnvelope env = getSelectionExtent();
 		if (env != null) {
 			setExtent(env);
 		}
 	}
-	
+
 	public void zoomToFeature(IFeature feature) throws IOException, AutomationException {
 		setExtent(feature.getExtent());
 	}
-	
-	
+
+
 	public void zoomToMsoObject(IMsoObjectIf msoObject) throws IOException, AutomationException {
 		if (msoObject instanceof IAssignmentIf) {
 			IAssignmentIf assignment = (IAssignmentIf)msoObject;
@@ -316,8 +312,8 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 			}
 		}
 	}
-	
-	public void setSelected(IMsoObjectIf msoObject, boolean selected) 
+
+	public void setSelected(IMsoObjectIf msoObject, boolean selected)
 			throws IOException, AutomationException {
 		if (msoObject instanceof IAssignmentIf) {
 			IAssignmentIf assignment = (IAssignmentIf)msoObject;
@@ -334,19 +330,19 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 			}
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#setSelected(java.lang.String, java.lang.String, java.lang.Object)
 	 */
-	public void setSelected(String layerName, String fieldName, Object value) 
+	public void setSelected(String layerName, String fieldName, Object value)
 			throws IOException, AutomationException {
 		setSelected(getFeatureLayer(layerName), fieldName, value);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#setSelected(com.esri.arcgis.carto.FeatureLayer, java.lang.String, java.lang.Object)
 	 */
-	public void setSelected(FeatureLayer layer, String fieldName, Object value) 
+	public void setSelected(FeatureLayer layer, String fieldName, Object value)
 			throws IOException, AutomationException {
 		String whereclause = "\""+fieldName+"\"=";
 		if (value instanceof String) {
@@ -361,29 +357,29 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#setSelected(com.esri.arcgis.carto.FeatureLayer, java.lang.String)
 	 */
-	public void setSelected(FeatureLayer layer, String whereclause) 
+	public void setSelected(FeatureLayer layer, String whereclause)
 			throws IOException, AutomationException {
 		QueryFilter queryFilter = new QueryFilter();
 		queryFilter.setWhereClause(whereclause);
 		layer.selectFeatures(queryFilter,com.esri.arcgis.carto.
 				esriSelectionResultEnum.esriSelectionResultNew, false);
 	}
-	
-	
+
+
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#getFeatureLayer(java.lang.String)
 	 */
-	public FeatureLayer getFeatureLayer(String name) 
+	public FeatureLayer getFeatureLayer(String name)
 			throws IOException, AutomationException {
 		for (int i = 0; i < getLayerCount(); i++) {
 			ILayer layer = getLayer(i);
 			if (layer instanceof FeatureLayer && layer.getName().equals(name)) {
 				return (FeatureLayer)layer;
 			}
-		}	
+		}
 		return null;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#deleteSelected()
 	 */
@@ -393,7 +389,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 			selection[i].delete();
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#partialRefresh(com.esri.arcgis.geometry.IEnvelope)
 	 */

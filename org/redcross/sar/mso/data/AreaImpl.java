@@ -6,9 +6,10 @@ import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.mso.GeoList;
+import org.redcross.sar.util.mso.IGeodataIf;
+import org.redcross.sar.util.mso.Selector;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * Strip of field to search
@@ -162,33 +163,24 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
         return m_areaPOIs.getItems();
     }
 
-    public void addAreaGeodata(IMsoObjectIf anMsoObjectIf)
+
+    public void setAreaGeodataItem(int anIndex, IMsoObjectIf anMsoObjectIf)
     {
-        int nextNr = getNextGeodataSequenceNumber();
-
-        if (anMsoObjectIf instanceof IPOIIf)
+        IMsoObjectIf oldItem = getGeodataAt(anIndex);
+        if (oldItem != null)
         {
-            ((IPOIIf) anMsoObjectIf).setAreaSequenceNumber(nextNr);
-
-        } else if (anMsoObjectIf instanceof ITrackIf)
-        {
-            ((ITrackIf) anMsoObjectIf).setAreaSequenceNumber(nextNr);
-        } else if (anMsoObjectIf instanceof IRouteIf)
-        {
-            ((IRouteIf) anMsoObjectIf).setAreaSequenceNumber(nextNr);
-        } else
-        {
-            return;
+            m_areaGeodata.removeReference(oldItem);
         }
-        m_areaGeodata.add(anMsoObjectIf);
+        addAreaGeodata(anIndex, anMsoObjectIf);
     }
 
-    public void addAreaGeodata(IMsoObjectIf anMsoObjectIf, int aNr)
+    public void addAreaGeodata(IMsoObjectIf anMsoObjectIf)
     {
-        for (IMsoObjectIf objekt : getAreaGeodata().getItems())
-        {
-            
-        }
+        addAreaGeodata(getNextGeodataSequenceNumber(), anMsoObjectIf);
+    }
+
+    public void addAreaGeodata(int aNr, IMsoObjectIf anMsoObjectIf)
+    {
         if (setAreaSequenceNumber(anMsoObjectIf, aNr))
         {
             m_areaGeodata.add(anMsoObjectIf);
@@ -272,33 +264,83 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
 
     private int getNextGeodataSequenceNumber()
     {
-        int retVal = 0;
+        int retVal = -1;
         for (IMsoObjectIf ml : m_areaGeodata.getItems())
         {
-            if (ml instanceof IPOIIf)
+            int i = getAreaSequenceNumber(ml);
+
+            if (i > retVal)
             {
-                IPOIIf ml1 = (IPOIIf) ml;
-                if (ml1.getAreaSequenceNumber() > retVal)
-                {
-                    retVal = ml1.getAreaSequenceNumber();
-                }
-            } else if (ml instanceof ITrackIf)
-            {
-                ITrackIf ml1 = (ITrackIf) ml;
-                if (ml1.getAreaSequenceNumber() > retVal)
-                {
-                    retVal = ml1.getAreaSequenceNumber();
-                }
-            } else if (ml instanceof IRouteIf)
-            {
-                IRouteIf ml1 = (IRouteIf) ml;
-                if (ml1.getAreaSequenceNumber() > retVal)
-                {
-                    retVal = ml1.getAreaSequenceNumber();
-                }
+                retVal = i;
             }
         }
         return retVal + 1;
+    }
+
+    private int getAreaSequenceNumber(IMsoObjectIf ml)
+    {
+        if (ml instanceof IPOIIf)                   // todo sjekk etter endring av GeoCollection
+        {
+            IPOIIf ml1 = (IPOIIf) ml;
+            return ((IPOIIf) ml).getAreaSequenceNumber();
+        }
+        if (ml instanceof ITrackIf)
+        {
+            ITrackIf ml1 = (ITrackIf) ml;
+            return ml1.getAreaSequenceNumber();
+        }
+        if (ml instanceof IRouteIf)
+        {
+            IRouteIf ml1 = (IRouteIf) ml;
+            return ml1.getAreaSequenceNumber();
+        }
+        return 0;
+    }
+
+    public IMsoObjectIf getGeodataAt(int anIndex)
+    {
+        int i = 0;
+        for (IMsoObjectIf ml : m_areaGeodata.getItems())
+        {
+            if (getAreaSequenceNumber(ml) == anIndex)
+            {
+                return ml;
+            }
+        }
+        return null;
+    }
+
+    public Iterator<IGeodataIf> getAreaGeodataIterator()
+    {
+        List<IMsoObjectIf> x = m_areaGeodata.selectItems(new Selector<IMsoObjectIf>()
+        {
+            public boolean select(IMsoObjectIf anObject)
+            {
+                return true;
+            }
+        }, new Comparator<IMsoObjectIf>()
+        {
+            public int compare(IMsoObjectIf o1, IMsoObjectIf o2)
+            {
+                return getAreaSequenceNumber(o1) - getAreaSequenceNumber(o2);
+            }
+        });
+
+        List<IGeodataIf> y = new ArrayList<IGeodataIf>();
+        for (IMsoObjectIf m1 : x)
+        {
+            if (m1 instanceof IRouteIf)
+            {
+                y.add(((IRouteIf) m1).getGeodata());
+            } else if (m1 instanceof ITrackIf)
+            {
+                y.add(((ITrackIf) m1).getGeodata());
+            } else if (m1 instanceof IPOIIf)
+            {
+                y.add(((IPOIIf) m1).getPosition());
+            }
+        }
+        return y.iterator();
     }
 
 }

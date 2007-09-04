@@ -12,6 +12,7 @@ public class TrackImpl extends AbstractMsoObject implements ITrackIf
 {
     private final AttributeImpl.MsoTrack m_geodata = new AttributeImpl.MsoTrack(this, "Geodata");
     private final AttributeImpl.MsoString m_remarks = new AttributeImpl.MsoString(this, "Remarks");
+    private final AttributeImpl.MsoInteger m_areaSequenceNumber = new AttributeImpl.MsoInteger(this, "AreaSequenceNumber");
 
     public TrackImpl(IMsoObjectIf.IObjectIdIf anObjectId)
     {
@@ -28,6 +29,7 @@ public class TrackImpl extends AbstractMsoObject implements ITrackIf
     {
         addAttribute(m_geodata);
         addAttribute(m_remarks);
+        addAttribute(m_areaSequenceNumber);
     }
 
     protected void defineLists()
@@ -110,21 +112,21 @@ public class TrackImpl extends AbstractMsoObject implements ITrackIf
 
     public void setAreaSequenceNumber(int aNumber)
     {
-        //Todo change body of implemented methods use File | Settings | File Templates.
+        m_areaSequenceNumber.setValue(aNumber);
     }
 
     public int getAreaSequenceNumber()
     {
-        return 0;  //Todo change body of implemented methods use File | Settings | File Templates.
+        return m_areaSequenceNumber.intValue();
     }
 
     public IMsoModelIf.ModificationState getAreaSequenceNumberState()
     {
-        return null;  //Todo change body of implemented methods use File | Settings | File Templates.
+        return m_areaSequenceNumber.getState();
     }
 
     public IAttributeIf.IMsoIntegerIf getAreaSequenceNumberAttribute()
     {
-        return null;  //Todo change body of implemented methods use File | Settings | File Templates.
+        return m_areaSequenceNumber;
     }
 }

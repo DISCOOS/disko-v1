@@ -1,24 +1,6 @@
 package org.redcross.sar.wp.tactics;
 
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Point;
-import java.io.IOException;
-import java.util.Hashtable;
-import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSlider;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.border.BevelBorder;
-
+import com.esri.arcgis.interop.AutomationException;
 import org.redcross.sar.event.IMsoLayerEventListener;
 import org.redcross.sar.event.MsoLayerEvent;
 import org.redcross.sar.gui.DiskoDialog;
@@ -27,10 +9,15 @@ import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.mso.data.IAreaIf;
 import org.redcross.sar.mso.data.IAssignmentIf;
-import org.redcross.sar.mso.data.ISearchIf;
 import org.redcross.sar.mso.data.IAssignmentIf.AssignmentPriority;
+import org.redcross.sar.mso.data.ISearchIf;
 
-import com.esri.arcgis.interop.AutomationException;
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import java.awt.*;
+import java.io.IOException;
+import java.util.Hashtable;
+import java.util.List;
 
 public class SearchRequirementDialog extends DiskoDialog implements IMsoLayerEventListener {
 
@@ -48,8 +35,8 @@ public class SearchRequirementDialog extends DiskoDialog implements IMsoLayerEve
 	private JTabbedPane tabbedPane = null;  //  @jve:decl-index=0:visual-constraint="10,10"
 	private JTextField personelTextField = null;
 	private DiskoWpTacticsImpl wp = null;
-	
-	
+
+
 	public SearchRequirementDialog(DiskoWpTacticsImpl wp) {
 		super(wp.getApplication().getFrame());
 		this.wp = wp;
@@ -63,7 +50,7 @@ public class SearchRequirementDialog extends DiskoDialog implements IMsoLayerEve
 
 	/**
 	 * This method initializes this
-	 * 
+	 *
 	 */
 	private void initialize() {
 		try {
@@ -76,11 +63,11 @@ public class SearchRequirementDialog extends DiskoDialog implements IMsoLayerEve
 			//  Do Something
 		}
 	}
-	
+
 	/**
-	 * This method initializes tabbedPane	
-	 * 	
-	 * @return javax.swing.JTabbedPane	
+	 * This method initializes tabbedPane
+	 *
+	 * @return javax.swing.JTabbedPane
 	 */
 	private JTabbedPane getTabbedPane() {
 		if (tabbedPane == null) {
@@ -95,31 +82,31 @@ public class SearchRequirementDialog extends DiskoDialog implements IMsoLayerEve
 		}
 		return tabbedPane;
 	}
-	
+
 	public void reset() {
 		getAccuracyTextField().setText(null);
 		getPriorityTextField().setText(null);
 		getRemarksTextArea().setText(null);
 		getPersonelTextField().setText(null);
-		
+
 		getPrioritySlider().setValue(3);
 		getAccuracySlider().setValue(50);
 	}
-	
+
 	public int getAccuracy() {
 		return getAccuracySlider().getValue();
 	}
-	
+
 	public AssignmentPriority getPriority() {
 		int value = getPrioritySlider().getValue();
 		switch (value) {
 			case 1: return AssignmentPriority.LOW;
-			case 2: return AssignmentPriority.MEDIUM;
+			case 2: return AssignmentPriority.NORMAL;
 			case 3: return AssignmentPriority.HIGH;
 		}
 		return null;
 	}
-	
+
 	public int getPersonelNeed() {
 		try {
 			return Integer.parseInt(getPersonelTextField().getText());
@@ -128,39 +115,39 @@ public class SearchRequirementDialog extends DiskoDialog implements IMsoLayerEve
 		}
 		return 0;
 	}
-	
+
 	public String getRemarks() {
 		return getRemarksTextArea().getText();
 	}
-	
+
 	public void setAccuracy(int accuracy) {
 		getAccuracySlider().setValue(accuracy);
 	}
-	
+
 	public void setPriority(AssignmentPriority priority) {
 		if (priority == AssignmentPriority.LOW) {
 			getPrioritySlider().setValue(1);
 		}
-		else if (priority == AssignmentPriority.MEDIUM) {
+		else if (priority == AssignmentPriority.NORMAL) {
 			getPrioritySlider().setValue(2);
 		}
 		if (priority == AssignmentPriority.HIGH) {
 			getPrioritySlider().setValue(3);
 		}
 	}
-	
+
 	public void setPersonelNeed(int need) {
 		getPersonelTextField().setText(String.valueOf(need));
 	}
-	
+
 	public void setRemarks(String remarks) {
 		getRemarksTextArea().setText(remarks);
 	}
 
 	/**
-	 * This method initializes contentPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
+	 * This method initializes contentPanel
+	 *
+	 * @return javax.swing.JPanel
 	 */
 	private JPanel getContentPanel() {
 		if (contentPanel == null) {
@@ -245,9 +232,9 @@ public class SearchRequirementDialog extends DiskoDialog implements IMsoLayerEve
 	}
 
 	/**
-	 * This method initializes accuracySlider	
-	 * 	
-	 * @return javax.swing.JSlider	
+	 * This method initializes accuracySlider
+	 *
+	 * @return javax.swing.JSlider
 	 */
 	private JSlider getAccuracySlider() {
 		if (accuracySlider == null) {
@@ -274,11 +261,11 @@ public class SearchRequirementDialog extends DiskoDialog implements IMsoLayerEve
 		}
 		return accuracySlider;
 	}
-	
+
 	/**
-	 * This method initializes prioritySlider	
-	 * 	
-	 * @return javax.swing.JSlider	
+	 * This method initializes prioritySlider
+	 *
+	 * @return javax.swing.JSlider
 	 */
 	private JSlider getPrioritySlider() {
 		if (prioritySlider == null) {
@@ -314,9 +301,9 @@ public class SearchRequirementDialog extends DiskoDialog implements IMsoLayerEve
 	}
 
 	/**
-	 * This method initializes accuracyTextField	
-	 * 	
-	 * @return javax.swing.JTextField	
+	 * This method initializes accuracyTextField
+	 *
+	 * @return javax.swing.JTextField
 	 */
 	private JTextField getAccuracyTextField() {
 		if (accuracyTextField == null) {
@@ -333,9 +320,9 @@ public class SearchRequirementDialog extends DiskoDialog implements IMsoLayerEve
 	}
 
 	/**
-	 * This method initializes priorityTextField	
-	 * 	
-	 * @return javax.swing.JTextField	
+	 * This method initializes priorityTextField
+	 *
+	 * @return javax.swing.JTextField
 	 */
 	private JTextField getPriorityTextField() {
 		if (priorityTextField == null) {
@@ -350,11 +337,11 @@ public class SearchRequirementDialog extends DiskoDialog implements IMsoLayerEve
 		}
 		return priorityTextField;
 	}
-	
+
 	/**
-	 * This method initializes personelTextField	
-	 * 	
-	 * @return javax.swing.JTextField	
+	 * This method initializes personelTextField
+	 *
+	 * @return javax.swing.JTextField
 	 */
 	private JTextField getPersonelTextField() {
 		if (personelTextField == null) {
@@ -367,20 +354,20 @@ public class SearchRequirementDialog extends DiskoDialog implements IMsoLayerEve
 					}
 				});
 				personelTextField.addMouseListener(new java.awt.event.MouseAdapter() {
-					public void mouseClicked(java.awt.event.MouseEvent e) {					
+					public void mouseClicked(java.awt.event.MouseEvent e) {
 						if (e.getClickCount() == 2){
 							NumPadDialog npDialog = wp.getApplication().
 								getUIFactory().getNumPadDialog();
 							Point p = personelTextField.getLocationOnScreen();
 							p.setLocation(p.x + personelTextField.getWidth()-
 									npDialog.getWidth(), p.y-npDialog.getHeight()-2);
-							npDialog.setLocation(p);					
+							npDialog.setLocation(p);
 							npDialog.setTextField(personelTextField);
-							npDialog.setVisible(true);	
+							npDialog.setVisible(true);
 							fireDialogStateChanged();
 						}
 					}
-				});	
+				});
 			} catch (java.lang.Throwable e) {
 				// TODO: Something
 			}
@@ -389,9 +376,9 @@ public class SearchRequirementDialog extends DiskoDialog implements IMsoLayerEve
 	}
 
 	/**
-	 * This method initializes criticalQuestionsScrollPane	
-	 * 	
-	 * @return javax.swing.JScrollPane	
+	 * This method initializes criticalQuestionsScrollPane
+	 *
+	 * @return javax.swing.JScrollPane
 	 */
 	private JScrollPane getRemarksScrollPane() {
 		if (remarksScrollPane == null) {
@@ -406,9 +393,9 @@ public class SearchRequirementDialog extends DiskoDialog implements IMsoLayerEve
 	}
 
 	/**
-	 * This method initializes criticalQuestionsTextArea	
-	 * 	
-	 * @return javax.swing.JTextArea	
+	 * This method initializes criticalQuestionsTextArea
+	 *
+	 * @return javax.swing.JTextArea
 	 */
 	private JTextArea getRemarksTextArea() {
 		if (remarksTextArea == null) {

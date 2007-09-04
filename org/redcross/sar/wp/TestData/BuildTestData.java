@@ -127,7 +127,7 @@ public class BuildTestData
                         asg.setPriority(IAssignmentIf.AssignmentPriority.LOW);
                         break;
                     case 1:
-                        asg.setPriority(IAssignmentIf.AssignmentPriority.MEDIUM);
+                        asg.setPriority(IAssignmentIf.AssignmentPriority.NORMAL);
                         break;
                     default:
                         asg.setPriority(IAssignmentIf.AssignmentPriority.HIGH);
@@ -159,21 +159,21 @@ public class BuildTestData
         message.setCreated(Calendar.getInstance());
         message.setOccuredTime(Calendar.getInstance());
         message.setStatus(IMessageIf.MessageStatus.UNCONFIRMED);
-        messageLine = message.findMessageLine(IMessageLineIf.MessageLineType.TEXT,true);
+        messageLine = message.findMessageLine(IMessageLineIf.MessageLineType.TEXT, null, true);
         messageLine.setLineText("Tekst Linje 1. Treng litt meir tekst for å sjekke om lina vert delt eller ikkje. Treng enda litt meir tekst for å sjekke dette");
 
         message = messageLog.createMessage();
         message.setCreated(Calendar.getInstance());
         message.setOccuredTime(Calendar.getInstance());
         message.setStatus(IMessageIf.MessageStatus.UNCONFIRMED);
-        messageLine = message.findMessageLine(IMessageLineIf.MessageLineType.TEXT,true);
+        messageLine = message.findMessageLine(IMessageLineIf.MessageLineType.TEXT, null, true);
         messageLine.setLineText("Tekst Linje 2");
 
         message = messageLog.createMessage();
         message.setCreated(Calendar.getInstance());
         message.setOccuredTime(Calendar.getInstance());
         message.setStatus(IMessageIf.MessageStatus.UNCONFIRMED);
-        messageLine = message.findMessageLine(IMessageLineIf.MessageLineType.TEXT,true);
+        messageLine = message.findMessageLine(IMessageLineIf.MessageLineType.TEXT, null, true);
         messageLine.setLineText("Tekst Linje 2. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line.");
 
         aMsoModel.restoreUpdateMode();

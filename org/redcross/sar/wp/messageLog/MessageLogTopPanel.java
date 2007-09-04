@@ -19,24 +19,21 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
 
 /**
  * Top edit panel
- * 
+ *
  * @author thomasl
  */
 public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, IDialogEventListener
 {
 	private static final long serialVersionUID = 1L;
-	
+
 	public final static int PANEL_HEIGHT = (MessageLogPanel.SMALL_BUTTON_SIZE.height) * 3 + 20;
 	public final static int SMALL_PANEL_WIDTH = 60;
-	
+
 	private final static String EMPTY_PANEL_ID = "EMPTY_PANEL";
 	private final static String TEXT_PANEL_ID = "TEXT_PANEL";
 	private final static String POSITION_PANEL_ID = "POSITION_PANEL";
@@ -47,9 +44,9 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	private final static String LIST_PANEL_ID = "LIST_PANEL";
 
 	IMessageLogIf m_messageLog;
-	
+
 	private static IDiskoWpMessageLog m_wpMessageLog;
-	
+
 	// Current message Singleton
 	private static int m_currentMessageNr;
 	private static boolean m_newMessage;
@@ -72,9 +69,9 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		}
 		return m_currentMessage;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return Whether the current message is new or not, i.e. not stored in MSO
 	 */
 	public static boolean isNewMessage()
@@ -109,7 +106,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
     private JPanel m_messagePanel;
     private JLabel m_messagePanelTopLabel;
-    
+
     private JPanel m_buttonRow;
 	private static JToggleButton  m_textButton;
 	private static JToggleButton  m_positionButton;
@@ -119,7 +116,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	private static JToggleButton  m_completedButton;
 	private static JToggleButton  m_listButton;
 	private JButton m_deleteButton;
-	
+
 	private static JPanel m_cardsPanel;
 	private static TextPanel m_textPanel;
 	private static MessagePOIPanel m_messagePOIPanel;
@@ -254,7 +251,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     	}
     	return m_messagePOIPanel;
     }
-    
+
     private MessagePOIPanel getMessageFindingPanel()
     {
     	if(m_messageFindingPanel == null)
@@ -266,7 +263,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     	}
     	return m_messageFindingPanel;
     }
-    
+
     private void getAssignedPanel()
     {
     	if(m_messageAssignedPanel == null)
@@ -276,7 +273,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     		m_cardsPanel.add(m_messageAssignedPanel, ASSIGNED_PANEL_ID);
     	}
     }
-    
+
     private void getStartedPanel()
     {
     	if(m_messageStartedPanel == null)
@@ -294,7 +291,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			m_editComponents.add(m_messageCompletedPanel);
 			m_cardsPanel.add(m_messageCompletedPanel, COMPLETED_PANEL_ID);
 		}
-		
+
 	}
 
     private LineListPanel getMessageListPanel()
@@ -326,7 +323,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		m_fromLabel.setText("");
 		m_toLabel.setText("");
 		m_taskLabel.setText("");
-		
+
 		for(IEditMessageComponentIf component : m_editComponents)
 		{
 			component.clearContents();
@@ -413,7 +410,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
         CardLayout layout = (CardLayout)m_cardsPanel.getLayout();
         layout.show(m_cardsPanel, EMPTY_PANEL_ID);
         m_messagePanel.add(m_cardsPanel);
-        
+
         m_buttonRow.setAlignmentY(Component.BOTTOM_ALIGNMENT);
         m_buttonRow.setMaximumSize(new Dimension(SMALL_PANEL_WIDTH*9, (int)MessageLogPanel.SMALL_BUTTON_SIZE.getHeight()));
         m_buttonRow.setAlignmentX(0.0f);
@@ -516,15 +513,15 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		{
 
 			Object[] options = {m_wpMessageLog.getText("yes.text"), m_wpMessageLog.getText("no.text")};
-			int n = JOptionPane.showOptionDialog(m_wpMessageLog.getApplication().getFrame(), 
-					m_wpMessageLog.getText("DirtyMessageWarning.text"), 
-					m_wpMessageLog.getText("DirtyMessageWarning.header"), 
-					JOptionPane.YES_NO_OPTION, 
-					JOptionPane.QUESTION_MESSAGE, 
-					null, 
-					options, 
+			int n = JOptionPane.showOptionDialog(m_wpMessageLog.getApplication().getFrame(),
+					m_wpMessageLog.getText("DirtyMessageWarning.text"),
+					m_wpMessageLog.getText("DirtyMessageWarning.header"),
+					JOptionPane.YES_NO_OPTION,
+					JOptionPane.QUESTION_MESSAGE,
+					null,
+					options,
 					options[0]);
-					
+
 			if(n == JOptionPane.NO_OPTION)
 			{
 				return;
@@ -587,7 +584,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				}
 				m_toLabel.setText(receiver.getCommunicatorNumberPrefix() + " " + receiver.getCommunicatorNumber());
 			}
-			
+
 			ITaskListIf tasks = m_currentMessage.getMessageTasks();
 			StringBuilder tasksString = new StringBuilder();
 			for(ITaskIf task : tasks.getItems())
@@ -684,7 +681,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		{
 			getCurrentMessage();
 		}
-		
+
 		hideEditPanels();
 		m_buttonGroup.clearSelection();
 		updateMessageGUI();
@@ -708,16 +705,16 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					getCurrentMessage();
 					// Commit message, set status to postponed
 					m_currentMessage.setStatus(MessageStatus.POSTPONED);
-					
+
 					m_wpMessageLog.getMsoManager().commit();
-					
+
 					m_messageDirty = false;
-					
+
 					for(IEditMessageComponentIf dialog : m_editComponents)
 					{
 						dialog.hideComponent();
 					}
-					
+
 					m_buttonGroup.clearSelection();
 					clearPanelContents();
 					m_currentMessageNr = 0;
@@ -733,7 +730,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     	{
     		m_finishedStatusButton = DiskoButtonFactory.createSmallButton(m_wpMessageLog.getText("FinishedButton.text"),
     				m_wpMessageLog.getText("FinishedButton.icon"));
-   
+
     		m_finishedStatusButton.addActionListener(new ActionListener()
     		{
 				public void actionPerformed(ActionEvent arg0)
@@ -757,7 +754,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 						{
 							m_currentMessage.setStatus(MessageStatus.CONFIRMED);
 						}
-						
+
 						// Handle assignments
 						updateAssignments();
 
@@ -769,12 +766,12 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 						m_currentMessage = null;
 						m_messageDirty = false;
 						m_currentMessageNr = 0;
-						
+
 						for(IEditMessageComponentIf dialog : m_editComponents)
 						{
 							dialog.hideComponent();
 						}
-						
+
 						m_buttonGroup.clearSelection();
 					}
 					else
@@ -889,7 +886,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     {
     	if(m_cancelStatusButton == null)
     	{
-    		m_cancelStatusButton = DiskoButtonFactory.createSmallButton(m_wpMessageLog.getText("CancelButton.text"), 
+    		m_cancelStatusButton = DiskoButtonFactory.createSmallButton(m_wpMessageLog.getText("CancelButton.text"),
     				m_wpMessageLog.getText("CancelButton.icon"));
 
     		m_cancelStatusButton.addActionListener(new ActionListener()
@@ -914,28 +911,28 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				// Delete if message is not committed, don't create new message when pressing delete
 				if(m_currentMessage != null && m_newMessage)
 				{
-					IMessageLineIf line = m_currentMessage.findMessageLine(m_currentMessageLineType, false);
+					IMessageLineIf line = m_currentMessage.findMessageLine(m_currentMessageLineType, null, false);
 					if(line != null)
-					{						
+					{
 						// If line that has other assignment lines depending on it is deleted, delete them as well
 						switch(line.getLineType())
 						{
 						case ASSIGNED:
-							IMessageLineIf startedLine = m_currentMessage.findMessageLine(MessageLineType.STARTED, false);
+							IMessageLineIf startedLine = m_currentMessage.findMessageLine(MessageLineType.STARTED, null, false);
 							if(startedLine != null)
 							{
 								startedLine.deleteObject();
 //								TODO m_messageStartedDialog.lineRemoved();
 							}
 						case STARTED:
-							IMessageLineIf completeLine = m_currentMessage.findMessageLine(MessageLineType.COMPLETE, false);
+							IMessageLineIf completeLine = m_currentMessage.findMessageLine(MessageLineType.COMPLETE, null, false);
 							if(completeLine != null)
 							{
 								completeLine.deleteObject();
 //								TODO m_messageCompletedDialog.lineRemoved();
 							}
 						}
-						
+
 						if(!line.deleteObject())
 						{
 							System.err.println("Couldn't delete message line");
@@ -945,7 +942,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				else
 				{
 					ErrorDialog error = new ErrorDialog(m_wpMessageLog.getApplication().getFrame());
-					error.showError(m_wpMessageLog.getText("CanNotDeleteMessageLine.header"), 
+					error.showError(m_wpMessageLog.getText("CanNotDeleteMessageLine.header"),
 							m_wpMessageLog.getText("CanNotDeleteMessageLine.details"));
 				}
 			}
@@ -956,7 +953,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 	private void createListButton()
 	{
-		m_listButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("ListButton.text"), 
+		m_listButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("ListButton.text"),
 				m_wpMessageLog.getText("ListButton.icon"));
 		m_listButton.addActionListener(new ActionListener()
 		{
@@ -965,10 +962,10 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelListLabel.text"));
 				getMessageListPanel();
 				hideEditPanels();
-				
+
 				CardLayout layout = (CardLayout)m_cardsPanel.getLayout();
 				layout.show(m_cardsPanel, LIST_PANEL_ID);
-				
+
 				m_messageListPanel.showComponent();
 			}
 
@@ -987,22 +984,22 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			{
 				ErrorDialog errorDialog = Utils.getErrorDialog();
 				hideEditPanels();
-				
+
 				if(getCurrentMessage().isBroadcast())
 				{
-					errorDialog.showError(m_wpMessageLog.getText("CompletedError.header"), 
+					errorDialog.showError(m_wpMessageLog.getText("CompletedError.header"),
 							m_wpMessageLog.getText("CompletedError.details"));
 				}
 				else if(isReceiverCommandPost())
 				{
 					// Not possible to assign when receiver is CP
-					errorDialog.showError(m_wpMessageLog.getText("ReceiverCommandPostError.header"), 
+					errorDialog.showError(m_wpMessageLog.getText("ReceiverCommandPostError.header"),
 							m_wpMessageLog.getText("ReceiverCommandPostError.details"));
 				}
 				else if(!isAssignmentOperationLegal())
 				{
 					// Require certain message status
-					errorDialog.showError(m_wpMessageLog.getText("MessageTaskOperationError.header"), 
+					errorDialog.showError(m_wpMessageLog.getText("MessageTaskOperationError.header"),
 							m_wpMessageLog.getText("MessageTaskOperationError.details"));
 				}
 				else
@@ -1010,7 +1007,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelCompletedLabel.text"));
 					getCompletedPanel();
 					m_currentMessageLineType = MessageLineType.COMPLETE;
-					
+
 					CardLayout layout = (CardLayout)m_cardsPanel.getLayout();
 					layout.show(m_cardsPanel, COMPLETED_PANEL_ID);
 					m_messageCompletedPanel.showComponent();
@@ -1031,22 +1028,22 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			{
 				ErrorDialog errorDialog = Utils.getErrorDialog();
 				hideEditPanels();
-				
+
 				if(getCurrentMessage().isBroadcast())
 				{
-					errorDialog.showError(m_wpMessageLog.getText("StartedError.header"), 
+					errorDialog.showError(m_wpMessageLog.getText("StartedError.header"),
 							m_wpMessageLog.getText("StartedError.details"));
 				}
 				else if(isReceiverCommandPost())
 				{
 					// Not possible to assign when receiver is CP
-					errorDialog.showError(m_wpMessageLog.getText("ReceiverCommandPostError.header"), 
+					errorDialog.showError(m_wpMessageLog.getText("ReceiverCommandPostError.header"),
 							m_wpMessageLog.getText("ReceiverCommandPostError.details"));
 				}
 				else if(!isAssignmentOperationLegal())
 				{
 					// Require certain message status
-					errorDialog.showError(m_wpMessageLog.getText("MessageTaskOperationError.header"), 
+					errorDialog.showError(m_wpMessageLog.getText("MessageTaskOperationError.header"),
 							m_wpMessageLog.getText("MessageTaskOperationError.details"));
 				}
 				else
@@ -1058,7 +1055,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					CardLayout layout = (CardLayout)m_cardsPanel.getLayout();
 					layout.show(m_cardsPanel, STARTED_PANEL_ID);
 					m_messageStartedPanel.showComponent();
-				}	
+				}
 			}
 		});
 		m_buttonGroup.add(m_startButton);
@@ -1067,7 +1064,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 	private void createAssignedButton()
 	{
-		m_assignButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("AssignedButton.text")/*, 
+		m_assignButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("AssignedButton.text")/*,
 				m_wpMessageLog.getText("AssignedButton.icon")*/);
 		m_assignButton.addActionListener(new ActionListener()
 		{
@@ -1075,23 +1072,23 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			{
 				ErrorDialog errorDialog = Utils.getErrorDialog();
 				hideEditPanels();
-				
+
 				if(getCurrentMessage().isBroadcast())
 				{
 					// Only legal if message isn't broadcast
-					errorDialog.showError(m_wpMessageLog.getText("AssignmentError.header"), 
+					errorDialog.showError(m_wpMessageLog.getText("AssignmentError.header"),
 							m_wpMessageLog.getText("AssignmentError.details"));
 				}
 				else if(isReceiverCommandPost())
 				{
 					// Not possible to assign when receiver is CP
-					errorDialog.showError(m_wpMessageLog.getText("ReceiverCommandPostError.header"), 
+					errorDialog.showError(m_wpMessageLog.getText("ReceiverCommandPostError.header"),
 							m_wpMessageLog.getText("ReceiverCommandPostError.details"));
 				}
 				else if(!isAssignmentOperationLegal())
 				{
 					// Require certain message status
-					errorDialog.showError(m_wpMessageLog.getText("MessageTaskOperationError.header"), 
+					errorDialog.showError(m_wpMessageLog.getText("MessageTaskOperationError.header"),
 							m_wpMessageLog.getText("MessageTaskOperationError.details"));
 				}
 				else
@@ -1100,7 +1097,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelAssignedLabel.text"));
 					getAssignedPanel();
 					m_currentMessageLineType = MessageLineType.ASSIGNED;
-					
+
 					CardLayout layout = (CardLayout)m_cardsPanel.getLayout();
 					layout.show(m_cardsPanel, ASSIGNED_PANEL_ID);
 					m_messageAssignedPanel.showComponent();
@@ -1110,7 +1107,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		m_buttonGroup.add(m_assignButton);
 		m_buttonRow.add(m_assignButton);
 	}
-	
+
 	private boolean isReceiverCommandPost()
 	{
 		ICommunicatorIf receiver = getCurrentMessage().getSingleReceiver();
@@ -1131,18 +1128,18 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			return true;
 		}
 	}
-	
+
 	private boolean isAssignmentOperationLegal()
 	{
 		if(m_newMessage)
 		{
 			return true;
 		}
-		
+
 		MessageStatus status = getCurrentMessage().getStatus();
 		return (status == MessageStatus.UNCONFIRMED || status == MessageStatus.POSTPONED);
 	}
-	
+
 	/**
 	 * Ensures that units and assignments affected by the added message lines in the current message are
 	 * updated (status, etc.). Message lines are also updated according to what operations are legal
@@ -1150,25 +1147,25 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	private void updateAssignments()
 	{
 //		ErrorDialog error = new ErrorDialog(m_wpMessageLog.getApplication().getFrame());
-//		
+//
 //		IUnitIf unit = null;
 //		ICommunicatorIf communicator = MessageLogTopPanel.getCurrentMessage().getSingleReceiver();
 //		if(communicator != null && communicator instanceof IUnitIf)
 //		{
 //			unit = (IUnitIf)communicator;
 //		}
-//		
+//
 //		IMessageLineIf assignedLine = m_currentMessage.findMessageLine(MessageLineType.ASSIGNED, false);
 //		IMessageLineIf startedLine = m_currentMessage.findMessageLine(MessageLineType.STARTED, false);
 //		IMessageLineIf completeLine = m_currentMessage.findMessageLine(MessageLineType.COMPLETE, false);
-//		
+//
 //		IAssignmentIf assignment = null;
-//		
+//
 		// Keep track of which lines are added
 //		boolean assignLineAdded = m_messageAssignedDialog.lineAdded();
 //		boolean startedLineAdded = m_messageStartedDialog.lineAdded();
 //		boolean completedLineAdded = m_messageCompletedDialog.lineAdded();
-//		
+//
 //		if(m_messageAssignedDialog != null)
 //		{
 //			m_messageAssignedDialog.lineRemoved();
@@ -1181,7 +1178,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 //		{
 //			m_messageCompletedDialog.lineRemoved();
 //		}
-		
+
 //		if(assignLineAdded && unit != null)
 //		{
 //			assignment = assignedLine.getLineAssignment();
@@ -1192,20 +1189,20 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 //				if(startedLineAdded)
 //				{
 //					startedLine.deleteObject();
-//					
+//
 //					if(completedLineAdded)
 //					{
 //						completeLine.deleteObject();
 //					}
 //				}
-//				
-//				error.showError(m_wpMessageLog.getText("CanNotAssignError.header"), 
+//
+//				error.showError(m_wpMessageLog.getText("CanNotAssignError.header"),
 //						m_wpMessageLog.getText("CanNotAssignError.details"));
-//				
+//
 //				return;
 //			}
 //		}
-//		
+//
 //		if(startedLineAdded && unit != null)
 //		{
 //			assignment = startedLine.getLineAssignment();
@@ -1217,14 +1214,14 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 //				{
 //					completeLine.deleteObject();
 //				}
-//				
+//
 //				error.showError(m_wpMessageLog.getText("CanNotStartError.header"),
 //						m_wpMessageLog.getText("CanNotStartError.details"));
-//				
+//
 //				return;
 //			}
 //		}
-//		
+//
 //		if(completedLineAdded && unit != null)
 //		{
 //			assignment = completeLine.getLineAssignment();
@@ -1232,19 +1229,19 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 //			{
 //				error.showError(m_wpMessageLog.getText("CanNotCompleteError.header"),
 //						m_wpMessageLog.getText("CanNotCompleteError.details"));
-//				
+//
 //				// Assignment could not be completed, remove message line
 //				if(completeLine != null)
 //				{
 //					completeLine.deleteObject();
 //				}
 //			}
-//		}	
+//		}
 	}
 
 	private void createFindingButton()
 	{
-		m_findingButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("FindingButton.text"), 
+		m_findingButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("FindingButton.text"),
 				m_wpMessageLog.getText("FindingButton.icon"));
 		m_findingButton.addActionListener(new ActionListener()
 		{
@@ -1255,10 +1252,10 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				hideEditPanels();
 				m_currentMessageLineType = MessageLineType.FINDING;
 				m_messageFindingPanel.setMapTool();
-				
+
 				CardLayout layout = (CardLayout)m_cardsPanel.getLayout();
 				layout.show(m_cardsPanel, FINDING_PANEL_ID);
-				
+
 				m_messageFindingPanel.showComponent();
 			}
 		});
@@ -1279,10 +1276,10 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				hideEditPanels();
 				m_currentMessageLineType = MessageLineType.POI;
 				m_messagePOIPanel.setMapTool();
-				
+
 				CardLayout layout = (CardLayout)m_cardsPanel.getLayout();
 				layout.show(m_cardsPanel, POSITION_PANEL_ID);
-				
+
 				m_messagePOIPanel.showComponent();
 			}
 		});
@@ -1302,10 +1299,10 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				getMessageTextPanel();
 				hideEditPanels();
 				m_currentMessageLineType = MessageLineType.TEXT;
-				
+
 				CardLayout layout = (CardLayout)m_cardsPanel.getLayout();
 				layout.show(m_cardsPanel, TEXT_PANEL_ID);
-				
+
 				m_textPanel.showComponent();
 			}
 		});
@@ -1341,7 +1338,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	{
 		m_listButton.doClick();
 	}
-	
+
 	public static void showCompleteDialog()
 	{
 		m_completedButton.doClick();
@@ -1351,17 +1348,17 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	{
 		m_startButton.doClick();
 	}
-	
+
 	public static void showTextDialog()
 	{
 		m_textButton.doClick();
 	}
-	
+
 	public static void showPositionDialog()
 	{
 		m_positionButton.doClick();
 	}
-	
+
 	public static void showFindingDialog()
 	{
 		m_findingButton.doClick();
@@ -1397,14 +1394,14 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		m_currentMessage = null;
 		m_messageDirty = false;
 		m_currentMessageNr = 0;
-		
+
 		for(IEditMessageComponentIf dialog : m_editComponents)
 		{
 			dialog.hideComponent();
 		}
-		
+
 		m_buttonGroup.clearSelection();
-		
+
 		clearPanelContents();
 	}
 }

@@ -7,8 +7,8 @@ import org.redcross.sar.app.Utils;
 import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.map.MapUtil;
 import org.redcross.sar.mso.data.IAreaIf;
+import org.redcross.sar.mso.data.IMsoListIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
-import org.redcross.sar.util.mso.GeoList;
 import org.redcross.sar.util.mso.IGeodataIf;
 import org.redcross.sar.util.mso.Route;
 
@@ -22,7 +22,8 @@ public class FlankFeature extends AbstractMsoFeature {
 	private static final int RIGHT_SIDE_FLANK = 2;
 	private List<Polygon> leftFlanks  = null;
 	private List<Polygon> rightFlanks = null;
-	private GeoList geoList = null;
+//CMR	private GeoList geoList = null;
+	private IMsoListIf<IMsoObjectIf> geoList = null;
 
 	public FlankFeature() {
 		leftFlanks  = new ArrayList<Polygon>();
@@ -39,23 +40,28 @@ public class FlankFeature extends AbstractMsoFeature {
 
 	public boolean geometryIsChanged(IMsoObjectIf msoObj) {
 		IAreaIf area = (IAreaIf)msoObj;
-		return area.getGeodata() != null && !area.getGeodata().equals(getGeodata());
+//CMR		return area.getGeodata() != null && !area.getGeodata().equals(getGeodata());
+		return area.getAreaGeodata() != null && !area.getAreaGeodata().equals(getGeodata());          // todo sjekk etter endring av GeoCollection
 	}
 
 	@Override
 	public void msoGeometryChanged() throws IOException, AutomationException {
 		if (srs == null) return;
 		IAreaIf area = (IAreaIf)msoObject;
-		geoList = area.getGeodata();
-		if (geoList != null) {
+//CMR		geoList = area.getGeodata();
+		geoList = area.getAreaGeodata();
+//CMR 		if (geoList != null) {
+        if (geoList != null && geoList.size() > 0) {
 			leftFlanks.clear();
 			rightFlanks.clear();
 			GeometryBag geomBag = new GeometryBag();
-			Iterator iter = geoList.getPositions().iterator();
+//CMR			Iterator iter = geoList.getPositions().iterator();
+			Iterator<IGeodataIf> iter = area.getAreaGeodataIterator();       // todo sjekk etter endring av GeoCollection
 			while (iter.hasNext()) {
-				IGeodataIf geodata = (IGeodataIf) iter.next();
+//CMR           IGeodataIf geodata = (IGeodataIf) iter.next();
+                IGeodataIf geodata = iter.next();
 				if (geodata instanceof Route) {
-					Polyline polyline = MapUtil.getEsriPolyline((Route)geodata, srs);
+                    Polyline polyline = MapUtil.getEsriPolyline((Route)geodata, srs); // todo Denne er feil, MSO-modellen oppdateres ikke korrekt.
 					geomBag.addGeometry(polyline, null, null);
 					createFlankForRoute((Route)geodata);
 				}
