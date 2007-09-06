@@ -11,7 +11,7 @@ import java.util.EnumSet;
 /**
  *
  */
-public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumStatusHolder<IAssignmentIf.AssignmentStatus>
+public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumStatusHolder<IAssignmentIf.AssignmentStatus>, IEnumPriorityHolder<IAssignmentIf.AssignmentPriority>
 {
     public enum AssignmentStatus
     {
@@ -232,26 +232,26 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
             return o1.getPrioritySequence() - o2.getPrioritySequence();
         }
     };
-
+    
     public final static Comparator<IAssignmentIf> PRIORITY_COMPARATOR = new Comparator<IAssignmentIf>()
     {
         public int compare(IAssignmentIf o1, IAssignmentIf o2)
         {
-            return o1.getPriority().compareTo(o2.getPriority());
+            return o1.comparePriorityTo(o2);
         }
     };
 
     public final static Comparator<IAssignmentIf> PRIORITY_AND_NUMBER_COMPARATOR = new Comparator<IAssignmentIf>()
     {
-        public int compare(IAssignmentIf u1, IAssignmentIf u2)
+        public int compare(IAssignmentIf o1, IAssignmentIf o2)
         {
-            if (u1.getPriority().equals(u2.getPriority()))
+            if (o1.getPriority().equals(o2.getPriority()))
             {
-                return u1.getNumber() - u2.getNumber();
+                return o1.getNumber() - o2.getNumber();
             } else
             {
                 // Compare priorities so that high priority comes first (high priority is "smaller than" low priority)
-                return u1.getPriority().compareTo(u2.getPriority());
+                return o1.comparePriorityTo(o2);
             }
         }
     };

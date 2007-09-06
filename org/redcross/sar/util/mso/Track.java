@@ -8,7 +8,7 @@ import java.util.Collections;
 /**
  * Class for holding track information
  */
-public class Track implements IGeodataIf
+public class Track implements IGeodataIf, Cloneable
 {
     private final String m_id;
     private String m_layout;
@@ -146,4 +146,14 @@ public class Track implements IGeodataIf
       result = 31 * result + (m_track != null ? m_track.hashCode() : 0);
       return result;
    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    { // todo test!!!!!
+        super.clone();
+        Track retVal = new Track(m_id,m_name);
+        retVal.setLayout(m_layout);
+        retVal.m_track.addAll(m_track);
+        return retVal;
+    }
 }

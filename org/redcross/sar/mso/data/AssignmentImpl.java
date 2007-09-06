@@ -42,9 +42,9 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         return Internationalization.getFullBundleText(bundle, aKey);
     }
 
-    public static String getEnumText(Enum anEnum)
+    public static String getStatusText(AssignmentStatus anEnum)
     {
-        return getText(anEnum.getClass().getSimpleName() + "." + anEnum.name() + ".text");
+        return Internationalization.getEnumText(bundle, anEnum);
     }
 
     public AssignmentImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
@@ -224,7 +224,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
 
     public String getStatusText()
     {
-        return getEnumText(getStatus());
+        return Internationalization.getEnumText(bundle,m_status.getValue());
     }
 
     public void setPriority(AssignmentPriority aPriority)
@@ -235,6 +235,11 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
     public void setPriority(String aPriority)
     {
         m_priority.setValue(aPriority);
+    }
+
+    public int comparePriorityTo(IEnumPriorityHolder<AssignmentPriority> anObject)
+    {
+        return getPriority().compareTo(anObject.getPriority());
     }
 
     public AssignmentPriority getPriority()
@@ -254,7 +259,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
 
     public String getPriorityText()
     {
-        return getEnumText(getPriority());
+        return Internationalization.getEnumText(bundle,m_priority.getValue());
     }
 
 
@@ -280,12 +285,12 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
 
     public String getTypeText()
     {
-        return getEnumText(getType());
+        return Internationalization.getEnumText(bundle,m_type.getValue());
     }
 
     public String getTypeAndNumber()
     {
-    	return getTypeText() + " " + getNumber();
+        return getTypeText() + " " + getNumber();
     }
 
     /*-------------------------------------------------------------------------------------------
@@ -367,15 +372,19 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
     {
         IMessageLineIf line = getLatestStatusChangeMessageLine(aLineType);
         if (line != null)
-        return line.getOperationTime();
+        {
+            return line.getOperationTime();
+        }
         return null;
     }
 
-    private IMsoModelIf.ModificationState  getMessageLineTimeState(IMessageLineIf.MessageLineType aLineType)
+    private IMsoModelIf.ModificationState getMessageLineTimeState(IMessageLineIf.MessageLineType aLineType)
     {
         IMessageLineIf line = getLatestStatusChangeMessageLine(aLineType);
         if (line != null)
-        return line.getOperationTimeState();
+        {
+            return line.getOperationTimeState();
+        }
         return null;
     }
 
@@ -383,7 +392,9 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
     {
         IMessageLineIf line = getLatestStatusChangeMessageLine(aLineType);
         if (line != null)
-        return line.getOperationTimeAttribute();
+        {
+            return line.getOperationTimeAttribute();
+        }
         return null;
     }
 
@@ -424,7 +435,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
 
     public Calendar getTimeStarted()
     {
-            return getMessageLineTime(IMessageLineIf.MessageLineType.STARTED);
+        return getMessageLineTime(IMessageLineIf.MessageLineType.STARTED);
     }
 
     public IMsoModelIf.ModificationState getTimeStartedState()

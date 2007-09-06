@@ -6,7 +6,7 @@ import java.util.Vector;
 /**
  * Class for holding route information
  */
-public class Route implements IGeodataIf
+public class Route implements IGeodataIf, Cloneable
 {
     private final String m_id;
     private String m_layout;
@@ -142,4 +142,15 @@ public class Route implements IGeodataIf
       result = 31 * result + (m_route != null ? m_route.hashCode() : 0);
       return result;
    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    { // todo test!!!!!
+        super.clone();
+        Route retVal = new Route(m_id,m_name);
+        retVal.setLayout(m_layout);
+        retVal.m_route.addAll(m_route);
+        return retVal;
+    }
+
 }

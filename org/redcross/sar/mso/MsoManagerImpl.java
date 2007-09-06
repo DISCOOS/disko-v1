@@ -4,6 +4,7 @@ import org.redcross.sar.mso.data.*;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent;
+import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.DuplicateIdException;
 import org.redcross.sar.util.except.MsoNullPointerException;
 import org.redcross.sar.util.mso.Position;
@@ -11,6 +12,7 @@ import org.redcross.sar.util.mso.Route;
 import org.redcross.sar.util.mso.Track;
 
 import java.util.Calendar;
+import java.util.ResourceBundle;
 
 /**
  * An implementation of {@link IMsoManagerIf} interface
@@ -18,6 +20,12 @@ import java.util.Calendar;
 public class MsoManagerImpl implements IMsoManagerIf
 {
     OperationImpl m_operation = null;
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.properties.MsoManager");
+
+    public static String getClasscodeText(MsoClassCode aClassCode)
+    {
+        return Internationalization.getEnumText(bundle,aClassCode);
+    }
 
     private void eventLogg(String aText, MsoEvent.Update e)
     {

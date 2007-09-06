@@ -1,6 +1,7 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.util.mso.TimePos;
 import org.redcross.sar.util.mso.Track;
 
 public interface ITrackIf extends IMsoObjectIf
@@ -32,4 +33,6 @@ public interface ITrackIf extends IMsoObjectIf
     public IMsoModelIf.ModificationState getAreaSequenceNumberState();
 
     public IAttributeIf.IMsoIntegerIf getAreaSequenceNumberAttribute();
+
+    public void addTrackPoint(TimePos aTimePos);
 }

@@ -6,7 +6,7 @@ import java.util.Vector;
 /**
  * Class for holding polygon information
  */
-public class Polygon implements IGeodataIf
+public class Polygon implements IGeodataIf, Cloneable
 {
     private final String m_id;
     private String m_layout;
@@ -141,4 +141,15 @@ public class Polygon implements IGeodataIf
       result = 31 * result + (m_polygon != null ? m_polygon.hashCode() : 0);
       return result;
    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    { // todo test!!!!!
+        super.clone();
+        Polygon retVal = new Polygon(m_id,m_name);
+        retVal.setLayout(m_layout);
+        retVal.m_polygon.addAll(m_polygon);
+        return retVal;
+    }
+
 }

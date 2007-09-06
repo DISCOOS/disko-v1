@@ -120,6 +120,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         return m_MsoObjectId.getId();
     }
 
+    public String shortDescriptor()
+    {
+        return toString();
+    }
+
     public void addDeleteListener(IMsoObjectHolderIf aHolder)
     {
         m_objectHolders.add(aHolder);
@@ -166,7 +171,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (IllegalDeleteException e)
         {
-            Log.error(e.getMessage());
+            System.out.println(e.getMessage());     // todo Erstatt med logging når implementert i junittest
             return false;
         }
         return true;

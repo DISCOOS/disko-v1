@@ -181,7 +181,7 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
         if (m_assigmentSelection != aSelection)
         {
             m_assigmentSelection = aSelection;
-            m_selectableAssignments.getHeaderLabel().setText(AssignmentImpl.getEnumText(m_assigmentSelection));
+            m_selectableAssignments.getHeaderLabel().setText(AssignmentImpl.getStatusText(m_assigmentSelection));
             selectionChanged();
         }
     }
@@ -315,7 +315,7 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
          */
         private SelectButton buttonWithAction(final IAssignmentIf.AssignmentStatus aSelection)
         {
-            String buttonText = AssignmentImpl.getEnumText(aSelection);
+            String buttonText = AssignmentImpl.getStatusText(aSelection);
             AbstractAction action = new AbstractAction(buttonText)
             {
                 public void actionPerformed(ActionEvent e)

@@ -82,6 +82,7 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
         addReference(m_sender);
     }
 
+    @Override
     public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
         if (anObject instanceof ITaskIf)

@@ -247,7 +247,7 @@ public class MessageLineImpl extends AbstractMsoObject implements IMessageLineIf
             	{
             		return "";
             	}
-                
+
             case POI:
             case FINDING:
                 IPOIIf poi = getLinePOI();

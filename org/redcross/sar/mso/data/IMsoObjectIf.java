@@ -19,6 +19,16 @@ public interface IMsoObjectIf
      */
     public String getObjectId();
 
+    /**
+     * Get short descriptor of object.
+     * @return Short description, default = toString(), can be overridden.
+     */
+    public String shortDescriptor();
+
+    /**
+     * Get classcode enumerator for the object.
+     * @return The {@link IMsoManagerIf.MsoClassCode} of the object. 
+     */
     public IMsoManagerIf.MsoClassCode getMsoClassCode();
 
     /**

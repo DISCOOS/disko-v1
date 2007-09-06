@@ -1,8 +1,10 @@
 package org.redcross.sar.mso.data;
 
+import no.cmr.tools.Log;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.MsoCastException;
+import org.redcross.sar.util.mso.TimePos;
 import org.redcross.sar.util.mso.Track;
 
 /**
@@ -128,5 +130,20 @@ public class TrackImpl extends AbstractMsoObject implements ITrackIf
     public IAttributeIf.IMsoIntegerIf getAreaSequenceNumberAttribute()
     {
         return m_areaSequenceNumber;
+    }
+
+    public void addTrackPoint(TimePos aTimePos)
+    {
+        Track t = getGeodata();
+        try
+        {
+            Track tc = (Track)t.clone();
+            tc.add(aTimePos);
+            setGeodata(tc);
+        }
+        catch (CloneNotSupportedException e)
+        {
+            Log.error("CloneNotSupportedException in addTrackPoint, no point added.");
+        }
     }
 }

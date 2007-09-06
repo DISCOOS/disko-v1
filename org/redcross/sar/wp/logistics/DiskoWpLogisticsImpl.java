@@ -120,7 +120,7 @@ public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDisk
         question = getText(question);
 
         int n = JOptionPane.showOptionDialog(m_logisticsPanel.getPanel(),
-                MessageFormat.format(question, anAssignment.getNumber(), AssignmentImpl.getEnumText(aTargetStatus), unitNumber),
+                MessageFormat.format(question, anAssignment.getNumber(), AssignmentImpl.getStatusText(aTargetStatus), unitNumber),
                 getText("confirm_assignmentTransfer_title.text"),
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE,

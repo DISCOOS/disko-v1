@@ -1,5 +1,6 @@
 package org.redcross.sar.mso.data;
 
+import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.IllegalOperationException;
 /**
  * Created by IntelliJ IDEA.
@@ -19,6 +20,12 @@ public interface IEnumPriorityHolder<E extends Enum> extends IMsoObjectIf
 
     public E getPriority();
 
-    public int comparePriorities(IEnumPriorityHolder anObject);
+    public IMsoModelIf.ModificationState getPriorityState();
+
+    public IAttributeIf.IMsoEnumIf<E> getPriorityAttribute();
+
+    public String getPriorityText();
+
+    public int comparePriorityTo(IEnumPriorityHolder<E> anObject);
 }
 

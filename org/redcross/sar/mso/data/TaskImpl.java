@@ -2,11 +2,14 @@ package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.mso.MsoManagerImpl;
+import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.util.except.MsoCastException;
 
 import java.util.Calendar;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class TaskImpl extends AbstractTimeItem implements ITaskIf
@@ -16,23 +19,22 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
     private final AttributeImpl.MsoInteger m_progress = new AttributeImpl.MsoInteger(this, "Progress");
     private final AttributeImpl.MsoString m_responsibleRole = new AttributeImpl.MsoString(this, "ResponsibleRole");
     private final AttributeImpl.MsoString m_taskText = new AttributeImpl.MsoString(this, "TaskText");
+    private final AttributeImpl.MsoCalendar m_alert = new AttributeImpl.MsoCalendar(this, "Alert");
+    private final AttributeImpl.MsoCalendar m_created = new AttributeImpl.MsoCalendar(this, "Created");
+
     private final AttributeImpl.MsoEnum<TaskStatus> m_status = new AttributeImpl.MsoEnum<TaskStatus>(this, "Status", TaskStatus.IDLE);
     private final AttributeImpl.MsoEnum<TaskPriority> m_priority = new AttributeImpl.MsoEnum<TaskPriority>(this, "Priority", TaskPriority.LOW);
     private final AttributeImpl.MsoEnum<TaskType> m_type = new AttributeImpl.MsoEnum<TaskType>(this, "Type", TaskType.TRANSPORT);
+    private final AttributeImpl.MsoEnum<IMsoManagerIf.MsoClassCode> m_sourceClass = new AttributeImpl.MsoEnum<IMsoManagerIf.MsoClassCode>(this,"SourceClass", IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
 
     private final MsoReferenceImpl<IEventIf> m_createdEvent = new MsoReferenceImpl<IEventIf>(this, "CreatedEvent", true);
-
+    private final MsoReferenceImpl<IMsoObjectIf> m_dependentObject = new MsoReferenceImpl<IMsoObjectIf>(this, "DependentObject", true);
 
     private static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Task");
 
     public static String getText(String aKey)
     {
         return Internationalization.getFullBundleText(bundle, aKey);
-    }
-
-    public static String getEnumText(Enum anEnum)
-    {
-        return getText(anEnum.getClass().getSimpleName() + "." + anEnum.name() + ".text");
     }
 
     public TaskImpl(IMsoObjectIf.IObjectIdIf anObjectId)
@@ -54,9 +56,12 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
         addAttribute(m_progress);
         addAttribute(m_responsibleRole);
         addAttribute(m_taskText);
+        addAttribute(m_alert);
+        addAttribute(m_created);
         addAttribute(m_priority);
         addAttribute(m_status);
         addAttribute(m_type);
+        addAttribute(m_sourceClass);
     }
 
     @Override
@@ -70,6 +75,7 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
     {
         super.defineReferences();
         addReference(m_createdEvent);
+        addReference(m_dependentObject);
     }
 
     @Override
@@ -166,6 +172,11 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
         return m_type;
     }
 
+    public String getTypeText()
+    {
+        return Internationalization.getEnumText(bundle,m_type.getValue());
+    }
+
     public void setProgress(int aProgress)
     {
         m_progress.setValue(aProgress);
@@ -226,9 +237,45 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
         return m_taskText;
     }
 
-    public int comparePriorities(IEnumPriorityHolder anObject)
+
+    public void setAlert(Calendar aAlert)
     {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        m_alert.setValue(aAlert);
+    }
+
+    public Calendar getAlert()
+    {
+        return m_alert.getCalendar();
+    }
+
+    public IMsoModelIf.ModificationState getAlertState()
+    {
+        return m_alert.getState();
+    }
+
+    public IAttributeIf.IMsoCalendarIf getAlertAttribute()
+    {
+        return m_alert;
+    }
+
+    public void setCreated(Calendar aCreated)
+    {
+        m_created.setValue(aCreated);
+    }
+
+    public Calendar getCreated()
+    {
+        return m_created.getCalendar();
+    }
+
+    public IMsoModelIf.ModificationState getCreatedState()
+    {
+        return m_created.getState();
+    }
+
+    public IAttributeIf.IMsoCalendarIf getCreatedAttribute()
+    {
+        return m_created;
     }
 
     public void setPriority(TaskPriority aPriority)
@@ -256,6 +303,16 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
         return m_priority;
     }
 
+    public String getPriorityText()
+    {
+        return Internationalization.getEnumText(bundle,m_priority.getValue());
+    }
+
+    public int comparePriorityTo(IEnumPriorityHolder<TaskPriority> anObject)
+    {
+        return getPriority().compareTo(anObject.getPriority());
+    }
+
     public void setStatus(TaskStatus aStatus) throws IllegalOperationException
     {
         m_status.setValue(aStatus);
@@ -271,6 +328,11 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
         return m_status.getValue();
     }
 
+    public String getStatusText()
+    {
+        return Internationalization.getEnumText(bundle,m_status.getValue());
+    }
+
     public IMsoModelIf.ModificationState getStatusState()
     {
         return m_status.getState();
@@ -280,6 +342,37 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
     {
         return m_status;
     }
+
+    public void setSourceClass(IMsoManagerIf.MsoClassCode aSourceClass)
+    {
+        m_sourceClass.setValue(aSourceClass);
+    }
+
+    public void setSourceClass(String aSourceClass)
+    {
+        m_sourceClass.setValue(aSourceClass);
+    }
+
+    public IMsoManagerIf.MsoClassCode getSourceClass()
+    {
+        return m_sourceClass.getValue();
+    }
+
+    public String getSourceClassText()
+    {
+        return MsoManagerImpl.getClasscodeText(m_sourceClass.getValue());
+    }
+
+    public IMsoModelIf.ModificationState getSourceClassState()
+    {
+        return m_sourceClass.getState();
+    }
+
+    public IAttributeIf.IMsoEnumIf<IMsoManagerIf.MsoClassCode> getSourceClassAttribute()
+    {
+        return m_sourceClass;
+    }
+
 
     public void setCreatedEvent(IEventIf aEvent)
     {
@@ -301,6 +394,26 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
         return m_createdEvent;
     }
 
+    public void setDependentObject(IMsoObjectIf anAbstractMsoObject)
+    {
+        m_dependentObject.setReference(anAbstractMsoObject);
+    }
+
+    public IMsoObjectIf getDependentObject()
+    {
+        return m_dependentObject.getReference();
+    }
+
+    public IMsoModelIf.ModificationState getDependentObjectState()
+    {
+        return m_dependentObject.getState();
+    }
+
+    public IMsoReferenceIf<IMsoObjectIf> getDependentObjectAttribute()
+    {
+        return m_dependentObject;
+    }
+
     /*-------------------------------------------------------------------------------------------
     * Other specified methods
     *-------------------------------------------------------------------------------------------*/
@@ -315,9 +428,33 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
         setTimeStamp(aCalendar);
     }
 
-
     public IMsoModelIf.ModificationState getDueTimeState()
     {
         return getTimeStampState();
+    }
+
+    public IMsoObjectIf getSourceObject()
+    {
+        switch(getSourceClass())
+        {
+            case CLASSCODE_MESSAGE:
+                return findReferringMessage();
+            default: // todo supply with other class codes
+                return null;
+        }
+    }
+
+    private final SelfSelector<ITaskIf,IMessageIf> selectReferringMessage = new SelfSelector<ITaskIf,IMessageIf>(this)
+    {
+        public boolean select(IMessageIf anObject)
+        {
+            return anObject.getMessageTasksItems().contains(m_object);
+        }
+    };
+
+    private IMessageIf findReferringMessage()
+    {
+        List<IMessageIf> messages = MsoModelImpl.getInstance().getMsoManager().getCmdPost().getMessageLog().selectItems(selectReferringMessage,null);
+        return (messages.size() > 0) ? messages.get(0) : null;
     }
 }

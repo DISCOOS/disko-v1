@@ -1,9 +1,11 @@
 package org.redcross.sar.mso.data;
 
+import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.IllegalOperationException;
 
 import java.util.Calendar;
+import java.util.Comparator;
 
 public interface ITaskIf extends ITimeItemIf, ISerialNumberedIf, IEnumStatusHolder<ITaskIf.TaskStatus>, IEnumPriorityHolder<ITaskIf.TaskPriority>
 {
@@ -49,17 +51,6 @@ public interface ITaskIf extends ITimeItemIf, ISerialNumberedIf, IEnumStatusHold
 
     public IAttributeIf.IMsoIntegerIf getNumberAttribute();
 
-
-    public void setType(TaskType aType);
-
-    public void setType(String aType);
-
-    public TaskType getType();
-
-    public IMsoModelIf.ModificationState getTypeState();
-
-    public IAttributeIf.IMsoEnumIf<TaskType> getTypeAttribute();
-
     public void setProgress(int aProgress);
 
     public int getProgress();
@@ -84,6 +75,22 @@ public interface ITaskIf extends ITimeItemIf, ISerialNumberedIf, IEnumStatusHold
 
     public IAttributeIf.IMsoStringIf getTaskTextAttribute();
 
+    public void setAlert(Calendar aAlert);
+
+    public Calendar getAlert();
+
+    public IMsoModelIf.ModificationState getAlertState();
+
+    public IAttributeIf.IMsoCalendarIf getAlertAttribute();
+
+    public void setCreated(Calendar aCreated);
+
+    public Calendar getCreated();
+
+    public IMsoModelIf.ModificationState getCreatedState();
+
+    public IAttributeIf.IMsoCalendarIf getCreatedAttribute();
+
     /*-------------------------------------------------------------------------------------------
     * Methods for references
     *-------------------------------------------------------------------------------------------*/
@@ -95,6 +102,14 @@ public interface ITaskIf extends ITimeItemIf, ISerialNumberedIf, IEnumStatusHold
     public IMsoModelIf.ModificationState getCreatedEventState();
 
     public IMsoReferenceIf<IEventIf> getCreatedEventAttribute();
+
+    public void setDependentObject(IMsoObjectIf anAbstractMsoObject);
+
+    public IMsoObjectIf getDependentObject();
+
+    public IMsoModelIf.ModificationState getDependentObjectState();
+
+    public IMsoReferenceIf<IMsoObjectIf> getDependentObjectAttribute();
 
     /*-------------------------------------------------------------------------------------------
     * Methods for enums
@@ -110,6 +125,8 @@ public interface ITaskIf extends ITimeItemIf, ISerialNumberedIf, IEnumStatusHold
 
     public IAttributeIf.IMsoEnumIf<TaskPriority> getPriorityAttribute();
 
+    public String getPriorityText();
+
     public void setStatus(TaskStatus aStatus) throws IllegalOperationException;
 
     public void setStatus(String aStatus) throws IllegalOperationException;
@@ -120,6 +137,32 @@ public interface ITaskIf extends ITimeItemIf, ISerialNumberedIf, IEnumStatusHold
 
     public IAttributeIf.IMsoEnumIf<TaskStatus> getStatusAttribute();
 
+    public String getStatusText();
+
+    public void setType(TaskType aType);
+
+    public void setType(String aType);
+
+    public TaskType getType();
+
+    public IMsoModelIf.ModificationState getTypeState();
+
+    public IAttributeIf.IMsoEnumIf<TaskType> getTypeAttribute();
+
+    public String getTypeText();
+
+    public void setSourceClass(IMsoManagerIf.MsoClassCode aSourceClass);
+
+    public void setSourceClass(String aSourceClass);
+
+    public IMsoManagerIf.MsoClassCode getSourceClass();
+
+    public IMsoModelIf.ModificationState getSourceClassState();
+
+    public IAttributeIf.IMsoEnumIf<IMsoManagerIf.MsoClassCode> getSourceClassAttribute();
+
+    public String getSourceClassText();
+
     /*-------------------------------------------------------------------------------------------
     * Other specified methods
     *-------------------------------------------------------------------------------------------*/
@@ -129,4 +172,12 @@ public interface ITaskIf extends ITimeItemIf, ISerialNumberedIf, IEnumStatusHold
     public void setDueTime(Calendar aCalendar);
 
     public IMsoModelIf.ModificationState getDueTimeState();
+
+    public final static Comparator<ITaskIf> PRIORITY_COMPARATOR = new Comparator<ITaskIf>()
+    {
+        public int compare(ITaskIf o1, ITaskIf o2)
+        {
+            return o1.comparePriorityTo(o2);
+        }
+    };
 }
