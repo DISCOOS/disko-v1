@@ -6,18 +6,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.Comparator;
 import java.util.EnumSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
 
-import javax.swing.AbstractAction;
-import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.JTableHeader;
@@ -27,17 +19,13 @@ import javax.swing.table.TableRowSorter;
 import org.redcross.sar.gui.AbstractPopupHandler;
 import org.redcross.sar.gui.PopupListener;
 import org.redcross.sar.mso.IMsoManagerIf;
-import org.redcross.sar.mso.data.AbstractUnit;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.ITaskIf;
-import org.redcross.sar.mso.data.ITaskListIf;
-import org.redcross.sar.mso.data.IUnitIf;
-import org.redcross.sar.mso.data.TaskListImpl;
+import org.redcross.sar.mso.data.TaskImpl;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
 import org.redcross.sar.util.mso.DTG;
 import org.redcross.sar.util.mso.Selector;
-import org.redcross.sar.wp.logistics.UnitTableModel;
 
 public class TaskTableModel extends AbstractTableModel implements IMsoUpdateListenerIf
 {
@@ -126,15 +114,15 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 		case 0:
 			return task.getNumber();
 		case 1:
-			return task.getPriorityState();
+			return TaskImpl.getEnumText(task.getPriorityState());
 		case 2:
-			return task.getDescription();
+			return task.getTaskText();
 		case 3:
 			return task.getResponsibleRole();
 		case 4:
 			return DTG.CalToDTG(task.getDueTime());
 		case 5:
-			return task.getStatus();
+			return TaskImpl.getEnumText(task.getStatus());
 		}
 		
 		return null;

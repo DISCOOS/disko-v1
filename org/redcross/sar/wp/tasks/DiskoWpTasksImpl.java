@@ -19,6 +19,7 @@ import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.SubMenuPanel;
 import org.redcross.sar.gui.TaskDialog;
+import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
 import org.redcross.sar.mso.data.ITaskIf;
 import org.redcross.sar.mso.data.ITaskIf.TaskStatus;
 import org.redcross.sar.util.except.IllegalOperationException;
@@ -205,7 +206,7 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 		if(m_currentTask != null)
 		{
 			hideDialogs();
-			m_deleteTaskDialog.setCurrentTask(m_currentTask);
+			m_deleteTaskDialog.setTask(m_currentTask);
 			m_deleteTaskDialog.setLocationRelativeTo(m_contentsPanel, DiskoDialog.POS_CENTER, false);
 			m_deleteTaskDialog.setVisible(true);
 		}

@@ -9,9 +9,11 @@ import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
 import org.redcross.sar.map.IDiskoMap;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
+import org.redcross.sar.mso.data.ITaskIf;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 import org.redcross.sar.mso.data.IPOIIf;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
+import org.redcross.sar.mso.data.ITaskIf.TaskType;
 import org.redcross.sar.util.mso.Position;
 
 import javax.swing.*;
@@ -345,14 +347,38 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 				IMessageLineIf messageLine = message.findMessageLine(MessageLineType.FINDING, false);
 				if(messageLine != null)
 				{
+					// Update type
 					IPOIIf poi = messageLine.getLinePOI();
 					if(poi == null)
 					{
 						poi = m_wpMessageLog.getMsoManager().createPOI();
 						messageLine.setLinePOI(poi);
 					}
-
 					poi.setType(type);
+					
+					// Update related intelligence task
+					String taskText = m_wpMessageLog.getText("FindingFinding.text").split(":")[0];
+					for(ITaskIf messageTask : message.getMessageTasksItems())
+					{
+						if(messageTask.getType() == TaskType.INTELLIGENCE)
+						{
+							if(taskText.equals(messageTask.getTaskText().split(":")[0]))
+							{
+								String findingText = null;
+								if(type == POIType.FINDING)
+								{
+									findingText = String.format(m_wpMessageLog.getText("TaskSubType.FINDING.text"),
+											m_wpMessageLog.getText("Finding.text"));
+								}
+								else
+								{
+									findingText = String.format(m_wpMessageLog.getText("TaskSubType.FINDING.text"),
+											m_wpMessageLog.getText("SilentWitness.text"));
+								}
+								messageTask.setTaskText(findingText);
+							}
+						}
+					}
 				}
 			}
 		});

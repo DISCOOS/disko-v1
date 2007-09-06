@@ -5,7 +5,13 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -18,9 +24,16 @@ import javax.swing.SwingConstants;
 import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.TaskDialog;
+import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.IMessageIf;
+import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.ITaskIf;
-import org.redcross.sar.mso.data.ITaskListIf;
+import org.redcross.sar.mso.data.ITaskIf.TaskPriority;
+import org.redcross.sar.mso.data.ITaskIf.TaskStatus;
+import org.redcross.sar.mso.data.ITaskIf.TaskType;
+import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
+import org.redcross.sar.mso.event.MsoEvent.Update;
+import org.redcross.sar.util.except.IllegalOperationException;
 
 /**
  * Dialog for changing task in current message. 
@@ -28,11 +41,11 @@ import org.redcross.sar.mso.data.ITaskListIf;
  * 
  * @author thomasl
  */
-public class ChangeTasksDialog extends DiskoDialog implements IEditMessageComponentIf
+public class ChangeTasksDialog extends DiskoDialog implements IEditMessageComponentIf, IMsoUpdateListenerIf
 {
 	private static final long serialVersionUID = 1L;
 
-	IDiskoWpMessageLog m_wpMessageLog = null;
+	protected static IDiskoWpMessageLog m_wpMessageLog = null;
 	
 	protected JPanel m_contentsPanel = null;
 	
@@ -48,15 +61,29 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	protected JToggleButton m_confirmIntelligenceButton = null;
 	protected JButton m_changeConfirmIntelligenceButton = null;
 	
-	protected JToggleButton m_silentWitnessButton = null;
-	protected JButton m_changeSilentWitnessButton = null;
+	protected JToggleButton m_findingButton = null;
+	protected JButton m_changeFindingButton = null;
 	
 	protected JToggleButton m_generalTaskButton = null;
 	protected JButton m_changeGeneralTaskButton = null;
 	
-	protected HashMap<JToggleButton, JButton> m_buttonMap = null;
+	protected List<JToggleButton> m_toggleButtons = null;
 	
-	protected TaskDialog m_taskDialog = null;
+	protected HashMap<JToggleButton, JButton> m_buttonMap = null;
+	protected HashMap<TaskSubType, JToggleButton> m_typeButtonMap = null;
+	protected HashMap<JToggleButton, TaskSubType> m_buttonTypeMap = null;
+	
+//	protected static final ResourceBundle m_taskBundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Task");
+	
+	protected enum TaskSubType 
+	{
+		SEND_TRANSPORT,
+		GET_TEAM,
+		CREATE_ASSIGNMENT,
+		CONFIRM_INTELLIGENCE,
+		FINDING,
+		GENERAL
+	};
 	
 	/**
 	 * @param wp Message log work process reference
@@ -66,8 +93,12 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 		super(wp.getApplication().getFrame());
 		
 		m_wpMessageLog = wp;
-		m_taskDialog = wp.getApplication().getUIFactory().getTaskDialog();
+		wp.getMmsoEventManager().addClientUpdateListener(this);	
+		
 		m_buttonMap = new HashMap<JToggleButton, JButton>();
+		m_buttonTypeMap = new HashMap<JToggleButton, TaskSubType>();
+		m_typeButtonMap = new HashMap<TaskSubType, JToggleButton>();
+		
 		initialize();
 	}
 
@@ -78,7 +109,7 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 		m_contentsPanel.setLayout(new BoxLayout(m_contentsPanel, BoxLayout.PAGE_AXIS));		
 		m_contentsPanel.setPreferredSize(new Dimension(DiskoButtonFactory.LARGE_BUTTON_SIZE.width + DiskoButtonFactory.SMALL_BUTTON_SIZE.width + 4,
 				DiskoButtonFactory.LARGE_BUTTON_SIZE.height*6 + 6));
-		m_contentsPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+		m_contentsPanel.setBorder(BorderFactory.createLineBorder(Color.lightGray));
 		
 		initButtons();
 		
@@ -90,36 +121,36 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	private void initButtons()
 	{
 		// Send transport
-		m_sendTransportButton = createToggleButton(m_wpMessageLog.getText("SendTransport.text"));
-		m_changeSendTransportButton = createChangeButton();
-		addButtonPair(m_sendTransportButton, m_changeSendTransportButton);
+		m_sendTransportButton = createToggleButton(TaskSubType.SEND_TRANSPORT);
+		m_changeSendTransportButton = createChangeButton(TaskSubType.SEND_TRANSPORT);
+		addButtonPair(m_sendTransportButton, m_changeSendTransportButton, TaskSubType.SEND_TRANSPORT);
 		
 		// Get team
-		m_getTeamButton = createToggleButton(m_wpMessageLog.getText("GetTeam.text"));
-		m_changeGetTeamButton = createChangeButton();
-		addButtonPair(m_getTeamButton, m_changeGetTeamButton);
+		m_getTeamButton = createToggleButton(TaskSubType.GET_TEAM);
+		m_changeGetTeamButton = createChangeButton(TaskSubType.GET_TEAM);
+		addButtonPair(m_getTeamButton, m_changeGetTeamButton, TaskSubType.GET_TEAM);
 		
 		// Create assignment
-		m_createAssignmentButton = createToggleButton(m_wpMessageLog.getText("CreateAssignment.text"));
-		m_changeCreateAssignmentButton = createChangeButton();
-		addButtonPair(m_createAssignmentButton, m_changeCreateAssignmentButton);
+		m_createAssignmentButton = createToggleButton(TaskSubType.CREATE_ASSIGNMENT);
+		m_changeCreateAssignmentButton = createChangeButton(TaskSubType.CREATE_ASSIGNMENT);
+		addButtonPair(m_createAssignmentButton, m_changeCreateAssignmentButton, TaskSubType.CREATE_ASSIGNMENT);
 		
 		// Confirm intelligence
-		m_confirmIntelligenceButton = createToggleButton(m_wpMessageLog.getText("ConfirmIntelligence.text"));
-		m_changeConfirmIntelligenceButton = createChangeButton();
-		addButtonPair(m_confirmIntelligenceButton, m_changeConfirmIntelligenceButton);
+		m_confirmIntelligenceButton = createToggleButton(TaskSubType.CONFIRM_INTELLIGENCE);
+		m_changeConfirmIntelligenceButton = createChangeButton(TaskSubType.CONFIRM_INTELLIGENCE);
+		addButtonPair(m_confirmIntelligenceButton, m_changeConfirmIntelligenceButton, TaskSubType.CONFIRM_INTELLIGENCE);
 		
-		// Silent witness
-		m_silentWitnessButton = createToggleButton(m_wpMessageLog.getText("SilentWitness.text"));
-		m_changeSilentWitnessButton = createChangeButton();
-		addButtonPair(m_silentWitnessButton, m_changeSilentWitnessButton);
+		// Finding
+		m_findingButton = createToggleButton(TaskSubType.FINDING);
+		m_changeFindingButton = createChangeButton(TaskSubType.FINDING);
+		addButtonPair(m_findingButton, m_changeFindingButton, TaskSubType.FINDING);
 		
 		m_contentsPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
 		
 		// General
-		m_generalTaskButton = createToggleButton(m_wpMessageLog.getText("GeneralTask.text"));
-		m_changeGeneralTaskButton = createChangeButton();
-		addButtonPair(m_generalTaskButton, m_changeGeneralTaskButton);
+		m_generalTaskButton = createToggleButton(TaskSubType.GENERAL);
+		m_changeGeneralTaskButton = createChangeButton(TaskSubType.GENERAL);
+		addButtonPair(m_generalTaskButton, m_changeGeneralTaskButton, TaskSubType.GENERAL);
 	}
 	
 	/**
@@ -127,23 +158,36 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	 * @param ae Event generated by button
 	 * @param type The task type for the given button
 	 */
-	private void toggleTask(ActionEvent ae/*, TaskType type*/)
+	private void toggleTask(ActionEvent ae, TaskSubType type)
 	{
-//		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
 		
 		JToggleButton button = (JToggleButton)ae.getSource();
 		JButton changeButton = m_buttonMap.get(button);
 		
 		if(button.isSelected())
 		{
-			// TODO Button is selected, add task
+			// Button is selected, add task
+			ITaskIf task = m_wpMessageLog.getMsoManager().createTask(Calendar.getInstance());
+			initTaskValues(task, type);
+			message.addMessageTask(task);
 			
 			// Make corresponding change button active
 			changeButton.setEnabled(true);
 		}
 		else
 		{
-			// TODO Button is deselected, remove task
+			// Button is deselected, remove task
+			for(ITaskIf task : message.getMessageTasksItems())
+			{
+				if(getSubType(task) == type)
+				{
+					if(!task.deleteObject())
+					{
+						System.err.println("Error removing task");
+					}
+				}
+			}
 			
 			// Make corresponding change button inactive
 			changeButton.setEnabled(false);
@@ -151,11 +195,86 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	}
 	
 	/**
+	 * Initialize task with the correct field values based on the task sub type
+	 * @param task
+	 * @param type
+	 */
+	private void initTaskValues(ITaskIf task, TaskSubType type)
+	{
+		if(type == TaskSubType.FINDING)
+		{
+			String taskText = String.format(m_wpMessageLog.getText("TaskSubType.FINDING.text"),
+					m_wpMessageLog.getText("Finding.text"));
+			task.setTaskText(taskText);
+		}
+		else
+		{
+			task.setTaskText(m_wpMessageLog.getText("TaskSubType." + type.name() + ".text"));
+		}
+		
+		switch(type)
+		{
+		case SEND_TRANSPORT:
+			task.setType(TaskType.TRANSPORT);
+			break;
+		case GET_TEAM:
+			task.setType(TaskType.RESOURCE);
+			break;
+		case CREATE_ASSIGNMENT:
+			task.setType(TaskType.RESOURCE);
+			break;
+		case CONFIRM_INTELLIGENCE:
+			task.setType(TaskType.INTELLIGENCE);
+			// TODO Set receiver to none
+			break;
+		case FINDING:
+			task.setType(TaskType.INTELLIGENCE);
+			break;
+		case GENERAL: 
+			task.setType(TaskType.GENERAL);
+		}
+		
+		// Due time
+		Calendar dueTime = Calendar.getInstance();
+		dueTime.add(Calendar.MINUTE, 30);
+		task.setDueTime(dueTime);
+		
+		// Alert time
+		Calendar alertTime = Calendar.getInstance();
+		alertTime.add(Calendar.MINUTE, 15);
+//		task.setAlertTime(alertTime); // TODO To be implemented?
+		
+		// Priority
+		task.setPriority(TaskPriority.NORMAL);
+		
+		// Status
+		try
+		{
+			task.setStatus(TaskStatus.IDLE);
+		} 
+		catch (IllegalOperationException e)
+		{
+			e.printStackTrace();
+		}
+		
+//		// Receiver
+//		ICommunicatorIf receiver = MessageLogTopPanel.getCurrentMessage().getSingleReceiver();
+//		task.setReceiver(receiver);
+		
+		// Progress
+		task.setProgress(0);
+		
+		// Responsible
+		String responsible = null;
+		task.setResponsibleRole(responsible);
+	}
+
+	/**
 	 * Adds a pair of task selection and change action button for that task
 	 * @param task
 	 * @param change
 	 */
-	private void addButtonPair(JToggleButton task, JButton change)
+	private void addButtonPair(JToggleButton task, JButton change, TaskSubType type)
 	{
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
@@ -164,7 +283,10 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 		m_contentsPanel.add(buttonPanel);
 		
 		change.setEnabled(false);
+	
 		m_buttonMap.put(task, change);
+		m_typeButtonMap.put(type, task);
+		m_buttonTypeMap.put(task, type);
 	}
 	
 	/**
@@ -172,9 +294,10 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	 */
 	private void showEditTaskDialog()
 	{
+		TaskDialog taskDialog = m_wpMessageLog.getApplication().getUIFactory().getTaskDialog();
 		Point location = getLocationOnScreen();
-		m_taskDialog.setLocation(location);
-		m_taskDialog.setVisible(true);
+		taskDialog.setLocation(location);
+		taskDialog.setVisible(true);
 	}
 
 	/**
@@ -191,11 +314,21 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	public void newMessageSelected(IMessageIf message)
 	{
 		// Loop through all tasks in new/updated message
-		ITaskListIf tasks = message.getMessageTasks();
-		for(ITaskIf task : tasks.getItems())
+		Collection<ITaskIf> messageTasks = message.getMessageTasks().getItems();
+		List<TaskSubType> taskTypes = new LinkedList<TaskSubType>();
+		for(ITaskIf messageTask : messageTasks)
 		{
-			// TODO Mark message tasks as selected in button panel
-		}	
+			taskTypes.add(getSubType(messageTask));
+		}
+		
+		for(TaskSubType type : TaskSubType.values())
+		{
+			JToggleButton button = m_typeButtonMap.get(type);
+			JButton changeButton = m_buttonMap.get(button);
+			boolean hasType = taskTypes.contains(type);
+			button.setSelected(hasType);
+			changeButton.setEnabled(hasType);
+		}
 	}
 
 	/**
@@ -207,23 +340,40 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	}
 
 	/**
-	 * 
+	 * Clear button selection
 	 */
 	public void clearContents()
 	{
+		Iterator<JToggleButton> iterator = m_buttonMap.keySet().iterator();
+		while(iterator.hasNext())
+		{
+			JToggleButton button = iterator.next();
+			JButton changeButton = m_buttonMap.get(button);
+			button.setSelected(false);
+			changeButton.setEnabled(false);
+		}
 	}
 	
 	/**
 	 * @return The change button for the given task. 
 	 */
-	private JButton createChangeButton(/*TaskType type*/)
+	private JButton createChangeButton(final TaskSubType type)
 	{
 		JButton button = DiskoButtonFactory.createSmallButton("", m_wpMessageLog.getText("ChangeButton.icon"));
 		button.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-//				TODO m_taskDialog.setTask(task);
+				IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+				for(ITaskIf task : message.getMessageTasksItems())
+				{
+					if(getSubType(task) == type)
+					{
+						TaskDialog taskDialog = m_wpMessageLog.getApplication().getUIFactory().getTaskDialog();
+						taskDialog.setTask(task);
+						break;
+					}
+				}
 				showEditTaskDialog();
 			}
 		});
@@ -233,20 +383,124 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	
 	/**
 	 * Creates a button that toggles a task in the current message
-	 * @param text Button text
 	 * @return Toggle button that add/remove task from current message
 	 */
-	private JToggleButton createToggleButton(String text)
+	private JToggleButton createToggleButton(final TaskSubType type)
 	{
-		JToggleButton button = DiskoButtonFactory.createLargeToggleButton(text);
+		String buttonText = null;
+		if(type == TaskSubType.FINDING)
+		{
+			String findingType = m_wpMessageLog.getText("Finding.text");
+			buttonText = String.format(m_wpMessageLog.getText("TaskSubType.FINDING.text"), findingType);
+		}
+		else
+		{
+			buttonText = m_wpMessageLog.getText("TaskSubType." + type.name() + ".text");
+		}
+		JToggleButton button = 	DiskoButtonFactory.createLargeToggleButton(buttonText);
 		button.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent ae)
 			{
-				toggleTask(ae);
+				toggleTask(ae, type);
 			}
 		});
 		
 		return button;
+	}
+	
+	/**
+	 * Used to identify which of the tasks in this dialog, if any, a specific task is. General types
+	 * does not provide sufficient information to determine that
+	 * @param task
+	 * @return
+	 */
+	public static TaskSubType getSubType(ITaskIf task)
+	{
+		TaskType taskType = task.getType();
+		String taskText = task.getTaskText();
+		switch(taskType)
+		{
+		case TRANSPORT:
+			if(taskText.equals(m_wpMessageLog.getText("TaskSubType.SEND_TRANSPORT.text")))
+			{
+				return TaskSubType.SEND_TRANSPORT;
+			}
+		case RESOURCE:
+			if(taskText.equals(m_wpMessageLog.getText("TaskSubType.GET_TEAM.text")))
+			{
+				return TaskSubType.GET_TEAM;
+			}
+			if(taskText.equals(m_wpMessageLog.getText("TaskSubType.CREATE_ASSIGNMENT.text")))
+			{
+				return TaskSubType.CREATE_ASSIGNMENT;
+			}
+		case INTELLIGENCE:
+			if(taskText.equals(m_wpMessageLog.getText("TaskSubType.CONFIRM_INTELLIGENCE.text")))
+			{
+				return TaskSubType.CONFIRM_INTELLIGENCE;
+			}
+			try
+			{
+				if(taskText.split(":")[0].equals(m_wpMessageLog.getText("TaskSubType.FINDING.text").split(":")[0]))
+				{
+					return TaskSubType.FINDING;
+				}
+			}catch(Exception e){}
+		case GENERAL:
+			return TaskSubType.GENERAL;
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Translate between task sub types and task types
+	 * @param type
+	 * @return
+	 */
+	@SuppressWarnings("unused")
+	public static TaskType getType(TaskSubType type)
+	{
+		switch(type)
+		{
+		case SEND_TRANSPORT:
+			return TaskType.TRANSPORT;
+		case GET_TEAM:
+		case CREATE_ASSIGNMENT:
+			return TaskType.RESOURCE;
+		case CONFIRM_INTELLIGENCE:
+		case FINDING:
+			return TaskType.INTELLIGENCE;
+		case GENERAL:
+			return TaskType.GENERAL;
+		}
+		
+		return null;
+	}
+
+	/**
+	 * Update finding button to correct type if finding type has been changed
+	 * @param e
+	 */
+	public void handleMsoUpdateEvent(Update e)
+	{
+		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+		for(ITaskIf task : message.getMessageTasksItems())
+		{
+			TaskSubType type = getSubType(task);
+			if(type == TaskSubType.FINDING)
+			{
+				m_findingButton.setText(task.getTaskText());
+			}
+		}
+	}
+
+	private final EnumSet<IMsoManagerIf.MsoClassCode> myInterests = EnumSet.of(
+    		IMsoManagerIf.MsoClassCode.CLASSCODE_TASK);
+
+	public boolean hasInterestIn(IMsoObjectIf msoObject)
+	{
+		return myInterests.contains(msoObject.getMsoClassCode());
 	}
 }

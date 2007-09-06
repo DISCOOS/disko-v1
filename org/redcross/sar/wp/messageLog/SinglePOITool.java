@@ -14,6 +14,8 @@ import org.redcross.sar.mso.data.IPOIIf;
 import org.redcross.sar.mso.data.ITaskIf;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
+import org.redcross.sar.mso.data.ITaskIf.TaskPriority;
+import org.redcross.sar.mso.data.ITaskIf.TaskType;
 
 import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.interop.AutomationException;
@@ -93,10 +95,44 @@ public class SinglePOITool extends AbstractCommandTool
 			// Update finding in message
 			messageLine = message.findMessageLine(MessageLineType.FINDING, true);
 			
-			// Need to add task
-			ITaskIf task = m_wpMessageLog.getMsoManager().createTask(Calendar.getInstance());
-			// TODO set: title/type, priority high
-			message.addMessageTask(task);
+			// Need to add/update task
+			ITaskIf task = null;
+			
+			String findingText = m_wpMessageLog.getText("TaskSubType.FINDING.text");
+			// Check for existing tasks
+			for(ITaskIf messageTask : message.getMessageTasksItems())
+			{
+				if(messageTask.getType() == TaskType.INTELLIGENCE)
+				{
+					// Check to see if task is a finding task
+					String taskText = messageTask.getTaskText().split(":")[0];
+					if(taskText.equals(findingText.split(":")[0]))
+					{
+						// Message has a finding task, update this
+						task = messageTask;
+					}
+				}
+			}
+			
+			// If message does not have a finding task, create new
+			if(task == null)
+			{
+				task = m_wpMessageLog.getMsoManager().createTask(Calendar.getInstance());
+				task.setType(TaskType.INTELLIGENCE);
+				message.addMessageTask(task);
+			}
+			
+			// Update task fields
+			if(type == POIType.FINDING)
+			{
+				task.setTaskText(String.format(findingText, m_wpMessageLog.getText("Finding.text")));
+			}
+			else
+			{
+				task.setTaskText(String.format(findingText, m_wpMessageLog.getText("SilentWitness.text")));
+			}	
+			// TODO set alert
+			task.setPriority(TaskPriority.HIGH);
 		}
 		
 		IPOIIf poi = messageLine.getLinePOI();
@@ -113,7 +149,5 @@ public class SinglePOITool extends AbstractCommandTool
 		point = transform(x, y);
 		point.setSpatialReferenceByRef(map.getSpatialReference());
 		poi.setPosition(MapUtil.getMsoPosistion(point));
-		
-//		map.refreshMsoLayers();
 	}
 }

@@ -168,36 +168,3 @@ TacticsTaskType.UNIT_TASK.icon=icons/60x60/unit.gif
 TacticsTaskType.MAKE_READY_TASK.icon=icons/60x60/ready.gif
 TacticsTaskType.MAKE_DRAFT_TASK.icon=
 TacticsTaskType.PRINT_TASK.icon=icons/60x60/printer.gif
-
-# Task
-Task.text=Oppgave
-TaskType.text=Type
-TaskType.TRANSPORT.text=Transport
-TaskType.RESOURCE.text=Ressurs
-TaskType.INTELLIGENCE.text=Etterretning
-TaskType.GENERAL.text=Generell
-TaskPriority.text=Prioritet
-TaskPriority.HIGH.text=Høy
-TaskPriority.NORMAL.text=Normal
-TaskPriority.LOW.text=Lav
-TaskDue.text=Forfall
-TaskResponsible.text=Ansvarlig
-TaskAlert.text=Varsel
-TaskStatus.text=Status
-TaskStatus.IDLE.text=Ledig
-TaskStatus.STARTED.text=Startet
-TaskStatus.UNTREATED.text=Ubehandlet
-TaskStatus.POSTPONED.text=Utsatt
-TaskStatus.FINISHED.text=Ferdig
-TaskStatus.DELETED.text=Slettet
-TaskType.TRANSPORT.text=Transport
-TaskType.RESOURCE.text=Ressurs
-TaskType.INTELLIGENCE.text=Etterretning
-TaskType.GENERAL.text=Generell
-TaskProgress.text=Fremdrift (%)
-TaskDescription.text=Beskrivelse
-TaskSource.text=Kilde
-
-
-
-

@@ -586,11 +586,12 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			}
 
 			ITaskListIf tasks = m_currentMessage.getMessageTasks();
-			StringBuilder tasksString = new StringBuilder();
+			StringBuilder tasksString = new StringBuilder("<html>");
 			for(ITaskIf task : tasks.getItems())
 			{
-				tasksString.append(task.toString() + "\n");
+				tasksString.append(task.getTaskText() + "<br>");
 			}
+			tasksString.append("</html>");
 			m_taskLabel.setText(tasksString.toString());
 
 			// Update dialogs
@@ -815,6 +816,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     		{
 				public void actionPerformed(ActionEvent e)
 				{
+					// Create new message if null
+					getCurrentMessage();
 					getChangeTasksDialog();
 					hideEditPanels();
 					Point location = m_changeTasksButton.getLocationOnScreen();
@@ -1384,7 +1387,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	 */
 	public static void clearCurrentMessage()
 	{
-		if(m_newMessage)
+		if(m_newMessage && m_currentMessage != null)
 		{
 			m_currentMessage.deleteObject();
 		}

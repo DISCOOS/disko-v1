@@ -10,12 +10,16 @@ import org.redcross.sar.mso.data.IMessageLogIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.IPOIIf;
 import org.redcross.sar.mso.data.ITaskIf;
+import org.redcross.sar.mso.data.TaskImpl;
+import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
+import org.redcross.sar.mso.data.IPOIIf.POIType;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
 import org.redcross.sar.util.mso.DTG;
 import org.redcross.sar.util.mso.Position;
 import org.redcross.sar.util.mso.Selector;
+import org.redcross.sar.wp.messageLog.ChangeTasksDialog.TaskSubType;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -241,10 +245,41 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
             	StringBuilder taskBuilder = new StringBuilder();
             	for(ITaskIf task : message.getMessageTasksItems())
             	{
-            		taskBuilder.append(task.toString()); // TODO 
+            		if(ChangeTasksDialog.getSubType(task) == TaskSubType.FINDING)
+            		{
+            			String taskString = null;
+            			IMessageLineIf line = message.findMessageLine(MessageLineType.FINDING, false);
+            			if(line != null)
+            			{
+            				
+            				IPOIIf poi = line.getLinePOI();
+            				if(poi.getType() == POIType.SILENT_WITNESS)
+            				{
+            					taskString = String.format(m_wpModule.getText("TaskSubType.FINDING.text"),
+            							m_wpModule.getText("SilentWitness.text"));
+            				}
+            				else
+            				{
+            					taskString = String.format(m_wpModule.getText("TaskSubType.FINDING.text"),
+            							m_wpModule.getText("Finding.text"));
+            				}
+            			}
+            			else
+        				{
+            				// Set task finding to finding if no message line added
+        					taskString = String.format(m_wpModule.getText("TaskSubType.FINDING.text"),
+        							m_wpModule.getText("Finding.text"));
+        				}
+        				taskBuilder.append(taskString);
+            		}
+            		else
+            		{
+            			taskBuilder.append(task.getTaskText());
+            		}
+            		
             		taskBuilder.append("\n");
             	}
-                return taskBuilder.toString();
+                return taskBuilder.toString().split("\\n");
             default:
                 return message.getStatusText();
         }
@@ -359,20 +394,25 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
 	/**
 	 * @param rowIndex Identifies the message line
 	 * @return Number of rows in the table need to display the entire contents of the message lines
+	 *		or task, whichever is longer
 	 */
 	public int numRows(int rowIndex)
 	{
-		int numRows = 0;
-		String[] strings = (String[])m_table.getValueAt(rowIndex, 4);
-		
-		for(int i=0; i<strings.length; i++)
+		// Message lines
+		int numMessageLines = 0;
+		String[] messageLineStrings = (String[])getValueAt(rowIndex, 4);
+		for(int i=0; i<messageLineStrings.length; i++)
 		{
-			String[] multiline = strings[i].split("\n");
+			String[] multiline = messageLineStrings[i].split("\n");
 			int numLinesString = multiline.length;
 			// TODO handle long single lines as well.
-			numRows += Math.max(1, numLinesString);
+			numMessageLines += Math.max(1, numLinesString);
 		}
 		
-		return numRows;
+		// Tasks
+		String[] taskStrings = (String[])getValueAt(rowIndex, 5);
+		int numTaskLines = taskStrings.length;
+		
+		return Math.max(numMessageLines, numTaskLines);
 	}
 }
