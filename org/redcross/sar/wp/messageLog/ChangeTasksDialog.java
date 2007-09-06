@@ -1,26 +1,5 @@
 package org.redcross.sar.wp.messageLog;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.JToggleButton;
-import javax.swing.SwingConstants;
-
 import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.TaskDialog;
@@ -35,10 +14,17 @@ import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
 import org.redcross.sar.util.except.IllegalOperationException;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.*;
+import java.util.List;
+
 /**
- * Dialog for changing task in current message. 
+ * Dialog for changing task in current message.
  * Initializes and shows a {@link TaskDialog} when changing task fields
- * 
+ *
  * @author thomasl
  */
 public class ChangeTasksDialog extends DiskoDialog implements IEditMessageComponentIf, IMsoUpdateListenerIf
@@ -46,36 +32,36 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	private static final long serialVersionUID = 1L;
 
 	protected static IDiskoWpMessageLog m_wpMessageLog = null;
-	
+
 	protected JPanel m_contentsPanel = null;
-	
+
 	protected JToggleButton m_sendTransportButton = null;
 	protected JButton m_changeSendTransportButton = null;
-	
+
 	protected JToggleButton m_getTeamButton = null;
 	protected JButton m_changeGetTeamButton = null;
-	
+
 	protected JToggleButton m_createAssignmentButton = null;
 	protected JButton m_changeCreateAssignmentButton = null;
-	
+
 	protected JToggleButton m_confirmIntelligenceButton = null;
 	protected JButton m_changeConfirmIntelligenceButton = null;
-	
+
 	protected JToggleButton m_findingButton = null;
 	protected JButton m_changeFindingButton = null;
-	
+
 	protected JToggleButton m_generalTaskButton = null;
 	protected JButton m_changeGeneralTaskButton = null;
-	
+
 	protected List<JToggleButton> m_toggleButtons = null;
-	
+
 	protected HashMap<JToggleButton, JButton> m_buttonMap = null;
 	protected HashMap<TaskSubType, JToggleButton> m_typeButtonMap = null;
 	protected HashMap<JToggleButton, TaskSubType> m_buttonTypeMap = null;
-	
+
 //	protected static final ResourceBundle m_taskBundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Task");
-	
-	protected enum TaskSubType 
+
+	protected enum TaskSubType
 	{
 		SEND_TRANSPORT,
 		GET_TEAM,
@@ -84,21 +70,21 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 		FINDING,
 		GENERAL
 	};
-	
+
 	/**
 	 * @param wp Message log work process reference
 	 */
 	public ChangeTasksDialog(IDiskoWpMessageLog wp)
 	{
 		super(wp.getApplication().getFrame());
-		
+
 		m_wpMessageLog = wp;
-		wp.getMmsoEventManager().addClientUpdateListener(this);	
-		
+		wp.getMmsoEventManager().addClientUpdateListener(this);
+
 		m_buttonMap = new HashMap<JToggleButton, JButton>();
 		m_buttonTypeMap = new HashMap<JToggleButton, TaskSubType>();
 		m_typeButtonMap = new HashMap<TaskSubType, JToggleButton>();
-		
+
 		initialize();
 	}
 
@@ -106,53 +92,53 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	{
 		// Initialize contents panel
 		m_contentsPanel = new JPanel();
-		m_contentsPanel.setLayout(new BoxLayout(m_contentsPanel, BoxLayout.PAGE_AXIS));		
+		m_contentsPanel.setLayout(new BoxLayout(m_contentsPanel, BoxLayout.PAGE_AXIS));
 		m_contentsPanel.setPreferredSize(new Dimension(DiskoButtonFactory.LARGE_BUTTON_SIZE.width + DiskoButtonFactory.SMALL_BUTTON_SIZE.width + 4,
 				DiskoButtonFactory.LARGE_BUTTON_SIZE.height*6 + 6));
 		m_contentsPanel.setBorder(BorderFactory.createLineBorder(Color.lightGray));
-		
+
 		initButtons();
-		
+
 		this.add(m_contentsPanel);
-	
+
 		this.pack();
 	}
-	
+
 	private void initButtons()
 	{
 		// Send transport
 		m_sendTransportButton = createToggleButton(TaskSubType.SEND_TRANSPORT);
 		m_changeSendTransportButton = createChangeButton(TaskSubType.SEND_TRANSPORT);
 		addButtonPair(m_sendTransportButton, m_changeSendTransportButton, TaskSubType.SEND_TRANSPORT);
-		
+
 		// Get team
 		m_getTeamButton = createToggleButton(TaskSubType.GET_TEAM);
 		m_changeGetTeamButton = createChangeButton(TaskSubType.GET_TEAM);
 		addButtonPair(m_getTeamButton, m_changeGetTeamButton, TaskSubType.GET_TEAM);
-		
+
 		// Create assignment
 		m_createAssignmentButton = createToggleButton(TaskSubType.CREATE_ASSIGNMENT);
 		m_changeCreateAssignmentButton = createChangeButton(TaskSubType.CREATE_ASSIGNMENT);
 		addButtonPair(m_createAssignmentButton, m_changeCreateAssignmentButton, TaskSubType.CREATE_ASSIGNMENT);
-		
+
 		// Confirm intelligence
 		m_confirmIntelligenceButton = createToggleButton(TaskSubType.CONFIRM_INTELLIGENCE);
 		m_changeConfirmIntelligenceButton = createChangeButton(TaskSubType.CONFIRM_INTELLIGENCE);
 		addButtonPair(m_confirmIntelligenceButton, m_changeConfirmIntelligenceButton, TaskSubType.CONFIRM_INTELLIGENCE);
-		
+
 		// Finding
 		m_findingButton = createToggleButton(TaskSubType.FINDING);
 		m_changeFindingButton = createChangeButton(TaskSubType.FINDING);
 		addButtonPair(m_findingButton, m_changeFindingButton, TaskSubType.FINDING);
-		
+
 		m_contentsPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
-		
+
 		// General
 		m_generalTaskButton = createToggleButton(TaskSubType.GENERAL);
 		m_changeGeneralTaskButton = createChangeButton(TaskSubType.GENERAL);
 		addButtonPair(m_generalTaskButton, m_changeGeneralTaskButton, TaskSubType.GENERAL);
 	}
-	
+
 	/**
 	 * Remove/add tasks as task  buttons are toggled
 	 * @param ae Event generated by button
@@ -161,17 +147,17 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	private void toggleTask(ActionEvent ae, TaskSubType type)
 	{
 		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
-		
+
 		JToggleButton button = (JToggleButton)ae.getSource();
 		JButton changeButton = m_buttonMap.get(button);
-		
+
 		if(button.isSelected())
 		{
 			// Button is selected, add task
 			ITaskIf task = m_wpMessageLog.getMsoManager().createTask(Calendar.getInstance());
 			initTaskValues(task, type);
 			message.addMessageTask(task);
-			
+
 			// Make corresponding change button active
 			changeButton.setEnabled(true);
 		}
@@ -188,12 +174,12 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 					}
 				}
 			}
-			
+
 			// Make corresponding change button inactive
 			changeButton.setEnabled(false);
 		}
 	}
-	
+
 	/**
 	 * Initialize task with the correct field values based on the task sub type
 	 * @param task
@@ -211,7 +197,7 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 		{
 			task.setTaskText(m_wpMessageLog.getText("TaskSubType." + type.name() + ".text"));
 		}
-		
+
 		switch(type)
 		{
 		case SEND_TRANSPORT:
@@ -230,40 +216,40 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 		case FINDING:
 			task.setType(TaskType.INTELLIGENCE);
 			break;
-		case GENERAL: 
+		case GENERAL:
 			task.setType(TaskType.GENERAL);
 		}
-		
+
 		// Due time
 		Calendar dueTime = Calendar.getInstance();
 		dueTime.add(Calendar.MINUTE, 30);
 		task.setDueTime(dueTime);
-		
+
 		// Alert time
 		Calendar alertTime = Calendar.getInstance();
 		alertTime.add(Calendar.MINUTE, 15);
 //		task.setAlertTime(alertTime); // TODO To be implemented?
-		
+
 		// Priority
 		task.setPriority(TaskPriority.NORMAL);
-		
+
 		// Status
 		try
 		{
-			task.setStatus(TaskStatus.IDLE);
-		} 
+			task.setStatus(TaskStatus.UNPROCESSED);
+		}
 		catch (IllegalOperationException e)
 		{
 			e.printStackTrace();
 		}
-		
+
 //		// Receiver
 //		ICommunicatorIf receiver = MessageLogTopPanel.getCurrentMessage().getSingleReceiver();
 //		task.setReceiver(receiver);
-		
+
 		// Progress
 		task.setProgress(0);
-		
+
 		// Responsible
 		String responsible = null;
 		task.setResponsibleRole(responsible);
@@ -281,14 +267,14 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 		buttonPanel.add(task);
 		buttonPanel.add(change);
 		m_contentsPanel.add(buttonPanel);
-		
+
 		change.setEnabled(false);
-	
+
 		m_buttonMap.put(task, change);
 		m_typeButtonMap.put(type, task);
 		m_buttonTypeMap.put(task, type);
 	}
-	
+
 	/**
 	 * Shows the edit task dialog, dialog should have been initialized before this is called
 	 */
@@ -320,7 +306,7 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 		{
 			taskTypes.add(getSubType(messageTask));
 		}
-		
+
 		for(TaskSubType type : TaskSubType.values())
 		{
 			JToggleButton button = m_typeButtonMap.get(type);
@@ -353,9 +339,9 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 			changeButton.setEnabled(false);
 		}
 	}
-	
+
 	/**
-	 * @return The change button for the given task. 
+	 * @return The change button for the given task.
 	 */
 	private JButton createChangeButton(final TaskSubType type)
 	{
@@ -377,10 +363,10 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 				showEditTaskDialog();
 			}
 		});
-		
+
 		return button;
 	}
-	
+
 	/**
 	 * Creates a button that toggles a task in the current message
 	 * @return Toggle button that add/remove task from current message
@@ -405,10 +391,10 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 				toggleTask(ae, type);
 			}
 		});
-		
+
 		return button;
 	}
-	
+
 	/**
 	 * Used to identify which of the tasks in this dialog, if any, a specific task is. General types
 	 * does not provide sufficient information to determine that
@@ -450,10 +436,10 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 		case GENERAL:
 			return TaskSubType.GENERAL;
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Translate between task sub types and task types
 	 * @param type
@@ -475,7 +461,7 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 		case GENERAL:
 			return TaskType.GENERAL;
 		}
-		
+
 		return null;
 	}
 

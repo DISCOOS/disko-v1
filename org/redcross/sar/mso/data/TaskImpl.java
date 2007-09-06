@@ -22,7 +22,7 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
     private final AttributeImpl.MsoCalendar m_alert = new AttributeImpl.MsoCalendar(this, "Alert");
     private final AttributeImpl.MsoCalendar m_created = new AttributeImpl.MsoCalendar(this, "Created");
 
-    private final AttributeImpl.MsoEnum<TaskStatus> m_status = new AttributeImpl.MsoEnum<TaskStatus>(this, "Status", TaskStatus.IDLE);
+    private final AttributeImpl.MsoEnum<TaskStatus> m_status = new AttributeImpl.MsoEnum<TaskStatus>(this, "Status", TaskStatus.UNPROCESSED);
     private final AttributeImpl.MsoEnum<TaskPriority> m_priority = new AttributeImpl.MsoEnum<TaskPriority>(this, "Priority", TaskPriority.LOW);
     private final AttributeImpl.MsoEnum<TaskType> m_type = new AttributeImpl.MsoEnum<TaskType>(this, "Type", TaskType.TRANSPORT);
     private final AttributeImpl.MsoEnum<IMsoManagerIf.MsoClassCode> m_sourceClass = new AttributeImpl.MsoEnum<IMsoManagerIf.MsoClassCode>(this,"SourceClass", IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);

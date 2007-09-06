@@ -12,7 +12,7 @@ public interface ITaskIf extends ITimeItemIf, ISerialNumberedIf, IEnumStatusHold
 
     public enum TaskStatus
     {
-        IDLE,
+        UNPROCESSED,
         STARTED,
         POSTPONED,
         FINISHED,
