@@ -37,6 +37,11 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
         return Internationalization.getFullBundleText(bundle, aKey);
     }
 
+    public static String getEnumText(Enum anEnum)
+    {
+        return getText(anEnum.getClass().getSimpleName() + "." + anEnum.name() + ".text");
+    }
+
     public TaskImpl(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         super(anObjectId);
