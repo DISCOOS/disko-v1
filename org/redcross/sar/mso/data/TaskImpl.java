@@ -21,11 +21,12 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
     private final AttributeImpl.MsoString m_taskText = new AttributeImpl.MsoString(this, "TaskText");
     private final AttributeImpl.MsoCalendar m_alert = new AttributeImpl.MsoCalendar(this, "Alert");
     private final AttributeImpl.MsoCalendar m_created = new AttributeImpl.MsoCalendar(this, "Created");
+    private final AttributeImpl.MsoString m_creatingWorkProcess = new AttributeImpl.MsoString(this,"CreatingWorkProcess");
 
     private final AttributeImpl.MsoEnum<TaskStatus> m_status = new AttributeImpl.MsoEnum<TaskStatus>(this, "Status", TaskStatus.UNPROCESSED);
     private final AttributeImpl.MsoEnum<TaskPriority> m_priority = new AttributeImpl.MsoEnum<TaskPriority>(this, "Priority", TaskPriority.LOW);
     private final AttributeImpl.MsoEnum<TaskType> m_type = new AttributeImpl.MsoEnum<TaskType>(this, "Type", TaskType.TRANSPORT);
-    private final AttributeImpl.MsoEnum<IMsoManagerIf.MsoClassCode> m_sourceClass = new AttributeImpl.MsoEnum<IMsoManagerIf.MsoClassCode>(this,"SourceClass", IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
+    private final AttributeImpl.MsoEnum<IMsoManagerIf.MsoClassCode> m_sourceClass = new AttributeImpl.MsoEnum<IMsoManagerIf.MsoClassCode>(this, "SourceClass", IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
 
     private final MsoReferenceImpl<IEventIf> m_createdEvent = new MsoReferenceImpl<IEventIf>(this, "CreatedEvent", true);
     private final MsoReferenceImpl<IMsoObjectIf> m_dependentObject = new MsoReferenceImpl<IMsoObjectIf>(this, "DependentObject", true);
@@ -68,6 +69,7 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
         addAttribute(m_status);
         addAttribute(m_type);
         addAttribute(m_sourceClass);
+        addAttribute(m_creatingWorkProcess);
     }
 
     @Override
@@ -153,6 +155,30 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
         return m_number;
     }
 
+    public void setCreatingWorkProcess(String aCreatingWorkProcess)
+    {
+        m_creatingWorkProcess.setValue(aCreatingWorkProcess);
+    }
+
+    public String getCreatingWorkProcess()
+    {
+        return m_creatingWorkProcess.getString();
+    }
+
+    public IMsoModelIf.ModificationState getCreatingWorkProcessState()
+    {
+        return m_creatingWorkProcess.getState();
+    }
+
+    public IAttributeIf.IMsoStringIf getCreatingWorkProcessAttribute()
+    {
+        return m_creatingWorkProcess;
+    }
+
+    /*-------------------------------------------------------------------------------------------
+    * Methods for enums
+    *-------------------------------------------------------------------------------------------*/
+
     public void setType(TaskType aType)
     {
         m_type.setValue(aType);
@@ -180,7 +206,7 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
 
     public String getTypeText()
     {
-        return Internationalization.getEnumText(bundle,m_type.getValue());
+        return Internationalization.getEnumText(bundle, m_type.getValue());
     }
 
     public void setProgress(int aProgress)
@@ -242,7 +268,6 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
     {
         return m_taskText;
     }
-
 
     public void setAlert(Calendar aAlert)
     {
@@ -311,7 +336,7 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
 
     public String getPriorityText()
     {
-        return Internationalization.getEnumText(bundle,m_priority.getValue());
+        return Internationalization.getEnumText(bundle, m_priority.getValue());
     }
 
     public int comparePriorityTo(IEnumPriorityHolder<TaskPriority> anObject)
@@ -336,7 +361,7 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
 
     public String getStatusText()
     {
-        return Internationalization.getEnumText(bundle,m_status.getValue());
+        return Internationalization.getEnumText(bundle, m_status.getValue());
     }
 
     public IMsoModelIf.ModificationState getStatusState()
@@ -379,6 +404,9 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
         return m_sourceClass;
     }
 
+    /*-------------------------------------------------------------------------------------------
+    * Methods for references
+    *-------------------------------------------------------------------------------------------*/
 
     public void setCreatedEvent(IEventIf aEvent)
     {
@@ -441,7 +469,7 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
 
     public IMsoObjectIf getSourceObject()
     {
-        switch(getSourceClass())
+        switch (getSourceClass())
         {
             case CLASSCODE_MESSAGE:
                 return findReferringMessage();
@@ -450,7 +478,7 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
         }
     }
 
-    private final SelfSelector<ITaskIf,IMessageIf> selectReferringMessage = new SelfSelector<ITaskIf,IMessageIf>(this)
+    private final SelfSelector<ITaskIf, IMessageIf> selectReferringMessage = new SelfSelector<ITaskIf, IMessageIf>(this)
     {
         public boolean select(IMessageIf anObject)
         {
@@ -460,7 +488,7 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
 
     private IMessageIf findReferringMessage()
     {
-        List<IMessageIf> messages = MsoModelImpl.getInstance().getMsoManager().getCmdPost().getMessageLog().selectItems(selectReferringMessage,null);
+        List<IMessageIf> messages = MsoModelImpl.getInstance().getMsoManager().getCmdPost().getMessageLog().selectItems(selectReferringMessage, null);
         return (messages.size() > 0) ? messages.get(0) : null;
     }
 }

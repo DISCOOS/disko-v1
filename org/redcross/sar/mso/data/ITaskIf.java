@@ -91,6 +91,14 @@ public interface ITaskIf extends ITimeItemIf, ISerialNumberedIf, IEnumStatusHold
 
     public IAttributeIf.IMsoCalendarIf getCreatedAttribute();
 
+    public void setCreatingWorkProcess(String aCreatingWorkProcess);
+
+    public String getCreatingWorkProcess();
+
+    public IMsoModelIf.ModificationState getCreatingWorkProcessState();
+
+    public IAttributeIf.IMsoStringIf getCreatingWorkProcessAttribute();
+
     /*-------------------------------------------------------------------------------------------
     * Methods for references
     *-------------------------------------------------------------------------------------------*/
