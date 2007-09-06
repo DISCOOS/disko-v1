@@ -30,15 +30,15 @@ import org.redcross.sar.util.mso.Selector;
 public class TaskTableModel extends AbstractTableModel implements IMsoUpdateListenerIf
 {
 	private static final long serialVersionUID = 1L;
-	
+
 	protected List<ITaskIf> m_tasks;
 	protected IDiskoWpTasks m_wpTasks;
-	
+
 	protected JTable m_table;
 	protected TaskTableRowSorter m_rowSorter;
-	
-//	protected EnumSet<TaskType> m_typeFilter = 
-//	protected EnumSet<TaskPriority> m_priorityFilter = 
+
+//	protected EnumSet<TaskType> m_typeFilter =
+//	protected EnumSet<TaskPriority> m_priorityFilter =
 	/**
 	 * Filters and comparators
 	 */
@@ -50,7 +50,7 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 			return true;
 		}
 	};
-	
+
 	private final static Comparator<ITaskIf> m_nrComparator = new Comparator<ITaskIf>()
 	{
 		public int compare(ITaskIf arg0, ITaskIf arg1)
@@ -59,30 +59,30 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 			return 0;
 		}
 	};
-	
+
 	private static Comparator<ITaskIf> m_taskComparator = m_nrComparator;
-	
+
 	public TaskTableModel(IDiskoWpTasks wp, JTable table)
 	{
 		m_wpTasks = wp;
 		m_table = table;
 		m_tasks = wp.getMsoManager().getCmdPost().getTaskList().selectItems(m_taskSelector, m_taskComparator);
-		
+
 		wp.getMmsoEventManager().addClientUpdateListener(this);
-		
+
 		m_rowSorter = new TaskTableRowSorter(this);
 		m_table.setRowSorter(m_rowSorter);
-		
+
 		PopupListener listener = new PopupListener(new TaskTableModel.HeaderPopupHandler(this, m_table));
         JTableHeader tableHeader = m_table.getTableHeader();
         tableHeader.addMouseListener(listener);
 	}
-	
+
 	public TaskTableRowSorter getRowSorter()
 	{
 		return m_rowSorter;
 	}
-	
+
 	public int getColumnCount()
 	{
 		return 6;
@@ -92,13 +92,13 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 	{
 		return m_tasks.size();
 	}
-	
+
     @Override
     public String getColumnName(int column)
     {
     	return m_wpTasks.getText("TableHeader" + column + ".text");
     }
-    
+
     protected void buildTable()
     {
     	m_tasks = m_wpTasks.getMsoManager().getCmdPost().getTaskList().selectItems(m_taskSelector, null);
@@ -108,13 +108,13 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 	public Object getValueAt(int row, int column)
 	{
 		ITaskIf task = m_tasks.get(row);
-		
+
 		switch(column)
 		{
 		case 0:
 			return task.getNumber();
 		case 1:
-			return TaskImpl.getEnumText(task.getPriorityState());
+			return task.getPriorityText();
 		case 2:
 			return task.getTaskText();
 		case 3:
@@ -122,12 +122,12 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 		case 4:
 			return DTG.CalToDTG(task.getDueTime());
 		case 5:
-			return TaskImpl.getEnumText(task.getStatus());
+			return task.getStatusText();
 		}
-		
+
 		return null;
 	}
-	
+
 	public void handleMsoUpdateEvent(Update e)
 	{
 		// Rebuild list
@@ -141,10 +141,10 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 	{
 		return myInterests.contains(msoObject.getMsoClassCode());
 	}
-	
+
 	/**
 	 * Sorts and filters table
-	 * 
+	 *
 	 * @author thomasl
 	 */
 	public class TaskTableRowSorter extends TableRowSorter<TaskTableModel>
@@ -153,7 +153,7 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 		{
 			super(model);
 		}
-		
+
 		@Override
 		 public Comparator<?> getComparator(int column)
 		 {
@@ -172,17 +172,17 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 			}
 		 }
 	}
-	
+
 	/**
 	 * Pop-up menu for table header
-	 * 
+	 *
 	 * @author thomasl
 	 */
 	public class HeaderPopupHandler extends AbstractPopupHandler implements ActionListener
     {
         private final TableColumnModel m_columnModel;
         private final JPopupMenu[] m_menus = new JPopupMenu[6];
-        
+
         private final static String ALL_TASKS_COMMAND = "ALL_TASKS";
         private final static String OWN_TASKS_COMMAND = "OWN_TASKS";
         private final static String LOW_PRIORITY_COMMAND = "LOW_PRIORITY";
@@ -202,30 +202,30 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
         	// Task pop-up menu
         	addMenuCheckBox(2, m_wpTasks.getText("AllRolesCheckBox.text"), ALL_TASKS_COMMAND, true);
         	addMenuCheckBox(2, m_wpTasks.getText("OwnTasksCheckBox.text"), OWN_TASKS_COMMAND, false);
-        	
+
         	// Status pop-up menu
         }
-        
+
         private void addMenuCheckBox(int menu, String label, String command, boolean selected)
         {
         	if(m_menus[menu] == null)
         	{
         		 m_menus[menu] = new JPopupMenu();
         	}
-        	
+
         	JCheckBoxMenuItem checkBox = new JCheckBoxMenuItem();
         	checkBox.setText(label);
         	checkBox.setActionCommand(command);
         	checkBox.addActionListener(this);
         	checkBox.setSelected(selected);
-        	
+
         	m_menus[menu].add(checkBox);
         }
 
         public void actionPerformed(ActionEvent e)
         {
         	String command = e.getActionCommand();
-        	
+
         	if(command.equals(ALL_TASKS_COMMAND))
         	{
         		// TODO Set filter
@@ -234,7 +234,7 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
         	{
         		// TODO Set filter
         	}
-        	
+
         	buildTable();
         	fireTableDataChanged();
         }
