@@ -47,9 +47,10 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
         super(anObjectId);
     }
 
-    public TaskImpl(IMsoObjectIf.IObjectIdIf anObjectId, Calendar aCalendar)
+    public TaskImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aSerialNumber, Calendar aCalendar)
     {
         super(anObjectId, aCalendar);
+        setNumber(aSerialNumber);
     }
 
     @Override

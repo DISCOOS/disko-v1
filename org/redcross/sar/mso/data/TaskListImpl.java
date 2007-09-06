@@ -20,7 +20,7 @@ public class TaskListImpl extends MsoListImpl<ITaskIf> implements ITaskListIf
     public ITaskIf createTask(Calendar aCalendar)
     {
         checkCreateOp();
-        return createdUniqueItem(new TaskImpl(makeUniqueId(), aCalendar));
+        return createdUniqueItem(new TaskImpl(makeUniqueId(), makeSerialNumber(), aCalendar));
     }
 
     public ITaskIf createTask(IMsoObjectIf.IObjectIdIf anObjectId)
