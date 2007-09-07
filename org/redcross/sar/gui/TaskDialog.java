@@ -113,6 +113,7 @@ public class TaskDialog extends DiskoDialog
 		m_createdTextField = new JTextField();
 		m_createdTextField.setEditable(false);
 		addComponent(2, m_resources.getString("TaskCreated.text"), m_createdTextField, 1, gbc);
+		
 		// Priority
 		m_priorityComboBox = new JComboBox(TaskPriority.values());
 		m_priorityComboBox.setSelectedIndex(1);
@@ -123,7 +124,14 @@ public class TaskDialog extends DiskoDialog
 		m_dueComboBox = new JComboBox();
 		updateDueComboBox(Calendar.getInstance());
 		m_dueComboBox.setEditable(true);
-		m_dueComboBox.setSelectedIndex(1);
+		m_dueComboBox.setSelectedIndex(2);
+//		m_dueComboBox.addItemListener(new ItemListener()
+//		{
+//			public void itemStateChanged(ItemEvent arg0)
+//			{
+//				m_dueComboBox.setSelectedItem(arg0.getItem());
+//			}
+//		});
 		addComponent(2, m_resources.getString("TaskDue.text"), m_dueComboBox, 1, gbc);
 		
 		// Responsible
@@ -217,8 +225,17 @@ public class TaskDialog extends DiskoDialog
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				updateTask();
-				setVisible(false);
+				if(timesValid())
+				{
+					updateTask();
+					setVisible(false);
+				}
+				else
+				{
+					ErrorDialog error = new ErrorDialog(m_application.getFrame());
+					error.showError(m_resources.getString("TimeError.header"),
+							m_resources.getString("TimeError.text"));
+				}
 			}
 		});
 		actionButtonPanel.add(m_finishedButton);
@@ -265,6 +282,27 @@ public class TaskDialog extends DiskoDialog
 		updateFieldsEditable();
 	}
 	
+	private boolean timesValid()
+	{
+		// Check that alert time is after creation time.
+		// Alert time will always be before due time
+		try
+		{
+			Calendar creationTime = Calendar.getInstance();
+			Calendar alertTime = null;
+			String alertString = ((String)m_alertComboBox.getSelectedItem()).split(" ")[0];
+			String dueString = (String)m_dueComboBox.getSelectedItem();
+			alertTime = DTG.DTGToCal(dueString);
+			alertTime.add(Calendar.MINUTE, -Integer.valueOf(alertString));
+			return alertTime.after(creationTime);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 	/**
 	 * Decides whether or not fields can be edited, given the current message
 	 */
@@ -305,7 +343,7 @@ public class TaskDialog extends DiskoDialog
 		if(m_currentTask == null)
 		{ 
 			m_currentTask = m_application.getMsoModel().getMsoManager().createTask(dueTime);
-//			m_currentTask.setStatus(TaskStatus.)
+			m_currentTask.setCreated(Calendar.getInstance());
 		}
 		
 		// Get text
@@ -321,22 +359,24 @@ public class TaskDialog extends DiskoDialog
 		m_currentTask.setPriority(priority);
 		
 		// Get responsible
+		String responsible = (String)m_responsibleComboBox.getSelectedItem();
+		m_currentTask.setResponsibleRole(responsible);
 		
 		// Get alert
 		Calendar alertTime = null;
 		try
 		{
 			String alertString = ((String)m_alertComboBox.getSelectedItem()).split(" ")[0];
-			alertTime = m_currentTask.getDueTime();
+			alertTime = DTG.DTGToCal((String)(m_dueComboBox.getSelectedItem()));
 			alertTime.add(Calendar.MINUTE, -Integer.valueOf(alertString));
 		}
 		catch(Exception e)
 		{
-			System.err.println("Error parsing alert time, setting to 5 min before due time");
+//			System.err.println("Error parsing alert time, setting to 5 min before due time");
 			alertTime = m_currentTask.getDueTime();
 			alertTime.add(Calendar.MINUTE, -5);
 		}
-//		m_currentTask.setAlertTime(alertTime); TODO
+		m_currentTask.setAlert(alertTime);
 		
 		// Get status
 		TaskStatus status = (TaskStatus)m_statusComboBox.getSelectedItem();
@@ -381,22 +421,19 @@ public class TaskDialog extends DiskoDialog
 			m_typeComboBox.setSelectedItem(type);
 			
 			// Created
-//			Calendar created = m_currentTask.getCreatedEvent().getEventTime();
-//			m_createdTextField.setText(DTG.CalToDTG(created));
+			Calendar created = m_currentTask.getCreated();
+			m_createdTextField.setText(DTG.CalToDTG(created));
 			
 			// Priority
 			TaskPriority priority = m_currentTask.getPriority();
 			m_priorityComboBox.setSelectedItem(priority);
 			
 			// Due
-//			updateDueComboBox(m_currentTask.getCreatedEvent().getEventTime());
+			updateDueComboBox(m_currentTask.getCreated());
 			
 			// Responsible
 			String responsible = m_currentTask.getResponsibleRole();
 			m_responsibleComboBox.setSelectedItem(responsible);
-			
-			// Alert
-//			Calendar alert = m_currentTask.get TODO
 			
 			// Status
 			TaskStatus status = m_currentTask.getStatus();
@@ -411,21 +448,31 @@ public class TaskDialog extends DiskoDialog
 			m_descriptionTextArea.setText(description);
 			
 			// Source
-//			String source = m_currentTask.get TODO
+			String source = m_currentTask.getSourceClassText();
+			m_sourceTextArea.setText(source);
 		}
 		else
 		{
 			// Updating a new task
 			m_typeComboBox.setSelectedItem(TaskType.GENERAL);
-			
+			m_createdTextField.setText(DTG.CalToDTG(Calendar.getInstance()));
+			m_priorityComboBox.setSelectedItem(TaskPriority.NORMAL);
+			updateDueComboBox(Calendar.getInstance());
 			m_responsibleComboBox.setSelectedItem(null);
+			m_alertComboBox.setSelectedIndex(0);
+			m_statusComboBox.setSelectedItem(TaskStatus.UNPROCESSED);
+			m_progressSpinner.setValue(0);
+			m_descriptionTextArea.setText("");
+			m_sourceTextArea.setText("");
+			m_objectTextField.setText("");
 		}
 	}
 	
 	private void updateDueComboBox(Calendar createdTime)
 	{
-		int intervals = 15;
-		int numItems = 4;
+		m_dueComboBox.removeAllItems();
+		int intervalSize = 15;
+		int numItems = 5;
 		Calendar dueItem = Calendar.getInstance();
 		dueItem.set(createdTime.get(Calendar.YEAR),
 				createdTime.get(Calendar.MONTH),
@@ -433,14 +480,14 @@ public class TaskDialog extends DiskoDialog
 				createdTime.get(Calendar.HOUR),
 				createdTime.get(Calendar.MINUTE),
 				createdTime.get(Calendar.SECOND));
-		String[] dueItems = new String[numItems];
 	
 		for(int i=0; i<numItems; i++)
 		{
-			dueItems[i] = DTG.CalToDTG(dueItem);
-			dueItem.add(Calendar.MINUTE, intervals);
+			dueItem.add(Calendar.MINUTE, intervalSize);
+			m_dueComboBox.addItem(DTG.CalToDTG(dueItem));
 		}
-		m_dueComboBox = new JComboBox(dueItems); // TODO No set items?
+		
+		m_dueComboBox.setSelectedIndex(2);
 	}
 	
 	/**

@@ -71,6 +71,7 @@ public class DeleteTaskDialog extends DiskoDialog
 		m_taskTextField = new JTextField();
 		m_taskTextField.setEditable(false);
 		m_taskTextField.setColumns(30);
+		m_taskTextField.setBackground(m_contentsPanel.getBackground());
 		gbc.gridx++;
 		m_contentsPanel.add(m_taskTextField, gbc);
 		
@@ -84,6 +85,7 @@ public class DeleteTaskDialog extends DiskoDialog
 		m_descriptionTextArea.setRows(5);
 		m_descriptionTextArea.setColumns(30);
 		m_descriptionTextArea.setBorder(BorderFactory.createLineBorder(Color.lightGray));
+		m_descriptionTextArea.setBackground(m_contentsPanel.getBackground());
 		gbc.gridx++;
 		m_contentsPanel.add(m_descriptionTextArea, gbc);
 		
