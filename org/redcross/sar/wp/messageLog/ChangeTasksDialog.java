@@ -171,6 +171,7 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 					if(!task.deleteObject())
 					{
 						System.err.println("Error removing task");
+						// TODO warning?
 					}
 				}
 			}
@@ -187,6 +188,8 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	 */
 	private void initTaskValues(ITaskIf task, TaskSubType type)
 	{
+		task.setCreated(Calendar.getInstance());
+		
 		if(type == TaskSubType.FINDING)
 		{
 			String taskText = String.format(m_wpMessageLog.getText("TaskSubType.FINDING.text"),
@@ -211,7 +214,6 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 			break;
 		case CONFIRM_INTELLIGENCE:
 			task.setType(TaskType.INTELLIGENCE);
-			// TODO Set receiver to none
 			break;
 		case FINDING:
 			task.setType(TaskType.INTELLIGENCE);
@@ -228,7 +230,7 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 		// Alert time
 		Calendar alertTime = Calendar.getInstance();
 		alertTime.add(Calendar.MINUTE, 15);
-//		task.setAlertTime(alertTime); // TODO To be implemented?
+		task.setAlert(alertTime);
 
 		// Priority
 		task.setPriority(TaskPriority.NORMAL);
@@ -242,17 +244,21 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 		{
 			e.printStackTrace();
 		}
-
-//		// Receiver
-//		ICommunicatorIf receiver = MessageLogTopPanel.getCurrentMessage().getSingleReceiver();
-//		task.setReceiver(receiver);
+		
+		// Source
+		task.setSourceClass(MessageLogTopPanel.getCurrentMessage().getMsoClassCode());
 
 		// Progress
 		task.setProgress(0);
-
+		
 		// Responsible
-		String responsible = null;
-		task.setResponsibleRole(responsible);
+		task.setResponsibleRole(null);
+
+		// WP
+		task.setCreatingWorkProcess(m_wpMessageLog.getName());
+		
+		// Object
+		task.setDependentObject(MessageLogTopPanel.getCurrentMessage().getSender());
 	}
 
 	/**

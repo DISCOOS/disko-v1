@@ -556,6 +556,12 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
         }
         return retVal;
     }
+    
+    @Override
+    public String shortDescriptor()
+    {
+    	return getTypeText() + " " + getNumber();
+    }
 
 
     public void rearrangeAsgPrioritiesAfterStatusChange(IAssignmentIf anAssignment, IAssignmentIf.AssignmentStatus oldStatus)

@@ -30,7 +30,6 @@ import org.redcross.sar.mso.data.ITaskIf;
 import org.redcross.sar.mso.data.TaskImpl;
 import org.redcross.sar.mso.data.ITaskIf.TaskPriority;
 import org.redcross.sar.mso.data.ITaskIf.TaskStatus;
-import org.redcross.sar.mso.data.ITaskIf.TaskType;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
 import org.redcross.sar.util.mso.Selector;
@@ -52,12 +51,6 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 
 	protected JTable m_table;
 	protected TaskTableRowSorter m_rowSorter;
-
-	protected static EnumSet<TaskType> m_typeFilter = EnumSet.of(
-			TaskType.GENERAL, 
-			TaskType.INTELLIGENCE, 
-			TaskType.RESOURCE, 
-			TaskType.TRANSPORT);
 	
 	protected static EnumSet<TaskPriority> m_priorityFilter = EnumSet.of(
 			TaskPriority.HIGH,
@@ -165,7 +158,6 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
     protected void buildTable()
     {
     	m_tasks = m_wpTasks.getMsoManager().getCmdPost().getTaskList().selectItems(m_taskSelector, null);
-    	m_table.invalidate();
     }
 
 	public Object getValueAt(int row, int column)
@@ -198,8 +190,10 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 		fireTableDataChanged();
 	}
 
-	private final EnumSet<IMsoManagerIf.MsoClassCode> myInterests = EnumSet.of(
-    		IMsoManagerIf.MsoClassCode.CLASSCODE_TASK);
+	private final EnumSet<IMsoManagerIf.MsoClassCode> myInterests = EnumSet.of
+	(
+    		IMsoManagerIf.MsoClassCode.CLASSCODE_TASK
+    );
 	public boolean hasInterestIn(IMsoObjectIf msoObject)
 	{
 		return myInterests.contains(msoObject.getMsoClassCode());

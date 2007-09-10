@@ -25,6 +25,7 @@ import javax.swing.border.BevelBorder;
 
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.gui.DiskoButtonFactory.ButtonType;
+import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.ITaskIf;
 import org.redcross.sar.mso.data.TaskImpl;
 import org.redcross.sar.mso.data.ITaskIf.TaskPriority;
@@ -135,18 +136,9 @@ public class TaskDialog extends DiskoDialog
 		addComponent(0, m_resources.getString("TaskResponsible.text"), m_responsibleComboBox, 0, gbc);
 		
 		// Alert
-		Object[] alertItems = null;
-		int startTime = 5;
-		int interval = 5;
-		int numValues = 4;
-		alertItems = new Object[numValues];
-		for(int i=0; i<numValues; i++)
-		{
-			alertItems[i] = (startTime + i*interval) + " " + m_resources.getString("TaskAlertItem.text");
-		}
-		m_alertComboBox = new JComboBox(alertItems);
+		m_alertComboBox = new JComboBox();
 		m_alertComboBox.setEditable(true);
-		m_alertComboBox.setSelectedIndex(0);
+		updateAlertComboBox();
 		addComponent(2, m_resources.getString("TaskAlert.text"), m_alertComboBox, 1, gbc);
 		
 		// Status
@@ -227,7 +219,7 @@ public class TaskDialog extends DiskoDialog
 		// Object
 		m_objectTextField = new JTextField();
 		m_objectTextField.setEditable(false);
-		gbc.gridwidth = 1;
+		gbc.gridwidth = 3;
 		addComponent(0, m_resources.getString("TaskObject.text"), m_objectTextField, 1, gbc);
 		
 		// Finish button
@@ -440,6 +432,9 @@ public class TaskDialog extends DiskoDialog
 			TaskPriority priority = m_currentTask.getPriority();
 			m_priorityComboBox.setSelectedItem(priority);
 			
+			// Alert
+			updateAlertComboBox();
+			
 			// Due
 			updateDueComboBox();
 			
@@ -460,8 +455,11 @@ public class TaskDialog extends DiskoDialog
 			m_descriptionTextArea.setText(description);
 			
 			// Source
-			String source = m_currentTask.getSourceClassText();
-			m_sourceTextArea.setText(source);
+			m_sourceTextArea.setText(m_currentTask.getSourceClassText());
+			
+			// Object
+			IMsoObjectIf object = m_currentTask.getDependentObject();
+			m_objectTextField.setText(object == null ? "" : object.shortDescriptor());
 		}
 		else
 		{
@@ -494,6 +492,30 @@ public class TaskDialog extends DiskoDialog
 		}
 		
 		m_dueComboBox.setSelectedIndex(2);
+	}
+	
+	private void updateAlertComboBox()
+	{
+		Object alertItem;
+		int startTime = 5;
+		int interval = 5;
+		int numValues = 5;
+		
+		m_alertComboBox.removeAllItems();
+		
+//		if(m_currentTask != null)
+//		{
+//			Calendar alert = m_currentTask.getAlert();
+//			Calendar due = m_currentTask.getDueTime();
+//		}
+	
+		for(int i=0; i<numValues; i++)
+		{
+			alertItem = (startTime + i*interval) + " " + m_resources.getString("TaskAlertItem.text");
+			m_alertComboBox.addItem(alertItem);
+		}
+		
+		m_alertComboBox.setSelectedIndex(2);
 	}
 	
 	/**

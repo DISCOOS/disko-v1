@@ -118,9 +118,14 @@ public class SinglePOITool extends AbstractCommandTool
 			if(task == null)
 			{
 				task = m_wpMessageLog.getMsoManager().createTask(Calendar.getInstance());
+				task.setCreated(Calendar.getInstance());
+				task.setAlert(Calendar.getInstance());
+				task.setPriority(TaskPriority.HIGH);
+				task.setResponsibleRole(null);
 				task.setType(TaskType.INTELLIGENCE);
 				task.setSourceClass(message.getMsoClassCode());
-				
+				task.setCreatingWorkProcess(m_wpMessageLog.getName());
+//				task.setDependentObject(message.getSender());
 				message.addMessageTask(task);
 			}
 			
@@ -132,9 +137,7 @@ public class SinglePOITool extends AbstractCommandTool
 			else
 			{
 				task.setTaskText(String.format(findingText, m_wpMessageLog.getText("SilentWitness.text")));
-			}	
-			// TODO set alert
-			task.setPriority(TaskPriority.HIGH);
+			}
 		}
 		
 		IPOIIf poi = messageLine.getLinePOI();
