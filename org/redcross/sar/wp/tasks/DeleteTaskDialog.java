@@ -19,6 +19,8 @@ import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.DiskoButtonFactory.ButtonType;
 import org.redcross.sar.mso.data.ITaskIf;
+import org.redcross.sar.mso.data.ITaskIf.TaskStatus;
+import org.redcross.sar.util.except.IllegalOperationException;
 
 /**
  * Dialog for deleting a task
@@ -133,14 +135,24 @@ public class DeleteTaskDialog extends DiskoDialog
 	{
 		if(m_currentTask != null)
 		{
-			if(!m_currentTask.deleteObject())
+//			if(!m_currentTask.deleteObject())
+//			{
+//				System.err.println("Task not deleted");
+//			}
+//			else
+//			{
+//				m_currentTask = null;
+//			}
+			try
 			{
-				System.err.println("Task not deleted");
-			}
-			else
+				m_currentTask.setStatus(TaskStatus.DELETED);
+			} 
+			catch (IllegalOperationException e)
 			{
-				m_currentTask = null;
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+			m_currentTask = null;
 		}
 		this.setVisible(false);
 	}

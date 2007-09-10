@@ -119,6 +119,8 @@ public class SinglePOITool extends AbstractCommandTool
 			{
 				task = m_wpMessageLog.getMsoManager().createTask(Calendar.getInstance());
 				task.setType(TaskType.INTELLIGENCE);
+				task.setSourceClass(message.getMsoClassCode());
+				
 				message.addMessageTask(task);
 			}
 			

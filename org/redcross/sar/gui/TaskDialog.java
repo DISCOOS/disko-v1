@@ -7,10 +7,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
@@ -20,17 +17,14 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
-import javax.swing.SpinnerNumberModel;
 import javax.swing.border.BevelBorder;
 
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.gui.DiskoButtonFactory.ButtonType;
-import org.redcross.sar.gui.renderers.DTGListCellRenderer;
-import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
 import org.redcross.sar.mso.data.ITaskIf;
 import org.redcross.sar.mso.data.TaskImpl;
 import org.redcross.sar.mso.data.ITaskIf.TaskPriority;
@@ -65,7 +59,7 @@ public class TaskDialog extends DiskoDialog
 	private JComboBox m_responsibleComboBox = null;
 	private JComboBox m_alertComboBox = null;
 	private JComboBox m_statusComboBox = null;
-	private JSpinner m_progressSpinner = null;
+	private JComboBox m_progressComboBox = null;
 	private JButton m_useSourceButton = null;
 	private JTextArea m_descriptionTextArea = null;
 	private JTextArea m_sourceTextArea = null;
@@ -122,16 +116,9 @@ public class TaskDialog extends DiskoDialog
 		
 		// Due
 		m_dueComboBox = new JComboBox();
-		updateDueComboBox(Calendar.getInstance());
+		updateDueComboBox();
 		m_dueComboBox.setEditable(true);
 		m_dueComboBox.setSelectedIndex(2);
-//		m_dueComboBox.addItemListener(new ItemListener()
-//		{
-//			public void itemStateChanged(ItemEvent arg0)
-//			{
-//				m_dueComboBox.setSelectedItem(arg0.getItem());
-//			}
-//		});
 		addComponent(2, m_resources.getString("TaskDue.text"), m_dueComboBox, 1, gbc);
 		
 		// Responsible
@@ -163,25 +150,50 @@ public class TaskDialog extends DiskoDialog
 		addComponent(2, m_resources.getString("TaskAlert.text"), m_alertComboBox, 1, gbc);
 		
 		// Status
-		m_statusComboBox = new JComboBox(TaskStatus.values());
+		TaskStatus[] statusItems =
+		{
+			TaskStatus.UNPROCESSED,
+			TaskStatus.STARTED,
+			TaskStatus.POSTPONED,
+			TaskStatus.FINISHED,
+		};
+		m_statusComboBox = new JComboBox(statusItems);
 		m_statusComboBox.setSelectedIndex(0);
 		m_statusComboBox.setRenderer(new TaskEnumListCellRenderer());
+		m_statusComboBox.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				// If status is set to finished, progress should be set to 100%
+				TaskStatus selectedStatus = (TaskStatus)m_statusComboBox.getSelectedItem();
+				if(selectedStatus == TaskStatus.FINISHED)
+				{
+					m_progressComboBox.setSelectedIndex(10);
+					m_progressComboBox.setEnabled(false);
+				}
+				else
+				{
+					m_progressComboBox.setEnabled(true);
+				}
+			}
+		});
 		addComponent(0, m_resources.getString("TaskStatus.text"), m_statusComboBox, 0, gbc);
 		
 		// Progress
-		m_progressSpinner = new JSpinner();
-		m_progressSpinner.setModel(new SpinnerNumberModel(0, 0, 100, 1));
+		String[] progressItems = {"0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"};
+		m_progressComboBox = new JComboBox(progressItems);
 //		m_progressTextField.setText(String.valueOf(0));
-		addComponent(2, m_resources.getString("TaskProgress.text"), m_progressSpinner, 1, gbc);
+		addComponent(2, m_resources.getString("TaskProgress.text"), m_progressComboBox, 1, gbc);
 		
 		// Description
 		m_descriptionTextArea = new JTextArea();
+		JScrollPane scrollPane = new JScrollPane(m_descriptionTextArea);
+		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		m_descriptionTextArea.setRows(10);
-		m_descriptionTextArea.setBorder(BorderFactory.createLineBorder(Color.lightGray));
 		m_descriptionTextArea.setLineWrap(true);
 		m_descriptionTextArea.setWrapStyleWord(true);
 		gbc.gridwidth = 3;
-		addComponent(0, m_resources.getString("TaskDescription.text"), m_descriptionTextArea, 10, gbc);
+		addComponent(0, m_resources.getString("TaskDescription.text"), scrollPane, 10, gbc);
 		
 		// Use source
 		m_useSourceButton = DiskoButtonFactory.createSmallButton(m_resources.getString("TaskUseSource.text"));
@@ -390,7 +402,7 @@ public class TaskDialog extends DiskoDialog
 		}
 		
 		// Get progress
-		int progress = (Integer)m_progressSpinner.getValue();
+		int progress = Integer.valueOf(((String)m_progressComboBox.getSelectedItem()).split("%")[0]);
 		m_currentTask.setProgress(progress);
 		
 		// Get description
@@ -429,7 +441,7 @@ public class TaskDialog extends DiskoDialog
 			m_priorityComboBox.setSelectedItem(priority);
 			
 			// Due
-			updateDueComboBox(m_currentTask.getCreated());
+			updateDueComboBox();
 			
 			// Responsible
 			String responsible = m_currentTask.getResponsibleRole();
@@ -441,7 +453,7 @@ public class TaskDialog extends DiskoDialog
 			
 			// Progress
 			int progress = m_currentTask.getProgress();
-			m_progressSpinner.setValue(progress);
+			m_progressComboBox.setSelectedIndex(progress/10);
 			
 			// Description
 			String description = m_currentTask.getDescription();
@@ -457,34 +469,28 @@ public class TaskDialog extends DiskoDialog
 			m_typeComboBox.setSelectedItem(TaskType.GENERAL);
 			m_createdTextField.setText(DTG.CalToDTG(Calendar.getInstance()));
 			m_priorityComboBox.setSelectedItem(TaskPriority.NORMAL);
-			updateDueComboBox(Calendar.getInstance());
+			updateDueComboBox();
 			m_responsibleComboBox.setSelectedItem(null);
 			m_alertComboBox.setSelectedIndex(0);
 			m_statusComboBox.setSelectedItem(TaskStatus.UNPROCESSED);
-			m_progressSpinner.setValue(0);
+			m_progressComboBox.setSelectedIndex(0);
 			m_descriptionTextArea.setText("");
 			m_sourceTextArea.setText("");
 			m_objectTextField.setText("");
 		}
 	}
 	
-	private void updateDueComboBox(Calendar createdTime)
+	private void updateDueComboBox()
 	{
 		m_dueComboBox.removeAllItems();
 		int intervalSize = 15;
 		int numItems = 5;
 		Calendar dueItem = Calendar.getInstance();
-		dueItem.set(createdTime.get(Calendar.YEAR),
-				createdTime.get(Calendar.MONTH),
-				createdTime.get(Calendar.DATE),
-				createdTime.get(Calendar.HOUR),
-				createdTime.get(Calendar.MINUTE),
-				createdTime.get(Calendar.SECOND));
-	
+		
 		for(int i=0; i<numItems; i++)
 		{
-			dueItem.add(Calendar.MINUTE, intervalSize);
 			m_dueComboBox.addItem(DTG.CalToDTG(dueItem));
+			dueItem.add(Calendar.MINUTE, intervalSize);
 		}
 		
 		m_dueComboBox.setSelectedIndex(2);
@@ -528,6 +534,7 @@ public class TaskDialog extends DiskoDialog
 	 * 
 	 * @author thomasl
 	 */
+	@SuppressWarnings("unchecked")
 	private class TaskEnumListCellRenderer extends JLabel implements ListCellRenderer
 	{
 		private static final long serialVersionUID = 1L;

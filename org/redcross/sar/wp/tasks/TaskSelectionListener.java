@@ -1,5 +1,6 @@
 package org.redcross.sar.wp.tasks;
 
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -15,12 +16,12 @@ import org.redcross.sar.mso.data.ITaskIf;
 public class TaskSelectionListener implements ListSelectionListener
 {
 	protected IDiskoWpTasks m_wpTasks;
-	protected TaskTableModel m_model;
+	protected JTable m_table;
 	
-	public TaskSelectionListener(IDiskoWpTasks wp, TaskTableModel model)
+	public TaskSelectionListener(IDiskoWpTasks wp, JTable table)
 	{
 		m_wpTasks = wp;
-		m_model = model;
+		m_table = table;
 	}
 	public void valueChanged(ListSelectionEvent lse)
 	{
@@ -28,9 +29,16 @@ public class TaskSelectionListener implements ListSelectionListener
 		ListSelectionModel lsm = (ListSelectionModel)lse.getSource();
 		
 		int index = lsm.getMinSelectionIndex();
+		if(index < 0)
+		{
+			return;
+		}
+		
+		int taskNr = (Integer)m_table.getValueAt(index, 0);
 		
 		// Inform work process of selection
-		ITaskIf task = m_model.getTask(index);
+		TaskTableModel model = (TaskTableModel)m_table.getModel();
+		ITaskIf task = model.getTask(taskNr);
 		
 		m_wpTasks.setCurrentTask(task);
 	}

@@ -12,14 +12,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableRowSorter;
 
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.gui.SubMenuPanel;
 import org.redcross.sar.gui.TaskDialog;
-import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
 import org.redcross.sar.mso.data.ITaskIf;
 import org.redcross.sar.mso.data.ITaskIf.TaskStatus;
 import org.redcross.sar.util.except.IllegalOperationException;
@@ -35,7 +34,6 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 	private JPanel m_contentsPanel;
 	
 	private JTable m_taskTable;
-	private TableRowSorter<TaskTableModel> m_rowSorter;
 	
 	private JButton m_newButton;
 	private JButton m_changeButton;
@@ -125,7 +123,8 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 		m_taskTable = new JTable();
 		TaskTableModel model = new TaskTableModel(this, m_taskTable);
 		m_taskTable.setModel(model);
-		m_taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionListener(this, model));
+		m_taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionListener(this, m_taskTable));
+		m_taskTable.setDefaultRenderer(Object.class, new TaskTableRenderer());
 		
 		TableColumn column = m_taskTable.getColumnModel().getColumn(0);
 		column.setMaxWidth(75);
@@ -205,10 +204,19 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 	{
 		if(m_currentTask != null)
 		{
-			hideDialogs();
-			m_deleteTaskDialog.setTask(m_currentTask);
-			m_deleteTaskDialog.setLocationRelativeTo(m_contentsPanel, DiskoDialog.POS_CENTER, false);
-			m_deleteTaskDialog.setVisible(true);
+			if(m_currentTask.getStatus() == TaskStatus.FINISHED)
+			{
+				ErrorDialog error = new ErrorDialog(this.getApplication().getFrame());
+				error.showError(this.getText("CanNotDeleteTaskError.header"),
+						this.getText("CanNotDeleteTaskError.text"));
+			}
+			else
+			{
+				hideDialogs();
+				m_deleteTaskDialog.setTask(m_currentTask);
+				m_deleteTaskDialog.setLocationRelativeTo(m_contentsPanel, DiskoDialog.POS_CENTER, false);
+				m_deleteTaskDialog.setVisible(true);
+			}
 		}
 	}
 	
