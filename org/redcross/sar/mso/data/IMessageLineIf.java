@@ -88,4 +88,6 @@ public interface IMessageLineIf extends IMsoObjectIf
     public IMsoModelIf.ModificationState getLineAssignmentState();
 
     public IMsoReferenceIf<IAssignmentIf> geLinetAssignmentAttribute();
+
+    public IMessageIf getOwningMessage();
 }

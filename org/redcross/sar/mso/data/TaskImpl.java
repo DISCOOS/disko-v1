@@ -9,7 +9,6 @@ import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.util.except.MsoCastException;
 
 import java.util.Calendar;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class TaskImpl extends AbstractTimeItem implements ITaskIf
@@ -472,23 +471,22 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
         switch (getSourceClass())
         {
             case CLASSCODE_MESSAGE:
-                return findReferringMessage();
+                return getOwningMessage();
             default: // todo supply with other class codes
                 return null;
         }
     }
 
-    private final SelfSelector<ITaskIf, IMessageIf> selectReferringMessage = new SelfSelector<ITaskIf, IMessageIf>(this)
+    private final SelfSelector<ITaskIf, IMessageIf> referringMessageSelector = new SelfSelector<ITaskIf, IMessageIf>(this)
     {
         public boolean select(IMessageIf anObject)
         {
-            return anObject.getMessageTasksItems().contains(m_object);
+            return anObject.getMessageTasks().contains(m_object);
         }
     };
 
-    private IMessageIf findReferringMessage()
+    private IMessageIf getOwningMessage()
     {
-        List<IMessageIf> messages = MsoModelImpl.getInstance().getMsoManager().getCmdPost().getMessageLog().selectItems(selectReferringMessage, null);
-        return (messages.size() > 0) ? messages.get(0) : null;
+        return  MsoModelImpl.getInstance().getMsoManager().getCmdPost().getMessageLog().selectSingleItem(referringMessageSelector);
     }
 }

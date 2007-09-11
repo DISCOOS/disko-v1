@@ -78,9 +78,9 @@ public class SarMsoMapper {
             List<TimePos> posList = mapTimePosListToSaraTimePos(lAttr.getTrack().getTrackTimePos());
             ((SarFactTrack) sarFact).setTrack(posList, lAttr.getTrack().getName(), lAttr.getTrack().getLayout(), distribute);
         }
-        if (msoAttr instanceof AttributeImpl.MsoGeoList) {
-            throw new ClassCastException("MsoGeoList not supported by mapper");
-        }
+// todo remove        if (msoAttr instanceof AttributeImpl.MsoGeoList) {
+// todo remove            throw new ClassCastException("MsoGeoList not supported by mapper");
+// todo remove        }
         if (msoAttr instanceof AttributeImpl.MsoEnum) {
             AttributeImpl.MsoEnum lAttr = (AttributeImpl.MsoEnum) msoAttr;
             ((SarFactString) sarFact).setStringValue(lAttr.getValueName(), distribute);
@@ -163,8 +163,8 @@ public class SarMsoMapper {
             }
             lAttr.setValue(lPoly);
 
-        } else if (msoAttr instanceof AttributeImpl.MsoGeoList) {
-            throw new ClassCastException("MsoGeoList not supported by mapper");
+// todo remove        } else if (msoAttr instanceof AttributeImpl.MsoGeoList) {
+// todo remove            throw new ClassCastException("MsoGeoList not supported by mapper");
         } else if (msoAttr instanceof AttributeImpl.MsoEnum) {
             AttributeImpl.MsoEnum lAttr = (AttributeImpl.MsoEnum) msoAttr;
             if(((SarFactString) sarFact).getStringValue().length()>0)

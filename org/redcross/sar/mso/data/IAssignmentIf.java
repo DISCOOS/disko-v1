@@ -215,8 +215,8 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
 
     int getTypenr();
 
-//    public final static EnumSet<AssignmentStatus> CAN_START_SET = EnumSet.of(AssignmentStatus.ALLOCATED, AssignmentStatus.ASSIGNED);
-    public final static EnumSet<AssignmentStatus> ACTIVE_SET = EnumSet.of(AssignmentStatus.ALLOCATED, AssignmentStatus.ASSIGNED,AssignmentStatus.EXECUTING);
+    //    public final static EnumSet<AssignmentStatus> CAN_START_SET = EnumSet.of(AssignmentStatus.ALLOCATED, AssignmentStatus.ASSIGNED);
+    public final static EnumSet<AssignmentStatus> ACTIVE_SET = EnumSet.of(AssignmentStatus.ALLOCATED, AssignmentStatus.ASSIGNED, AssignmentStatus.EXECUTING);
     public final static EnumSet<AssignmentStatus> FINISHED_SET = EnumSet.of(AssignmentStatus.ABORTED, AssignmentStatus.FINISHED);
     public final static EnumSet<AssignmentStatus> FINISHED_AND_REPORTED_SET = EnumSet.of(AssignmentStatus.ABORTED, AssignmentStatus.FINISHED, AssignmentStatus.REPORTED);
     public final static AbstractMsoObject.StatusSelector<IAssignmentIf, AssignmentStatus> READY_SELECTOR = new AbstractMsoObject.StatusSelector<IAssignmentIf, AssignmentStatus>(AssignmentStatus.READY);
@@ -232,7 +232,7 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
             return o1.getPrioritySequence() - o2.getPrioritySequence();
         }
     };
-    
+
     public final static Comparator<IAssignmentIf> PRIORITY_COMPARATOR = new Comparator<IAssignmentIf>()
     {
         public int compare(IAssignmentIf o1, IAssignmentIf o2)
@@ -256,6 +256,11 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
         }
     };
 
-     public IMessageLineIf getLatestStatusChangeMessageLine(final IMessageLineIf.MessageLineType aType);
+    public IMessageLineIf getLatestStatusChangeMessageLine(final IMessageLineIf.MessageLineType aType);
+
+    public boolean transferMessageConfirmed();
+
+    public boolean transferMessageConfirmed(AssignmentStatus aStatus);
+
 
 }

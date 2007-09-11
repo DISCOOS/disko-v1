@@ -29,7 +29,8 @@ public class PlannedAreaFeature extends AbstractMsoFeature {
 
 	public boolean geometryIsChanged(IMsoObjectIf msoObj) {
 		IAreaIf area = (IAreaIf)msoObject;
-		return area.getGeodata() != null && !area.getGeodata().equals(getGeodata());
+//CMR		return area.getGeodata() != null && !area.getGeodata().equals(getGeodata());
+        return area.getAreaGeodata() != null && !area.getAreaGeodata().equals(getGeodata());
 	}
 
 	@Override

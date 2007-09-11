@@ -123,7 +123,7 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
     {
         return getUnitNumberPrefix() + Integer.toString(getNumber());
     }
-    
+
     public String getTypeAndNumber()
     {
     	return getTypeText() + " " + getUnitNumber();
@@ -603,34 +603,40 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
         return m_unitAssignments.selectItems(IAssignmentIf.ALLOCATED_SELECTOR, IAssignmentIf.PRIORITY_SEQUENCE_COMPARATOR);
     }
 
+    public IAssignmentIf getAssignedAssignment()
+    {
+        return m_unitAssignments.selectSingleItem(IAssignmentIf.ASSIGNED_SELECTOR);
+    }
+
     public List<IAssignmentIf> getAssignedAssignments()
     {
         return m_unitAssignments.selectItems(IAssignmentIf.ASSIGNED_SELECTOR, null);
     }
 
-    public List<IAssignmentIf> getExecutingAssigment()
+    public IAssignmentIf getExecutingAssigment()
+    {
+        return m_unitAssignments.selectSingleItem(IAssignmentIf.EXECUTING_SELECTOR);
+    }
+
+    public List<IAssignmentIf> getExecutingAssigments()
     {
         return m_unitAssignments.selectItems(IAssignmentIf.EXECUTING_SELECTOR, null);
     }
 
-    public List<IAssignmentIf> getFinishedAssigment()
+    public List<IAssignmentIf> getFinishedAssigments()
     {
         return m_unitAssignments.selectItems(IAssignmentIf.FINISHED_SELECTOR, null);
     }
 
     public IAssignmentIf getActiveAssignment()
     {
-        List<IAssignmentIf> asgList = getAssignedAssignments();
-        if (asgList.size() > 0)
+        IAssignmentIf retVal;
+        retVal = getAssignedAssignment();
+        if (retVal != null)
         {
-            return asgList.get(0);
+            return retVal;
         }
-        asgList = getExecutingAssigment();
-        if (asgList.size() > 0)
-        {
-            return asgList.get(0);
-        }
-        return null;
+        return getExecutingAssigment();
     }
 
     public boolean addAllocatedAssignment(IAssignmentIf newAssignment, IAssignmentIf beforeAssignment)

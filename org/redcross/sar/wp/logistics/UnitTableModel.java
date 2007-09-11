@@ -166,9 +166,9 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
             case 1:
                 return aUnit.getAssignedAssignments();
             case 2:
-                return aUnit.getExecutingAssigment();
+                return aUnit.getExecutingAssigments();
             default:
-                return aUnit.getFinishedAssigment();
+                return aUnit.getFinishedAssigments();
         }
     }
 

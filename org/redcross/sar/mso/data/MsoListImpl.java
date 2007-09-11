@@ -377,6 +377,19 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         return retVal;
     }
 
+    public M selectSingleItem(Selector<M> aSelector)
+    {
+        for (M item : getItems())
+        {
+            if (aSelector.select(item))
+            {
+                return item;
+            }
+        }
+        return null;
+    }
+
+
     protected M createdItem(M anObject)
     {
         ((AbstractMsoObject) anObject).setupReferences();
@@ -447,4 +460,54 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
     {
         return (m_items.containsKey(anObject.getObjectId()) || m_added.containsKey(anObject.getObjectId()));
     }
+
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+
+        MsoListImpl<M> position = null;
+        try
+        {
+            position = (MsoListImpl<M>) o;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+
+        if (m_owner != null ? !m_owner.equals(position.m_owner) : position.m_owner != null)
+        {
+            return false;
+        }
+        if (m_name != null ? !m_name.equals(position.m_name) : position.m_name != null)
+        {
+            return false;
+        }
+        if (m_isMain != position.m_isMain)
+        {
+            return false;
+        }
+        if (m_items != null ? !m_items.equals(position.m_items) : position.m_items != null)
+        {
+            return false;
+        }
+        if (m_added!= null ? !m_added.equals(position.m_added) : position.m_added != null)
+        {
+            return false;
+        }
+        if (m_deleted != null ? !m_deleted.equals(position.m_deleted) : position.m_deleted != null)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
 }

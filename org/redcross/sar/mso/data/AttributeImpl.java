@@ -735,45 +735,45 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
         }
     }
 
-    public static class MsoGeoList extends AttributeImpl<GeoList> implements IMsoGeoListIf
-    {
-        public MsoGeoList(AbstractMsoObject theOwner, String theName)
-        {
-            super(GeoList.class, theOwner, theName, Integer.MAX_VALUE, null);
-        }
-
-        public MsoGeoList(AbstractMsoObject theOwner, String theName, int theIndexNo)
-        {
-            super(GeoList.class, theOwner, theName, theIndexNo, null);
-        }
-
-        public MsoGeoList(AbstractMsoObject theOwner, String theName, int theIndexNo, GeoList aGeoList)
-        {
-            super(GeoList.class, theOwner, theName, theIndexNo, aGeoList);
-        }
-
-        @Override
-        public void set(GeoList aGeoList)
-        {
-            super.set(aGeoList);
-        }
-
-        public void setValue(GeoList aGeoList)
-        {
-            super.setAttrValue(aGeoList);
-        }
-
-        public GeoList getGeoList()
-        {
-            return getAttrValue();
-        }
-
-        public boolean isGisAttribute()
-        {
-            return true;
-        }
-    }
-
+// todo remove    public static class MsoGeoList extends AttributeImpl<GeoList> implements IMsoGeoListIf
+//    {
+//        public MsoGeoList(AbstractMsoObject theOwner, String theName)
+//        {
+//            super(GeoList.class, theOwner, theName, Integer.MAX_VALUE, null);
+//        }
+//
+//        public MsoGeoList(AbstractMsoObject theOwner, String theName, int theIndexNo)
+//        {
+//            super(GeoList.class, theOwner, theName, theIndexNo, null);
+//        }
+//
+//        public MsoGeoList(AbstractMsoObject theOwner, String theName, int theIndexNo, GeoList aGeoList)
+//        {
+//            super(GeoList.class, theOwner, theName, theIndexNo, aGeoList);
+//        }
+//
+//        @Override
+//        public void set(GeoList aGeoList)
+//        {
+//            super.set(aGeoList);
+//        }
+//
+//        public void setValue(GeoList aGeoList)
+//        {
+//            super.setAttrValue(aGeoList);
+//        }
+//
+//        public GeoList getGeoList()
+//        {
+//            return getAttrValue();
+//        }
+//
+//        public boolean isGisAttribute()
+//        {
+//            return true;
+//        }
+//    }
+//
     public static class MsoEnum<E extends Enum> extends AttributeImpl<E> implements IMsoEnumIf<E>
     {
         public MsoEnum(AbstractMsoObject theOwner, String theName, E anInstance)
@@ -880,7 +880,7 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
     {
         int result;
         result = (m_class != null ? m_class.hashCode() : 0);
-        result = 31 * result + (m_owner != null ? m_owner.hashCode() : 0);
+        result = 31 * result + (m_owner != null ? m_owner.getObjectId().hashCode() : 0); // To avoid eternal loop
         result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
         result = 31 * result + m_indexNo;
         result = 31 * result + (m_required ? 1 : 0);

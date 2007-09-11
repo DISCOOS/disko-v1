@@ -2,7 +2,6 @@ package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.IllegalOperationException;
-import org.redcross.sar.util.mso.GeoList;
 import org.redcross.sar.util.mso.IGeodataIf;
 
 import java.util.Collection;
@@ -14,13 +13,13 @@ public interface IAreaIf extends IMsoObjectIf
     * Methods for attributes
     *-------------------------------------------------------------------------------------------*/
 
-    public void setGeodata(GeoList aGeodata);
-
-    public GeoList getGeodata();
-
-    public IMsoModelIf.ModificationState getGeodataState();
-
-    public IAttributeIf.IMsoGeoListIf getGeodataAttribute();
+// todo remove   public void setGeodata(GeoList aGeodata);
+//
+//    public GeoList getGeodata();
+//
+//    public IMsoModelIf.ModificationState getGeodataState();
+//
+//    public IAttributeIf.IMsoGeoListIf getGeodataAttribute();
 
     public void setRemarks(String aRemarks);
 

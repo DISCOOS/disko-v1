@@ -13,12 +13,9 @@ import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.mso.data.IAreaIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.IRouteIf;
-import org.redcross.sar.util.mso.GeoList;
-import org.redcross.sar.util.mso.IGeodataIf;
 import org.redcross.sar.util.mso.Route;
 
 import java.io.IOException;
-import java.util.Iterator;
 
 /**
  * A custom draw tool.
@@ -80,18 +77,18 @@ public class FlankTool extends AbstractCommandTool {
 		}
 	}
 
-	private Route getRouteAt(GeoList geoList, int index) { // todo (vw) Use direct lookup in list in stead
-        Iterator iter = geoList.getPositions().iterator();
-		int i = 0;
-		while (iter.hasNext()) {
-			IGeodataIf geodata = (IGeodataIf) iter.next();
-			if (geodata instanceof Route && index == i) {
-				return (Route)geodata;
-			}
-			i++;
-		}
-		return null;
-	}
+//CMR	private Route getRouteAt(GeoList geoList, int index) { // todo (vw) Use direct lookup in list in stead
+//CMR        Iterator iter = geoList.getPositions().iterator();
+//CMR		int i = 0;
+//CMR		while (iter.hasNext()) {
+//CMR			IGeodataIf geodata = (IGeodataIf) iter.next();
+//CMR			if (geodata instanceof Route && index == i) {
+//CMR				return (Route)geodata;
+//CMR			}
+//CMR			i++;
+//CMR		}
+//CMR		return null;
+//CMR	}
 
 	private String getLayout() throws AutomationException, IOException {
 		FlankDialog flankDialog = (FlankDialog)dialog;

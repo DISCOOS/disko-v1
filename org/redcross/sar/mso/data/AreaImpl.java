@@ -5,7 +5,6 @@ import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.util.except.MsoCastException;
-import org.redcross.sar.util.mso.GeoList;
 import org.redcross.sar.util.mso.IGeodataIf;
 import org.redcross.sar.util.mso.Selector;
 
@@ -16,7 +15,7 @@ import java.util.*;
  */
 public class AreaImpl extends AbstractMsoObject implements IAreaIf
 {
-    private final AttributeImpl.MsoGeoList m_geodata = new AttributeImpl.MsoGeoList(this, "Geodata");
+// todo remove   private final AttributeImpl.MsoGeoList m_geodata = new AttributeImpl.MsoGeoList(this, "Geodata");
     private final AttributeImpl.MsoString m_remarks = new AttributeImpl.MsoString(this, "Remarks");
     private final POIListImpl m_areaPOIs = new POIListImpl(this, "AreaPOIs", false);
     private final MsoListImpl<IMsoObjectIf> m_areaGeodata = new MsoListImpl<IMsoObjectIf>(this, "AreaGeodata", false);
@@ -28,7 +27,7 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
 
     protected void defineAttributes()
     {
-        addAttribute(m_geodata);
+// todo remove        addAttribute(m_geodata);
         addAttribute(m_remarks);
     }
 
@@ -99,25 +98,25 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
     }
 
 
-    public void setGeodata(GeoList aGeodata)
-    {
-        m_geodata.setValue(aGeodata);
-    }
-
-    public GeoList getGeodata()
-    {
-        return m_geodata.getGeoList();
-    }
-
-    public IMsoModelIf.ModificationState getGeodataState()
-    {
-        return m_geodata.getState();
-    }
-
-    public IAttributeIf.IMsoGeoListIf getGeodataAttribute()
-    {
-        return m_geodata;
-    }
+// todo remove   public void setGeodata(GeoList aGeodata)
+//    {
+//        m_geodata.setValue(aGeodata);
+//    }
+//
+//    public GeoList getGeodata()
+//    {
+//        return m_geodata.getGeoList();
+//    }
+//
+//    public IMsoModelIf.ModificationState getGeodataState()
+//    {
+//        return m_geodata.getState();
+//    }
+//
+//    public IAttributeIf.IMsoGeoListIf getGeodataAttribute()
+//    {
+//        return m_geodata;
+//    }
 
     public void setRemarks(String aRemarks)
     {
@@ -236,8 +235,7 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
 
     public IAssignmentIf getOwningAssignment()
     {
-        List<IAssignmentIf> retVal = MsoModelImpl.getInstance().getMsoManager().getCmdPost().getAssignmentList().selectItems(owningAssigmentSelector, null);
-        return (retVal.size() == 0) ? null : retVal.get(0);
+        return MsoModelImpl.getInstance().getMsoManager().getCmdPost().getAssignmentList().selectSingleItem(owningAssigmentSelector);
     }
 
     public void verifyAssignable(IAssignmentIf anAssignment) throws IllegalOperationException

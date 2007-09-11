@@ -144,7 +144,7 @@ public class AssignmentTransferUtilities
                     return (aUnit.getAssignedAssignments().size() == 0);
                 } else if (aStatus == IAssignmentIf.AssignmentStatus.EXECUTING)
                 {
-                    return (aUnit.getExecutingAssigment().size() == 0);
+                    return (aUnit.getExecutingAssigments().size() == 0);
                 } else
                 {
                     return true;

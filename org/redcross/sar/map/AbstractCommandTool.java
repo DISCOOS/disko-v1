@@ -8,12 +8,9 @@ import com.esri.arcgis.systemUI.ICommand;
 import com.esri.arcgis.systemUI.ITool;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.map.layer.OperationAreaLayer;
-import org.redcross.sar.util.mso.GeoList;
-import org.redcross.sar.util.mso.IGeodataIf;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.Iterator;
 import java.util.Properties;
 
 public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool {
@@ -85,16 +82,16 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 		return -1;
 	}
 
-	protected GeoList cloneGeoList(GeoList oldList) {
-		GeoList newColl = new GeoList(null);
-		if (oldList != null) {
-			Iterator iter = oldList.getPositions().iterator();
-			while (iter.hasNext()) {
-				newColl.add((IGeodataIf)iter.next());
-			}
-		}
-		return newColl;
-	}
+//CMR	protected GeoList cloneGeoList(GeoList oldList) {
+//CMR		GeoList newColl = new GeoList(null);
+//CMR		if (oldList != null) {
+//CMR			Iterator iter = oldList.getPositions().iterator();
+//CMR			while (iter.hasNext()) {
+//CMR				newColl.add((IGeodataIf)iter.next());
+//CMR			}
+//CMR		}
+//CMR		return newColl;
+//CMR	}
 
 	protected boolean insideOpArea(IPoint point) throws AutomationException, IOException {
 		boolean flag = false;

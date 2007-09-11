@@ -82,12 +82,20 @@ public interface IMsoListIf<M extends IMsoObjectIf>
     /**
      * Generate an List of selected items from the list.
      *
-     * Selects
      * @param aSelector A {@link org.redcross.sar.util.mso.Selector} that is used for selecting items.
      * @param aComparator {@link java.util.Comparator} that is used for determining the ordering the items, if <code>null</code>, no ordering will be done.
      * @return The generated list
      */
     public List<M> selectItems(Selector<M> aSelector, Comparator<M> aComparator);
+
+    /**
+     * Find an item in the list.
+     *
+     * @param aSelector A {@link org.redcross.sar.util.mso.Selector} that is used for selecting items.
+     * @return The found item, or null if not found;
+     */
+    public M selectSingleItem(Selector<M> aSelector);
+
 
     public boolean contains(M anObject);
 }

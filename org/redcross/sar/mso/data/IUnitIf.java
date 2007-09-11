@@ -63,7 +63,7 @@ public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf, ISerialNu
     *-------------------------------------------------------------------------------------------*/
 
     public String getUnitNumber();
-    
+
     public String getTypeAndNumber();
 
     public char getUnitNumberPrefix();
@@ -173,11 +173,15 @@ public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf, ISerialNu
 
     public List<IAssignmentIf> getAllocatedAssignments();
 
+    public IAssignmentIf getAssignedAssignment();
+
     public List<IAssignmentIf> getAssignedAssignments();
 
-    public List<IAssignmentIf> getExecutingAssigment();
+    public IAssignmentIf getExecutingAssigment();
 
-    public List<IAssignmentIf> getFinishedAssigment();
+    public List<IAssignmentIf> getExecutingAssigments();
+
+    public List<IAssignmentIf> getFinishedAssigments();
 
     public IAssignmentIf getActiveAssignment();
 

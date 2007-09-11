@@ -224,7 +224,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
 
     public String getStatusText()
     {
-        return Internationalization.getEnumText(bundle,m_status.getValue());
+        return Internationalization.getEnumText(bundle, m_status.getValue());
     }
 
     public void setPriority(AssignmentPriority aPriority)
@@ -259,7 +259,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
 
     public String getPriorityText()
     {
-        return Internationalization.getEnumText(bundle,m_priority.getValue());
+        return Internationalization.getEnumText(bundle, m_priority.getValue());
     }
 
 
@@ -285,7 +285,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
 
     public String getTypeText()
     {
-        return Internationalization.getEnumText(bundle,m_type.getValue());
+        return Internationalization.getEnumText(bundle, m_type.getValue());
     }
 
     public String getTypeAndNumber()
@@ -584,17 +584,17 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         return getStatus().ordinal() >= AssignmentStatus.ABORTED.ordinal();
     }
 
+    private final SelfSelector<IAssignmentIf, IUnitIf> owningUnitSelector = new SelfSelector<IAssignmentIf, IUnitIf>(this)
+    {
+        public boolean select(IUnitIf anObject)
+        {
+            return (anObject.getUnitAssignments().contains(m_object));
+        }
+    };
+
     public IUnitIf getOwningUnit()
     {
-        List<IUnitIf> retVal = MsoModelImpl.getInstance().getMsoManager().getCmdPost().getUnitList().selectItems(
-                new SelfSelector<IAssignmentIf, IUnitIf>(this)
-                {
-                    public boolean select(IUnitIf anObject)
-                    {
-                        return (anObject.getUnitAssignments().contains(m_object));
-                    }
-                }, null);
-        return (retVal.size() == 0) ? null : retVal.get(0);
+        return MsoModelImpl.getInstance().getMsoManager().getCmdPost().getUnitList().selectSingleItem(owningUnitSelector);
     }
 
     public void verifyAllocatable(AssignmentStatus newStatus, IUnitIf aUnit, boolean unassignIfPossible) throws IllegalOperationException
@@ -623,23 +623,72 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         return 0;
     }
 
-    public IMessageLineIf getLatestStatusChangeMessageLine(final IMessageLineIf.MessageLineType aType)
+    private final Comparator<IMessageLineIf> messageLineTimeComparator = new Comparator<IMessageLineIf>()
     {
-        List<IMessageLineIf> retVal = MsoModelImpl.getInstance().getMsoManager().getCmdPost().getMessageLines().selectItems(
-                new SelfSelector<IAssignmentIf, IMessageLineIf>(this)
-                {
-                    public boolean select(IMessageLineIf anObject)
-                    {
-                        return (anObject.getLineAssignment() == m_object && anObject.getLineType() == aType && anObject.getOperationTime() != null);
-                    }
-                },
-                new Comparator<IMessageLineIf>()
-                {
-                    public int compare(IMessageLineIf o1, IMessageLineIf o2)
-                    {
-                        return o2.getOperationTime().compareTo(o1.getOperationTime()); // Sort according to latest time
-                    }
-                });
+        public int compare(IMessageLineIf o1, IMessageLineIf o2)
+        {
+            return o2.getOperationTime().compareTo(o1.getOperationTime()); // Sort according to latest time
+        }
+    };
+
+    private final TypeMessageLineSelector messageLineSelector = new TypeMessageLineSelector(this);
+
+    public IMessageLineIf getLatestStatusChangeMessageLine(IMessageLineIf.MessageLineType aType)
+    {
+        messageLineSelector.setSelectType(aType);
+        List<IMessageLineIf> retVal = MsoModelImpl.getInstance().getMsoManager().getCmdPost().getMessageLines().selectItems(messageLineSelector, messageLineTimeComparator);
         return (retVal.size() == 0) ? null : retVal.get(0);
+    }
+
+    public boolean transferMessageConfirmed()
+    {
+        return transferMessageConfirmed(getStatus());
+    }
+
+    public boolean transferMessageConfirmed(AssignmentStatus aStatus)
+    {
+        IMessageLineIf.MessageLineType searchLineType;
+        switch (aStatus)
+        {
+            case ASSIGNED:
+                searchLineType = IMessageLineIf.MessageLineType.ASSIGNED;
+                break;
+            case EXECUTING:
+                searchLineType = IMessageLineIf.MessageLineType.STARTED;
+                break;
+            case FINISHED:
+            case REPORTED:
+                searchLineType = IMessageLineIf.MessageLineType.COMPLETE;
+                break;
+            default:
+                return true;
+        }
+        IMessageLineIf foundMessageLine = getLatestStatusChangeMessageLine(searchLineType);
+        if (foundMessageLine == null)
+        {
+            return true;
+        }
+        IMessageIf owningMessage = foundMessageLine.getOwningMessage();
+        return owningMessage == null || owningMessage.getStatus().equals(IMessageIf.MessageStatus.CONFIRMED);
+    }
+
+    class TypeMessageLineSelector extends SelfSelector<IAssignmentIf, IMessageLineIf>
+    {
+        IMessageLineIf.MessageLineType m_type;
+
+        TypeMessageLineSelector(IAssignmentIf anObject)
+        {
+            super(anObject);
+        }
+
+        void setSelectType(IMessageLineIf.MessageLineType aType)
+        {
+            m_type = aType;
+        }
+
+        public boolean select(IMessageLineIf anObject)
+        {
+            return (anObject.getLineAssignment() == m_object && anObject.getLineType() == m_type && anObject.getOperationTime() != null);
+        }
     }
 }
