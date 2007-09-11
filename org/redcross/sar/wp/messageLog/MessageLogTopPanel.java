@@ -659,7 +659,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 	private boolean validMessage()
 	{
-		// TODO Auto-generated method stub
 		// TODO data should be valid already, perhaps not needed?
 		return (m_currentMessage != null);
 	}
@@ -906,32 +905,37 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				// Delete if message is not committed, don't create new message when pressing delete
 				if(m_currentMessage != null && m_newMessage)
 				{
-					IMessageLineIf line = m_currentMessage.findMessageLine(m_currentMessageLineType, null, false);
-					if(line != null)
+					// If line that has other assignment lines depending on it is deleted, delete them as well
+					switch(m_currentMessageLineType)
 					{
-						// If line that has other assignment lines depending on it is deleted, delete them as well
-						switch(line.getLineType())
+					case ASSIGNED:
+						for(IMessageLineIf line : m_messageAssignedPanel.getAddedLines())
 						{
-						case ASSIGNED:
-							IMessageLineIf startedLine = m_currentMessage.findMessageLine(MessageLineType.STARTED, null, false);
-							if(startedLine != null)
-							{
-								startedLine.deleteObject();
-//								TODO m_messageStartedDialog.lineRemoved();
-							}
-						case STARTED:
-							IMessageLineIf completeLine = m_currentMessage.findMessageLine(MessageLineType.COMPLETE, null, false);
-							if(completeLine != null)
-							{
-								completeLine.deleteObject();
-//								TODO m_messageCompletedDialog.lineRemoved();
-							}
+							line.deleteObject();
 						}
-
-						if(!line.deleteObject())
+						m_messageAssignedPanel.lineRemoved(null);
+						break;
+					case STARTED:
+						for(IMessageLineIf line : m_messageStartedPanel.getAddedLines())
 						{
-							System.err.println("Couldn't delete message line");
+							line.deleteObject();
 						}
+						m_messageStartedPanel.lineRemoved(null);
+						break;
+					case COMPLETE:
+						for(IMessageLineIf line : m_messageCompletedPanel.getAddedLines())
+						{
+							line.deleteObject();
+						}
+						m_messageCompletedPanel.lineRemoved(null);
+						break;
+					default:
+						IMessageLineIf line = MessageLogTopPanel.getCurrentMessage().findMessageLine(m_currentMessageLineType, false);
+						if(line != null)
+						{
+							line.deleteObject();
+						}
+						break;
 					}
 				}
 				else
@@ -942,6 +946,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				}
 			}
 		});
+		
 		m_buttonGroup.add(m_deleteButton);
 		m_buttonRow.add(m_deleteButton);
 	}
@@ -1361,6 +1366,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	{
 		if(m_newMessage && m_currentMessage != null)
 		{
+			System.err.println("Delete current message: " + m_currentMessage.getNumber());
 			m_currentMessage.deleteObject();
 		}
 
