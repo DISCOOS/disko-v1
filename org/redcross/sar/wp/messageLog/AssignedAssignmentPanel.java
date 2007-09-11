@@ -2,6 +2,7 @@ package org.redcross.sar.wp.messageLog;
 
 import java.util.Calendar;
 
+import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
@@ -29,16 +30,17 @@ public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 	}
 
 	/**
-	 * Deletes all message lines of type assign that was added since last commit
+	 * Deletes all message lines that was added since last commit
 	 */
 	public void cancelUpdate()
 	{
-		if(linesAdded())
+		// Remove all added lines
+		for(int i=0; i<m_addedLines.size(); i++)
 		{
-			//TODO Loop through added lines, delete ASSIGNED, should also delete STARTED and COMPLETED added in this message
-//			IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.ASSIGNED, false);
-//			messageLine.deleteObject();
+			m_addedLines.get(i).deleteObject();
 		}
+		
+		m_addedLines.clear();
 	}
 
 
@@ -49,7 +51,7 @@ public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 	protected void updateMessageLine()
 	{
 		super.updateMessageLine();
-		MessageLogTopPanel.showListDialog();
+		MessageLogTopPanel.showListPanel();
 	}
 
 	/**
@@ -86,8 +88,9 @@ public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 		}
 		else
 		{
-			//TODO Display error message?
-			System.err.println("Unit can not accept assignment");
+			ErrorDialog error = new ErrorDialog(m_wpMessageLog.getApplication().getFrame());
+			error.showError(m_wpMessageLog.getText("CanNotAssignError.header"),
+					String.format(m_wpMessageLog.getText("CanNotAssignError.details"), unit.getTypeAndNumber(), ""));
 		}
 	}
 
@@ -99,14 +102,16 @@ public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 		if(m_selectedAssignment != null)
 		{
 			IMessageIf message = MessageLogTopPanel.getCurrentMessage();
-			// TODO Add selected assignment to message
-			AssignmentTransferUtilities.createAssignmentChangeMessageLines(message, 
+			AssignmentTransferUtilities.createAssignmentChangeMessageLines(
+					message, 
 					MessageLineType.ASSIGNED, 
 					MessageLineType.ASSIGNED, 
 					Calendar.getInstance(),
 					m_selectedAssignment);
+			
+			m_addedLines.add(message.findMessageLine(MessageLineType.ASSIGNED, m_selectedAssignment, false));
 		}
 		
-		MessageLogTopPanel.showAssignDialog();
+		MessageLogTopPanel.showAssignPanel();
 	}
 }

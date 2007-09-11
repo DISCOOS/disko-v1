@@ -217,65 +217,35 @@ public class AssignmentTransferUtilities
      * Assigns an assignment to some unit. All statuses are updated.
      * @param assignment The assignment
      * @param unit The unit to get the assignment
-     * @return Whether the assignment was successfully assigned or not
+     * @throws IllegalOperationException 
      */
-    public static boolean assignAssignmentToUnit(IAssignmentIf assignment, IUnitIf unit)
+    public static void assignAssignmentToUnit(IAssignmentIf assignment, IUnitIf unit) throws IllegalOperationException
     {
-    	try
-		{
-			assignment.setStatusAndOwner(AssignmentStatus.ASSIGNED, unit);
-		}
-    	catch (IllegalOperationException e1)
-		{
-			e1.printStackTrace();
-			return false;
-		}
-
-    	unit.setStatus(UnitStatus.INITIALIZING);
+    	unit.addUnitAssignment(assignment, AssignmentStatus.ASSIGNED);
     	unit.getAssignedAssignments().add(assignment);
-
-    	return true;
     }
 
     /**
      * Starts an assignment, updates unit and assignment status
      * @param unit
      * @param assignment
-     * @return Whether or not the assignment could be started
+     * @throws IllegalOperationException 
      */
-    public static boolean unitStartAssignment(IUnitIf unit, IAssignmentIf assignment)
+    public static void unitStartAssignment(IUnitIf unit, IAssignmentIf assignment) throws IllegalOperationException
     {
-    	try
-		{
-			unit.addUnitAssignment(assignment, AssignmentStatus.EXECUTING);
-		}
-    	catch (IllegalOperationException e)
-		{
-			e.printStackTrace();
-			return false;
-		}
-
+		unit.addUnitAssignment(assignment, AssignmentStatus.EXECUTING);
 		unit.setStatus(UnitStatus.WORKING);
-
-    	return true;
     }
 
     /**
      * Marks an assignment as completed. Unit and assignment statuses are updated
      * @param unit
      * @param assignment
-     * @return Whether or not that assignment could be completed by the given unit
+     * @throws IllegalOperationException 
      */
-    public static boolean unitCompleteAssignment(IUnitIf unit, IAssignmentIf assignment)
+    public static void unitCompleteAssignment(IUnitIf unit, IAssignmentIf assignment) throws IllegalOperationException
     {
-    	try
-		{
-			assignment.setStatusAndOwner(AssignmentStatus.FINISHED, unit);
-		}
-    	catch (IllegalOperationException e){return false;}
-
+		assignment.setStatusAndOwner(AssignmentStatus.FINISHED, unit);
     	unit.setStatus(UnitStatus.READY);
-
-    	return true;
     }
 }

@@ -38,22 +38,22 @@ public class MessageLineSelectionListener implements ListSelectionListener
 			switch(line.getLineType())
 			{
 			case TEXT:
-				MessageLogTopPanel.showTextDialog();
+				MessageLogTopPanel.showTextPanel();
 				break;
 			case POI:
-				MessageLogTopPanel.showPositionDialog();
+				MessageLogTopPanel.showPositionPanel();
 				break;
 			case FINDING:
-				MessageLogTopPanel.showFindingDialog();
+				MessageLogTopPanel.showFindingPanel();
 				break;
 			case ASSIGNED:
-				MessageLogTopPanel.showAssignDialog();
+				MessageLogTopPanel.showAssignPanel();
 				break;
 			case STARTED:
-				MessageLogTopPanel.showStartDialog();
+				MessageLogTopPanel.showStartPanel();
 				break;
 			case COMPLETE:
-				MessageLogTopPanel.showCompleteDialog();
+				MessageLogTopPanel.showCompletePanel();
 				break;
 			}
 		}

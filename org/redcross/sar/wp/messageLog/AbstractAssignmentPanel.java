@@ -7,10 +7,12 @@ import org.redcross.sar.gui.renderers.IconRenderer;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
+import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.mso.DTG;
+import org.redcross.sar.util.mso.Selector;
 
 import javax.swing.*;
 import java.awt.*;
@@ -68,7 +70,7 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 	protected IAssignmentIf m_selectedAssignment = null;
 	protected IMessageLineIf m_editingLine = null;
 
-	protected List<IMessageLineIf> m_addedLines = null;
+	protected List<IMessageLineIf> m_addedLines = new LinkedList<IMessageLineIf>();
 
 	protected boolean m_notebookMode = true;
 
@@ -174,8 +176,8 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 		gbc.anchor = GridBagConstraints.CENTER;
 		m_overviewPanel.add(m_assignmentLineList, gbc);
 
-		m_newButton = DiskoButtonFactory.createSmallButton(m_wpMessageLog.getText("NewButton.text")/*,
-				m_wpMessageLog.getText("NewButton.icon")*/);
+		m_newButton = DiskoButtonFactory.createSmallButton(m_wpMessageLog.getText("NewButton.text"),
+				m_wpMessageLog.getText("NewButton.icon"));
 		m_newButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent arg0)
@@ -377,6 +379,20 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 	/**
 	 * Show all assignments available from command post
 	 */
+	EnumSet<AssignmentStatus> m_assignmentPoolSet = EnumSet.of
+	(
+			AssignmentStatus.ABORTED,
+			AssignmentStatus.DRAFT,
+			AssignmentStatus.EMPTY,
+			AssignmentStatus.READY
+	);
+	Selector<IAssignmentIf> m_assignmentPoolSelector = new Selector<IAssignmentIf>()
+	{
+		public boolean select(IAssignmentIf anObject)
+		{
+			return m_assignmentPoolSet.contains(anObject.getStatus());
+		}
+	};
 	protected void showAssignmentPool()
 	{
 		m_assignmentPoolButtonPanel.removeAll();
@@ -385,7 +401,8 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 		gbc.gridy = 0;
 		gbc.gridx = 0;
 
-		Collection<IAssignmentIf> assignments = m_wpMessageLog.getMsoManager().getCmdPost().getAssignmentListItems();
+		Collection<IAssignmentIf> assignments = 
+			m_wpMessageLog.getMsoManager().getCmdPost().getAssignmentList().selectItems(m_assignmentPoolSelector, null);
 		int i = 0;
 		int numButtonsInRow = m_assignmentPoolButtonPanel.getWidth() / DiskoButtonFactory.SMALL_BUTTON_SIZE.width;
 		for(final IAssignmentIf assignment : assignments)
@@ -507,6 +524,7 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 		m_editingLine = (IMessageLineIf)model.getElementAt(selectedAssignment);
 		if(m_editingLine == null)
 		{
+			System.err.println("edit line null");
 			return;
 		}
 		IAssignmentIf assignment = m_editingLine.getLineAssignment();
@@ -581,6 +599,12 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 		catch(Exception e){}
 
 		return assignment;
+	}
+	
+	
+	public List<IMessageLineIf> getAddedLines()
+	{
+		return m_addedLines;
 	}
 
 	public boolean linesAdded()

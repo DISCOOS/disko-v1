@@ -40,15 +40,12 @@ public class StartedAssignmentPanel extends AbstractAssignmentPanel
 	 */
 	public void cancelUpdate()
 	{
-		if(linesAdded())
+		for(IMessageLineIf line : m_addedLines)
 		{
-			IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.STARTED, false);
-			messageLine.deleteObject();
-//			TODO m_lineAdded = false;
-			
-			// Delete assigned message line if added
-			MessageLogTopPanel.cancelAssign();
+			line.deleteObject();
 		}
+		
+		m_addedLines.clear();
 	}
 
 	/**
@@ -60,7 +57,7 @@ public class StartedAssignmentPanel extends AbstractAssignmentPanel
 		super.updateMessageLine();
 		
 		// Perform action show in list
-		MessageLogTopPanel.showListDialog();
+		MessageLogTopPanel.showListPanel();
 	}
 
 	protected void showHasAssignment()
@@ -100,7 +97,7 @@ public class StartedAssignmentPanel extends AbstractAssignmentPanel
 			if(!AssignmentTransferUtilities.unitCanAccept(unit, AssignmentStatus.EXECUTING))
 			{
 				ErrorDialog error = new ErrorDialog(m_wpMessageLog.getApplication().getFrame());
-				error.showError(m_wpMessageLog.getText("CanNotStartError.details"),
+				error.showError(String.format(m_wpMessageLog.getText("CanNotStartError.details"), unit.getTypeAndNumber(), assignment.getTypeAndNumber()),
 						m_wpMessageLog.getText("CanNotStartError.header"));
 				this.hideComponent();
 				return;
@@ -124,14 +121,10 @@ public class StartedAssignmentPanel extends AbstractAssignmentPanel
 				// Set assignment started
 				AssignmentTransferUtilities.createAssignmentChangeMessageLines(message, MessageLineType.STARTED, 
 						MessageLineType.STARTED, Calendar.getInstance(), assignment);
-				// TODO Keep track of added lines
+				
+				m_addedLines.add(message.findMessageLine(MessageLineType.STARTED, assignment, false));
 
-				showComponent();
-
-			}
-			else
-			{
-				// TODO
+				MessageLogTopPanel.showStartPanel();
 			}
 		}
 		else if(unitHasNextAssignment())
@@ -151,14 +144,16 @@ public class StartedAssignmentPanel extends AbstractAssignmentPanel
 		if(m_selectedAssignment != null)
 		{
 			IMessageIf message = MessageLogTopPanel.getCurrentMessage();
-			// TODO Add started line with selected assignment
 			AssignmentTransferUtilities.createAssignmentChangeMessageLines(message, 
 					MessageLineType.ASSIGNED, 
 					MessageLineType.STARTED, 
 					Calendar.getInstance(), 
 					m_selectedAssignment);
+			
+			m_addedLines.add(message.findMessageLine(MessageLineType.ASSIGNED, m_selectedAssignment, false));
+			m_addedLines.add(message.findMessageLine(MessageLineType.STARTED, m_selectedAssignment, false));
 		}
 		
-		MessageLogTopPanel.showStartDialog();
+		MessageLogTopPanel.showStartPanel();
 	}
 }

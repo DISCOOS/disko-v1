@@ -63,7 +63,7 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 		super.updateMessageLine();
 		
 		// Perform action show in list
-		MessageLogTopPanel.showListDialog();
+		MessageLogTopPanel.showListPanel();
 	}
 
 	/**
@@ -83,23 +83,25 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 	{
 		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
 		IUnitIf unit = (IUnitIf)message.getSingleReceiver();
+		IAssignmentIf assignedAssignment = unit.getAssignedAssignment();
+		IAssignmentIf executingAssignment = unit.getExecutingAssigment();
+		IAssignmentIf assignment = executingAssignment == null ? assignedAssignment : executingAssignment;
 		
 		
-		IAssignmentIf assignment = unit.getActiveAssignment();
 		if(assignment != null)
 		{
+			this.hideComponent();
+
 			// If unit has assigned or started assignment, ask user if this is completed
 			if(!AssignmentTransferUtilities.unitCanAccept(unit, AssignmentStatus.FINISHED))
 			{
 				ErrorDialog error = new ErrorDialog(m_wpMessageLog.getApplication().getFrame());
-				error.showError(m_wpMessageLog.getText("CanNotCompleteError.details"),
+				error.showError(String.format(m_wpMessageLog.getText("CanNotCompleteError.details"), unit.getTypeAndNumber(), assignment),
 						m_wpMessageLog.getText("CanNotCompleteError.header"));
 				this.hideComponent();
 				return;
 			}
 			
-			this.hideComponent();
-
 			Object[] options = {m_wpMessageLog.getText("yes.text"), m_wpMessageLog.getText("no.text")};
 			int n = JOptionPane.showOptionDialog(m_wpMessageLog.getApplication().getFrame(), 
 					String.format(m_wpMessageLog.getText("UnitCompletedAssignment.text"), unit.getTypeAndNumber(), assignment.getTypeAndNumber()),
@@ -112,14 +114,22 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 
 			if(n == JOptionPane.YES_OPTION)
 			{
-				AssignmentTransferUtilities.createAssignmentChangeMessageLines(message, MessageLineType.COMPLETE, MessageLineType.COMPLETE,
-						Calendar.getInstance(), assignment);
-//				m_lineAdded = true;
-				showComponent();
-			}
-			else
-			{
-				// TODO
+				if(executingAssignment == null)
+				{
+					// Adding both started and completed lines
+					AssignmentTransferUtilities.createAssignmentChangeMessageLines(message, MessageLineType.STARTED, MessageLineType.COMPLETE,
+							Calendar.getInstance(), assignment);
+					m_addedLines.add(message.findMessageLine(MessageLineType.STARTED, assignment, false));
+				}
+				else
+				{
+					AssignmentTransferUtilities.createAssignmentChangeMessageLines(message, MessageLineType.COMPLETE, MessageLineType.COMPLETE,
+							Calendar.getInstance(), assignment);
+				}
+				
+				m_addedLines.add(message.findMessageLine(MessageLineType.COMPLETE, assignment, false));
+				
+				MessageLogTopPanel.showCompletePanel();
 			}
 		}
 		else if(unitHasNextAssignment())
@@ -142,14 +152,17 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 		if(m_selectedAssignment != null)
 		{
 			IMessageIf message = MessageLogTopPanel.getCurrentMessage();
-			// TODO Add completed line with selected assignment
 			AssignmentTransferUtilities.createAssignmentChangeMessageLines(message,
 					MessageLineType.ASSIGNED,
 					MessageLineType.COMPLETE,
 					Calendar.getInstance(),
 					m_selectedAssignment);
+			
+			m_addedLines.add(message.findMessageLine(MessageLineType.ASSIGNED, m_selectedAssignment, false));
+			m_addedLines.add(message.findMessageLine(MessageLineType.STARTED, m_selectedAssignment, false));
+			m_addedLines.add(message.findMessageLine(MessageLineType.COMPLETE, m_selectedAssignment, false));
 		}
 		
-		MessageLogTopPanel.showCompleteDialog();
+		MessageLogTopPanel.showCompletePanel();
 	}
 }

@@ -12,6 +12,8 @@ import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
+import org.redcross.sar.util.AssignmentTransferUtilities;
+import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.util.mso.DTG;
 import org.redcross.sar.util.mso.Selector;
 
@@ -1139,97 +1141,77 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	 */
 	private void updateAssignments()
 	{
-//		ErrorDialog error = new ErrorDialog(m_wpMessageLog.getApplication().getFrame());
-//
-//		IUnitIf unit = null;
-//		ICommunicatorIf communicator = MessageLogTopPanel.getCurrentMessage().getSingleReceiver();
-//		if(communicator != null && communicator instanceof IUnitIf)
-//		{
-//			unit = (IUnitIf)communicator;
-//		}
-//
-//		IMessageLineIf assignedLine = m_currentMessage.findMessageLine(MessageLineType.ASSIGNED, false);
-//		IMessageLineIf startedLine = m_currentMessage.findMessageLine(MessageLineType.STARTED, false);
-//		IMessageLineIf completeLine = m_currentMessage.findMessageLine(MessageLineType.COMPLETE, false);
-//
-//		IAssignmentIf assignment = null;
-//
-		// Keep track of which lines are added
-//		boolean assignLineAdded = m_messageAssignedDialog.lineAdded();
-//		boolean startedLineAdded = m_messageStartedDialog.lineAdded();
-//		boolean completedLineAdded = m_messageCompletedDialog.lineAdded();
-//
-//		if(m_messageAssignedDialog != null)
-//		{
-//			m_messageAssignedDialog.lineRemoved();
-//		}
-//		if(m_messageStartedDialog != null)
-//		{
-//			m_messageStartedDialog.lineRemoved();
-//		}
-//		if(m_messageCompletedDialog != null)
-//		{
-//			m_messageCompletedDialog.lineRemoved();
-//		}
+		
+		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+		ICommunicatorIf communicator = message.getSingleReceiver();
+		IUnitIf unit = (IUnitIf)communicator;
+		
 
-//		if(assignLineAdded && unit != null)
-//		{
-//			assignment = assignedLine.getLineAssignment();
-//			if(!AssignmentTransferUtilities.assignAssignmentToUnit(assignment, unit))
-//			{
-//				// Remove line, as it will not be assigned, cascade to depending lines
-//				assignedLine.deleteObject();
-//				if(startedLineAdded)
-//				{
-//					startedLine.deleteObject();
-//
-//					if(completedLineAdded)
-//					{
-//						completeLine.deleteObject();
-//					}
-//				}
-//
-//				error.showError(m_wpMessageLog.getText("CanNotAssignError.header"),
-//						m_wpMessageLog.getText("CanNotAssignError.details"));
-//
-//				return;
-//			}
-//		}
-//
-//		if(startedLineAdded && unit != null)
-//		{
-//			assignment = startedLine.getLineAssignment();
-//			if(!AssignmentTransferUtilities.unitStartAssignment(unit, assignment))
-//			{
-//				// Remove line, assignment will not be started
-//				startedLine.deleteObject();
-//				if(completedLineAdded)
-//				{
-//					completeLine.deleteObject();
-//				}
-//
-//				error.showError(m_wpMessageLog.getText("CanNotStartError.header"),
-//						m_wpMessageLog.getText("CanNotStartError.details"));
-//
-//				return;
-//			}
-//		}
-//
-//		if(completedLineAdded && unit != null)
-//		{
-//			assignment = completeLine.getLineAssignment();
-//			if(!AssignmentTransferUtilities.unitCompleteAssignment(unit, assignment))
-//			{
-//				error.showError(m_wpMessageLog.getText("CanNotCompleteError.header"),
-//						m_wpMessageLog.getText("CanNotCompleteError.details"));
-//
-//				// Assignment could not be completed, remove message line
-//				if(completeLine != null)
-//				{
-//					completeLine.deleteObject();
-//				}
-//			}
-//		}
+		if(unit != null)
+		{
+			ErrorDialog error = new ErrorDialog(m_wpMessageLog.getApplication().getFrame());
+			IAssignmentIf assignment = null;
+			List<IMessageLineIf> messageLines = new LinkedList<IMessageLineIf>();
+			
+			// Get all assignment lines. Lines from complete is placed first, started second, assign last.
+			// This should ensure that unit statuses are updated in the correct order
+			messageLines.addAll(m_messageCompletedPanel.getAddedLines());
+			messageLines.addAll(m_messageStartedPanel.getAddedLines());
+			messageLines.addAll(m_messageAssignedPanel.getAddedLines());
+			
+			// Update status
+			for(IMessageLineIf line : messageLines)
+			{
+				assignment = line.getLineAssignment();
+				
+					switch(line.getLineType())
+					{
+					case ASSIGNED:
+						try
+						{
+							AssignmentTransferUtilities.assignAssignmentToUnit(assignment, unit);
+						}
+						catch(IllegalOperationException e)
+						{
+							line.deleteObject();
+							error.showError(m_wpMessageLog.getText("CanNotAssignError.header"),
+									String.format(m_wpMessageLog.getText("CanNotAssignError.details"), unit.getTypeAndNumber(), assignment.getTypeAndNumber()));
+						}
+						break;
+					case STARTED:
+						try
+						{
+							AssignmentTransferUtilities.unitStartAssignment(unit, assignment);
+						}
+						catch(IllegalOperationException e)
+						{
+							line.deleteObject();
+							error.showError(m_wpMessageLog.getText("CanNotStartError.header"),
+									String.format(m_wpMessageLog.getText("CanNotStartError.details"), unit.getTypeAndNumber(), assignment.getTypeAndNumber()));
+						}
+						break;
+					case COMPLETE:
+						try
+						{
+							AssignmentTransferUtilities.unitCompleteAssignment(unit, assignment);
+						}
+						catch(IllegalOperationException e)
+						{
+							line.deleteObject();
+							error.showError(m_wpMessageLog.getText("CanNotCompleteError.header"),
+									String.format(m_wpMessageLog.getText("CanNotCompleteError.details"), unit.getTypeAndNumber(), assignment.getTypeAndNumber()));
+						}
+						break;
+					default:
+						continue;
+					}
+			}
+		}
+		
+		// Keep track of which lines are added
+		m_messageAssignedPanel.lineRemoved(null);
+		m_messageStartedPanel.lineRemoved(null);
+		m_messageCompletedPanel.lineRemoved(null);
 	}
 
 	private void createFindingButton()
@@ -1322,37 +1304,37 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		m_buttonGroup.clearSelection();
 	}
 
-	public static void showAssignDialog()
+	public static void showAssignPanel()
 	{
 		m_assignButton.doClick();
 	}
 
-	public static void showListDialog()
+	public static void showListPanel()
 	{
 		m_listButton.doClick();
 	}
 
-	public static void showCompleteDialog()
+	public static void showCompletePanel()
 	{
 		m_completedButton.doClick();
 	}
 
-	public static void showStartDialog()
+	public static void showStartPanel()
 	{
 		m_startButton.doClick();
 	}
 
-	public static void showTextDialog()
+	public static void showTextPanel()
 	{
 		m_textButton.doClick();
 	}
 
-	public static void showPositionDialog()
+	public static void showPositionPanel()
 	{
 		m_positionButton.doClick();
 	}
 
-	public static void showFindingDialog()
+	public static void showFindingPanel()
 	{
 		m_findingButton.doClick();
 	}

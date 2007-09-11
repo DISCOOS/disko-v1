@@ -5,8 +5,10 @@ import java.util.List;
 
 import javax.swing.AbstractListModel;
 
+import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
+import org.redcross.sar.util.mso.Selector;
 
 /**
  * Data model for assignment lines, used to retrieve list depending on action (assign, start, complete)
@@ -45,11 +47,24 @@ public class AssignmentListModel extends AbstractListModel
 	 */
 	public void updateList()
 	{
+		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
 		m_messageLines.clear();
-		
-		// TODO Get all message lines of given type
-		// TODO Store lines in list
-		m_messageLines.add(MessageLogTopPanel.getCurrentMessage().findMessageLine(m_lineType, false));
+		Selector<IMessageLineIf> lineSelector = new Selector<IMessageLineIf>()
+		{
+			public boolean select(IMessageLineIf anObject)
+			{
+				if(anObject.getLineType() == m_lineType)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+					
+			}
+		};
+		m_messageLines.addAll(message.getMessageLines().selectItems(lineSelector, null));
 		fireContentsChanged(this, 0, m_messageLines.size()-1);
 	}
 	

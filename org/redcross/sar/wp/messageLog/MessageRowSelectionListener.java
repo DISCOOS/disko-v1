@@ -69,7 +69,7 @@ public class MessageRowSelectionListener implements ListSelectionListener
 		
 		// Update top message panel
 		m_topPanel.newMessageSelected(messageNr);
-		MessageLogTopPanel.showListDialog();
+		MessageLogTopPanel.showListPanel();
 	}
 
 	/**
