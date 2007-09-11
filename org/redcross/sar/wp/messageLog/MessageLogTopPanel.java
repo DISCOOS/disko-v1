@@ -698,7 +698,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					// Commit message, set status to postponed
 					m_currentMessage.setStatus(MessageStatus.POSTPONED);
 
-					m_wpMessageLog.getMsoManager().commit();
+					m_wpMessageLog.getMsoModel().commit();
 
 					m_messageDirty = false;
 
@@ -753,7 +753,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 						clearPanelContents();
 
 						// Commit changes
-						m_wpMessageLog.getMsoManager().commit();
+						m_wpMessageLog.getMsoModel().commit();
 
 						m_currentMessage = null;
 						m_messageDirty = false;
