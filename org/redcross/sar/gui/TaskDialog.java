@@ -24,6 +24,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.border.BevelBorder;
 
 import org.redcross.sar.app.IDiskoApplication;
+import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.gui.DiskoButtonFactory.ButtonType;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.ITaskIf;
@@ -34,6 +35,7 @@ import org.redcross.sar.mso.data.ITaskIf.TaskType;
 import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.util.mso.DTG;
+import org.redcross.sar.wp.tasks.TaskUtilities;
 
 /**
  * Dialog for editing/creating tasks.
@@ -137,8 +139,8 @@ public class TaskDialog extends DiskoDialog
 		
 		// Alert
 		m_alertComboBox = new JComboBox();
-		m_alertComboBox.setEditable(true);
 		updateAlertComboBox();
+		m_alertComboBox.setEditable(true);
 		addComponent(2, m_resources.getString("TaskAlert.text"), m_alertComboBox, 1, gbc);
 		
 		// Status
@@ -161,12 +163,8 @@ public class TaskDialog extends DiskoDialog
 				if(selectedStatus == TaskStatus.FINISHED)
 				{
 					m_progressComboBox.setSelectedIndex(10);
-					m_progressComboBox.setEnabled(false);
 				}
-				else
-				{
-					m_progressComboBox.setEnabled(true);
-				}
+				updateFieldsEditable();
 			}
 		});
 		addComponent(0, m_resources.getString("TaskStatus.text"), m_statusComboBox, 0, gbc);
@@ -288,13 +286,18 @@ public class TaskDialog extends DiskoDialog
 	
 	private boolean timesValid()
 	{
+		String selectedAlertTimeString = (String)m_alertComboBox.getSelectedItem();
+		if(selectedAlertTimeString.equals(m_resources.getString("TaskNoAlert.text")))
+		{
+			return true;
+		}
 		// Check that alert time is after creation time.
 		// Alert time will always be before due time
 		try
 		{
 			Calendar creationTime = Calendar.getInstance();
 			Calendar alertTime = null;
-			String alertString = ((String)m_alertComboBox.getSelectedItem()).split(" ")[0];
+			String alertString = selectedAlertTimeString.split(" ")[0];
 			String dueString = (String)m_dueComboBox.getSelectedItem();
 			alertTime = DTG.DTGToCal(dueString);
 			alertTime.add(Calendar.MINUTE, -Integer.valueOf(alertString));
@@ -312,16 +315,28 @@ public class TaskDialog extends DiskoDialog
 	 */
 	private void updateFieldsEditable()
 	{
-		if(m_currentTask == null || m_currentTask.getType() == TaskType.GENERAL)
+		// Check status
+		TaskStatus status = (TaskStatus)m_statusComboBox.getSelectedItem();
+		IDiskoRole role = m_application.getCurrentRole();
+		boolean editable = TaskUtilities.canChangeFields(status) && 
+		TaskUtilities.canChangeStatus(role, m_currentTask);	
+		
+		m_alertComboBox.setEnabled(editable);
+		m_descriptionTextArea.setEditable(editable);
+		if(editable)
 		{
-			// TODO
-			m_typeComboBox.setEnabled(true);
+			m_descriptionTextArea.setBackground(Color.white);
 		}
 		else
 		{
-			m_typeComboBox.setEnabled(false);
-			// TODO
+			m_descriptionTextArea.setBackground(m_createdTextField.getBackground());
 		}
+		m_dueComboBox.setEnabled(editable);
+		m_priorityComboBox.setEnabled(editable);
+		m_progressComboBox.setEnabled(editable);
+		m_responsibleComboBox.setEnabled(editable);
+		m_taskTextField.setEditable(editable);
+		m_typeComboBox.setEnabled(editable);
 	}
 
 	/**
@@ -376,9 +391,8 @@ public class TaskDialog extends DiskoDialog
 		}
 		catch(Exception e)
 		{
-//			System.err.println("Error parsing alert time, setting to 5 min before due time");
-			alertTime = m_currentTask.getDueTime();
-			alertTime.add(Calendar.MINUTE, -5);
+			// Invalid alert, set to null 
+			alertTime = null;
 		}
 		m_currentTask.setAlert(alertTime);
 		
@@ -496,26 +510,36 @@ public class TaskDialog extends DiskoDialog
 	
 	private void updateAlertComboBox()
 	{
-		Object alertItem;
-		int startTime = 5;
-		int interval = 5;
-		int numValues = 5;
+		int[] alertItems = {1, 5, 30, 60};
 		
 		m_alertComboBox.removeAllItems();
 		
-//		if(m_currentTask != null)
-//		{
-//			Calendar alert = m_currentTask.getAlert();
-//			Calendar due = m_currentTask.getDueTime();
-//		}
+		m_alertComboBox.addItem(m_resources.getString("TaskNoAlert.text"));
 	
-		for(int i=0; i<numValues; i++)
+		String alertItem = null;
+		for(int i=0; i<alertItems.length; i++)
 		{
-			alertItem = (startTime + i*interval) + " " + m_resources.getString("TaskAlertItem.text");
+			alertItem = String.valueOf(alertItems[i]) + " " + m_resources.getString("TaskAlertItem.text");
 			m_alertComboBox.addItem(alertItem);
 		}
 		
-		m_alertComboBox.setSelectedIndex(2);
+		if(m_currentTask != null)
+		{
+			Calendar alertTime = m_currentTask.getAlert();
+			if(alertTime == null)
+			{
+				m_alertComboBox.setSelectedIndex(0);
+			}
+			else
+			{
+				// TODO Calculate alert time from stored alert time
+				m_alertComboBox.setSelectedIndex(2);
+			}
+		}
+		else
+		{
+			m_alertComboBox.setSelectedIndex(2);
+		}
 	}
 	
 	/**

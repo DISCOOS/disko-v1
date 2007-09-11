@@ -231,6 +231,7 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 			try
 			{
 				m_currentTask.setStatus(TaskStatus.FINISHED);
+				m_currentTask.setProgress(100);
 			} 
 			catch (IllegalOperationException e)
 			{

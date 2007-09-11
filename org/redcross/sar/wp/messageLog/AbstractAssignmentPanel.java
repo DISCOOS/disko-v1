@@ -533,7 +533,7 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 	protected boolean unitHasAssignedAssignment()
 	{
 		IUnitIf unit = (IUnitIf)MessageLogTopPanel.getCurrentMessage().getSingleReceiver();
-		return unit.getAssignedAssignment() != null;
+		return !unit.getAssignedAssignments().isEmpty();
 	}
 
 	protected boolean unitHasStartedAssignment()
