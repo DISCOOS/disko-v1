@@ -521,7 +521,6 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
         return findMessageLine(aType, null, makeNewLine);
     }
 
-
     public IMessageLineIf findMessageLine(IMessageLineIf.MessageLineType aType, IAssignmentIf anAssignment, boolean makeNewLine)
     {
         for (IMessageLineIf ml : m_messageLines.getItems())
@@ -584,20 +583,20 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
         }
     };
 
-    private Selector<IMessageLineIf> m_typeSelector = new Selector<IMessageLineIf>()
-    {
-       private IMessageLineIf.MessageLineType m_testLineType;
-
-        public void setLineType(IMessageLineIf.MessageLineType aLineType)
-        {
-            m_testLineType = aLineType;
-        }
-
-        public boolean select(IMessageLineIf anObject)
-        {
-            return anObject.getLineType() == m_testLineType;
-        }
-    };
+//todo remove    private Selector<IMessageLineIf> m_typeSelector = new Selector<IMessageLineIf>()
+//    {
+//       private IMessageLineIf.MessageLineType m_testLineType;
+//
+//        public void setLineType(IMessageLineIf.MessageLineType aLineType)
+//        {
+//            m_testLineType = aLineType;
+//        }
+//
+//        public boolean select(IMessageLineIf anObject)
+//        {
+//            return anObject.getLineType() == m_testLineType;
+//        }
+//    };
 
     private final typeSelector m_lineTypeSelector = new typeSelector();
 

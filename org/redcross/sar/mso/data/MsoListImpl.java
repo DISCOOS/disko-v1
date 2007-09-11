@@ -472,37 +472,37 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
             return false;
         }
 
-        MsoListImpl<M> position = null;
+        MsoListImpl<M> list;
         try
         {
-            position = (MsoListImpl<M>) o;
+            list = (MsoListImpl<M>) o;
         }
         catch (Exception e)
         {
             return false;
         }
 
-        if (m_owner != null ? !m_owner.equals(position.m_owner) : position.m_owner != null)
+        if (m_owner != null ? !m_owner.equals(list.m_owner) : list.m_owner != null)
         {
             return false;
         }
-        if (m_name != null ? !m_name.equals(position.m_name) : position.m_name != null)
+        if (m_name != null ? !m_name.equals(list.m_name) : list.m_name != null)
         {
             return false;
         }
-        if (m_isMain != position.m_isMain)
+        if (m_isMain != list.m_isMain)
         {
             return false;
         }
-        if (m_items != null ? !m_items.equals(position.m_items) : position.m_items != null)
+        if (m_items != null ? !m_items.equals(list.m_items) : list.m_items != null)
         {
             return false;
         }
-        if (m_added!= null ? !m_added.equals(position.m_added) : position.m_added != null)
+        if (m_added!= null ? !m_added.equals(list.m_added) : list.m_added != null)
         {
             return false;
         }
-        if (m_deleted != null ? !m_deleted.equals(position.m_deleted) : position.m_deleted != null)
+        if (m_deleted != null ? !m_deleted.equals(list.m_deleted) : list.m_deleted != null)
         {
             return false;
         }

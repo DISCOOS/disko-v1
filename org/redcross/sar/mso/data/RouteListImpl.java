@@ -2,8 +2,6 @@ package org.redcross.sar.mso.data;
 
 import org.redcross.sar.util.mso.Route;
 
-import org.redcross.sar.util.except.DuplicateIdException;
-
 public class RouteListImpl extends MsoListImpl<IRouteIf> implements IRouteListIf
 {
 
@@ -25,5 +23,11 @@ public class RouteListImpl extends MsoListImpl<IRouteIf> implements IRouteListIf
         return retVal != null ? retVal : createdItem(new RouteImpl(anObjectId, aRoute));
     }
 
+    public IRouteIf createRoute(IMsoObjectIf.IObjectIdIf anObjectId)
+    {
+        checkCreateOp();
+        IRouteIf retVal = getItem(anObjectId);
+        return retVal != null ? retVal : createdItem(new RouteImpl(anObjectId));
+    }
 
 }

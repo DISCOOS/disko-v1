@@ -384,6 +384,12 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getRouteList().createRoute(anObjectId, aRoute);
     }
 
+
+    public IRouteIf createRoute(IMsoObjectIf.IObjectIdIf anObjectId)
+    {
+        return getExistingCmdPost().getRouteList().createRoute(anObjectId);
+    }
+
     public ISearchAreaIf createSearchArea()
     {
         return getExistingCmdPost().getSearchAreaList().createSearchArea();

@@ -11,6 +11,11 @@ public class RouteImpl extends AbstractMsoObject implements IRouteIf
     private final AttributeImpl.MsoString m_remarks = new AttributeImpl.MsoString(this, "Remarks");
     private final AttributeImpl.MsoInteger m_areaSequenceNumber = new AttributeImpl.MsoInteger(this, "AreaSequenceNumber");
 
+    public RouteImpl(IMsoObjectIf.IObjectIdIf anObjectId)
+    {
+        super(anObjectId);
+    }
+
     public RouteImpl(IMsoObjectIf.IObjectIdIf anObjectId, Route aRoute)
     {
         super(anObjectId);

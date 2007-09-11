@@ -431,6 +431,7 @@ public interface IMsoManagerIf
     /**
      * Create a new {@link org.redcross.sar.mso.data.IRouteIf} object and add it to the collection of Route objects.
      *
+     * @param aRoute Referred Route object
      * @return The created object.
      */
     public IRouteIf createRoute(Route aRoute);
@@ -439,6 +440,15 @@ public interface IMsoManagerIf
      * Create a new {@link org.redcross.sar.mso.data.IRouteIf} object and add it to the collection of Route objects.
      *
      * @param anObjectId The Object id
+     * @return The created object.
+     */
+    public IRouteIf createRoute(IMsoObjectIf.IObjectIdIf anObjectId);
+
+    /**
+     * Create a new {@link org.redcross.sar.mso.data.IRouteIf} object and add it to the collection of Route objects.
+     *
+     * @param anObjectId The Object id
+     * @param aRoute Referred Route object
      * @return The created object.
      */
     public IRouteIf createRoute(IMsoObjectIf.IObjectIdIf anObjectId, Route aRoute);

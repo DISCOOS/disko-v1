@@ -164,7 +164,7 @@ public interface IMessageIf extends ITimeItemIf, ISerialNumberedIf
     /**
      * Get all message lines of a given type.
      *
-     * @param aType       Type of line to create.
+     * @param aType       Type of line.
      * @return List of lines, sorted by line number.
      */
     public List<IMessageLineIf> getTypeMessageLines(IMessageLineIf.MessageLineType aType);
