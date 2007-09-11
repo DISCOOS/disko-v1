@@ -3,7 +3,4 @@
 <fact comp="n" edit="y" id="00000000024" label="Remarks" pos1="999" pos2="999" relTo="00000000023" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000025" label="Geodata" pos1="999" pos2="999" relTo="00000000023" version="1">
-<fact_area name="" state="0"/>
-</fact>
 </object>
