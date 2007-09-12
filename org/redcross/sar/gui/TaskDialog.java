@@ -7,6 +7,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.Calendar;
 import java.util.ResourceBundle;
 
@@ -68,7 +70,10 @@ public class TaskDialog extends DiskoDialog
 	private JTextArea m_sourceTextArea = null;
 	private JTextField m_objectTextField = null;
 	
-	private final static ResourceBundle m_resources = ResourceBundle.getBundle("org.redcross.sar.gui.TaskDialog");
+	// Temp, should check DISKO global
+	private final static boolean NOTEBOOK = true;
+	
+	private final static ResourceBundle m_resources = ResourceBundle.getBundle("org.redcross.sar.gui.properties.TaskDialog");
 	
 	public TaskDialog(IDiskoApplication application)
 	{
@@ -122,6 +127,7 @@ public class TaskDialog extends DiskoDialog
 		updateDueComboBox();
 		m_dueComboBox.setEditable(true);
 		m_dueComboBox.setSelectedIndex(2);
+	
 		addComponent(2, m_resources.getString("TaskDue.text"), m_dueComboBox, 1, gbc);
 		
 		// Responsible
