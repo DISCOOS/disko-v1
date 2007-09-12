@@ -206,6 +206,11 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 	{
 		this.setVisible(true);
 		
+		if(m_createdTextField.getText().isEmpty())
+		{
+			setCreated(Calendar.getInstance());
+		}
+		
 		if(NOTEBOOK_MODE)
 		{
 			Point location = m_contentsPanel.getLocationOnScreen();
@@ -214,7 +219,6 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 			location.y -= m_numpad.getHeight();
 			m_numpad.setLocation(location);
 			m_numpad.setVisible(true);
-			
 		}
 	}
 

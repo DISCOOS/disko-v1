@@ -329,6 +329,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		for(IEditMessageComponentIf component : m_editComponents)
 		{
 			component.clearContents();
+			component.hideComponent();
 		}
 	}
 
