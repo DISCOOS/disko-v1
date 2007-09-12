@@ -9,7 +9,6 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.swing.JCheckBoxMenuItem;
@@ -27,12 +26,12 @@ import org.redcross.sar.gui.PopupListener;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.ITaskIf;
+import org.redcross.sar.mso.data.ITaskListIf;
 import org.redcross.sar.mso.data.TaskImpl;
 import org.redcross.sar.mso.data.ITaskIf.TaskPriority;
 import org.redcross.sar.mso.data.ITaskIf.TaskStatus;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
-import org.redcross.sar.util.mso.Selector;
 
 /**
  * Provides task table with data. Updates contents on MSO taks update. Also contains nested classes for
@@ -46,7 +45,7 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 {
 	private static final long serialVersionUID = 1L;
 
-	protected List<ITaskIf> m_tasks;
+	protected ITaskListIf m_tasks;
 	protected IDiskoWpTasks m_wpTasks;
 
 	protected JTable m_table;
@@ -66,17 +65,6 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 	protected static Set<String> m_responsibleRoleFilter = new HashSet<String>();
 	
 	protected HashMap<JCheckBoxMenuItem, Enum> m_menuItemEnumMap = null; 
-
-	/**
-	 * Selection, checks that message is valid
-	 */
-	private static final Selector<ITaskIf> m_taskSelector = new Selector<ITaskIf>()
-	{
-		public boolean select(ITaskIf task)
-		{
-			return true;
-		}
-	};
 
 	/**
 	 * Compares task numbers
@@ -120,7 +108,7 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 	{
 		m_wpTasks = wp;
 		m_table = table;
-		m_tasks = wp.getMsoManager().getCmdPost().getTaskList().selectItems(m_taskSelector, null);
+		m_tasks = wp.getMsoManager().getCmdPost().getTaskList();
 
 		wp.getMmsoEventManager().addClientUpdateListener(this);
 		
@@ -155,15 +143,9 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
     	return m_wpTasks.getText("TableHeader" + column + ".text");
     }
 
-    protected void buildTable()
-    {
-    	m_tasks = m_wpTasks.getMsoManager().getCmdPost().getTaskList().selectItems(m_taskSelector, null);
-    }
-
 	public Object getValueAt(int row, int column)
 	{
-		ITaskIf task = m_tasks.get(row);
-
+		ITaskIf task = (ITaskIf)m_tasks.getItems().toArray()[row];
 		switch(column)
 		{
 		case 0:
@@ -185,8 +167,7 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 
 	public void handleMsoUpdateEvent(Update e)
 	{
-		// Rebuild list
-		buildTable();
+		// Values has changed
 		fireTableDataChanged();
 	}
 
@@ -256,7 +237,7 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 		public boolean isRowSelected(TaskPriority priority, String responsible, TaskStatus status)
 		{
 			return m_priorityFilter.contains(priority) &&
-			(m_responsibleRoleFilter.contains(responsible) || responsible == null) &&
+			(m_responsibleRoleFilter.contains(responsible) || responsible == null || responsible.equals("")) &&
 			m_statusFilter.contains(status);
 		}
 	}
@@ -305,7 +286,6 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 							m_responsibleRoleFilter.add(itemText);
 						}
 						
-						buildTable();
 			        	fireTableDataChanged();			
 					}
 	        	};
@@ -381,7 +361,6 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 						}
 					default:
 					}
-					buildTable();
 		        	fireTableDataChanged();
 				}
         	});
@@ -405,7 +384,7 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 	 */
 	public ITaskIf getTask(int taskNr)
 	{
-		for(ITaskIf task : m_tasks)
+		for(ITaskIf task : m_tasks.getItems())
 		{
 			if(taskNr == task.getNumber())
 			{

@@ -135,14 +135,6 @@ public class DeleteTaskDialog extends DiskoDialog
 	{
 		if(m_currentTask != null)
 		{
-//			if(!m_currentTask.deleteObject())
-//			{
-//				System.err.println("Task not deleted");
-//			}
-//			else
-//			{
-//				m_currentTask = null;
-//			}
 			try
 			{
 				m_currentTask.setStatus(TaskStatus.DELETED);
@@ -153,6 +145,8 @@ public class DeleteTaskDialog extends DiskoDialog
 				e.printStackTrace();
 			}
 			m_currentTask = null;
+			
+			m_wpTasks.getMsoModel().commit();
 		}
 		this.setVisible(false);
 	}

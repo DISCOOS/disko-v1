@@ -7,8 +7,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.util.Calendar;
 import java.util.ResourceBundle;
 
@@ -31,6 +29,7 @@ import org.redcross.sar.gui.DiskoButtonFactory.ButtonType;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.ITaskIf;
 import org.redcross.sar.mso.data.TaskImpl;
+import org.redcross.sar.mso.data.IMsoObjectIf.IObjectIdIf;
 import org.redcross.sar.mso.data.ITaskIf.TaskPriority;
 import org.redcross.sar.mso.data.ITaskIf.TaskStatus;
 import org.redcross.sar.mso.data.ITaskIf.TaskType;
@@ -329,6 +328,7 @@ public class TaskDialog extends DiskoDialog
 		
 		m_alertComboBox.setEnabled(editable);
 		m_descriptionTextArea.setEditable(editable);
+		m_useSourceButton.setEnabled(editable);
 		if(editable)
 		{
 			m_descriptionTextArea.setBackground(Color.white);
@@ -359,7 +359,6 @@ public class TaskDialog extends DiskoDialog
 		} 
 		catch (IllegalMsoArgumentException e1)
 		{
-			System.err.println("Error parsing due time DTG, setting due time in 30 min");
 			dueTime = Calendar.getInstance();
 			dueTime.add(Calendar.MINUTE, 30);
 		}
@@ -367,6 +366,7 @@ public class TaskDialog extends DiskoDialog
 		// Create new task if current is set to null
 		if(m_currentTask == null)
 		{ 
+//			IObjectIdIf taskId = m_application.getMsoModel().getModelDriver().makeObjectId();
 			m_currentTask = m_application.getMsoModel().getMsoManager().createTask(dueTime);
 			m_currentTask.setCreated(Calendar.getInstance());
 		}
@@ -408,7 +408,7 @@ public class TaskDialog extends DiskoDialog
 		{
 			m_currentTask.setStatus(status);
 		} 
-		catch (IllegalOperationException e)
+		catch(IllegalOperationException e)
 		{
 			System.err.println("Can not accept status");
 		}
@@ -422,6 +422,8 @@ public class TaskDialog extends DiskoDialog
 		m_currentTask.setDescription(description);
 		
 		// Get source
+		
+		m_application.getMsoModel().commit();
 		
 		// Clean up
 		m_currentTask = null;
