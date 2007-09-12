@@ -222,7 +222,7 @@ public class AssignmentTransferUtilities
     public static void assignAssignmentToUnit(IAssignmentIf assignment, IUnitIf unit) throws IllegalOperationException
     {
     	unit.addUnitAssignment(assignment, AssignmentStatus.ASSIGNED);
-    	unit.getAssignedAssignments().add(assignment);
+    	unit.setStatus(UnitStatus.INITIALIZING);
     }
 
     /**
