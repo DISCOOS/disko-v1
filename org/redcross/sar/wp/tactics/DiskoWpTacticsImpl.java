@@ -29,6 +29,7 @@ import org.redcross.sar.gui.SubMenuPanel;
 import org.redcross.sar.gui.UIFactory;
 import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.DrawTool;
+import org.redcross.sar.map.FreeHandTool;
 import org.redcross.sar.map.IDiskoMapManager;
 import org.redcross.sar.map.POITool;
 import org.redcross.sar.map.feature.IMsoFeature;
@@ -75,6 +76,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 	private JToggleButton estimateToggleButton = null;
 	private POITool poiTool = null;
 	private DrawTool drawTool = null;
+	private FreeHandTool freeHandTool = null;
 	private POIDialog poiDialog = null;
 	private ArrayList<DiskoDialog> dialogs = null;
 	private TextAreaDialog textAreaDialog = null;
@@ -114,6 +116,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		
 		NavBar navBar = getApplication().getNavBar();
 		drawTool = navBar.getDrawTool();
+		freeHandTool = navBar.getFreeHandTool();
 		poiTool = navBar.getPOITool();
 		poiDialog = (POIDialog) poiTool.getDialog();
 		poiDialog.addDialogListener(this);
@@ -149,6 +152,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		super.activated();
 		NavBar navBar = getApplication().getNavBar();
 		EnumSet<NavBar.ToolCommandType> myTools = EnumSet.of(NavBar.ToolCommandType.DRAW_TOOL);
+		myTools.add(NavBar.ToolCommandType.FREEHAND_TOOL);
 		myTools.add(NavBar.ToolCommandType.POI_TOOL);
 		myTools.add(NavBar.ToolCommandType.ERASE_COMMAND);
 		
@@ -220,6 +224,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 				POIType[] poiTypes = { POIType.INTELLIGENCE };
 				poiDialog.setTypes(poiTypes);
 				drawTool.setMsoClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA);
+				freeHandTool.setMsoClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA);
 			}
 			else if (element == IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA) {
 				if (cmdPost.getOperationAreaListItems().size() == 0) {
@@ -231,6 +236,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 				POIType[] poiTypes = { POIType.INTELLIGENCE };
 				poiDialog.setTypes(poiTypes);
 				drawTool.setMsoClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA);
+				freeHandTool.setMsoClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA);
 			}
 			else {
 				if (cmdPost.getOperationAreaListItems().size() == 0) {
@@ -247,6 +253,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 				POIType[] poiTypes = { POIType.VIA, POIType.START, POIType.STOP };
 				poiDialog.setTypes(poiTypes);
 				drawTool.setMsoClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
+				freeHandTool.setMsoClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
 			}
 			setFrameText(Utils.translate(element));
 		}
@@ -271,6 +278,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 						elementList.setSelectedValue(search.getSubType(), false);
 					}
 					drawTool.setArea(area);
+					freeHandTool.setArea(area);
 					NavBar navBar = getApplication().getNavBar();
 					navBar.getPOIToggleButton().setEnabled(true);
 				}

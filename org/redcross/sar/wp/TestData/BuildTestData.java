@@ -75,15 +75,6 @@ public class BuildTestData
         unit.setStatus(IUnitIf.UnitStatus.READY);
         unit.setCallSign("99999");
 
-        unit = unitList.createVehicle("St 39913");
-        unit.setStatus(IUnitIf.UnitStatus.EMPTY);
-
-        unit = unitList.createVehicle("St 39914");
-        unit.setStatus(IUnitIf.UnitStatus.EMPTY);
-
-        unit = unitList.createVehicle("St 39915");
-        unit.setStatus(IUnitIf.UnitStatus.EMPTY);
-
         aMsoModel.restoreUpdateMode();
         aMsoModel.commit();
     }
