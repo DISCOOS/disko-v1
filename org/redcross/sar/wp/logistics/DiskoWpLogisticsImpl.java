@@ -23,10 +23,11 @@ public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDisk
     {
         super(role);
         initialize();
-        if (false)
+        if (true)
         {
-            BuildTestData.createUnitsAndAssignments(getMsoModel());
-            BuildTestData.createMessages(getMsoModel());
+            //BuildTestData.createUnitsAndAssignments(getMsoModel());
+            BuildTestData.createUnits(getMsoModel());
+            //BuildTestData.createMessages(getMsoModel());
         }
     }
 
