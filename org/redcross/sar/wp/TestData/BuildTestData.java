@@ -55,6 +55,39 @@ public class BuildTestData
         aMsoModel.commit();
     }
 
+    public static void createUnits(IMsoModelIf aMsoModel)
+    {
+        ICmdPostIf cmdPost = aMsoModel.getMsoManager().getCmdPost();
+        aMsoModel.setLocalUpdateMode();
+        IUnitListIf unitList = cmdPost.getUnitList();
+        IUnitIf unit;
+
+        unit = unitList.createVehicle("St 39911");
+        unit.setRemarks("This is a red car");
+        unit.setStatus(IUnitIf.UnitStatus.READY);
+        unit.setCallSign("88888");
+
+        unit = unitList.createVehicle("St 39912");
+        unit.setStatus(IUnitIf.UnitStatus.READY);
+        unit.setCallSign("21345");
+
+        unit = unitList.createBoat("Jupiter");
+        unit.setStatus(IUnitIf.UnitStatus.READY);
+        unit.setCallSign("99999");
+
+        unit = unitList.createVehicle("St 39913");
+        unit.setStatus(IUnitIf.UnitStatus.EMPTY);
+
+        unit = unitList.createVehicle("St 39914");
+        unit.setStatus(IUnitIf.UnitStatus.EMPTY);
+
+        unit = unitList.createVehicle("St 39915");
+        unit.setStatus(IUnitIf.UnitStatus.EMPTY);
+
+        aMsoModel.restoreUpdateMode();
+        aMsoModel.commit();
+    }
+
     public static void createUnitsAndAssignments(IMsoModelIf aMsoModel)
     {
         ICmdPostIf cmdPost = aMsoModel.getMsoManager().getCmdPost();
@@ -145,7 +178,7 @@ public class BuildTestData
         aMsoModel.restoreUpdateMode();
         aMsoModel.commit();
     }
-
+    
     public static void createMessages(IMsoModelIf aMsoModel)
     {
         ICmdPostIf cmdPost = aMsoModel.getMsoManager().getCmdPost();
