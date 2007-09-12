@@ -727,6 +727,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     		{
 				public void actionPerformed(ActionEvent arg0)
 				{
+					// Commit current message
 					if(validMessage())
 					{
 						// Set message status
@@ -750,19 +751,15 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 						// Handle assignments
 						updateAssignments();
 
-						clearPanelContents();
-
 						// Commit changes
 						m_wpMessageLog.getMsoModel().commit();
 
 						m_currentMessage = null;
 						m_messageDirty = false;
 						m_currentMessageNr = 0;
-
-						for(IEditMessageComponentIf dialog : m_editComponents)
-						{
-							dialog.hideComponent();
-						}
+						
+						// GUI clean-up
+						clearPanelContents();
 
 						m_buttonGroup.clearSelection();
 					}
@@ -1366,20 +1363,14 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	{
 		if(m_newMessage && m_currentMessage != null)
 		{
-			System.err.println("Delete current message: " + m_currentMessage.getNumber());
 			m_currentMessage.deleteObject();
 		}
 
-		m_wpMessageLog.getMsoManager().rollback();
+		m_wpMessageLog.getMsoModel().rollback();
 
 		m_currentMessage = null;
 		m_messageDirty = false;
 		m_currentMessageNr = 0;
-
-		for(IEditMessageComponentIf dialog : m_editComponents)
-		{
-			dialog.hideComponent();
-		}
 
 		m_buttonGroup.clearSelection();
 
