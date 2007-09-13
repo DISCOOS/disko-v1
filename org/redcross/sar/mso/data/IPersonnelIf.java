@@ -44,6 +44,22 @@ public interface IPersonnelIf extends IPersonIf
 
     public IAttributeIf.IMsoCalendarIf getCallOutAttribute();
 
+    public void setDataSourceID(String aDataSourceID);
+
+    public String getDataSourceID();
+
+    public IMsoModelIf.ModificationState getDataSourceIDState();
+
+    public IAttributeIf.IMsoStringIf getDataSourceIDAttribute();
+
+    public void setDataSourceName(String aDataSourceName);
+
+    public String getDataSourceName();
+
+    public IMsoModelIf.ModificationState getDataSourceNameState();
+
+    public IAttributeIf.IMsoStringIf getDataSourceNameAttribute();
+
     public void setEstimatedArrival(Calendar anEstimatedArrival);
 
     public Calendar getEstimatedArrival();
@@ -68,12 +84,28 @@ public interface IPersonnelIf extends IPersonIf
 
     public IAttributeIf.IMsoStringIf getRemarksAttribute();
 
+    public void setDepartment(String aDepartment);
+
+    public String getDepartment();
+
+    public IMsoModelIf.ModificationState getDepartmentState();
+
+    public IAttributeIf.IMsoStringIf getDepartmentAttribute();
+
+    public void setOrganization(String anOrganization);
+
+    public String getOrganization();
+
+    public IMsoModelIf.ModificationState getOrganizationState();
+
+    public IAttributeIf.IMsoStringIf getOrganizationAttribute();
+
     public void setStatus(PersonnelStatus aStatus);
 
     public void setStatus(String aStatus);
 
     public PersonnelStatus getStatus();
-    
+
     public String getStatusText();
 
     public IMsoModelIf.ModificationState getStatusState();
@@ -85,18 +117,20 @@ public interface IPersonnelIf extends IPersonIf
     public void setType(String aType);
 
     public PersonnelType getType();
-    
+
     public String getTypeText();
 
     public IMsoModelIf.ModificationState getTypeState();
 
     public IAttributeIf.IMsoEnumIf<PersonnelType> getTypeAttribute();
 
-    public void setDataSourceName(IDataSourceIf aDataSource);
 
-    public IDataSourceIf getDataSourceName();
+    public void setNextOccurence(IPersonnelIf aPersonnel);
 
-    public IMsoModelIf.ModificationState getDataSourceNameState();
+    public IPersonnelIf getNextOccurence();
 
-    public IMsoReferenceIf<IDataSourceIf> getDataSourceNameAttribute();
+    public IMsoModelIf.ModificationState getNextOccurenceState();
+
+    public IMsoReferenceIf<IPersonnelIf> getNextOccurenceAttribute();
+
 }
