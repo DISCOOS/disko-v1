@@ -1,14 +1,21 @@
 package org.redcross.sar.wp.tasks;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -21,6 +28,7 @@ import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.ErrorDialog;
+import org.redcross.sar.gui.MainMenuPanel;
 import org.redcross.sar.gui.SubMenuPanel;
 import org.redcross.sar.gui.TaskDialog;
 import org.redcross.sar.mso.data.ITaskIf;
@@ -29,6 +37,7 @@ import org.redcross.sar.mso.data.ITaskIf.TaskStatus;
 import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.util.mso.DTG;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
+import org.redcross.sar.wp.IDiskoWpModule;
 
 /**
  * Implementation of the tasks work process
@@ -51,7 +60,7 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 	
 	private ITaskIf m_currentTask;
 	
-	private static final int TASK_ALERT_TIMER = 5000;
+	private static final int TASK_ALERT_TIME = 5000;
 	
 	public DiskoWpTasksImpl(IDiskoRole role)
 	{
@@ -97,30 +106,52 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 						ITaskListIf tasks = getMsoManager().getCmdPost().getTaskList();
 						
 						Calendar currentTime = Calendar.getInstance();
-						boolean hasAlert = false;
+						IDiskoRole role = getDiskoRole();
+						
+						boolean alert = false;
+						boolean isAlertTime = false;
+						boolean isAlertStatus = false;
+						boolean isAlertRole = false; 
 						for(ITaskIf task : tasks.getItems())
 						{
 							Calendar alertTime = task.getAlert();
-							if(alertTime != null && alertTime.before(currentTime) && 
-									task.getStatus() != TaskStatus.FINISHED && task.getStatus() != TaskStatus.DELETED)
+							isAlertTime = alertTime != null && alertTime.before(currentTime);
+							isAlertStatus = task.getStatus() != TaskStatus.FINISHED && task.getStatus() != TaskStatus.DELETED;;
+							isAlertRole = task.getResponsibleRole() == null || 
+								task.getResponsibleRole().equals("") || 
+								task.getResponsibleRole().equals(role.getTitle());
+							if(isAlertTime && isAlertStatus && isAlertRole)
 							{		
-								hasAlert = true;
-								break;						
+								alert = true;
+								break;
 							}
 						}
-						
-						if(hasAlert)
+
+						List<IDiskoWpModule> modules = role.getDiskoWpModules();
+						int index = modules.indexOf(getDiskoWpTasks());
+						MainMenuPanel mainMenu = getApplication().getUIFactory().getMainMenuPanel();
+						AbstractButton button = mainMenu.getButton(role.getName(), index);
+						if(alert)
 						{
-							// Set alert on tasks button for responsible role(s)
+							button.setBorder(BorderFactory.createLineBorder(Color.red));
 						}
 						else
 						{
-							// No alert i tasks, remove any alert
+							button.setBorder(null);
 						}
 					}
-				}, TASK_ALERT_TIMER, TASK_ALERT_TIMER);
+				}, TASK_ALERT_TIME, TASK_ALERT_TIME);
 			}	
 		});
+	}
+	
+	/**
+	 * Used by the alert timer
+	 * @return
+	 */
+	protected IDiskoWpModule getDiskoWpTasks()
+	{
+		return this;
 	}
 	
 	@Override
