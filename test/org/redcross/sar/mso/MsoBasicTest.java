@@ -290,9 +290,13 @@ public class MsoBasicTest
         unitListImpl.clear();
 
         UnitListImpl myUnitList = new UnitListImpl(null, "MyTestList", false);
+        UnitListImpl myOtherUnitList = new UnitListImpl(null, "MyTestList", false);
+
+        assertEquals(myUnitList,myOtherUnitList);
 
         IAssignmentListIf assignmentList = cmdPost.getAssignmentList();
         assertNotNull(assignmentList);
+        assertFalse(myUnitList.equals(assignmentList));
         AssignmentListImpl assignmentListImpl = (AssignmentListImpl) assignmentList;
         assignmentListImpl.clear();
 
@@ -319,6 +323,9 @@ public class MsoBasicTest
             mainUnitCount++;
             int v3Count = 1;
             myUnitList.add(vUnit1);
+            assertFalse(myUnitList.equals(myOtherUnitList));
+            myOtherUnitList.add(vUnit1);
+            assertEquals(myUnitList,myOtherUnitList);
             myCount++;
 
             AbstractUnit aUnit1 = (AbstractUnit) vUnit1;
