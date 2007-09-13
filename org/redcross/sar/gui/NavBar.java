@@ -20,6 +20,7 @@ import javax.swing.JToggleButton;
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.map.DrawTool;
+import org.redcross.sar.map.FreeHandTool;
 import org.redcross.sar.map.EraseCommand;
 import org.redcross.sar.map.FlankTool;
 import org.redcross.sar.map.TocCommand;
@@ -63,7 +64,8 @@ public class NavBar extends JPanel {
 		ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND,
 		ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND,
 		MAP_TOGGLE_COMMAND,
-		TOC_COMMAND
+		TOC_COMMAND,
+		FREEHAND_TOOL
     }
 	
 	public enum ButtonPlacement {
@@ -80,6 +82,7 @@ public class NavBar extends JPanel {
 	private JPanel rightPanel = null;
 	private JToggleButton flankToggleButton = null;
 	private JToggleButton drawLineToggleButton = null;
+	private JToggleButton freeHandToggleButton = null;
 	private JToggleButton eraseToggleButton = null;
 	private JToggleButton splitToggleButton = null;
 	private JToggleButton poiToggleButton = null;	
@@ -97,6 +100,7 @@ public class NavBar extends JPanel {
 	private JButton eraseButton = null;
 	
 	private DrawTool drawTool = null;
+	private FreeHandTool freeHandTool = null;
 	private FlankTool flankTool = null;
 	private SplitTool splitTool = null;
 	private POITool puiTool = null;
@@ -141,6 +145,8 @@ public class NavBar extends JPanel {
 				ToolCommandType.FLANK_TOOL, ButtonPlacement.LEFT);
 		addCommand(getDrawLineToggleButton(), getDrawTool(), 
 				ToolCommandType.DRAW_TOOL, ButtonPlacement.LEFT);
+		addCommand(getFreeHandToggleButton(), getFreeHandTool(), 
+				ToolCommandType.FREEHAND_TOOL, ButtonPlacement.LEFT);
 		addCommand(getSplitToggleButton(), getSplitTool(), 
 				ToolCommandType.SPLIT_TOOL, ButtonPlacement.LEFT);
 		addCommand(getSelectFeatureToggleButton(), getSelectFeatureTool(), 
@@ -214,6 +220,18 @@ public class NavBar extends JPanel {
 			}
 		}
 		return drawTool;
+	}
+	
+	public FreeHandTool getFreeHandTool() {
+		if (freeHandTool == null) {
+			try {
+				freeHandTool = new FreeHandTool(app);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return freeHandTool;
 	}
 	
 	public FlankTool getFlankTool() {
@@ -476,6 +494,21 @@ public class NavBar extends JPanel {
 			}
 		}
 		return drawLineToggleButton;
+	}
+	
+	
+	public JToggleButton getFreeHandToggleButton() {
+		if (freeHandToggleButton == null) {
+			try {
+				Dimension size = app.getUIFactory().getSmallButtonSize();
+				freeHandToggleButton = new JToggleButton();
+				freeHandToggleButton.setPreferredSize(size);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return freeHandToggleButton;
 	}
 	
 	public JToggleButton getSplitToggleButton() {

@@ -23,7 +23,7 @@ public class AssignmentTableCellRenderer extends JLabel implements
 		IAssignmentIf assignment = (IAssignmentIf)value;
 		if (column == 1) {
 			setText(Utils.translate(assignment instanceof ISearchIf ? 
-					((ISearchIf)assignment).getSubType() : assignment.getType()));
+					((ISearchIf)assignment).getSubType() : assignment.getType()) + " " + assignment.getNumber());
 		}
 		else if (column == 2) {
 			setText(Utils.translate(assignment.getStatus()));

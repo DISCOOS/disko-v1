@@ -163,7 +163,7 @@ public class DrawTool extends AbstractCommandTool {
 			searchArea.setGeodata(MapUtil.getMsoPolygon(polygon));
 			msoObj = searchArea;
 		}
-		else if (msoClassCode == IMsoManagerIf.MsoClassCode.CLASSCODE_AREA) {     // todo sjekk etter endring av GeoCollection
+		else if (msoClassCode == IMsoManagerIf.MsoClassCode.CLASSCODE_AREA) {
 			if (area == null) {
 				IAreaListIf areaList = cmdPost.getAreaList();
 				area = areaList.createArea();
@@ -301,6 +301,8 @@ public class DrawTool extends AbstractCommandTool {
 	}
 
 	private void draw() throws IOException, AutomationException {
+		
+		if (isActive) {
 		IScreenDisplay screenDisplay = map.getActiveView().getScreenDisplay();
 		screenDisplay.startDrawing(screenDisplay.getHDC(),(short) esriScreenCache.esriNoScreenCache);
 
@@ -317,6 +319,7 @@ public class DrawTool extends AbstractCommandTool {
 			screenDisplay.drawPolyline(snapGeometry);
 		}
 		screenDisplay.finishDrawing();
+		}
 	}
 
 	private void refresh() throws IOException, AutomationException {

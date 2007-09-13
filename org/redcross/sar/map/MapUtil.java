@@ -67,6 +67,16 @@ public class MapUtil {
 		return p;
 	}
 	
+	public static Point getEsriPoint(double x, double y, ISpatialReference srs) 
+	throws IOException, AutomationException {
+		Point p = new Point();
+		p.setX(x);
+		p.setY(y);
+		p.setSpatialReferenceByRef(getGeographicCS());
+		p.project(srs);
+		return p;
+	}
+	
 	public static Position getMsoPosistion(Point p)  
 			throws IOException, AutomationException {
 		Point prjPoint = (Point)p.esri_clone();

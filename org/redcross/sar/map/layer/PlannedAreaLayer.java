@@ -13,6 +13,7 @@ import org.redcross.sar.mso.data.IAreaIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.ISearchIf;
 import org.redcross.sar.mso.data.ISearchIf.SearchSubType;
+import org.redcross.sar.mso.data.IAssignmentIf;
 
 import com.esri.arcgis.display.IColor;
 import com.esri.arcgis.display.IDisplay;
@@ -65,7 +66,7 @@ public class PlannedAreaLayer extends AbstractMsoFeatureLayer {
 					SimpleLineSymbol lineSymbol = null;
 					if (search != null) {
 						lineSymbol = (SimpleLineSymbol)symbols.get(search.getSubType());
-						text = Utils.translate(search.getSubType())+" - "+
+						text = Utils.translate(search.getSubType()) + " " + ((IAssignmentIf)search).getNumber() + " - "+
 							Utils.translate(search.getStatus());
 					} else {
 						lineSymbol = defaultLineSymbol;

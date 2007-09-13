@@ -17,7 +17,7 @@ public class AssignmentTableStringConverter extends TableStringConverter {
 			String text = null;
 			if (column == 1) {
 				text = Utils.translate(assignment instanceof ISearchIf ? 
-						((ISearchIf)assignment).getSubType() : assignment.getType());
+						((ISearchIf)assignment).getSubType() : assignment.getType()) + " " + assignment.getNumber();
 			}
 			else if (column == 2) {
 				text = Utils.translate(assignment.getStatus());
