@@ -1,8 +1,12 @@
 package org.redcross.sar.wp.logistics;
 
 import com.esri.arcgis.interop.AutomationException;
+import org.redcross.sar.event.IMsoLayerEventListener;
+import org.redcross.sar.event.MsoLayerEvent;
 import org.redcross.sar.gui.renderers.IconRenderer;
 import org.redcross.sar.map.IDiskoMap;
+import org.redcross.sar.map.feature.IMsoFeature;
+import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.*;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
@@ -27,7 +31,7 @@ import java.util.EnumSet;
 /**
  *
  */
-public class LogisticsPanel implements IMsoUpdateListenerIf
+public class LogisticsPanel implements IMsoUpdateListenerIf, IMsoLayerEventListener
 {
 
     private JPanel WorkspacePanel;
@@ -48,6 +52,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
     private IUnitListIf m_unitList;
     private IAssignmentListIf m_assignmentList;
 
+    private IAssignmentIf m_mapSelectedAssignment;
     private AssignmentScrollPanel m_selectableAssignmentsPanel;
     private AssignmentScrollPanel m_priAssignmentsPanel;
     private AssignmentTransferHandler m_assignmentTransferHandler;
@@ -119,6 +124,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         {
             public void handleClick(IUnitIf aUnit)
             {
+                setSelectedAssignmentInPanels(null);
                 getInfoPanelHandler().setUnit(aUnit);
             }
 
@@ -129,6 +135,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
 
             public void handleClick(IUnitIf aUnit, int aSelectorIndex)
             {
+                setSelectedAssignmentInPanels(null);
                 getInfoPanelHandler().setUnitSelection(aUnit, aSelectorIndex);
             }
         };
@@ -136,11 +143,22 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
 
     private void singelAssignmentClick(IAssignmentIf anAssignment, boolean calledFromListPanel)
     {
+        setSelectedAssignmentInPanels(anAssignment);
         getInfoPanelHandler().setAssignment(anAssignment, calledFromListPanel);
         try
         {
-            m_map.zoomToMsoObject(anAssignment);
-            //m_map.setSelected(anAssignment, true);
+            if (m_mapSelectedAssignment != null)
+            {
+                m_map.setSelected(m_mapSelectedAssignment, false);
+                m_mapSelectedAssignment = null;
+            }
+
+            if (anAssignment.getPlannedArea() != null)
+            {
+                m_mapSelectedAssignment = anAssignment;
+                m_map.zoomToMsoObject(m_mapSelectedAssignment);
+                m_map.setSelected(m_mapSelectedAssignment, true);
+            }
         }
         catch (AutomationException e)
         {
@@ -150,6 +168,12 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
         {
             e.printStackTrace();
         }
+    }
+
+    private void setSelectedAssignmentInPanels(IAssignmentIf anAssignment)
+    {
+        m_selectableAssignmentsPanel.setSelectedAssignment(anAssignment);
+        m_priAssignmentsPanel.setSelectedAssignment(anAssignment);
     }
 
     private void initAssignmentPanels()
@@ -245,6 +269,9 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
     private void addToListeners()
     {
         m_wpModule.getMmsoEventManager().addClientUpdateListener(this);
+        IMsoFeatureLayer msoLayer = m_wpModule.getApplication().getDiskoMapManager().
+                getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER);
+        msoLayer.addDiskoLayerEventListener(this);
     }
 
     private void setPanelSizes()
@@ -313,6 +340,23 @@ public class LogisticsPanel implements IMsoUpdateListenerIf
     {
         UnitTableModel utm = (UnitTableModel) m_unitTable.getModel();
         utm.buildTable();
+    }
+
+    public void onSelectionChanged(MsoLayerEvent e) throws IOException, AutomationException
+    {
+        IMsoFeatureLayer msoLayer = (IMsoFeatureLayer) e.getSource();
+        java.util.List selection = msoLayer.getSelected();
+        if (selection != null && selection.size() > 0)
+        {
+            IMsoFeature msoFeature = (IMsoFeature) selection.get(0);
+            IMsoObjectIf msoObject = msoFeature.getMsoObject();
+            if (msoObject instanceof IAreaIf)
+            {
+                m_mapSelectedAssignment = ((IAreaIf) msoObject).getOwningAssignment();
+                setSelectedAssignmentInPanels(m_mapSelectedAssignment);
+                getInfoPanelHandler().setAssignment(m_mapSelectedAssignment, false);
+            }
+        }
     }
 
 

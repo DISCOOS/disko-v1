@@ -16,7 +16,7 @@ import java.util.Vector;
 
 /**
  * Scroll panel for assignments.
- *
+ * <p/>
  * The panel shows assignment labels for a given list of assignments.
  */
 public class AssignmentScrollPanel extends DiskoScrollPanel
@@ -78,13 +78,13 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
 
     /**
      * Constructor.
-     *
+     * <p/>
      * Define a panel with a given FlowLayout manager.
      *
-     * @param aScrollPane The surrounding scroll pane.
-     * @param aLayoutManager The layout manager used by the panel.
+     * @param aScrollPane     The surrounding scroll pane.
+     * @param aLayoutManager  The layout manager used by the panel.
      * @param anActionHandler The {@link AssignmentLabel.AssignmentLabelActionHandler} that shall be used by te labels.
-     * @param showIcons <code>true</code> if icons shall be shown in the labels, <code>false</code> otherwise.
+     * @param showIcons       <code>true</code> if icons shall be shown in the labels, <code>false</code> otherwise.
      * @see DiskoScrollPanel
      */
     public AssignmentScrollPanel(JScrollPane aScrollPane, FlowLayout aLayoutManager, AssignmentLabel.AssignmentLabelActionHandler anActionHandler, boolean showIcons)
@@ -97,13 +97,13 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
 
     /**
      * Constructor.
-     *
+     * <p/>
      * Define a panel with a given GridLayout manager.
      *
-     * @param aScrollPane The surrounding scroll pane.
-     * @param aLayoutManager The layout manager used by the panel.
+     * @param aScrollPane     The surrounding scroll pane.
+     * @param aLayoutManager  The layout manager used by the panel.
      * @param anActionHandler The {@link AssignmentLabel.AssignmentLabelActionHandler} that shall be used by te labels.
-     * @param showIcons <code>true</code> if icons shall be shown in the labels, <code>false</code> otherwise.
+     * @param showIcons       <code>true</code> if icons shall be shown in the labels, <code>false</code> otherwise.
      * @see DiskoScrollPanel
      */
     public AssignmentScrollPanel(JScrollPane aScrollPane, GridLayout aLayoutManager, AssignmentLabel.AssignmentLabelActionHandler anActionHandler, boolean showIcons)
@@ -116,17 +116,17 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
 
     /**
      * Constructor.
-     *
+     * <p/>
      * Define a panel with a given layout manager.
      *
-     * @param aScrollPane The surrounding scroll pane.
-     * @param aLayoutManager The layout manager used by the panel.
-     * @param aHgap Horizontal gap between labels.
-     * @param aVgap Vertical gap between labels.
+     * @param aScrollPane      The surrounding scroll pane.
+     * @param aLayoutManager   The layout manager used by the panel.
+     * @param aHgap            Horizontal gap between labels.
+     * @param aVgap            Vertical gap between labels.
      * @param isHorizontalFlow <code>true</code> if labels shall be displayed in horizontal rows, <code>false</code> if the
-     * shall be shown in vertical columns.
-     * @param anActionHandler The {@link AssignmentLabel.AssignmentLabelActionHandler} that shall be used by te labels.
-     * @param showIcons <code>true</code> if icons shall be shown in the labels, <code>false</code> otherwise.
+     *                         shall be shown in vertical columns.
+     * @param anActionHandler  The {@link AssignmentLabel.AssignmentLabelActionHandler} that shall be used by te labels.
+     * @param showIcons        <code>true</code> if icons shall be shown in the labels, <code>false</code> otherwise.
      * @see DiskoScrollPanel
      */
     public AssignmentScrollPanel(JScrollPane aScrollPane, LayoutManager aLayoutManager, int aHgap, int aVgap, boolean isHorizontalFlow, AssignmentLabel.AssignmentLabelActionHandler anActionHandler, boolean showIcons)
@@ -143,7 +143,8 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
         setFocusable(true);
         setEnabled(true);
 
-        addFocusListener(new FocusListener(){
+        addFocusListener(new FocusListener()
+        {
             public void focusGained(FocusEvent e)
             {
             }
@@ -154,6 +155,7 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
         });
 
     }
+
     /**
      * Set list of assignments to show
      *
@@ -166,6 +168,7 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
 
     /**
      * Get list of assignments to show
+     *
      * @return The actual list.
      */
     public List<IAssignmentIf> getAssignmentList()
@@ -200,7 +203,7 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
 
     /**
      * Set last index to show.
-     *
+     * <p/>
      * If equal to -1, show all items.
      */
     public void setLastIndex(int anIndex)
@@ -209,7 +212,7 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
     }
 
     /**
-     *  Get the current {@link IAssignmentIf.AssignmentStatus} for the assigments in the panel.
+     * Get the current {@link IAssignmentIf.AssignmentStatus} for the assigments in the panel.
      */
     public IAssignmentIf.AssignmentStatus getSelectedStatus()
     {
@@ -217,7 +220,7 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
     }
 
     /**
-     *  Set the current {@link IAssignmentIf.AssignmentStatus} for the assigments in the panel.
+     * Set the current {@link IAssignmentIf.AssignmentStatus} for the assigments in the panel.
      */
     public void setSelectedStatus(IAssignmentIf.AssignmentStatus aSelectedStatus)
     {
@@ -226,7 +229,7 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
 
 
     /**
-     *  Get the {@link org.redcross.sar.mso.data.IUnitIf} owning the assigments in the panel.
+     * Get the {@link org.redcross.sar.mso.data.IUnitIf} owning the assigments in the panel.
      */
     public IUnitIf getSelectedUnit()
     {
@@ -234,7 +237,7 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
     }
 
     /**
-     *  Set the {@link org.redcross.sar.mso.data.IUnitIf} owning the assigments in the panel.
+     * Set the {@link org.redcross.sar.mso.data.IUnitIf} owning the assigments in the panel.
      */
     public void setSelectedUnit(IUnitIf aSelectedUnit)
     {
@@ -295,7 +298,7 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
                 if (m_labels.size() == iv)
                 {
                     m_labels.ensureCapacity(lastIndex - firstIndex + 1);
-                    m_labels.add(new DTAssignmentLabel(icon, m_actionHandler,getTransferHandler())); // Inherit transfer handler from panel
+                    m_labels.add(new DTAssignmentLabel(icon, m_actionHandler, getTransferHandler())); // Inherit transfer handler from panel
                 } else
                 {
                     m_labels.get(iv).setAssignmentIcon(icon);
@@ -305,7 +308,7 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
                 if (m_labels.size() == iv)
                 {
                     m_labels.ensureCapacity(lastIndex - firstIndex + 1);
-                    m_labels.add(new DTAssignmentLabel(asg, m_actionHandler,getTransferHandler())); // Inherit transfer handler from panel
+                    m_labels.add(new DTAssignmentLabel(asg, m_actionHandler, getTransferHandler())); // Inherit transfer handler from panel
                 } else
                 {
                     m_labels.get(iv).setAssignment(asg);
@@ -320,10 +323,26 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
 
     /**
      * Calculate the number of labels that can be located within the pane without scrolling.
+     *
      * @return The calculated number.
      */
     public int getMaxNonscrollItems()
     {
         return super.getMaxNonscrollItems(IconRenderer.AssignmentIcon.getIconSize());
     }
+
+    public void setSelectedAssignment(IAssignmentIf anAssignment)
+    {
+        for (DTAssignmentLabel label : m_labels)
+        {
+            if (label.getAssignment() == anAssignment)
+            {
+                label.setSelected(true);
+            } else if (label.isSelected())
+            {
+                label.setSelected(false);
+            }
+        }
+    }
+
 }

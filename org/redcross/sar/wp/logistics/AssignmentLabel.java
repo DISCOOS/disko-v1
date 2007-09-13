@@ -82,7 +82,7 @@ public class AssignmentLabel extends JLabel implements MouseListener, FocusListe
         }
     }
 
-    private void setSelected(boolean isSelected)
+    public void setSelected(boolean isSelected)
     {
         m_isSelected = isSelected;
         if (m_assignment != null)
@@ -97,6 +97,11 @@ public class AssignmentLabel extends JLabel implements MouseListener, FocusListe
             }
         }
         repaint();
+    }
+
+    public boolean isSelected()
+    {
+        return m_isSelected;
     }
 
     /**
