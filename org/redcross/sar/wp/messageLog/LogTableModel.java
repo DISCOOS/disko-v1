@@ -23,6 +23,7 @@ import org.redcross.sar.wp.messageLog.ChangeTasksDialog.TaskSubType;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 
+import java.awt.Font;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -397,20 +398,31 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
 	 */
 	public int numRows(int rowIndex)
 	{
+		Font font = m_table.getFont();
 		// Message lines
+		int columnWidth = m_table.getColumnModel().getColumn(4).getWidth();
 		int numMessageLines = 0;
 		String[] messageLineStrings = (String[])getValueAt(rowIndex, 4);
 		for(int i=0; i<messageLineStrings.length; i++)
 		{
 			String[] multiline = messageLineStrings[i].split("\n");
-			int numLinesString = multiline.length;
-			// TODO handle long single lines as well.
+			int numLinesString = 0;
+			for(String line : multiline)
+			{
+				int lineWidth = line.length() * font.getSize();
+				numLinesString += Math.max(1, lineWidth/columnWidth);
+			}
 			numMessageLines += Math.max(1, numLinesString);
 		}
 		
 		// Tasks
+		columnWidth = m_table.getColumnModel().getColumn(5).getWidth();
 		String[] taskStrings = (String[])getValueAt(rowIndex, 5);
-		int numTaskLines = taskStrings.length;
+		int numTaskLines = 0;
+		for(String task : taskStrings)
+		{
+//			int lineWidth
+		}
 		
 		return Math.max(numMessageLines, numTaskLines);
 	}

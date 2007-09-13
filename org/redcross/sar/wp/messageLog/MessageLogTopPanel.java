@@ -440,9 +440,9 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
         // Status panel
         m_statusPanel = new JPanel();
         m_statusPanel.setLayout(new BoxLayout(m_statusPanel, BoxLayout.Y_AXIS));
-        m_statusPanel.setMinimumSize(new Dimension(SMALL_PANEL_WIDTH + 18, PANEL_HEIGHT));
-        m_statusPanel.setPreferredSize(new Dimension(SMALL_PANEL_WIDTH + 18, PANEL_HEIGHT));
-        m_statusPanel.setMaximumSize(new Dimension(SMALL_PANEL_WIDTH + 18, PANEL_HEIGHT));
+        m_statusPanel.setMinimumSize(new Dimension(SMALL_PANEL_WIDTH + 43, PANEL_HEIGHT));
+        m_statusPanel.setPreferredSize(new Dimension(SMALL_PANEL_WIDTH + 43, PANEL_HEIGHT));
+        m_statusPanel.setMaximumSize(new Dimension(SMALL_PANEL_WIDTH + 43, PANEL_HEIGHT));
         m_statusPanel.add(new JLabel(" "));
         m_statusPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
         m_statusPanel.add(m_cancelStatusButton);

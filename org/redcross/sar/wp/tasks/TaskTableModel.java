@@ -4,21 +4,17 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.RowFilter;
-import javax.swing.RowSorter;
-import javax.swing.SortOrder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
@@ -210,10 +206,8 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 			};
 			this.setRowFilter(rf);
 			
-			List <RowSorter.SortKey> sortKeys = new ArrayList<RowSorter.SortKey>();
-			sortKeys.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));
-			sortKeys.add(new RowSorter.SortKey(1, SortOrder.ASCENDING));
-			this.setSortKeys(sortKeys); 
+			this.setComparator(0, m_numberComparator);
+			this.sort();
 		}
 
 		@Override

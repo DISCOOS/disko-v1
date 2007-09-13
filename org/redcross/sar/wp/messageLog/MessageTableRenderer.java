@@ -33,9 +33,9 @@ public class MessageTableRenderer extends JTextArea implements TableCellRenderer
 	 */
     public MessageTableRenderer(IMessageLogIf log)
 	{
+    	setOpaque(true);
     	setLineWrap(true);
         setWrapStyleWord(true);
-        
         m_log  = log;
 	}
 
@@ -44,10 +44,10 @@ public class MessageTableRenderer extends JTextArea implements TableCellRenderer
      */
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
     {
+		LogTableModel model = (LogTableModel)table.getModel();
         // Contents
         if(value instanceof String[])
-        {
-        	LogTableModel model = (LogTableModel)table.getModel();
+        {	
         	Boolean extended = model.isMessageExpanded(row+1);
         	StringBuilder messageString = new StringBuilder();
         	String[] messageLines = (String[]) value;
@@ -80,20 +80,31 @@ public class MessageTableRenderer extends JTextArea implements TableCellRenderer
         	setText((String)value);
         }
         
-        // Size
-        setSize(table.getColumnModel().getColumn(column).getWidth(),
-                getPreferredSize().height);
+//        // Size
+//        setSize(table.getColumnModel().getColumn(column).getWidth(),
+//                getPreferredSize().height);
         
         // Colors
-        setBackground(table.getBackground());
-        if(m_log != null)
+        int messageNr = Integer.valueOf(((String)model.getValueAt(row, 0)).split("\\s")[0]);
+        if(MessageLogTopPanel.getCurrentMessage().getNumber() == messageNr)
         {
-        	for(IMessageIf message : m_log.getItems())
+        	setForeground(table.getSelectionForeground());
+        	setBackground(table.getSelectionBackground());
+        }
+        else
+        {
+        	setForeground(table.getForeground());
+        	setBackground(table.getBackground());
+        	
+        	if(m_log != null)
             {
-            	if(message.getNumber() == (row+1) && message.getStatus() == MessageStatus.POSTPONED)
-            	{
-            		setBackground(Color.pink);
-            	}
+            	for(IMessageIf message : m_log.getItems())
+                {
+                	if(message.getNumber() == (row+1) && message.getStatus() == MessageStatus.POSTPONED)
+                	{
+                		setBackground(Color.pink);
+                	}
+                }
             }
         }
         

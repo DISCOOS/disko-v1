@@ -628,19 +628,16 @@ public class TaskDialog extends DiskoDialog
 			switch(type)
 			{
 			case TRANSPORT:
-				text = m_resources.getString("TaskTransportText.text") + " " + 
-				m_objectTextField.getText();
+				text = m_resources.getString("TaskTransportText.text");
 				break;
 			case RESOURCE:
-				text = m_objectTextField.getText() + " " + 
-				m_resources.getString("TaskResourceText.text");
+				text = m_resources.getString("TaskResourceText.text");
 				break;
 			case INTELLIGENCE:
-				text = m_objectTextField.getText() + " " + 
-				m_resources.getString("TaskIntelligenceText.text");
+				text = m_resources.getString("TaskIntelligenceText.text");
 				break;
 			case GENERAL:
-				text = 	m_resources.getString("TaskGeneralText.text");
+				text = m_resources.getString("TaskGeneralText.text");
 				break;
 			}
 			m_taskTextField.setText(text);

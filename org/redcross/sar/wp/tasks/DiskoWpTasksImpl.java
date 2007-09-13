@@ -4,13 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -20,6 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
@@ -35,7 +32,6 @@ import org.redcross.sar.mso.data.ITaskIf;
 import org.redcross.sar.mso.data.ITaskListIf;
 import org.redcross.sar.mso.data.ITaskIf.TaskStatus;
 import org.redcross.sar.util.except.IllegalOperationException;
-import org.redcross.sar.util.mso.DTG;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
 import org.redcross.sar.wp.IDiskoWpModule;
 
@@ -60,7 +56,7 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 	
 	private ITaskIf m_currentTask;
 	
-	private static final int TASK_ALERT_TIME = 5000;
+	private static final int TASK_ALERT_TIME = 10000;
 	
 	public DiskoWpTasksImpl(IDiskoRole role)
 	{
@@ -91,6 +87,8 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 	/**
 	 * Creates timer for checking if any tasks have reached their alert time, and give the appropriate
 	 * role a warning (marking WP button)
+	 * 
+	 * TODO Should probably be moved to abstract WP, implemented as template pattern
 	 */
 	private void setTaskAlertTimer()
 	{
@@ -101,6 +99,7 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 				Timer timer = new Timer(true);
 				timer.schedule(new TimerTask()
 				{
+					@SuppressWarnings("unchecked")
 					public void run()
 					{
 						ITaskListIf tasks = getMsoManager().getCmdPost().getTaskList();
@@ -210,6 +209,7 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 		m_taskTable.setModel(model);
 		m_taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionListener(this, m_taskTable));
 		m_taskTable.setDefaultRenderer(Object.class, new TaskTableRenderer());
+		m_taskTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
 		TableColumn column = m_taskTable.getColumnModel().getColumn(0);
 		column.setMaxWidth(75);
@@ -226,7 +226,10 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 		column = m_taskTable.getColumnModel().getColumn(5);
 		column.setPreferredWidth(100);
 		column.setMaxWidth(100);
-		
+
+		m_taskTable.setRowMargin(2);
+		m_taskTable.setRowHeight(22);
+
 		JTableHeader tableHeader = m_taskTable.getTableHeader();
         tableHeader.setResizingAllowed(false);
         tableHeader.setReorderingAllowed(false);

@@ -6,6 +6,7 @@ import java.util.Calendar;
 
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.table.TableCellRenderer;
 
 import org.redcross.sar.mso.data.TaskImpl;
@@ -26,6 +27,8 @@ public class TaskTableRenderer extends JLabel implements TableCellRenderer
 	
 	public TaskTableRenderer()
 	{
+		JTextArea area = new JTextArea();
+		this.setFont(area.getFont());
 		this.setOpaque(true);
 	}
 

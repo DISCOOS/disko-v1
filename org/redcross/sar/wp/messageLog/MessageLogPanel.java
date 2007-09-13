@@ -101,14 +101,13 @@ public class MessageLogPanel
         final LogTableModel model = new LogTableModel(m_logTable, m_wpModule, m_messageLog, m_rowSelectionListener);
         m_rowSelectionListener.setModel(model);
         m_logTable.setModel(model);
-        m_logTable.setAutoCreateColumnsFromModel(true);
-        m_logTable.setShowHorizontalLines(true);
-        m_logTable.setShowVerticalLines(true);
-        m_logTable.setRowSelectionAllowed(true);
+//        m_logTable.setAutoCreateColumnsFromModel(true);
+//        m_logTable.setShowHorizontalLines(true);
+//        m_logTable.setShowVerticalLines(true);
         m_logTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        m_logTable.setRowSelectionAllowed(true);
-        m_logTable.setRowSelectionAllowed(false);
         m_logTable.setCellSelectionEnabled(false);
+        m_logTable.setRowSelectionAllowed(true);
+        m_logTable.setColumnSelectionAllowed(false);
         m_logTable.setRowMargin(2);
         m_logTable.setRowHeight(22);
 
@@ -128,15 +127,12 @@ public class MessageLogPanel
         column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH * 2);
         column.setMinWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH * 2);
         column = m_logTable.getColumnModel().getColumn(6);
-        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH);
-        column.setPreferredWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH);
+        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH + 25);
+        column.setPreferredWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH + 25);
 
         // Init custom renderer
-        column = m_logTable.getColumnModel().getColumn(4);
-        column.setCellRenderer(new MessageTableRenderer(m_messageLog));
-        m_logTable.setDefaultRenderer(m_logTable.getColumnClass(0), new MessageTableRenderer(m_messageLog));
+        m_logTable.setDefaultRenderer(Object.class, new MessageTableRenderer(m_messageLog));
       
-
         JTableHeader tableHeader = m_logTable.getTableHeader();
         tableHeader.setResizingAllowed(false);
         tableHeader.setReorderingAllowed(false);
@@ -156,16 +152,6 @@ public class MessageLogPanel
         LogTableModel ltm = (LogTableModel) m_logTable.getModel();
         ltm.buildTable();
     }
-
-//    public void setSmallButtonSize(Dimension smallButtonSize)
-//    {
-//        SMALL_BUTTON_SIZE = smallButtonSize;
-//    }
-
-//    public void setWpMessageLog(DiskoWpMessageLogImpl diskoWpMessageLogImpl)
-//    {
-//        m_wpModule = diskoWpMessageLogImpl;
-//    }
 
     /**
      * Hide all components

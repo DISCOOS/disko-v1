@@ -42,7 +42,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 
 	final private static Dimension BUTTON_SIZE = new Dimension(MessageLogPanel.SMALL_BUTTON_SIZE.width*3,
 			MessageLogPanel.SMALL_BUTTON_SIZE.height);
-	final public static int PANEL_WIDTH = BUTTON_SIZE.width * 5 - 30;
+	final public static int PANEL_WIDTH = BUTTON_SIZE.width * 5 ;
 	private final int NUMBER_OF_ROWS = 7;
 
 	/**
