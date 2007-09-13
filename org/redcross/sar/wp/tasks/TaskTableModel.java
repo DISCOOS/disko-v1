@@ -224,7 +224,7 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 			case 5:
 				return m_statusComparator;
 			default:
-				return null;
+				return m_numberComparator;
 			}
 		 }
 		

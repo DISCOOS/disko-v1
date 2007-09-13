@@ -129,6 +129,7 @@ public class MessageLogPanel
         column.setMinWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH * 2);
         column = m_logTable.getColumnModel().getColumn(6);
         column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH);
+        column.setPreferredWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH);
 
         // Init custom renderer
         column = m_logTable.getColumnModel().getColumn(4);

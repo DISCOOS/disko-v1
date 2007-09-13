@@ -52,7 +52,7 @@ public class MessageTableRenderer extends JTextArea implements TableCellRenderer
         	StringBuilder messageString = new StringBuilder();
         	String[] messageLines = (String[]) value;
       
-        	if(extended)
+        	if(extended != null && extended)
         	{
         		// Show lines in expanded mode
         		for (int i = 0; i < messageLines.length; i++)

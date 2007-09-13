@@ -660,7 +660,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 	private boolean validMessage()
 	{
-		// TODO data should be valid already, perhaps not needed?
 		return (m_currentMessage != null);
 	}
 
@@ -1362,13 +1361,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	 */
 	public static void clearCurrentMessage()
 	{
-		if(m_newMessage && m_currentMessage != null)
-		{
-			m_currentMessage.deleteObject();
-		}
-
 		m_wpMessageLog.getMsoModel().rollback();
-
 		m_currentMessage = null;
 		m_messageDirty = false;
 		m_currentMessageNr = 0;

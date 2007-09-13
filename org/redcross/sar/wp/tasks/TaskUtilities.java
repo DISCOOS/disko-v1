@@ -22,16 +22,9 @@ public class TaskUtilities
 		{
 			return true;
 		}
-		
+			
 		String responsible = task.getResponsibleRole();
-		if(responsible == null || responsible.equals(role.getTitle()))
-		{
-			return true;
-		}
-		
-		// TODO Check creating role, implemented in task? (11.09.07)
-		
-		return false;
+		return responsible == null || responsible.equals("") || responsible.equals(role.getTitle());
 	}
 	
 	/**

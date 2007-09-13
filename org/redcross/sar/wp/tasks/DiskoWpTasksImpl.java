@@ -3,13 +3,17 @@ package org.redcross.sar.wp.tasks;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 
@@ -20,8 +24,10 @@ import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.gui.SubMenuPanel;
 import org.redcross.sar.gui.TaskDialog;
 import org.redcross.sar.mso.data.ITaskIf;
+import org.redcross.sar.mso.data.ITaskListIf;
 import org.redcross.sar.mso.data.ITaskIf.TaskStatus;
 import org.redcross.sar.util.except.IllegalOperationException;
+import org.redcross.sar.util.mso.DTG;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
 
 /**
@@ -45,11 +51,15 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 	
 	private ITaskIf m_currentTask;
 	
+	private static final int TASK_ALERT_TIMER = 5000;
+	
 	public DiskoWpTasksImpl(IDiskoRole role)
 	{
 		super(role);
 		
 		m_dialogs = new LinkedList<DiskoDialog>();
+
+		setTaskAlertTimer();
 		
 		initialize();
 	}
@@ -67,6 +77,57 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 		m_deleteTaskDialog = new DeleteTaskDialog(this);
 		m_dialogs.add(m_deleteTaskDialog);
 		m_dialogs.add(this.getApplication().getUIFactory().getTaskDialog());
+	}
+	
+	/**
+	 * Creates timer for checking if any tasks have reached their alert time, and give the appropriate
+	 * role a warning (marking WP button)
+	 */
+	private void setTaskAlertTimer()
+	{
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				Timer timer = new Timer(true);
+				timer.schedule(new TimerTask()
+				{
+					public void run()
+					{
+						ITaskListIf tasks = getMsoManager().getCmdPost().getTaskList();
+						
+						Calendar currentTime = Calendar.getInstance();
+						boolean hasAlert = false;
+						for(ITaskIf task : tasks.getItems())
+						{
+							System.err.println("\nTask nr:" + task.getNumber());
+							Calendar alertTime = task.getAlert();
+							System.err.println("Has alert: " + (alertTime != null));
+							System.err.println("Alert before now: " + (alertTime != null && alertTime.before(Calendar.getInstance())));
+							System.err.println("Alert time: " + DTG.CalToDTG(task.getAlert()));
+							System.err.println("Status: " + task.getStatusText());
+							if(alertTime != null && alertTime.before(currentTime) && 
+									task.getStatus() != TaskStatus.FINISHED && task.getStatus() != TaskStatus.DELETED)
+							{		
+								hasAlert = true;
+								break;						
+							}
+						}
+						
+						if(hasAlert)
+						{
+							// Set alert on tasks button for responsible role(s)
+							System.err.println("Has alert");
+						}
+						else
+						{
+							// No alert i tasks, remove any alert
+							System.err.println("Does not have any alerts");
+						}
+					}
+				}, TASK_ALERT_TIMER, TASK_ALERT_TIMER);
+			}	
+		});
 	}
 	
 	@Override
@@ -128,17 +189,19 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 		
 		TableColumn column = m_taskTable.getColumnModel().getColumn(0);
 		column.setMaxWidth(75);
+		column.setPreferredWidth(75);
 		column = m_taskTable.getColumnModel().getColumn(1);
+		column.setPreferredWidth(150);
 		column.setMaxWidth(150);
 		column = m_taskTable.getColumnModel().getColumn(3);
+		column.setPreferredWidth(150);
+		column.setMaxWidth(150);
+		column = m_taskTable.getColumnModel().getColumn(4);
 		column.setPreferredWidth(100);
 		column.setMaxWidth(100);
-		column = m_taskTable.getColumnModel().getColumn(4);
-		column.setPreferredWidth(150);
-		column.setMaxWidth(150);
 		column = m_taskTable.getColumnModel().getColumn(5);
-		column.setPreferredWidth(150);
-		column.setMaxWidth(150);
+		column.setPreferredWidth(100);
+		column.setMaxWidth(100);
 		
 		JTableHeader tableHeader = m_taskTable.getTableHeader();
         tableHeader.setResizingAllowed(false);

@@ -252,7 +252,7 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
             			{
             				
             				IPOIIf poi = line.getLinePOI();
-            				if(poi.getType() == POIType.SILENT_WITNESS)
+            				if(poi != null && poi.getType() == POIType.SILENT_WITNESS)
             				{
             					taskString = String.format(m_wpModule.getText("TaskSubType.FINDING.text"),
             							m_wpModule.getText("SilentWitness.text"));
