@@ -100,12 +100,7 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 						boolean hasAlert = false;
 						for(ITaskIf task : tasks.getItems())
 						{
-							System.err.println("\nTask nr:" + task.getNumber());
 							Calendar alertTime = task.getAlert();
-							System.err.println("Has alert: " + (alertTime != null));
-							System.err.println("Alert before now: " + (alertTime != null && alertTime.before(Calendar.getInstance())));
-							System.err.println("Alert time: " + DTG.CalToDTG(task.getAlert()));
-							System.err.println("Status: " + task.getStatusText());
 							if(alertTime != null && alertTime.before(currentTime) && 
 									task.getStatus() != TaskStatus.FINISHED && task.getStatus() != TaskStatus.DELETED)
 							{		
@@ -117,12 +112,10 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 						if(hasAlert)
 						{
 							// Set alert on tasks button for responsible role(s)
-							System.err.println("Has alert");
 						}
 						else
 						{
 							// No alert i tasks, remove any alert
-							System.err.println("Does not have any alerts");
 						}
 					}
 				}, TASK_ALERT_TIMER, TASK_ALERT_TIMER);
