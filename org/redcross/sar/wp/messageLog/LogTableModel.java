@@ -24,6 +24,7 @@ import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -398,21 +399,18 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
 	 */
 	public int numRows(int rowIndex)
 	{
-		Font font = m_table.getFont();
+		JTextArea textArea = new JTextArea();
+		Font font = textArea.getFont();
+		FontMetrics fm = textArea.getFontMetrics(font);
+		
 		// Message lines
 		int columnWidth = m_table.getColumnModel().getColumn(4).getWidth();
 		int numMessageLines = 0;
 		String[] messageLineStrings = (String[])getValueAt(rowIndex, 4);
-		for(int i=0; i<messageLineStrings.length; i++)
+		for(String line : messageLineStrings)
 		{
-			String[] multiline = messageLineStrings[i].split("\n");
-			int numLinesString = 0;
-			for(String line : multiline)
-			{
-				int lineWidth = line.length() * font.getSize();
-				numLinesString += Math.max(1, lineWidth/columnWidth);
-			}
-			numMessageLines += Math.max(1, numLinesString);
+			int lineWidth = fm.stringWidth(line);
+			numMessageLines += (lineWidth/columnWidth + 1);
 		}
 		
 		// Tasks
@@ -421,7 +419,8 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
 		int numTaskLines = 0;
 		for(String task : taskStrings)
 		{
-//			int lineWidth
+			int lineWidth = fm.stringWidth(task);
+			numTaskLines += (lineWidth/columnWidth + 1);
 		}
 		
 		return Math.max(numMessageLines, numTaskLines);
