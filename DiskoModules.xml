@@ -6,12 +6,15 @@
 		<DiskoModule classname="org.redcross.sar.wp.messageLog.DiskoWpMessageLogImpl"/><DiskoModule
 			classname="org.redcross.sar.wp.tasks.DiskoWpTasksImpl">
 </DiskoModule>
+		<DiskoModule classname="org.redcross.sar.wp.unit.DiskoWpUnitImpl"></DiskoModule>
 	</DiskoRolle>
 	<DiskoRolle name="al" title="Aksjonsleder">
 		<DiskoModule classname="org.redcross.sar.wp.states.DiskoWpStatesImpl"/>
 	</DiskoRolle>
 	<DiskoRolle name="sb" title="Sambandsleder">
-		<DiskoModule classname="org.redcross.sar.wp.DiskoWpMapImpl"/>
+		<DiskoModule classname="org.redcross.sar.wp.DiskoWpMapImpl"/><DiskoModule
+			classname="org.redcross.sar.wp.tasks.DiskoWpTasksImpl">
+</DiskoModule>
 	</DiskoRolle>
 	<DiskoRolle name="adm" title="Administrator">
 		<DiskoModule classname="org.redcross.sar.wp.DiskoWpMapImpl"/>
