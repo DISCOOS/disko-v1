@@ -145,6 +145,9 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
 
     private void renderAssignment()
     {
+    	if (m_displayedAsssignment == null) {
+    		return;
+    	}
         m_assignmentInfoPanel.setTopText(0, m_displayedAsssignment.getNumber() + " (" + m_displayedAsssignment.getStatusText() + ")");
         m_assignmentInfoPanel.setTopText(1, m_displayedAsssignment.getTypeText());
         IUnitIf unit = m_displayedAsssignment.getOwningUnit();
