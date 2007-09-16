@@ -145,7 +145,7 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
 
     private void renderAssignment()
     {
-    	if (m_displayedAsssignment == null) {
+    	if (m_displayedAsssignment == null) { // added by Geodata
     		return;
     	}
         m_assignmentInfoPanel.setTopText(0, m_displayedAsssignment.getNumber() + " (" + m_displayedAsssignment.getStatusText() + ")");
