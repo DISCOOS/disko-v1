@@ -18,8 +18,6 @@ import java.util.Iterator;
 public class PlannedAreaFeature extends AbstractMsoFeature {
 
 	private static final long serialVersionUID = 1L;
-
-//CMR	private GeoList geoList = null;
     private IMsoListIf<IMsoObjectIf>  geoList = null;
     private IMsoModelIf msoModel = null;
 
@@ -29,7 +27,6 @@ public class PlannedAreaFeature extends AbstractMsoFeature {
 
 	public boolean geometryIsChanged(IMsoObjectIf msoObj) {
 		IAreaIf area = (IAreaIf)msoObject;
-//CMR		return area.getGeodata() != null && !area.getGeodata().equals(getGeodata());
         return area.getAreaGeodata() != null && !area.getAreaGeodata().equals(getGeodata());
 	}
 
@@ -37,15 +34,11 @@ public class PlannedAreaFeature extends AbstractMsoFeature {
     public void msoGeometryChanged() throws IOException, AutomationException {       // todo sjekk etter endring av GeoCollection
 		if (srs == null) return;
 		IAreaIf area = (IAreaIf)msoObject;
-//CMR		geoList = area.getGeodata();
-//CMR      if (geoList != null) {
         geoList = area.getAreaGeodata();
         if (geoList != null && geoList.size() > 0) {
 			GeometryBag geomBag = new GeometryBag();
-//CMR			Iterator iter = geoList.getPositions().iterator();
             Iterator<IGeodataIf> iter = area.getAreaGeodataIterator();
             while (iter.hasNext()) {
-//CMR				IGeodataIf geodata = (IGeodataIf) iter.next();
 				IGeodataIf geodata = iter.next();
 				if (geodata instanceof Route) {
 					Polyline polyline = MapUtil.getEsriPolyline((Route)geodata, srs);
@@ -65,8 +58,7 @@ public class PlannedAreaFeature extends AbstractMsoFeature {
 	}
 
 	public int getGeodataCount() {
-//CMR		return geoList != null ? geoList.getPositions().size() : 0;
-        return geoList != null ? geoList.size() : 0;                      // todo sjekk etter endring av GeoCollection
+        return geoList != null ? geoList.size() : 0;
 
     }
 

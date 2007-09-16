@@ -167,11 +167,7 @@ public class DrawTool extends AbstractCommandTool {
 			if (area == null) {
 				IAreaListIf areaList = cmdPost.getAreaList();
 				area = areaList.createArea();
-//CMR				area.setGeodata(new GeoList(null));
 			}
-//CMR			GeoList clone = cloneGeoList(area.getGeodata());
-//CMR			clone.add(MapUtil.getMsoRoute(polyline));
-//CMR			area.setGeodata(clone);
             IRouteIf route = cmdPost.getRouteList().createRoute(MapUtil.getMsoRoute(polyline));
             area.addAreaGeodata(route);
 			msoObj = area;
