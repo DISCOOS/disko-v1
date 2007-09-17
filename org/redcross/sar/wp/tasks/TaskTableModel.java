@@ -1,5 +1,6 @@
 package org.redcross.sar.wp.tasks;
 
+import java.awt.Component;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,6 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.RowFilter;
@@ -274,6 +276,33 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 				IDiskoRole role = m_wpTasks.getDiskoRole();
 	        	String roleName = role.getTitle();
 	        	
+	        	// Show own item
+	        	JMenuItem showOwnItem = new JMenuItem();
+	        	showOwnItem.setText(m_wpTasks.getText("OwnTasksCheckBox.text"));
+	        	showOwnItem.addActionListener(new ActionListener()
+	        	{
+					public void actionPerformed(ActionEvent arg0)
+					{
+						IDiskoRole currentRole = m_wpTasks.getDiskoRole();
+						String name = currentRole.getTitle();
+						m_responsibleRoleFilter.clear();
+						m_responsibleRoleFilter.add(name);
+						
+						// Set other filters to unselected
+						for(Component item : m_menus[3].getComponents())
+						{
+							if(item instanceof JCheckBoxMenuItem)
+							{
+								((JCheckBoxMenuItem)item).setSelected(false);
+							}
+						}
+							
+						fireTableDataChanged();
+					}
+	        	});
+	        	m_menus[3].add(showOwnItem);
+	        	
+	        	
 	        	// Handle responsible item selections, update filter
 	        	ActionListener responsibleListener = new ActionListener()
 	        	{
@@ -305,7 +334,6 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 	        			item.setSelected(true);
 	        			m_menus[3].add(item);
 	        		}
-	        		// TODO Always show own tasks?
 	        		m_responsibleRoleFilter.add(roles[i]);
 	        	}
 			} 
