@@ -229,7 +229,7 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 
 		// Alert time
 		Calendar alertTime = Calendar.getInstance();
-		alertTime.add(Calendar.MINUTE, 15);
+		alertTime.add(Calendar.MINUTE, 16);
 		task.setAlert(alertTime);
 
 		// Priority

@@ -806,6 +806,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				{
 					// Create new message if null
 					getCurrentMessage();
+					m_messageDirty = true;
+					
 					getChangeTasksDialog();
 					hideEditPanels();
 					Point location = m_changeTasksButton.getLocationOnScreen();

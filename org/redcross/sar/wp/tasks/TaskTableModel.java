@@ -278,7 +278,7 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 	        	
 	        	// Show own item
 	        	JMenuItem showOwnItem = new JMenuItem();
-	        	showOwnItem.setText(m_wpTasks.getText("OwnTasksCheckBox.text"));
+	        	showOwnItem.setText(m_wpTasks.getText("OwnTasksMenuItem.text"));
 	        	showOwnItem.addActionListener(new ActionListener()
 	        	{
 					public void actionPerformed(ActionEvent arg0)
@@ -336,6 +336,43 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 	        		}
 	        		m_responsibleRoleFilter.add(roles[i]);
 	        	}
+	        	
+	        	// Show all item
+	        	JMenuItem showAllItem = new JMenuItem();
+	        	showAllItem.setText(m_wpTasks.getText("AllRolesMenuItem.text"));
+	        	showAllItem.addActionListener(new ActionListener()
+	        	{
+					@SuppressWarnings("null")
+					public void actionPerformed(ActionEvent e)
+					{
+						// Select all roles
+						for(Component item : m_menus[3].getComponents())
+						{
+							if(item instanceof JCheckBoxMenuItem)
+							{
+								((JCheckBoxMenuItem)item).setSelected(true);
+							}
+						}
+						
+						// Add all roles to set
+						String[] allRoles = null;
+						try
+						{
+							allRoles = m_wpTasks.getApplication().getDiskoModuleLoader().getRoleTitles();
+						} 
+						catch (Exception e1)
+						{
+							e1.printStackTrace();
+						}
+						m_responsibleRoleFilter.clear();
+						for(int i=0; i<allRoles.length; i++)
+			        	{
+			        		m_responsibleRoleFilter.add(allRoles[i]);
+			        	}
+						fireTableDataChanged();
+					}
+	        	});
+	        	m_menus[3].add(showAllItem);
 			} 
 			catch (Exception e)
 			{
