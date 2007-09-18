@@ -1,7 +1,7 @@
 package org.redcross.sar.gui;
 
 import java.awt.Dimension;
-import java.util.Locale;
+import java.awt.Font;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
@@ -23,9 +23,9 @@ import org.redcross.sar.mso.data.IUnitIf;
  */
 public class DiskoButtonFactory
 {
+	public final static Dimension TABLE_BUTTON_SIZE = new Dimension(35, 35);
 	public final static Dimension SMALL_BUTTON_SIZE = new Dimension(60, 60);
 	public final static Dimension LARGE_BUTTON_SIZE = new Dimension(180, 60);
-//	public final static Dimension ASSIGNMENT_BUTTON_SIZE = new Dimension(200, 60);
 	
 	private static Properties m_properties = null;
 	private final static ResourceBundle m_unitResources = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Unit");
@@ -253,6 +253,18 @@ public class DiskoButtonFactory
 		button.setPreferredSize(LARGE_BUTTON_SIZE);
 		button.setMaximumSize(LARGE_BUTTON_SIZE);
 		
+		return button;
+	}
+
+	public static JToggleButton createTableToggleButton(String text)
+	{
+		JToggleButton button = new JToggleButton(text);
+		button.setFont(new Font("TableButtonFont", Font.BOLD, 12));
+		button.setBorder(null);
+		
+		button.setMinimumSize(TABLE_BUTTON_SIZE);
+		button.setPreferredSize(TABLE_BUTTON_SIZE);
+		button.setMaximumSize(TABLE_BUTTON_SIZE);
 		return button;
 	}
 }
