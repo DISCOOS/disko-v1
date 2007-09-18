@@ -80,5 +80,4 @@ public class PersonnelOverviewTableModel extends AbstractTableModel implements I
 	{
 		return clickedRow < m_personnel.size() ? (IPersonnelIf)m_personnel.getItems().toArray()[clickedRow] : null;
 	}
-
 }

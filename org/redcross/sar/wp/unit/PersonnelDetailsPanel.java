@@ -56,7 +56,7 @@ public class PersonnelDetailsPanel extends JPanel
 	private JTextField m_releasedTextField;
 	private JTextArea m_remarksTextArea;
 	
-	private boolean m_personnelDirty = false;
+	private boolean m_newPersonnel = false;
 
 	public PersonnelDetailsPanel(IDiskoWpUnit wp)
 	{
@@ -170,84 +170,82 @@ public class PersonnelDetailsPanel extends JPanel
 	 */
 	public void savePersonnel()
 	{
-		if(m_personnelDirty)
+		if(m_currentPersonnel == null && m_newPersonnel)
 		{
-			if(m_currentPersonnel == null)
-			{
-				// Creating new personnel
-				m_currentPersonnel = m_wpUnit.getMsoManager().createPersonnel();
-			}
-			
-			String[] name = m_nameTextField.getText().split(" ");
-			StringBuilder firstName = new StringBuilder();
-			for(int i=0; i<name.length-1; i++)
-			{
-				firstName.append(name[i] + " ");
-			}
-			m_currentPersonnel.setFirstname(firstName.toString().trim());
-			m_currentPersonnel.setLastname(name[name.length-1]);
-			
-			String phone = m_cellTextField.getText();
-			m_currentPersonnel.setTelephone1(phone);
-			
-			PersonnelType type= (PersonnelType)m_propertyComboBox.getSelectedItem();
-			m_currentPersonnel.setType(type);
-			
-			String organization = m_organizationTextField.getText();
-			m_currentPersonnel.setOrganization(organization);
-			
-			String department = m_departmentTextField.getText();
-			m_currentPersonnel.setDepartment(department);
-			
-//			String role = m_roleTextField.getText();
-//			m_currentPersonnel.set
-			
-//			m_unitTextField.getText();
-			
-			try
-			{
-				Calendar callout = DTG.DTGToCal(m_calloutTextField.getText());
-				m_currentPersonnel.setCallOut(callout);
-			}
-			catch (IllegalMsoArgumentException e)
-			{
-			}
-			
-			try
-			{
-				Calendar estimatedArrival = DTG.DTGToCal(m_estimatedArrivalTextField.getText());
-				m_currentPersonnel.setEstimatedArrival(estimatedArrival);
-			} 
-			catch (IllegalMsoArgumentException e)
-			{
-			}
-			
-			try
-			{
-				Calendar arrived = DTG.DTGToCal(m_arrivedTextField.getText());
-				m_currentPersonnel.setArrived(arrived);
-			} 
-			catch (IllegalMsoArgumentException e)
-			{
-			}
-			
-			try
-			{
-				Calendar released = DTG.DTGToCal(m_releasedTextField.getText());
-				m_currentPersonnel.setReleased(released);
-			} 
-			catch (IllegalMsoArgumentException e)
-			{
-			}
-			
-			String remarks = m_remarksTextArea.getText();
-			m_currentPersonnel.setRemarks(remarks);
+			// Creating new personnel
+			m_currentPersonnel = m_wpUnit.getMsoManager().createPersonnel();
+			m_newPersonnel = false;
 		}
+
+		String[] name = m_nameTextField.getText().split(" ");
+		StringBuilder firstName = new StringBuilder();
+		for(int i=0; i<name.length-1; i++)
+		{
+			firstName.append(name[i] + " ");
+		}
+		m_currentPersonnel.setFirstname(firstName.toString().trim());
+		m_currentPersonnel.setLastname(name[name.length-1]);
+
+		String phone = m_cellTextField.getText();
+		m_currentPersonnel.setTelephone1(phone);
+
+		PersonnelType type= (PersonnelType)m_propertyComboBox.getSelectedItem();
+		m_currentPersonnel.setType(type);
+
+		String organization = m_organizationTextField.getText();
+		m_currentPersonnel.setOrganization(organization);
+
+		String department = m_departmentTextField.getText();
+		m_currentPersonnel.setDepartment(department);
+
+//		String role = m_roleTextField.getText();
+//		m_currentPersonnel.set
+
+//		m_unitTextField.getText();
+
+		try
+		{
+			Calendar callout = DTG.DTGToCal(m_calloutTextField.getText());
+			m_currentPersonnel.setCallOut(callout);
+		}
+		catch (IllegalMsoArgumentException e)
+		{
+		}
+
+		try
+		{
+			Calendar estimatedArrival = DTG.DTGToCal(m_estimatedArrivalTextField.getText());
+			m_currentPersonnel.setEstimatedArrival(estimatedArrival);
+		} 
+		catch (IllegalMsoArgumentException e)
+		{
+		}
+
+		try
+		{
+			Calendar arrived = DTG.DTGToCal(m_arrivedTextField.getText());
+			m_currentPersonnel.setArrived(arrived);
+		} 
+		catch (IllegalMsoArgumentException e)
+		{
+		}
+
+		try
+		{
+			Calendar released = DTG.DTGToCal(m_releasedTextField.getText());
+			m_currentPersonnel.setReleased(released);
+		} 
+		catch (IllegalMsoArgumentException e)
+		{
+		}
+
+		String remarks = m_remarksTextArea.getText();
+		m_currentPersonnel.setRemarks(remarks);
 	}
 	
-	public void setPersonnelDirty(boolean dirty)
+	public void setNewPersonnel(boolean newPersonnel)
 	{
-		m_personnelDirty = dirty;
+		m_newPersonnel = newPersonnel;
 	}
 	
 	/**

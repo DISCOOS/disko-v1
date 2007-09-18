@@ -19,6 +19,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
 
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.gui.DiskoButtonFactory;
@@ -132,7 +133,16 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		m_personnelOverviewTable.addMouseListener(new PersonnelTableMouseListener());
 		m_personnelOverviewTable.setTransferHandler(m_personnelTransferHandler);
 		m_personnelOverviewTable.setDragEnabled(true);
+		PersonnelOverviewTableRenderer personnelRenderer = new PersonnelOverviewTableRenderer();
+		personnelRenderer.setTable(m_personnelOverviewTable);
 		
+		m_personnelOverviewTable.setRowHeight(DiskoButtonFactory.TABLE_BUTTON_SIZE.height + 10);
+		TableColumn column = m_personnelOverviewTable.getColumnModel().getColumn(1);
+		column.setMaxWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width + 10);
+		column = m_personnelOverviewTable.getColumnModel().getColumn(2);
+		column.setPreferredWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width * 3 + 20);
+		column.setMaxWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width * 3 + 20);
+	        
 		JTableHeader tableHeader = m_personnelOverviewTable.getTableHeader();
         tableHeader.setResizingAllowed(false);
         tableHeader.setReorderingAllowed(false);
@@ -228,7 +238,7 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		layout.show(m_detailsPanel, PERSONNEL_VIEW_ID);
 		
 		m_personnelDetailsPanel.setPersonnel(null);
-		m_personnelDetailsPanel.setPersonnelDirty(true);
+		m_personnelDetailsPanel.setNewPersonnel(true);
 	}
 	
 	/**
@@ -239,7 +249,7 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 	private class PersonnelTableMouseListener implements MouseListener
 	{
 		public void mouseClicked(MouseEvent e)
-		{
+		{	
 			int clickedRow = m_personnelOverviewTable.rowAtPoint(new Point(e.getX(), e.getY()));
 			PersonnelOverviewTableModel model = (PersonnelOverviewTableModel)m_personnelOverviewTable.getModel();
 			IPersonnelIf clickedPersonnel = model.getPersonnel(clickedRow);
