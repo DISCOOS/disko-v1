@@ -3,8 +3,11 @@ package org.redcross.sar.wp.unit;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -12,12 +15,15 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.JTableHeader;
 
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.gui.DiskoButtonFactory;
+import org.redcross.sar.mso.data.IPersonnelIf;
+import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
 
 /**
@@ -51,6 +57,8 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 	private static final String PERSONNEL_VIEW_ID = "PERSONNEL_VIEW";
 	private static final String UNIT_VIEW_ID = "UNIT_VIEW";
 	private static final String CALLOUT_VIEW_ID = "CALLOUT_VIEW";
+	private static String m_detailsViewId = PERSONNEL_VIEW_ID;
+//	private static String m_bottomViewId = PERSONNEL_VIEW_ID;
 
 	public DiskoWpUnitImpl(IDiskoRole role)
 	{
@@ -99,30 +107,7 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		m_overviewTabPane.addChangeListener(new ChangeListener()
 		{
 			public void stateChanged(ChangeEvent arg0)
-			{
-				int selectedIndex = m_overviewTabPane.getSelectedIndex();
-				
-				String componentId = null;
-				switch(selectedIndex)
-				{
-				case 0:
-					componentId = PERSONNEL_VIEW_ID;
-					break;
-				case 1:
-					componentId = UNIT_VIEW_ID;
-					break;
-				case 2:
-					componentId = CALLOUT_VIEW_ID;
-					break;
-				default:
-					componentId = null;
-					
-				}
-				CardLayout detailsLayout = (CardLayout)m_detailsPanel.getLayout();
-				detailsLayout.show(m_detailsPanel, componentId);
-				CardLayout bottomLayout = (CardLayout)m_bottomPanel.getLayout();
-				bottomLayout.show(m_bottomPanel, componentId);
-				
+			{				
 			}
 		});
 			
@@ -143,6 +128,8 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		// Personnel
 		PersonnelOverviewTableModel personnelModel = new PersonnelOverviewTableModel(this);
 		m_personnelOverviewTable = new JTable(personnelModel);
+		m_personnelOverviewTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		m_personnelOverviewTable.addMouseListener(new PersonnelTableMouseListener());
 		m_personnelOverviewTable.setTransferHandler(m_personnelTransferHandler);
 		m_personnelOverviewTable.setDragEnabled(true);
 		
@@ -156,6 +143,8 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		// Unit
 		UnitOverviewTableModel unitModel = new UnitOverviewTableModel(this);
 		m_unitOverviewTable = new JTable(unitModel);
+		m_unitOverviewTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		m_unitOverviewTable.addMouseListener(new UnitTableMouseListener());
 		
 		tableHeader = m_unitOverviewTable.getTableHeader();
         tableHeader.setResizingAllowed(false);
@@ -167,6 +156,8 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		// Call-out
 		CalloutOverviewTableModel calloutModel = new CalloutOverviewTableModel(this);
 		m_calloutOverviewTable = new JTable(calloutModel);
+		m_calloutOverviewTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		m_calloutOverviewTable.addMouseListener(new CalloutTableMouseListener());
 		
 		tableHeader = m_calloutOverviewTable.getTableHeader();
         tableHeader.setResizingAllowed(false);
@@ -237,5 +228,115 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		layout.show(m_detailsPanel, PERSONNEL_VIEW_ID);
 		
 		m_personnelDetailsPanel.setPersonnel(null);
+		m_personnelDetailsPanel.setPersonnelDirty(true);
+	}
+	
+	/**
+	 * Updates personnel details panel based on user selection
+	 * 
+	 * @author thomasl
+	 */
+	private class PersonnelTableMouseListener implements MouseListener
+	{
+		public void mouseClicked(MouseEvent e)
+		{
+			int clickedRow = m_personnelOverviewTable.rowAtPoint(new Point(e.getX(), e.getY()));
+			PersonnelOverviewTableModel model = (PersonnelOverviewTableModel)m_personnelOverviewTable.getModel();
+			IPersonnelIf clickedPersonnel = model.getPersonnel(clickedRow);
+			
+			int clickCount = e.getClickCount();
+			if(clickCount >= 2)
+			{
+				// Show personnel in detail panel
+				m_personnelDetailsPanel.setPersonnel(clickedPersonnel);
+				CardLayout layout = (CardLayout)m_detailsPanel.getLayout();
+				layout.show(m_detailsPanel, PERSONNEL_VIEW_ID);
+				m_detailsViewId = PERSONNEL_VIEW_ID;
+			}
+			else if(clickCount == 1)
+			{
+				// Show personnel details only if personnel panel is showing	
+				if(m_detailsViewId.equals(PERSONNEL_VIEW_ID))
+				{
+					m_personnelDetailsPanel.setPersonnel(clickedPersonnel);
+				}
+			}
+		}
+
+		public void mouseEntered(MouseEvent e){}
+		public void mouseExited(MouseEvent e){}
+		public void mousePressed(MouseEvent e){}
+		public void mouseReleased(MouseEvent e){}
+	}
+	
+	/**
+	 * Updates unit details panel based on user selection
+	 * 
+	 * @author thomasl
+	 */
+	private class UnitTableMouseListener implements MouseListener
+	{
+		public void mouseClicked(MouseEvent e)
+		{
+			int clickedRow = m_unitOverviewTable.rowAtPoint(new Point(e.getX(), e.getY()));
+			UnitOverviewTableModel model = (UnitOverviewTableModel)m_unitOverviewTable.getModel();
+			IUnitIf clickedUnit = model.getUnit(clickedRow);
+			
+			int clickCount = e.getClickCount();
+			if(clickCount >= 2)
+			{
+				// Show personnel in detail panel
+				m_unitDetailsPanel.setUnit(clickedUnit);
+				CardLayout layout = (CardLayout)m_detailsPanel.getLayout();
+				layout.show(m_detailsPanel, UNIT_VIEW_ID);
+				m_detailsViewId = UNIT_VIEW_ID;
+			}
+			else if(clickCount == 1)
+			{
+				// Show personnel details only if personnel panel is showing	
+				if(m_detailsViewId.equals(UNIT_VIEW_ID))
+				{
+					m_unitDetailsPanel.setUnit(clickedUnit);
+				}
+			}
+		}
+		
+		public void mouseEntered(MouseEvent arg0){}
+		public void mouseExited(MouseEvent arg0){}
+		public void mousePressed(MouseEvent arg0){}
+		public void mouseReleased(MouseEvent arg0){}
+	}
+	
+	/**
+	 * Updates callout details panel based on user selection
+	 * 
+	 * @author thomasl
+	 */
+	private class CalloutTableMouseListener implements MouseListener
+	{
+		public void mouseClicked(MouseEvent e)
+		{
+			int clickCount = e.getClickCount();
+			if(clickCount >= 2)
+			{
+				// Show personnel in detail panel
+				CardLayout layout = (CardLayout)m_detailsPanel.getLayout();
+				layout.show(m_detailsPanel, CALLOUT_VIEW_ID);
+				m_detailsViewId = CALLOUT_VIEW_ID;
+			}
+			else if(clickCount == 1)
+			{
+				// Show personnel details only if personnel panel is showing	
+				if(m_detailsViewId.equals(CALLOUT_VIEW_ID))
+				{
+					
+				}
+			}
+		}
+
+		public void mouseEntered(MouseEvent e){}
+		public void mouseExited(MouseEvent e){}
+		public void mousePressed(MouseEvent e){}
+		public void mouseReleased(MouseEvent e){}
 	}
 }

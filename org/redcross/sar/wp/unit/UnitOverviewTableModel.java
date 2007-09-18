@@ -61,4 +61,12 @@ public class UnitOverviewTableModel extends AbstractTableModel implements IMsoUp
 		return null;
 	}
 
+	/*
+	 * Return unit at given row in table model
+	 */
+	public IUnitIf getUnit(int clickedRow)
+	{
+		return clickedRow < m_units.size() ? (IUnitIf)m_units.getItems().toArray()[clickedRow] : null;
+	}
+
 }

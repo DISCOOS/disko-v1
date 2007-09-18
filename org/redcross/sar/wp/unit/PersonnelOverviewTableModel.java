@@ -76,4 +76,9 @@ public class PersonnelOverviewTableModel extends AbstractTableModel implements I
 		return myInterests.contains(msoObject.getMsoClassCode());
 	}
 
+	public IPersonnelIf getPersonnel(int clickedRow)
+	{
+		return clickedRow < m_personnel.size() ? (IPersonnelIf)m_personnel.getItems().toArray()[clickedRow] : null;
+	}
+
 }
