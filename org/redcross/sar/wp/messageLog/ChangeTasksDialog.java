@@ -12,7 +12,6 @@ import org.redcross.sar.mso.data.ITaskIf.TaskStatus;
 import org.redcross.sar.mso.data.ITaskIf.TaskType;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
-import org.redcross.sar.util.except.IllegalOperationException;
 
 import javax.swing.*;
 import java.awt.*;
@@ -189,7 +188,7 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	private void initTaskValues(ITaskIf task, TaskSubType type)
 	{
 		task.setCreated(Calendar.getInstance());
-		
+
 		if(type == TaskSubType.FINDING)
 		{
 			String taskText = String.format(m_wpMessageLog.getText("TaskSubType.FINDING.text"),
@@ -236,27 +235,20 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 		task.setPriority(TaskPriority.NORMAL);
 
 		// Status
-		try
-		{
-			task.setStatus(TaskStatus.UNPROCESSED);
-		}
-		catch (IllegalOperationException e)
-		{
-			e.printStackTrace();
-		}
-		
+		task.setStatus(TaskStatus.UNPROCESSED);
+
 		// Source
 		task.setSourceClass(MessageLogTopPanel.getCurrentMessage().getMsoClassCode());
 
 		// Progress
 		task.setProgress(0);
-		
+
 		// Responsible
 		task.setResponsibleRole(null);
 
 		// WP
 		task.setCreatingWorkProcess(m_wpMessageLog.getName());
-		
+
 		// Object
 		task.setDependentObject(MessageLogTopPanel.getCurrentMessage().getSender());
 	}

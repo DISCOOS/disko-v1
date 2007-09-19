@@ -14,7 +14,7 @@ import java.util.ResourceBundle;
 public class TaskImpl extends AbstractTimeItem implements ITaskIf
 {
     private final AttributeImpl.MsoString m_description = new AttributeImpl.MsoString(this, "Description");
-    private final AttributeImpl.MsoInteger m_number = new AttributeImpl.MsoInteger(this, "Number");
+    private final AttributeImpl.MsoInteger m_number = new AttributeImpl.MsoInteger(this, "Number",true);
     private final AttributeImpl.MsoInteger m_progress = new AttributeImpl.MsoInteger(this, "Progress");
     private final AttributeImpl.MsoString m_responsibleRole = new AttributeImpl.MsoString(this, "ResponsibleRole");
     private final AttributeImpl.MsoString m_taskText = new AttributeImpl.MsoString(this, "TaskText");
@@ -107,6 +107,14 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
         {
             throw new MsoCastException("Illegal cast to TaskImpl");
         }
+    }
+
+    /**
+     * Renumber duplicate numbers
+     */
+    public void renumberDuplicateNumbers()
+    {
+        //Todo Code
     }
 
     public IMsoManagerIf.MsoClassCode getMsoClassCode()
@@ -343,7 +351,7 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
         return getPriority().compareTo(anObject.getPriority());
     }
 
-    public void setStatus(TaskStatus aStatus) throws IllegalOperationException
+    public void setStatus(TaskStatus aStatus)
     {
         m_status.setValue(aStatus);
     }

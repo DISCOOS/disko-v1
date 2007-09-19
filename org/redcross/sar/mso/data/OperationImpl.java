@@ -10,22 +10,22 @@ import java.util.Collection;
 
 public class OperationImpl extends AbstractMsoObject implements IOperationIf
 {
-    private final AttributeImpl.MsoString m_number = new AttributeImpl.MsoString(this, "Number");
-    private final AttributeImpl.MsoString m_numberPrefix = new AttributeImpl.MsoString(this, "NumberPrefix");
+    private final AttributeImpl.MsoString m_opNumber = new AttributeImpl.MsoString(this, "OpNumber");
+    private final AttributeImpl.MsoString m_opNumberPrefix = new AttributeImpl.MsoString(this, "OpNumberPrefix");
 
     private final CmdPostListImpl m_cmdPostList = new CmdPostListImpl(this, "CmdPostList", true);
 
     public OperationImpl(IMsoObjectIf.IObjectIdIf anObjectId, String aNumberPrefix, String aNumber)
     {
         super(anObjectId);
-        setNumberPrefix(aNumberPrefix);
-        setNumber(aNumber);
+        setOpNumberPrefix(aNumberPrefix);
+        setOpNumber(aNumber);
     }
 
     protected void defineAttributes()
     {
-        addAttribute(m_number);
-        addAttribute(m_numberPrefix);
+        addAttribute(m_opNumber);
+        addAttribute(m_opNumberPrefix);
     }
 
     protected void defineLists()
@@ -62,44 +62,44 @@ public class OperationImpl extends AbstractMsoObject implements IOperationIf
     * Methods for attributes
     *-------------------------------------------------------------------------------------------*/
 
-    public void setNumber(String aNumber)
+    public void setOpNumber(String anOpNumber)
     {
-        m_number.setValue(aNumber);
+        m_opNumber.setValue(anOpNumber);
     }
 
     public String getNumber()
     {
-        return m_number.getString();
+        return m_opNumber.getString();
     }
 
-    public IMsoModelIf.ModificationState getNumberState()
+    public IMsoModelIf.ModificationState getOpNumberState()
     {
-        return m_number.getState();
+        return m_opNumber.getState();
     }
 
-    public IAttributeIf.IMsoStringIf getNumberAttribute()
+    public IAttributeIf.IMsoStringIf getOpNumberAttribute()
     {
-        return m_number;
+        return m_opNumber;
     }
 
-    public void setNumberPrefix(String aNumberPrefix)
+    public void setOpNumberPrefix(String aNumberPrefix)
     {
-        m_numberPrefix.setValue(aNumberPrefix);
+        m_opNumberPrefix.setValue(aNumberPrefix);
     }
 
-    public String getNumberPrefix()
+    public String getOpNumberPrefix()
     {
-        return m_numberPrefix.getString();
+        return m_opNumberPrefix.getString();
     }
 
-    public IMsoModelIf.ModificationState getNumberPrefixState()
+    public IMsoModelIf.ModificationState getOpNumberPrefixState()
     {
-        return m_numberPrefix.getState();
+        return m_opNumberPrefix.getState();
     }
 
-    public IAttributeIf.IMsoStringIf getNumberPrefixAttribute()
+    public IAttributeIf.IMsoStringIf getOpNumberPrefixAttribute()
     {
-        return m_numberPrefix;
+        return m_opNumberPrefix;
     }
 
     /*-------------------------------------------------------------------------------------------

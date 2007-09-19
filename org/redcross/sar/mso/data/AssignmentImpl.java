@@ -26,7 +26,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
     private final AttributeImpl.MsoEnum<AssignmentStatus> m_status = new AttributeImpl.MsoEnum<AssignmentStatus>(this, "Status", AssignmentStatus.EMPTY);
     private final AttributeImpl.MsoEnum<AssignmentType> m_type = new AttributeImpl.MsoEnum<AssignmentType>(this, "Type", AssignmentType.GENERAL);
 
-    private final AttributeImpl.MsoInteger m_number = new AttributeImpl.MsoInteger(this, "Number");
+    private final AttributeImpl.MsoInteger m_number = new AttributeImpl.MsoInteger(this, "Number",true);
 
     private final EquipmentListImpl m_assignmentEquipment = new EquipmentListImpl(this, "AssignmentEquipment", false);
     private final POIListImpl m_assignmentFindings = new POIListImpl(this, "AssignmentFindings", false);
@@ -112,6 +112,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
     /**
      * Local implementation of {@link AbstractMsoObject#registerModifiedData()}
      * Resets correct subclass in case of incorrect changes by application or others.
+     * Renumber duplicate numbers
      */
     public void registerModifiedData()
     {
@@ -119,7 +120,20 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         {
             setType(getTypeBySubclass());
         }
+        if(MsoModelImpl.getInstance().getUpdateMode() == IMsoModelIf.UpdateMode.REMOTE_UPDATE_MODE)
+        {
+            renumberDuplicateNumbers();
+        }
         super.registerModifiedData();
+    }
+
+
+    /**
+     * Renumber duplicate numbers
+     */
+    public void renumberDuplicateNumbers()
+    {
+        //Todo Code
     }
 
     public static AssignmentImpl implementationOf(IAssignmentIf anInterface) throws MsoCastException

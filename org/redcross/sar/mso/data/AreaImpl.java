@@ -27,7 +27,6 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
 
     protected void defineAttributes()
     {
-// todo remove        addAttribute(m_geodata);
         addAttribute(m_remarks);
     }
 
@@ -98,25 +97,6 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
     }
 
 
-// todo remove   public void setGeodata(GeoList aGeodata)
-//    {
-//        m_geodata.setValue(aGeodata);
-//    }
-//
-//    public GeoList getGeodata()
-//    {
-//        return m_geodata.getGeoList();
-//    }
-//
-//    public IMsoModelIf.ModificationState getGeodataState()
-//    {
-//        return m_geodata.getState();
-//    }
-//
-//    public IAttributeIf.IMsoGeoListIf getGeodataAttribute()
-//    {
-//        return m_geodata;
-//    }
 
     public void setRemarks(String aRemarks)
     {

@@ -19,7 +19,7 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
     private final static String UNCONFIRMED_RECEIVERS_NAME = "UnconfirmedReceivers";
     private final AttributeImpl.MsoBoolean m_broadcast = new AttributeImpl.MsoBoolean(this, "Broadcast");
     private final AttributeImpl.MsoCalendar m_created = new AttributeImpl.MsoCalendar(this, "Created");
-    private final AttributeImpl.MsoInteger m_number = new AttributeImpl.MsoInteger(this, "Number");
+    private final AttributeImpl.MsoInteger m_number = new AttributeImpl.MsoInteger(this, "Number",true);
     private final AttributeImpl.MsoEnum<MessageStatus> m_status = new AttributeImpl.MsoEnum<MessageStatus>(this, "Status", MessageStatus.UNCONFIRMED);
 
     private final MsoListImpl<ICommunicatorIf> m_confirmedReceivers = new MsoListImpl<ICommunicatorIf>(this, CONFIRMED_RECEIVERS_NAME, false);
@@ -149,6 +149,14 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
         {
             throw new MsoCastException("Illegal cast to MessageImpl");
         }
+    }
+
+    /**
+     * Renumber duplicate numbers
+     */
+    public void renumberDuplicateNumbers()
+    {
+        //Todo Code
     }
 
     public IMsoManagerIf.MsoClassCode getMsoClassCode()

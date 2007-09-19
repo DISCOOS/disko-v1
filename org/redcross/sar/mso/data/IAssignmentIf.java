@@ -45,33 +45,9 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
     * Methods for ENUM attributes
     *-------------------------------------------------------------------------------------------*/
 
-    public void setStatus(AssignmentStatus aStatus) throws IllegalOperationException;
-
     public void setStatusAndOwner(AssignmentStatus aStatus, IUnitIf aUnit) throws IllegalOperationException;
 
-    public void setStatus(String aStatus) throws IllegalOperationException;
-
     public void setStatusAndOwner(String aStatus, IUnitIf aUnit) throws IllegalOperationException;
-
-    public AssignmentStatus getStatus();
-
-    public IMsoModelIf.ModificationState getStatusState();
-
-    public IAttributeIf.IMsoEnumIf<AssignmentStatus> getStatusAttribute();
-
-    public String getStatusText();
-
-    public void setPriority(AssignmentPriority aPriority);
-
-    public void setPriority(String aPriority);
-
-    public AssignmentPriority getPriority();
-
-    public IMsoModelIf.ModificationState getPriorityState();
-
-    public String getPriorityText();
-
-    public IAttributeIf.IMsoEnumIf<AssignmentPriority> getPriorityAttribute();
 
     public AssignmentType getType();
 

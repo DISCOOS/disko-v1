@@ -1,7 +1,6 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.util.except.DuplicateIdException;
 
 import java.util.Collection;
 
@@ -14,21 +13,21 @@ public interface IOperationIf extends IMsoObjectIf
     * Methods for attributes
     *-------------------------------------------------------------------------------------------*/
 
-    public void setNumber(String aNumber);
+    public void setOpNumber(String aNumber);
 
     public String getNumber();
 
-    public IMsoModelIf.ModificationState getNumberState();
+    public IMsoModelIf.ModificationState getOpNumberState();
 
-    public IAttributeIf.IMsoStringIf getNumberAttribute();
+    public IAttributeIf.IMsoStringIf getOpNumberAttribute();
 
-    public void setNumberPrefix(String aNumberPrefix);
+    public void setOpNumberPrefix(String aNumberPrefix);
 
-    public String getNumberPrefix();
+    public String getOpNumberPrefix();
 
-    public IMsoModelIf.ModificationState getNumberPrefixState();
+    public IMsoModelIf.ModificationState getOpNumberPrefixState();
 
-    public IAttributeIf.IMsoStringIf getNumberPrefixAttribute();
+    public IAttributeIf.IMsoStringIf getOpNumberPrefixAttribute();
 
     /*-------------------------------------------------------------------------------------------
     * Methods for lists

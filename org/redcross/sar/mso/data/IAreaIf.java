@@ -13,14 +13,6 @@ public interface IAreaIf extends IMsoObjectIf
     * Methods for attributes
     *-------------------------------------------------------------------------------------------*/
 
-// todo remove   public void setGeodata(GeoList aGeodata);
-//
-//    public GeoList getGeodata();
-//
-//    public IMsoModelIf.ModificationState getGeodataState();
-//
-//    public IAttributeIf.IMsoGeoListIf getGeodataAttribute();
-
     public void setRemarks(String aRemarks);
 
     public String getRemarks();

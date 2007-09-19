@@ -2,7 +2,6 @@ package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.util.except.IllegalOperationException;
 
 import java.util.Calendar;
 import java.util.Comparator;
@@ -42,14 +41,6 @@ public interface ITaskIf extends ITimeItemIf, ISerialNumberedIf, IEnumStatusHold
     public IMsoModelIf.ModificationState getDescriptionState();
 
     public IAttributeIf.IMsoStringIf getDescriptionAttribute();
-
-    public void setNumber(int aNumber);
-
-    public int getNumber();
-
-    public IMsoModelIf.ModificationState getNumberState();
-
-    public IAttributeIf.IMsoIntegerIf getNumberAttribute();
 
     public void setProgress(int aProgress);
 
@@ -123,29 +114,7 @@ public interface ITaskIf extends ITimeItemIf, ISerialNumberedIf, IEnumStatusHold
     * Methods for enums
     *-------------------------------------------------------------------------------------------*/
 
-    public void setPriority(TaskPriority aPriority);
-
-    public void setPriority(String aPriority) throws IllegalOperationException;
-
-    public TaskPriority getPriority();
-
-    public IMsoModelIf.ModificationState getPriorityState();
-
-    public IAttributeIf.IMsoEnumIf<TaskPriority> getPriorityAttribute();
-
-    public String getPriorityText();
-
-    public void setStatus(TaskStatus aStatus) throws IllegalOperationException;
-
-    public void setStatus(String aStatus) throws IllegalOperationException;
-
-    public TaskStatus getStatus();
-
-    public IMsoModelIf.ModificationState getStatusState();
-
-    public IAttributeIf.IMsoEnumIf<TaskStatus> getStatusAttribute();
-
-    public String getStatusText();
+    public void setStatus(TaskStatus aStatus);
 
     public void setType(TaskType aType);
 

@@ -456,6 +456,22 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         return retVal + 1;
     }
 
+    void rearrangeSerialNumber()
+    {
+        // todo make code
+        for (M item : getItems())
+        {
+            try
+            {
+                ISerialNumberedIf serialItem = (ISerialNumberedIf) item;
+            }
+            catch (ClassCastException e)
+            {
+                //throw new MsoRuntimeException("Object " + item + " is not implementing ISerialNumberedIf");
+            }
+        }
+    }
+
     public boolean contains(M anObject)
     {
         return (m_items.containsKey(anObject.getObjectId()) || m_added.containsKey(anObject.getObjectId()));

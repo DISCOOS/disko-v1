@@ -38,6 +38,8 @@ public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf, ISerialNu
     * Methods for ENUM attributes
     *-------------------------------------------------------------------------------------------*/
 
+    public void setStatus(UnitStatus aStatus);
+
     public UnitType getType();
 
     public IMsoModelIf.ModificationState getTypeState();
@@ -45,18 +47,6 @@ public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf, ISerialNu
     public IAttributeIf.IMsoEnumIf<UnitType> getTypeAttribute();
 
     public String getTypeText();
-
-    public void setStatus(UnitStatus aStatus);
-
-    public void setStatus(String aStatus);
-
-    public UnitStatus getStatus();
-
-    public IMsoModelIf.ModificationState getStatusState();
-
-    public IAttributeIf.IMsoEnumIf<UnitStatus> getStatusAttribute();
-
-    public String getStatusText();
 
     /*-------------------------------------------------------------------------------------------
     * Methods for attributes

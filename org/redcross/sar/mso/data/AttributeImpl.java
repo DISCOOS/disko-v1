@@ -15,7 +15,7 @@ import java.util.Vector;
 public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<AttributeImpl<T>>
 {
     protected final Class m_class;
-    private final AbstractMsoObject m_owner;
+    protected final AbstractMsoObject m_owner;
     private final String m_name;
     private int m_indexNo;
     private boolean m_required = false;
@@ -282,35 +282,66 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
 
     public static class MsoInteger extends AttributeImpl<Integer> implements IMsoIntegerIf
     {
+        private boolean m_isSequenceNumber;
+
         public MsoInteger(AbstractMsoObject theOwner, String theName)
         {
+            this (theOwner, theName, false);
+        }
+
+        public MsoInteger(AbstractMsoObject theOwner, String theName, boolean isSequenceNumber)
+        {
             super(Integer.class, theOwner, theName, Integer.MAX_VALUE, 0);
+            m_isSequenceNumber = isSequenceNumber;
         }
 
         public MsoInteger(AbstractMsoObject theOwner, String theName, int theIndexNo)
         {
+            this(theOwner,theName,false,theIndexNo);
+        }
+
+        public MsoInteger(AbstractMsoObject theOwner, String theName, boolean isSequenceNumber, int theIndexNo)
+        {
             super(Integer.class, theOwner, theName, theIndexNo, 0);
+            m_isSequenceNumber = isSequenceNumber;
         }
 
         public MsoInteger(AbstractMsoObject theOwner, String theName, int theIndexNo, Integer anInt)
         {
+            this(theOwner, theName,false, theIndexNo, anInt);
+        }
+
+        public MsoInteger(AbstractMsoObject theOwner,  String theName, boolean isSequenceNumber,int theIndexNo, Integer anInt)
+        {
             super(Integer.class, theOwner, theName, theIndexNo, anInt);
+            m_isSequenceNumber = isSequenceNumber;
         }
 
         @Override
         public void set(Integer aValue)
         {
             super.set(aValue);
+            processSequenceNumberAttribute();
         }
 
         public void setValue(int aValue)
         {
             setAttrValue(aValue);
+            processSequenceNumberAttribute();
         }
 
         public void setValue(Integer aValue)
         {
             setAttrValue(aValue);
+            processSequenceNumberAttribute();
+        }
+
+        private void processSequenceNumberAttribute()
+        {
+            if (m_isSequenceNumber)
+            {
+                ISerialNumberedIf numberedOwner = (ISerialNumberedIf)m_owner; 
+            }
         }
 
         public int intValue()
@@ -324,55 +355,6 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
         }
     }
 
-    /*    public static class MsoLong extends AttributeImpl<Long> implements IMsoLongIf
-      {
-          public MsoLong(AbstractMsoObject theOwner, String theName)
-          {
-              super(Long.class, theOwner, theName, Integer.MAX_VALUE, (long) 0);
-          }
-
-          public MsoLong(AbstractMsoObject theOwner, String theName, int theIndexNo)
-          {
-              super(Long.class, theOwner, theName, theIndexNo, (long) 0);
-          }
-
-          public MsoLong(AbstractMsoObject theOwner, String theName, int theIndexNo, Long aLong)
-          {
-              super(Long.class, theOwner, theName, theIndexNo, aLong);
-          }
-
-          @Override
-          public void set(Long aValue)
-          {
-              super.set(aValue);
-          }
-
-          public void setValue(long aValue)
-          {
-              setAttrValue(aValue);
-          }
-
-          public void setValue(Integer aValue)
-          {
-              setAttrValue(aValue.longValue());
-          }
-
-          public void setValue(Long aValue)
-          {
-              setAttrValue(aValue);
-          }
-
-          public int intValue()
-          {
-              return getAttrValue().intValue();
-          }
-
-          public long longValue()
-          {
-              return getAttrValue();
-          }
-      }
-    */
     public static class MsoDouble extends AttributeImpl<Double> implements IMsoDoubleIf
     {
         public MsoDouble(AbstractMsoObject theOwner, String theName)
@@ -735,45 +717,6 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
         }
     }
 
-// todo remove    public static class MsoGeoList extends AttributeImpl<GeoList> implements IMsoGeoListIf
-//    {
-//        public MsoGeoList(AbstractMsoObject theOwner, String theName)
-//        {
-//            super(GeoList.class, theOwner, theName, Integer.MAX_VALUE, null);
-//        }
-//
-//        public MsoGeoList(AbstractMsoObject theOwner, String theName, int theIndexNo)
-//        {
-//            super(GeoList.class, theOwner, theName, theIndexNo, null);
-//        }
-//
-//        public MsoGeoList(AbstractMsoObject theOwner, String theName, int theIndexNo, GeoList aGeoList)
-//        {
-//            super(GeoList.class, theOwner, theName, theIndexNo, aGeoList);
-//        }
-//
-//        @Override
-//        public void set(GeoList aGeoList)
-//        {
-//            super.set(aGeoList);
-//        }
-//
-//        public void setValue(GeoList aGeoList)
-//        {
-//            super.setAttrValue(aGeoList);
-//        }
-//
-//        public GeoList getGeoList()
-//        {
-//            return getAttrValue();
-//        }
-//
-//        public boolean isGisAttribute()
-//        {
-//            return true;
-//        }
-//    }
-//
     public static class MsoEnum<E extends Enum> extends AttributeImpl<E> implements IMsoEnumIf<E>
     {
         public MsoEnum(AbstractMsoObject theOwner, String theName, E anInstance)

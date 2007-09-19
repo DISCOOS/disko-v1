@@ -1,26 +1,16 @@
 package org.redcross.sar.wp.tasks;
 
-import java.awt.Color;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.border.BevelBorder;
-
 import org.redcross.sar.gui.DiskoButtonFactory;
-import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.DiskoButtonFactory.ButtonType;
+import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.mso.data.ITaskIf;
 import org.redcross.sar.mso.data.ITaskIf.TaskStatus;
-import org.redcross.sar.util.except.IllegalOperationException;
+
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Dialog for deleting a task
@@ -29,25 +19,25 @@ import org.redcross.sar.util.except.IllegalOperationException;
 public class DeleteTaskDialog extends DiskoDialog
 {
 	private static final long serialVersionUID = 1L;
-	
+
 	protected IDiskoWpTasks m_wpTasks;
-	
+
 	protected ITaskIf m_currentTask;
-	
+
 	protected JPanel m_contentsPanel;
 	protected JTextField m_taskTextField;
 	protected JTextArea m_descriptionTextArea;
 	protected JButton m_cancelButton;
 	protected JButton m_deleteButton;
-	
+
 	public DeleteTaskDialog(IDiskoWpTasks wp)
 	{
 		super(wp.getApplication().getFrame());
 		m_wpTasks = wp;
-		
+
 		initialize();
 	}
-	
+
 	/**
 	 * Initialize GUI
 	 */
@@ -60,28 +50,28 @@ public class DeleteTaskDialog extends DiskoDialog
 		gbc.insets = new Insets(4, 4, 4, 4);
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		
+
 		JLabel headerLabel = new JLabel(m_wpTasks.getText("DeleteTask.text"));
 		gbc.gridwidth = 2;
 		m_contentsPanel.add(headerLabel, gbc);
-		
+
 		JLabel taskLabel = new JLabel(m_wpTasks.getText("Task.text"));
 		gbc.gridwidth = 1;
 		gbc.gridy++;
 		m_contentsPanel.add(taskLabel, gbc);
-		
+
 		m_taskTextField = new JTextField();
 		m_taskTextField.setEditable(false);
 		m_taskTextField.setColumns(30);
 		m_taskTextField.setBackground(m_contentsPanel.getBackground());
 		gbc.gridx++;
 		m_contentsPanel.add(m_taskTextField, gbc);
-		
+
 		JLabel descriptionLabel = new JLabel(m_wpTasks.getText("TaskDescription.text"));
 		gbc.gridx--;
 		gbc.gridy++;
 		m_contentsPanel.add(descriptionLabel, gbc);
-		
+
 		m_descriptionTextArea = new JTextArea();
 		m_descriptionTextArea.setEditable(false);
 		m_descriptionTextArea.setRows(5);
@@ -90,7 +80,7 @@ public class DeleteTaskDialog extends DiskoDialog
 		m_descriptionTextArea.setBackground(m_contentsPanel.getBackground());
 		gbc.gridx++;
 		m_contentsPanel.add(m_descriptionTextArea, gbc);
-		
+
 		JPanel buttonRowPanel = new JPanel();
 		m_deleteButton = DiskoButtonFactory.createSmallButton(ButtonType.DeleteButton);
 		m_deleteButton.addActionListener(new ActionListener()
@@ -114,11 +104,11 @@ public class DeleteTaskDialog extends DiskoDialog
 		gbc.gridx--;
 		gbc.gridy++;
 		m_contentsPanel.add(buttonRowPanel, gbc);
-		
+
 		this.add(m_contentsPanel);
 		this.pack();
 	}
-	
+
 	/**
 	 * Cancel delete action
 	 */
@@ -127,7 +117,7 @@ public class DeleteTaskDialog extends DiskoDialog
 		m_currentTask = null;
 		this.setVisible(false);
 	}
-	
+
 	/**
 	 * Finish delete action, delete selected task
 	 */
@@ -135,17 +125,10 @@ public class DeleteTaskDialog extends DiskoDialog
 	{
 		if(m_currentTask != null)
 		{
-			try
-			{
-				m_currentTask.setStatus(TaskStatus.DELETED);
-			} 
-			catch (IllegalOperationException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			m_currentTask.setStatus(TaskStatus.DELETED);
+
 			m_currentTask = null;
-			
+
 			m_wpTasks.getMsoModel().commit();
 		}
 		this.setVisible(false);

@@ -1,16 +1,16 @@
 package org.redcross.sar.mso.data;
 
-import java.util.ResourceBundle;
-
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.MsoCastException;
 
+import java.util.ResourceBundle;
+
 public class HypothesisImpl extends AbstractMsoObject implements IHypothesisIf
 {
     private final AttributeImpl.MsoString m_description = new AttributeImpl.MsoString(this, "Description");
-    private final AttributeImpl.MsoInteger m_number = new AttributeImpl.MsoInteger(this, "Number");
+    private final AttributeImpl.MsoInteger m_number = new AttributeImpl.MsoInteger(this, "Number",true);
     private final AttributeImpl.MsoInteger m_priorityIndex = new AttributeImpl.MsoInteger(this, "PriorityIndex");
 
     private final AttributeImpl.MsoEnum<HypothesisStatus> m_status = new AttributeImpl.MsoEnum<HypothesisStatus>(this, "Status", HypothesisStatus.ACTIVE);
@@ -59,6 +59,15 @@ public class HypothesisImpl extends AbstractMsoObject implements IHypothesisIf
         }
     }
 
+    /**
+     * Renumber duplicate numbers
+     */
+    public void renumberDuplicateNumbers()
+    {
+        //Todo Code
+    }
+
+
     public IMsoManagerIf.MsoClassCode getMsoClassCode()
     {
         return IMsoManagerIf.MsoClassCode.CLASSCODE_HYPOTHESIS;
@@ -82,7 +91,7 @@ public class HypothesisImpl extends AbstractMsoObject implements IHypothesisIf
     {
         return m_status.getValue();
     }
-    
+
     public String getStatusText()
     {
     	return Internationalization.getEnumText(bundle, m_status.getValue());

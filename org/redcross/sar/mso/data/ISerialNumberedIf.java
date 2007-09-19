@@ -1,7 +1,5 @@
 package org.redcross.sar.mso.data;
 
-import java.util.List;
-
 import org.redcross.sar.mso.IMsoModelIf;
 
 /**
@@ -36,4 +34,11 @@ public interface ISerialNumberedIf
      * @return The serial number attribute
      */
     public IAttributeIf.IMsoIntegerIf getNumberAttribute();
+
+    /**
+     * Renumber duplicate numbers caused by simultaneous creation of objects by different users.
+     *
+     * The method is called by event handler that handles updates from server.
+     */
+    public void renumberDuplicateNumbers();
 }

@@ -352,9 +352,13 @@ public class LogisticsPanel implements IMsoUpdateListenerIf, IMsoLayerEventListe
             IMsoObjectIf msoObject = msoFeature.getMsoObject();
             if (msoObject instanceof IAreaIf)
             {
-                m_mapSelectedAssignment = ((IAreaIf) msoObject).getOwningAssignment();
-                setSelectedAssignmentInPanels(m_mapSelectedAssignment);
-                getInfoPanelHandler().setAssignment(m_mapSelectedAssignment, false);
+                IAssignmentIf assignment = ((IAreaIf) msoObject).getOwningAssignment();
+                if (assignment != null)
+                {
+                    m_mapSelectedAssignment = ((IAreaIf) msoObject).getOwningAssignment();
+                    setSelectedAssignmentInPanels(m_mapSelectedAssignment);
+                    getInfoPanelHandler().setAssignment(m_mapSelectedAssignment, false);
+                }
             }
         }
     }

@@ -16,9 +16,6 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.dnd.DragSource;
-import java.awt.dnd.DragSourceListener;
-import java.awt.dnd.DragSourceMotionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -191,10 +188,6 @@ public class AssignmentTransferHandler extends TransferHandler
             JTable targetTable = (JTable) m_targetComponent;
             if (trs.isDrop())
             {
-                DragSource ds = DragSource.getDefaultDragSource();
-                int dt = DragSource.getDragThreshold();
-                DragSourceMotionListener[] dsml = ds.getDragSourceMotionListeners();
-                DragSourceListener[] dsl = ds.getDragSourceListeners();
                 JTable.DropLocation dr = (JTable.DropLocation) trs.getDropLocation();
                 int dropRow = targetTable.convertRowIndexToModel(dr.getRow());
                 int dropColumn = targetTable.convertColumnIndexToModel(dr.getColumn());

@@ -171,7 +171,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
         catch (IllegalDeleteException e)
         {
-            System.out.println(e.getMessage());     // todo Erstatt med logging når implementert i junittest
+            System.out.println(e.getMessage());
             return false;
         }
         return true;

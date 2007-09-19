@@ -21,7 +21,7 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
     private final AttributeImpl.MsoInteger m_bearing = new AttributeImpl.MsoInteger(this, "Bearing");
     private final AttributeImpl.MsoString m_callSign = new AttributeImpl.MsoString(this, "CallSign");
     private final AttributeImpl.MsoInteger m_maxSpeed = new AttributeImpl.MsoInteger(this, "MaxSpeed");
-    private final AttributeImpl.MsoInteger m_number = new AttributeImpl.MsoInteger(this, "Number");
+    private final AttributeImpl.MsoInteger m_number = new AttributeImpl.MsoInteger(this, "Number",true);
     private final AttributeImpl.MsoPosition m_position = new AttributeImpl.MsoPosition(this, "Position");
     private final AttributeImpl.MsoString m_remarks = new AttributeImpl.MsoString(this, "Remarks");
     private final AttributeImpl.MsoInteger m_speed = new AttributeImpl.MsoInteger(this, "Speed");
@@ -149,6 +149,7 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
     /**
      * Local implementation of {@link AbstractMsoObject#registerModifiedData()}
      * Resets correct subclass in case of incorrect changes by application or others.
+     * Renumber duplicate numbers
      */
     public void registerModifiedData()
     {
@@ -158,6 +159,15 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
         }
         super.registerModifiedData();
     }
+
+    /**
+     * Renumber duplicate numbers
+     */
+    public void renumberDuplicateNumbers()
+    {
+        //Todo Code
+    }
+
 
     /*-------------------------------------------------------------------------------------------
     * Methods for ENUM attributes
@@ -556,7 +566,7 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
         }
         return retVal;
     }
-    
+
     @Override
     public String shortDescriptor()
     {
