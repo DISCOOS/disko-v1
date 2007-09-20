@@ -3,6 +3,7 @@ package org.redcross.sar.mso.data;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.committer.ICommittableIf;
 import org.redcross.sar.util.except.UnknownAttributeException;
+import org.redcross.sar.util.mso.Selector;
 
 import java.util.Collection;
 import java.util.Map;
@@ -12,6 +13,14 @@ import java.util.Map;
  */
 public interface IMsoObjectIf
 {
+    public final static Selector<? extends IMsoObjectIf> SELECT_ALL = new Selector<IMsoObjectIf>()
+    {
+        public boolean select(IMsoObjectIf anObject)
+        {
+            return true;
+        }
+    };
+
     /**
      * Get Object ID
      *
@@ -27,7 +36,7 @@ public interface IMsoObjectIf
 
     /**
      * Get classcode enumerator for the object.
-     * @return The {@link IMsoManagerIf.MsoClassCode} of the object. 
+     * @return The {@link IMsoManagerIf.MsoClassCode} of the object.
      */
     public IMsoManagerIf.MsoClassCode getMsoClassCode();
 
@@ -54,7 +63,7 @@ public interface IMsoObjectIf
      * <p/>
      * Is used when several updates of an object shall be sent to listeners as one event.
      */
-//    public void suspendNotify();
+    public void suspendNotify();
 
     /**
      * Add a "listener" to MsoObject deleteObject.
@@ -121,7 +130,7 @@ public interface IMsoObjectIf
      * <p/>
      * Is used if notification has been suspended by {@link #suspendNotify()}.
      */
-//    public void resumeNotify();
+    public void resumeNotify();
 
 //    public void resumeNotifications();
 
