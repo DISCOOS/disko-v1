@@ -1,6 +1,8 @@
 package org.redcross.sar.wp.unit;
 
 import java.util.EnumSet;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -10,6 +12,7 @@ import org.redcross.sar.mso.data.IPersonnelIf;
 import org.redcross.sar.mso.data.IPersonnelListIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
+import org.redcross.sar.util.mso.Selector;
 
 /**
  * Table model for the personnel overview panel
@@ -19,13 +22,33 @@ import org.redcross.sar.mso.event.MsoEvent.Update;
 public class PersonnelOverviewTableModel extends AbstractTableModel implements IMsoUpdateListenerIf
 {
 	private static final long serialVersionUID = 1L;
-	private IPersonnelListIf m_personnel;
+	private List<IPersonnelIf> m_displayPersonnel;
+	private IPersonnelListIf m_allPersonnel;
+	
+	/**
+	 * Select personnel at the end of the history chain
+	 */
+	private static Selector<IPersonnelIf> m_activePersonnelSelector = new Selector<IPersonnelIf>()
+	{
+		public boolean select(IPersonnelIf personnel)
+		{
+			if(personnel.getNextOccurence() == null)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	};
 	
 	public PersonnelOverviewTableModel(IDiskoWpUnit wp)
 	{
-		// TODO attendance list correct?
 		wp.getMsoModel().getEventManager().addClientUpdateListener(this);
-		m_personnel = wp.getMsoManager().getCmdPost().getAttendanceList(); 
+		m_allPersonnel = wp.getMsoManager().getCmdPost().getAttendanceList();
+		m_displayPersonnel = new LinkedList<IPersonnelIf>();
+		m_displayPersonnel.addAll(m_allPersonnel.selectItems(m_activePersonnelSelector, null));
 	}
 
 	@Override
@@ -41,21 +64,28 @@ public class PersonnelOverviewTableModel extends AbstractTableModel implements I
 
 	public int getRowCount()
 	{
-		return m_personnel.size();
+		return m_displayPersonnel.size();
 	}
 
 	public Object getValueAt(int row, int column)
 	{
-		IPersonnelIf personnel = (IPersonnelIf)m_personnel.getItems().toArray()[row];
+		IPersonnelIf personnel = m_displayPersonnel.get(row);
 		switch(column)
 		{
 		case 0:
 			return personnel.getFirstname() + " " + personnel.getLastname();
-		case 2:
-			// TODO
-			break;
 		}
 		return null;
+	}
+	
+	@Override
+	public boolean isCellEditable(int rowIndex, int columnIndex) 
+	{
+		if (columnIndex == 1 || columnIndex == 2)  
+		{
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -63,6 +93,8 @@ public class PersonnelOverviewTableModel extends AbstractTableModel implements I
 	 */
 	public void handleMsoUpdateEvent(Update e)
 	{
+		m_displayPersonnel.clear();
+		m_displayPersonnel.addAll(m_allPersonnel.selectItems(m_activePersonnelSelector, null));
 		fireTableDataChanged();
 	}
 
@@ -76,8 +108,19 @@ public class PersonnelOverviewTableModel extends AbstractTableModel implements I
 		return myInterests.contains(msoObject.getMsoClassCode());
 	}
 
+	/**
+	 * @param clickedRow
+	 * @return Personnel at given row in table
+	 */
 	public IPersonnelIf getPersonnel(int clickedRow)
 	{
-		return clickedRow < m_personnel.size() ? (IPersonnelIf)m_personnel.getItems().toArray()[clickedRow] : null;
+		if(clickedRow >= 0)
+		{
+			return clickedRow < m_displayPersonnel.size() ? m_displayPersonnel.get(clickedRow) : null;
+		}
+		else
+		{
+			return null;
+		}
 	}
 }

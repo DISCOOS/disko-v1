@@ -2,17 +2,21 @@ package org.redcross.sar.wp.unit;
 
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ResourceBundle;
 
 import javax.swing.AbstractCellEditor;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTable;
-import javax.swing.JToggleButton;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.redcross.sar.gui.DiskoButtonFactory;
+import org.redcross.sar.mso.data.IPersonnelIf;
+import org.redcross.sar.mso.data.IPersonnelIf.PersonnelStatus;
 
 /**
  * The personnel overview table renderer
@@ -27,8 +31,10 @@ public class PersonnelOverviewTableRenderer
 	public void setTable(JTable overviewTable)
 	{
 		m_table = overviewTable;
-		EditPersonnelCellEditor editPersonnel = new EditPersonnelCellEditor();
+		
 		TableColumn column = m_table.getColumnModel().getColumn(1);
+		
+		EditPersonnelCellEditor editPersonnel = new EditPersonnelCellEditor();
 		column.setCellEditor(editPersonnel);
 		column.setCellRenderer(editPersonnel);
 		
@@ -47,7 +53,10 @@ public class PersonnelOverviewTableRenderer
 		implements TableCellEditor, TableCellRenderer 
 	{
 		private static final long serialVersionUID = 1L;
-		JToggleButton m_editButton;
+		
+		private int m_editRow = -1;
+		
+		JButton m_editButton;
 		JPanel m_panel;
 		
 		public EditPersonnelCellEditor()
@@ -55,20 +64,32 @@ public class PersonnelOverviewTableRenderer
 			m_panel = new JPanel();
 			m_panel.setBackground(m_table.getBackground());
 			
-			m_editButton = DiskoButtonFactory.createTableToggleButton(m_resources.getString("EditButton.letter"));
+			m_editButton = DiskoButtonFactory.createTableButton(m_resources.getString("EditButton.letter"));
+			m_editButton.setOpaque(true);
+			m_editButton.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					// Display selected personnel in details panel
+					int modelIndex = m_table.convertRowIndexToModel(m_editRow);
+					PersonnelOverviewTableModel model = (PersonnelOverviewTableModel)m_table.getModel();
+					IPersonnelIf selectedPersonnel = model.getPersonnel(modelIndex);
+					DiskoWpUnitImpl.setPersonnel(selectedPersonnel);
+					DiskoWpUnitImpl.setDetailView(DiskoWpUnitImpl.PERSONNEL_VIEW_ID);
+				}
+			});
 			m_panel.add(m_editButton);
 		}
 
 		public Component getTableCellEditorComponent(JTable table,
 				Object value, boolean isSelected, int row, int column)
 		{
-			// TODO Auto-generated method stub
+			m_editRow = row;
 			return m_panel;
 		}
 
 		public Object getCellEditorValue()
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -76,13 +97,23 @@ public class PersonnelOverviewTableRenderer
 				Object value, boolean isSelected, boolean hasFocus, int row,
 				int column)
 		{
-			// TODO Auto-generated method stub
+			fireEditingStopped();
+			
+			// Get personnel at row
+			PersonnelOverviewTableModel model = (PersonnelOverviewTableModel)table.getModel();
+			IPersonnelIf rowPersonnel = model.getPersonnel(table.convertRowIndexToModel(row));
+		
+			// Get personnel in personnel details panel
+			IPersonnelIf editingPersonnel = DiskoWpUnitImpl.getEditingPersonnel();
+			
+			m_editButton.setSelected(editingPersonnel == rowPersonnel);
+			
 			return m_panel;
 		}
 	}
 	
 	/**
-	 * Cell renderer and editor for changign personnel status
+	 * Cell renderer and editor for changing personnel status
 	 * 
 	 * @author thomasl
 	 */
@@ -93,9 +124,11 @@ public class PersonnelOverviewTableRenderer
 		
 		private JPanel m_panel;
 		
-		private JToggleButton m_calloutButton;
-		private JToggleButton m_arrivedButton;
-		private JToggleButton m_dismissedButton;
+		private int m_row;
+		
+		private JButton m_calloutButton;
+		private JButton m_arrivedButton;
+		private JButton m_releasedButton;
 		
 		public PersonnelStatusCellEditor()
 		{
@@ -106,26 +139,53 @@ public class PersonnelOverviewTableRenderer
 			fl.setAlignment(FlowLayout.RIGHT);
 			m_panel.setLayout(fl);
 			
-			m_calloutButton = DiskoButtonFactory.createTableToggleButton(m_resources.getString("CalloutButton.letter"));
+			m_calloutButton = DiskoButtonFactory.createTableButton(m_resources.getString("CalloutButton.letter"));
+			m_calloutButton.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent ae)
+				{
+					PersonnelOverviewTableModel model = (PersonnelOverviewTableModel)m_table.getModel();
+					IPersonnelIf personnel = model.getPersonnel(m_table.convertRowIndexToModel(m_row));
+					PersonnelUtilities.callOutPersonnel(personnel);
+				}
+			});
 			m_panel.add(m_calloutButton);
 			
-			m_arrivedButton = DiskoButtonFactory.createTableToggleButton(m_resources.getString("ArrivedButton.letter"));
+			m_arrivedButton = DiskoButtonFactory.createTableButton(m_resources.getString("ArrivedButton.letter"));
+			m_arrivedButton.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					PersonnelOverviewTableModel model = (PersonnelOverviewTableModel)m_table.getModel();
+					IPersonnelIf personnel = model.getPersonnel(m_table.convertRowIndexToModel(m_row));
+					PersonnelUtilities.arrivedPersonnel(personnel);
+				}
+			});
 			m_panel.add(m_arrivedButton);
 			
-			m_dismissedButton = DiskoButtonFactory.createTableToggleButton(m_resources.getString("DismissedButton.letter"));
-			m_panel.add(m_dismissedButton);
+			m_releasedButton = DiskoButtonFactory.createTableButton(m_resources.getString("DismissedButton.letter"));
+			m_releasedButton.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					PersonnelOverviewTableModel model = (PersonnelOverviewTableModel)m_table.getModel();
+					IPersonnelIf personnel = model.getPersonnel(m_table.convertRowIndexToModel(m_row));
+					PersonnelUtilities.releasePersonnel(personnel);
+				}
+			});
+			m_panel.add(m_releasedButton);
 		}
 
 		public Component getTableCellEditorComponent(JTable table,
 				Object value, boolean isSelected, int row, int column)
 		{
-			// TODO Auto-generated method stub
+			m_row = row;
+			updatePanel();
 			return m_panel;
 		}
 
 		public Object getCellEditorValue()
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -133,9 +193,25 @@ public class PersonnelOverviewTableRenderer
 				Object value, boolean isSelected, boolean hasFocus, int row,
 				int column)
 		{
-			// TODO Auto-generated method stub
+			fireEditingStopped();
+			m_row = row;
+			updatePanel();
 			return m_panel;
 		}
-
+		
+		private void updatePanel()
+		{
+			// Get current personnel
+			int modelIndex = m_table.convertRowIndexToModel(m_row);
+			PersonnelOverviewTableModel model = (PersonnelOverviewTableModel)m_table.getModel();
+			IPersonnelIf selectedPersonnel = model.getPersonnel(modelIndex);
+			
+			PersonnelStatus status = selectedPersonnel.getStatus();
+			
+			// Set button selection
+			m_calloutButton.setSelected(status == PersonnelStatus.ON_ROUTE || status == PersonnelStatus.ARRIVED);
+			m_arrivedButton.setSelected(status == PersonnelStatus.ARRIVED);
+			m_releasedButton.setSelected(status == PersonnelStatus.RELEASED);
+		}
 	}
 }

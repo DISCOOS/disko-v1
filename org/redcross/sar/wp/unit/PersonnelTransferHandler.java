@@ -80,8 +80,28 @@ public class PersonnelTransferHandler extends TransferHandler
             return false;
         }
         
-		// TODO Check for valid personnel transfer
-		return true;
+        // Always allowed to remove personnel from a unit (?)
+        JTable targetTable = (JTable)support.getComponent();
+        if(targetTable.getModel() instanceof PersonnelOverviewTableModel)
+        {
+        	return true;
+        }
+        
+		// Check for valid personnel transfer. Only applicable when transferring to a unit
+        try
+		{
+			IPersonnelIf personnel = (IPersonnelIf)support.getTransferable().getTransferData(m_personnelFlavor);
+			return PersonnelUtilities.canAssignPersonnelToUnit(personnel);
+		} 
+        catch (UnsupportedFlavorException e)
+		{
+			e.printStackTrace();
+		} 
+        catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	@Override
@@ -176,6 +196,8 @@ public class PersonnelTransferHandler extends TransferHandler
 				}
 			}
 		}
+		
+		// TODO Commit changes right away
     }
 
 	/**

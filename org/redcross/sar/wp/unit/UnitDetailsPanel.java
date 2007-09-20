@@ -37,7 +37,7 @@ public class UnitDetailsPanel extends JPanel
 	
 	private IUnitIf m_currentUnit;
 	
-	private JTextField m_topPanelTextField;
+	private JLabel m_topPanelLabel;
 	private JToggleButton m_pauseToggleButton;
 	private JButton m_dissolveButton;
 	private JButton m_showReportButton;
@@ -70,9 +70,8 @@ public class UnitDetailsPanel extends JPanel
 		JPanel topPanel = new JPanel(new BorderLayout());
 		JPanel topButtonsPanel = new JPanel();
 		topButtonsPanel.setBorder(null);
-		m_topPanelTextField = new JTextField();
-		m_topPanelTextField.setEditable(false);
-		topPanel.add(m_topPanelTextField, BorderLayout.CENTER);
+		m_topPanelLabel = new JLabel();
+		topPanel.add(m_topPanelLabel, BorderLayout.CENTER);
 		m_pauseToggleButton = DiskoButtonFactory.createSmallToggleButton(m_resources.getString("PauseButton.text"));
 		topButtonsPanel.add(m_pauseToggleButton);
 		m_dissolveButton = DiskoButtonFactory.createSmallButton(m_resources.getString("DissolveButton.text")/*, ""*/);
@@ -174,7 +173,7 @@ public class UnitDetailsPanel extends JPanel
 			// Fill in fields with unit values
 			String topText = m_currentUnit.getTypeText() + " " + m_currentUnit.getNumber() +
 			" (" + m_currentUnit.getStatusText() + ")"; 
-			m_topPanelTextField.setText(topText);
+			m_topPanelLabel.setText(topText);
 			
 			IPersonnelIf leader = m_currentUnit.getUnitLeader();
 			String leaderName = leader == null ? "" : leader.getFirstname() + " " + leader.getLastname();
@@ -184,23 +183,23 @@ public class UnitDetailsPanel extends JPanel
 			m_cellPhoneTextField.setText(cell);
 			
 //			String fiveTone = m_currentUnit.get// ?
-//			m_fiveToneTextField.setText(fiveTone);
+//			m_fiveToneTextField.setText(fiveTone); TODO
 			
 //			String created = DTG.CalToDTG(m_currentUnit.get)
-//			m_createdTextField.setText(created);
+//			m_createdTextField.setText(created); TODO
 			
 			String callsign = m_currentUnit.getCallSign();
 			m_callsignTextField.setText(callsign);
 			
 //			String fieldTime = DTG.CalToDTG(m_currentUnit.gets);
-//			m_fieldTimeTextField.setText(fieldTime);
+//			m_fieldTimeTextField.setText(fieldTime); TODO
 			
 			IAssignmentIf assignment = m_currentUnit.getActiveAssignment();
 			String assignmentString = assignment == null ? "" : assignment.getTypeAndNumber();
 			m_assignmentTextField.setText(assignmentString);
 			
 //			String stopTime = DTG.CalToDTG(m_currentUnit.get);
-//			m_stopTimeTextField.setText(stopTime);
+//			m_stopTimeTextField.setText(stopTime); TODO
 			
 			UnitPersonnelTableModel model = (UnitPersonnelTableModel)m_personnelTable.getModel();
 			model.setPersonnel(m_currentUnit.getUnitPersonnel());
@@ -208,7 +207,7 @@ public class UnitDetailsPanel extends JPanel
 		else
 		{
 			// Unit is null, clear fields
-			m_topPanelTextField.setText("");
+			m_topPanelLabel.setText("");
 			m_leaderTextField.setText("");
 			m_cellPhoneTextField.setText("");
 			m_fiveToneTextField.setText("");
@@ -281,5 +280,13 @@ public class UnitDetailsPanel extends JPanel
 		{
 			return m_personnel;
 		}
+	}
+
+	/**
+	 * @return Current unit
+	 */
+	public IUnitIf getUnit()
+	{
+		return m_currentUnit;
 	}
 }

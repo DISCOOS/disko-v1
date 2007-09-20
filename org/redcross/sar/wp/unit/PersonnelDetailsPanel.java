@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Calendar;
 import java.util.ResourceBundle;
 
@@ -21,6 +23,7 @@ import javax.swing.JTextField;
 import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
 import org.redcross.sar.mso.data.IPersonnelIf;
+import org.redcross.sar.mso.data.IPersonnelIf.PersonnelStatus;
 import org.redcross.sar.mso.data.IPersonnelIf.PersonnelType;
 import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.mso.DTG;
@@ -81,7 +84,36 @@ public class PersonnelDetailsPanel extends JPanel
 		JPanel topPanel = new JPanel(new BorderLayout());
 		m_topLabel = new JLabel();
 		topPanel.add(m_topLabel, BorderLayout.CENTER);
-		m_changeStatusButton = DiskoButtonFactory.createSmallButton("DismissButton.text"/*, "DismissButton.icon"*/);
+		m_changeStatusButton = DiskoButtonFactory.createSmallButton("");
+		m_changeStatusButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				if(m_currentPersonnel != null)
+				{
+					String command = arg0.getActionCommand();
+					PersonnelStatus newStatus = PersonnelStatus.valueOf(command);
+					
+					switch(newStatus)
+					{
+					case ON_ROUTE:
+						IPersonnelIf newPersonnel = PersonnelUtilities.callOutPersonnel(m_currentPersonnel);
+						// On route command might create new history instance of personnel
+						if(newPersonnel != null)
+						{
+							m_currentPersonnel = newPersonnel;
+						}
+						break;
+					case ARRIVED:
+						 PersonnelUtilities.arrivedPersonnel(m_currentPersonnel);
+						break;
+					case RELEASED:
+						PersonnelUtilities.releasePersonnel(m_currentPersonnel);
+					}
+					updateFieldContents();
+				}
+			}
+		});
 		topPanel.add(m_changeStatusButton, BorderLayout.EAST);
 		this.add(topPanel, gbc);
 		gbc.gridy++;
@@ -183,8 +215,12 @@ public class PersonnelDetailsPanel extends JPanel
 		{
 			firstName.append(name[i] + " ");
 		}
-		m_currentPersonnel.setFirstname(firstName.toString().trim());
-		m_currentPersonnel.setLastname(name[name.length-1]);
+		
+		if(firstName.toString() != null)
+		{
+			m_currentPersonnel.setFirstname(firstName.toString().trim());
+		}
+		m_currentPersonnel.setLastname(name[name.length-1].trim());
 
 		String phone = m_cellTextField.getText();
 		m_currentPersonnel.setTelephone1(phone);
@@ -274,9 +310,12 @@ public class PersonnelDetailsPanel extends JPanel
 			m_arrivedTextField.setText("");
 			m_releasedTextField.setText("");
 			m_remarksTextArea.setText("");
+			m_changeStatusButton.setText("");
 		}
 		else
 		{
+			m_topLabel.setText(m_currentPersonnel.getFirstname() + " " + m_currentPersonnel.getLastname() +
+					" (" + m_currentPersonnel.getStatusText() + ")");
 			m_nameTextField.setText(m_currentPersonnel.getFirstname() + " " + m_currentPersonnel.getLastname());
 			m_cellTextField.setText(m_currentPersonnel.getTelephone1());
 			m_propertyComboBox.setSelectedItem(m_currentPersonnel.getType());
@@ -289,6 +328,23 @@ public class PersonnelDetailsPanel extends JPanel
 			m_arrivedTextField.setText(DTG.CalToDTG(m_currentPersonnel.getArrived()));
 			m_releasedTextField.setText(DTG.CalToDTG(m_currentPersonnel.getReleased()));
 			m_remarksTextArea.setText(m_currentPersonnel.shortDescriptor());
+			
+			// Get next status for 
+			PersonnelStatus status = m_currentPersonnel.getStatus();
+			PersonnelStatus[] values = PersonnelStatus.values();
+			status = values[(status.ordinal()+1)%values.length];
+			if(status == PersonnelStatus.IDLE)
+			{
+				// Not possible to send personnel status back to idle, set to next
+				status = values[(status.ordinal() + 1) % values.length];
+			}
+			m_changeStatusButton.setText(status.toString());
+			m_changeStatusButton.setActionCommand(status.name());
 		}
+	}
+
+	public IPersonnelIf getPersonnel()
+	{
+		return m_currentPersonnel;
 	}
 }

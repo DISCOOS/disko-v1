@@ -130,6 +130,8 @@ public class DiskoButtonFactory
 		button.setPreferredSize(LARGE_BUTTON_SIZE);
 		button.setMaximumSize(LARGE_BUTTON_SIZE);
 		
+		button.setBorder(null);
+		
 		return button;
 	}
 
@@ -144,6 +146,8 @@ public class DiskoButtonFactory
 		button.setMinimumSize(SMALL_BUTTON_SIZE);
 		button.setPreferredSize(SMALL_BUTTON_SIZE);
 		button.setMaximumSize(SMALL_BUTTON_SIZE);
+		
+		button.setBorder(null);
 		
 		return button;
 	}
@@ -179,6 +183,8 @@ public class DiskoButtonFactory
 		button.setMinimumSize(SMALL_BUTTON_SIZE);
 		button.setPreferredSize(SMALL_BUTTON_SIZE);
 		button.setMaximumSize(SMALL_BUTTON_SIZE);
+		
+		button.setBorder(null);
 		
 		return button;
 	}
@@ -256,15 +262,18 @@ public class DiskoButtonFactory
 		return button;
 	}
 
-	public static JToggleButton createTableToggleButton(String text)
+	public static JButton createTableButton(String text)
 	{
-		JToggleButton button = new JToggleButton(text);
+		JButton button = new JButton(text);
 		button.setFont(new Font("TableButtonFont", Font.BOLD, 12));
 		button.setBorder(null);
 		
 		button.setMinimumSize(TABLE_BUTTON_SIZE);
 		button.setPreferredSize(TABLE_BUTTON_SIZE);
 		button.setMaximumSize(TABLE_BUTTON_SIZE);
+		
+		button.setFocusable(false);
+		
 		return button;
 	}
 }
