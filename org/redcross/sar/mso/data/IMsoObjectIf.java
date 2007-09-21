@@ -3,7 +3,6 @@ package org.redcross.sar.mso.data;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.committer.ICommittableIf;
 import org.redcross.sar.util.except.UnknownAttributeException;
-import org.redcross.sar.util.mso.Selector;
 
 import java.util.Collection;
 import java.util.Map;
@@ -13,14 +12,6 @@ import java.util.Map;
  */
 public interface IMsoObjectIf
 {
-    public final static Selector<? extends IMsoObjectIf> SELECT_ALL = new Selector<IMsoObjectIf>()
-    {
-        public boolean select(IMsoObjectIf anObject)
-        {
-            return true;
-        }
-    };
-
     /**
      * Get Object ID
      *

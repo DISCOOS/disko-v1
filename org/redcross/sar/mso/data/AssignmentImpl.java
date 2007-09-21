@@ -8,7 +8,10 @@ import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.util.except.MsoCastException;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  * Unit assignments
@@ -637,20 +640,13 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         return 0;
     }
 
-    private final Comparator<IMessageLineIf> messageLineTimeComparator = new Comparator<IMessageLineIf>()
-    {
-        public int compare(IMessageLineIf o1, IMessageLineIf o2)
-        {
-            return o2.getOperationTime().compareTo(o1.getOperationTime()); // Sort according to latest time
-        }
-    };
-
     private final TypeMessageLineSelector messageLineSelector = new TypeMessageLineSelector(this);
 
     public IMessageLineIf getLatestStatusChangeMessageLine(IMessageLineIf.MessageLineType aType)
     {
         messageLineSelector.setSelectType(aType);
-        List<IMessageLineIf> retVal = MsoModelImpl.getInstance().getMsoManager().getCmdPost().getMessageLines().selectItems(messageLineSelector, messageLineTimeComparator);
+        List<IMessageLineIf> retVal = MsoModelImpl.getInstance().getMsoManager().getCmdPost().getMessageLines().selectItems(messageLineSelector,
+                IMessageLineIf.MESSAGE_LINE_TIME_COMPARATOR);
         return (retVal.size() == 0) ? null : retVal.get(0);
     }
 

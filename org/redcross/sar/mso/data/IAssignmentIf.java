@@ -31,7 +31,8 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
     {
         HIGH,
         NORMAL,
-        LOW
+        LOW,
+        NONE
     }
 
     public enum AssignmentType

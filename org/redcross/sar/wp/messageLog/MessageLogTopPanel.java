@@ -21,7 +21,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.*;
+import java.util.Calendar;
+import java.util.EnumSet;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -537,7 +539,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		m_newMessage = false;
 
 		// Get the message
-		List<IMessageIf> messages = m_messageLog.selectItems(m_currentMessageSelector, m_lineNumberComparator);
+		List<IMessageIf> messages = m_messageLog.selectItems(m_currentMessageSelector, IMessageIf.MESSAGE_NUMBER_COMPARATOR);
 		if(!messages.isEmpty())
 		{
 			// Check that an uncommitted message is not reselected
@@ -607,14 +609,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
         	{
         		return false;
         	}
-        }
-    };
-
-    private final static Comparator<IMessageIf> m_lineNumberComparator = new Comparator<IMessageIf>()
-    {
-        public int compare(IMessageIf m1, IMessageIf m2)
-        {
-            return m1.getNumber() - m2.getNumber();
         }
     };
 
@@ -757,7 +751,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 						m_currentMessage = null;
 						m_messageDirty = false;
 						m_currentMessageNr = 0;
-						
+
 						// GUI clean-up
 						clearPanelContents();
 
@@ -807,7 +801,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					// Create new message if null
 					getCurrentMessage();
 					m_messageDirty = true;
-					
+
 					getChangeTasksDialog();
 					hideEditPanels();
 					Point location = m_changeTasksButton.getLocationOnScreen();
@@ -945,7 +939,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				}
 			}
 		});
-		
+
 		m_buttonGroup.add(m_deleteButton);
 		m_buttonRow.add(m_deleteButton);
 	}
@@ -1145,29 +1139,29 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	 */
 	private void updateAssignments()
 	{
-		
+
 		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
 		ICommunicatorIf communicator = message.getSingleReceiver();
 		IUnitIf unit = (IUnitIf)communicator;
-		
+
 
 		if(unit != null)
 		{
 			ErrorDialog error = new ErrorDialog(m_wpMessageLog.getApplication().getFrame());
 			IAssignmentIf assignment = null;
 			List<IMessageLineIf> messageLines = new LinkedList<IMessageLineIf>();
-			
+
 			// Get all assignment lines. Lines from complete is placed first, started second, assign last.
 			// This should ensure that unit statuses are updated in the correct order
 			messageLines.addAll(m_messageCompletedPanel.getAddedLines());
 			messageLines.addAll(m_messageStartedPanel.getAddedLines());
 			messageLines.addAll(m_messageAssignedPanel.getAddedLines());
-			
+
 			// Update status
 			for(IMessageLineIf line : messageLines)
 			{
 				assignment = line.getLineAssignment();
-				
+
 					switch(line.getLineType())
 					{
 					case ASSIGNED:
@@ -1211,7 +1205,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					}
 			}
 		}
-		
+
 		// Keep track of which lines are added
 		m_messageAssignedPanel.lineRemoved(null);
 		m_messageStartedPanel.lineRemoved(null);

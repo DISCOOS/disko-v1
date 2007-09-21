@@ -3,10 +3,13 @@ package org.redcross.sar.wp.TestData;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.*;
+import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 import org.redcross.sar.util.except.DuplicateIdException;
 import org.redcross.sar.util.except.MsoException;
+import org.redcross.sar.util.mso.Position;
 
 import java.util.Calendar;
+
 /**
  * Created by IntelliJ IDEA.
  * User: vinjar
@@ -62,18 +65,21 @@ public class BuildTestData
         IUnitListIf unitList = cmdPost.getUnitList();
         IUnitIf unit;
 
-        unit = unitList.createVehicle("St 39911");
-        unit.setRemarks("This is a red car");
-        unit.setStatus(IUnitIf.UnitStatus.READY);
-        unit.setCallSign("88888");
+        for (int i = 10; i < 30; i++)
+        {
+            unit = unitList.createVehicle("St 123" + i);
+            unit.setRemarks("This is a red car");
+            unit.setStatus(IUnitIf.UnitStatus.READY);
+            unit.setCallSign("888" + i);
 
-        unit = unitList.createVehicle("St 39912");
-        unit.setStatus(IUnitIf.UnitStatus.READY);
-        unit.setCallSign("21345");
+            unit = unitList.createVehicle("Su 987" + i);
+            unit.setStatus(IUnitIf.UnitStatus.READY);
+            unit.setCallSign("213" + i);
 
-        unit = unitList.createBoat("Jupiter");
-        unit.setStatus(IUnitIf.UnitStatus.READY);
-        unit.setCallSign("99999");
+            unit = unitList.createBoat("Jupiter" + "_" + i);
+            unit.setStatus(IUnitIf.UnitStatus.READY);
+            unit.setCallSign("999" + i);
+        }
 
         aMsoModel.restoreUpdateMode();
         aMsoModel.commit();
@@ -86,26 +92,29 @@ public class BuildTestData
         IUnitListIf unitList = cmdPost.getUnitList();
         IUnitIf unit;
 
-        unit = unitList.createVehicle("St 39911");
-        unit.setRemarks("This is a red car");
-        unit.setStatus(IUnitIf.UnitStatus.READY);
-        unit.setCallSign("88888");
+        for (int j = 10; j < 30; j++)
+        {
+            unit = unitList.createVehicle("St 123" + j);
+            unit.setRemarks("This is a red car");
+            unit.setStatus(IUnitIf.UnitStatus.READY);
+            unit.setCallSign("888" + j);
 
-        unit = unitList.createVehicle("St 39912");
-        unit.setStatus(IUnitIf.UnitStatus.READY);
-        unit.setCallSign("21345");
+            unit = unitList.createVehicle("Su 987" + j);
+            unit.setStatus(IUnitIf.UnitStatus.READY);
+            unit.setCallSign("213" + j);
 
-//        unit = unitList.createBoat("Jupiter");
-//        unit.setStatus(IUnitIf.UnitStatus.READY);
-//        unit.setCallSign("99999");
+            unit = unitList.createBoat("Jupiter" + "_" + j);
+            unit.setStatus(IUnitIf.UnitStatus.READY);
+            unit.setCallSign("999" + j);
+        }
 
-        unit = unitList.createVehicle("St 39913");
+        unit = unitList.createVehicle("Sn 30000");
         unit.setStatus(IUnitIf.UnitStatus.EMPTY);
 
-        unit = unitList.createVehicle("St 39914");
+        unit = unitList.createVehicle("Sn 30001");
         unit.setStatus(IUnitIf.UnitStatus.EMPTY);
 
-        unit = unitList.createVehicle("St 39915");
+        unit = unitList.createVehicle("Sn 30002");
         unit.setStatus(IUnitIf.UnitStatus.EMPTY);
 
         IAssignmentListIf asgList = cmdPost.getAssignmentList();
@@ -115,49 +124,76 @@ public class BuildTestData
             IAssignmentIf prevAsg = null;
             boolean insertionToggle = false;
 
-            unit = unitList.getUnit(1);
-            for (int i = 0; i < 10; i++)
+            for (int j = 0; j < 10; j++)
             {
-                asg = asgList.createSearch();
-                asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.DRAFT, null);
-                asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY, null);
-                ((ISearchIf) asg).setSubType(ISearchIf.SearchSubType.LINE);
-                unit.addAllocatedAssignment(asg, prevAsg);
-                prevAsg = insertionToggle ? asg : null;
-                insertionToggle = !insertionToggle;
-            }
-
-            unit = unitList.getUnit(2);
-            for (int i = 0; i < 8; i++)
-            {
-                asg = asgList.createSearch();
-                asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.DRAFT, null);
-                asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY, null);
-                ((ISearchIf) asg).setSubType(ISearchIf.SearchSubType.DOG);
-                unit.addAllocatedAssignment(asg, prevAsg);
-                prevAsg = insertionToggle ? asg : null;
-                insertionToggle = !insertionToggle;
-            }
-
-            for (int i = 0; i < 20; i++)
-            {
-                asg = asgList.createSearch();
-                asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.DRAFT, null);
-                asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY, null);
-                ((ISearchIf) asg).setSubType(ISearchIf.SearchSubType.PATROL);
-                switch (i % 3)
+                unit = unitList.getUnit(j * 2 + 1);
+                for (int i = 0; i < 10; i++)
                 {
-                    case 0:
-                        asg.setPriority(IAssignmentIf.AssignmentPriority.LOW);
-                        break;
-                    case 1:
-                        asg.setPriority(IAssignmentIf.AssignmentPriority.NORMAL);
-                        break;
-                    default:
-                        asg.setPriority(IAssignmentIf.AssignmentPriority.HIGH);
-                        break;
+                    asg = asgList.createSearch();
+                    asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.DRAFT, null);
+                    asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY, null);
+                    ((ISearchIf) asg).setSubType(ISearchIf.SearchSubType.LINE);
+                    if (unit != null)
+                    {
+                        unit.addAllocatedAssignment(asg, prevAsg);
+                    }
+                    prevAsg = insertionToggle ? asg : null;
+                    insertionToggle = !insertionToggle;
                 }
 
+                unit = unitList.getUnit(j * 2 + 2);
+                for (int i = 0; i < 8; i++)
+                {
+                    asg = asgList.createSearch();
+                    asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.DRAFT, null);
+                    asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY, null);
+                    ((ISearchIf) asg).setSubType(ISearchIf.SearchSubType.DOG);
+                    if (unit != null)
+                    {
+                        unit.addAllocatedAssignment(asg, prevAsg);
+                    }
+                    prevAsg = insertionToggle ? asg : null;
+                    insertionToggle = !insertionToggle;
+                }
+
+                for (int i = 0; i < 20; i++)
+                {
+                    asg = asgList.createSearch();
+                    asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.DRAFT, null);
+                    asg.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY, null);
+                    switch (i % 3)
+                    {
+                        case 0:
+                            asg.setPriority(IAssignmentIf.AssignmentPriority.LOW);
+                            break;
+                        case 1:
+                            asg.setPriority(IAssignmentIf.AssignmentPriority.NORMAL);
+                            break;
+                        default:
+                            asg.setPriority(IAssignmentIf.AssignmentPriority.HIGH);
+                            break;
+                    }
+
+                    switch (i % 5)
+                    {
+                        case 0:
+                            ((ISearchIf) asg).setSubType(ISearchIf.SearchSubType.PATROL);
+                            break;
+                        case 1:
+                            ((ISearchIf) asg).setSubType(ISearchIf.SearchSubType.SHORELINE);
+                            break;
+                        case 2:
+                            ((ISearchIf) asg).setSubType(ISearchIf.SearchSubType.DOG);
+                            break;
+                        case 3:
+                            ((ISearchIf) asg).setSubType(ISearchIf.SearchSubType.LINE);
+                            break;
+                        default:
+                            ((ISearchIf) asg).setSubType(ISearchIf.SearchSubType.URBAN);
+                            break;
+                    }
+
+                }
             }
 
         }
@@ -169,7 +205,7 @@ public class BuildTestData
         aMsoModel.restoreUpdateMode();
         aMsoModel.commit();
     }
-    
+
     public static void createMessages(IMsoModelIf aMsoModel)
     {
         ICmdPostIf cmdPost = aMsoModel.getMsoManager().getCmdPost();
@@ -183,22 +219,49 @@ public class BuildTestData
         message.setCreated(Calendar.getInstance());
         message.setOccuredTime(Calendar.getInstance());
         message.setStatus(IMessageIf.MessageStatus.UNCONFIRMED);
-        messageLine = message.findMessageLine(IMessageLineIf.MessageLineType.TEXT, null, true);
+        messageLine = message.findMessageLine(MessageLineType.TEXT, null, true);
         messageLine.setLineText("Tekst Linje 1. Treng litt meir tekst for å sjekke om lina vert delt eller ikkje. Treng enda litt meir tekst for å sjekke dette");
 
         message = messageLog.createMessage();
         message.setCreated(Calendar.getInstance());
         message.setOccuredTime(Calendar.getInstance());
         message.setStatus(IMessageIf.MessageStatus.UNCONFIRMED);
-        messageLine = message.findMessageLine(IMessageLineIf.MessageLineType.TEXT, null, true);
+        messageLine = message.findMessageLine(MessageLineType.TEXT, null, true);
         messageLine.setLineText("Tekst Linje 2");
 
         message = messageLog.createMessage();
         message.setCreated(Calendar.getInstance());
         message.setOccuredTime(Calendar.getInstance());
         message.setStatus(IMessageIf.MessageStatus.UNCONFIRMED);
-        messageLine = message.findMessageLine(IMessageLineIf.MessageLineType.TEXT, null, true);
-        messageLine.setLineText("Tekst Linje 2. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line. Test av ei enda lengre line.");
+        messageLine = message.findMessageLine(MessageLineType.TEXT, null, true);
+        messageLine.setLineText("Tekst Linje 2. Test av ei enda lengre line. " +
+                "Test av ei enda lengre line. Test av ei enda lengre line. " +
+                "Test av ei enda lengre line. Test av ei enda lengre line. " +
+                "Test av ei enda lengre line. Test av ei enda lengre line. " +
+                "Test av ei enda lengre line. Test av ei enda lengre line. " +
+                "Test av ei enda lengre line. Test av ei enda lengre line. " +
+                "Test av ei enda lengre line. Test av ei enda lengre line. " +
+                "Test av ei enda lengre line. Test av ei enda lengre line. " +
+                "Test av ei enda lengre line. Test av ei enda lengre line.");
+
+        message = messageLog.createMessage();
+        message.setCreated(Calendar.getInstance());
+        message.setOccuredTime(Calendar.getInstance());
+        message.setStatus(IMessageIf.MessageStatus.UNCONFIRMED);
+        messageLine = message.findMessageLine(MessageLineType.POI, true);
+        IPOIIf poi = aMsoModel.getMsoManager().createPOI();
+        poi.setPosition(new Position("2342423424", 10, 10));
+        messageLine.setLinePOI(poi);
+        messageLine = message.findMessageLine(MessageLineType.TEXT, true);
+        messageLine.setLineText("Ei melding med eit faktisk POI objekt");
+
+        message = messageLog.createMessage();
+        message.setCreated(Calendar.getInstance());
+        message.setOccuredTime(Calendar.getInstance());
+        message.setStatus(IMessageIf.MessageStatus.UNCONFIRMED);
+        messageLine = message.findMessageLine(MessageLineType.TEXT, true);
+        messageLine.setLineText("Ei melding med eit funn");
+        messageLine = message.findMessageLine(MessageLineType.FINDING, true);
 
         aMsoModel.restoreUpdateMode();
         aMsoModel.commit();

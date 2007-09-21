@@ -4,6 +4,7 @@ import org.redcross.sar.mso.IMsoModelIf;
 
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 public interface IMessageIf extends ITimeItemIf, ISerialNumberedIf
@@ -14,6 +15,15 @@ public interface IMessageIf extends ITimeItemIf, ISerialNumberedIf
         CONFIRMED,
         POSTPONED
     }
+
+    public final static Comparator<IMessageIf> MESSAGE_NUMBER_COMPARATOR = new Comparator<IMessageIf>()
+    {
+        public int compare(IMessageIf m1, IMessageIf m2)
+        {
+            return m1.getNumber() - m2.getNumber();
+        }
+    };
+
 
     /*-------------------------------------------------------------------------------------------
     * Methods for ENUM attributes

@@ -50,6 +50,8 @@ public class AssignmentTransferHandler extends TransferHandler
     {
         if (canImport(trs))
         {
+            int tableDropRow = -1;
+            UnitTableModel unitTableModel = null;
             IAssignmentIf transferredAssignment = getTransferredAssignment(trs);
             if (transferredAssignment == null)
             {
@@ -71,10 +73,10 @@ public class AssignmentTransferHandler extends TransferHandler
                 if (trs.isDrop())
                 {
                     JTable.DropLocation dr = (JTable.DropLocation) trs.getDropLocation();
-                    int dropRow = targetTable.convertRowIndexToModel(dr.getRow());
+                    tableDropRow = targetTable.convertRowIndexToModel(dr.getRow());
                     int dropColumn = targetTable.convertColumnIndexToModel(dr.getColumn());
-                    UnitTableModel tm = (UnitTableModel) targetTable.getModel();
-                    targetUnit = tm.getUnitAt(dropRow);
+                    unitTableModel = (UnitTableModel) targetTable.getModel();
+                    targetUnit = unitTableModel.getUnitAt(tableDropRow);
                     targetStatus = UnitTableModel.getSelectedAssignmentStatus(dropColumn - 1);
                 }
             }
@@ -102,6 +104,10 @@ public class AssignmentTransferHandler extends TransferHandler
                 {
                     AssignmentTransferUtilities.createAssignmentChangeMessage(m_wpModule.getMsoManager(), targetUnit, transferredAssignment, oldAssignemtStatus);
                     m_wpModule.getMsoModel().commit();
+                    if (unitTableModel != null)
+                    {
+                        unitTableModel.scrollToTableCellPosition(tableDropRow);
+                    }
                     return true;
                 } else
                 {
@@ -244,13 +250,18 @@ public class AssignmentTransferHandler extends TransferHandler
                 return;
             }
 
-            value = table.getValueAt(table.convertRowIndexToModel(row), column);
+            value = table.getValueAt(row, column);
             if (!(value instanceof IconRenderer.AssignmentIcon))
             {
                 return;
             }
 
             IconRenderer.AssignmentIcon icon = (IconRenderer.AssignmentIcon) value;
+            IAssignmentIf asg = icon.getAssignment();
+            if (asg == null)
+            {
+                return;
+            }
             if (m_tmpLabel == null)
             {
                 m_tmpLabel = new AssignmentLabel(icon.getAssignment(), null);

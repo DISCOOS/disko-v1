@@ -559,13 +559,13 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
     public List<IMessageLineIf> getTypeMessageLines(IMessageLineIf.MessageLineType aType)
     {
         m_lineTypeSelector.setLineType(aType);
-        return m_messageLines.selectItems(m_lineTypeSelector, m_lineNumberComparator);
+        return m_messageLines.selectItems(m_lineTypeSelector, IMessageLineIf.LINE_NUMBER_COMPARATOR);
     }
 
 
     public String[] getLines()
     {
-        List<IMessageLineIf> lines = m_messageLines.selectItems(m_messageLineSelector, m_lineNumberComparator);
+        List<IMessageLineIf> lines = m_messageLines.selectItems(m_messageLineSelector, IMessageLineIf.LINE_NUMBER_COMPARATOR);
         int numLines = lines.size();
         String[] lineArray = new String[numLines];
         for (int i = 0; i < numLines; i++)
@@ -582,29 +582,6 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
             return true;
         }
     };
-
-    private final static Comparator<IMessageLineIf> m_lineNumberComparator = new Comparator<IMessageLineIf>()
-    {
-        public int compare(IMessageLineIf m1, IMessageLineIf m2)
-        {
-            return m1.getLineNumber() - m2.getLineNumber();
-        }
-    };
-
-//todo remove    private Selector<IMessageLineIf> m_typeSelector = new Selector<IMessageLineIf>()
-//    {
-//       private IMessageLineIf.MessageLineType m_testLineType;
-//
-//        public void setLineType(IMessageLineIf.MessageLineType aLineType)
-//        {
-//            m_testLineType = aLineType;
-//        }
-//
-//        public boolean select(IMessageLineIf anObject)
-//        {
-//            return anObject.getLineType() == m_testLineType;
-//        }
-//    };
 
     private final typeSelector m_lineTypeSelector = new typeSelector();
 

@@ -50,7 +50,7 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     private final TaskListImpl m_taskList = new TaskListImpl(this, "TaskList", true, 100);
     private final TrackListImpl m_trackList = new TrackListImpl(this, "TrackList", true, 100);
     private final UnitListImpl m_unitList = new UnitListImpl(this, "UnitList", true, 100);
-    
+
     private final static ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.CmdPost");
 
     public CmdPostImpl(IMsoObjectIf.IObjectIdIf anObjectId)
@@ -198,7 +198,7 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     {
         return m_status.getValue();
     }
-    
+
     public String getStatusText()
     {
     	return Internationalization.getEnumText(bundle, m_status.getValue());
@@ -774,16 +774,10 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
 			}
 		}
     };
-	private Comparator<ICommunicatorIf> m_communicatorComparator = new Comparator<ICommunicatorIf>()
-	{
-		public int compare(ICommunicatorIf o1, ICommunicatorIf o2)
-		{
-			return o1.getCommunicatorNumber() - o2.getCommunicatorNumber();
-		}
-	};
+
     public List<ICommunicatorIf> getActiveCommunicators()
 	{
-		return m_communicatorList.selectItems(m_activeCommunicatorsSelector, m_communicatorComparator);
+		return m_communicatorList.selectItems(m_activeCommunicatorsSelector, COMMUNICATOR_COMPARATOR);
 	}
 
     /*-------------------------------------------------------------------------------------------

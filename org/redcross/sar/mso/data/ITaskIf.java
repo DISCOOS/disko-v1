@@ -20,9 +20,10 @@ public interface ITaskIf extends ITimeItemIf, ISerialNumberedIf, IEnumStatusHold
 
     public enum TaskPriority
     {
-        LOW,
+        HIGH,
         NORMAL,
-        HIGH
+        LOW,
+        NONE
     }
 
     public enum TaskType
@@ -32,6 +33,14 @@ public interface ITaskIf extends ITimeItemIf, ISerialNumberedIf, IEnumStatusHold
         INTELLIGENCE,
         GENERAL
     }
+
+    public final static Comparator<ITaskIf> PRIORITY_COMPARATOR = new Comparator<ITaskIf>()
+    {
+        public int compare(ITaskIf o1, ITaskIf o2)
+        {
+            return o1.comparePriorityTo(o2);
+        }
+    };
 
 
     public void setDescription(String aDescription);
@@ -150,11 +159,4 @@ public interface ITaskIf extends ITimeItemIf, ISerialNumberedIf, IEnumStatusHold
 
     public IMsoModelIf.ModificationState getDueTimeState();
 
-    public final static Comparator<ITaskIf> PRIORITY_COMPARATOR = new Comparator<ITaskIf>()
-    {
-        public int compare(ITaskIf o1, ITaskIf o2)
-        {
-            return o1.comparePriorityTo(o2);
-        }
-    };
 }

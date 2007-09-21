@@ -32,7 +32,7 @@ import java.util.List;
  */
 
 /**
- *  Table model for unit table in logistics WP
+ * Table model for unit table in logistics WP
  */
 public class UnitTableModel extends AbstractTableModel implements IMsoUpdateListenerIf
 {
@@ -50,9 +50,10 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
 
     /**
      * Creator
-     * @param aTable The displayed table.
-     * @param aWp The related wor process.
-     * @param aUnitList Reference to the list of units.
+     *
+     * @param aTable          The displayed table.
+     * @param aWp             The related wor process.
+     * @param aUnitList       Reference to the list of units.
      * @param anActionHandler The handler of icon actions.
      */
     public UnitTableModel(JTable aTable, IDiskoWpLogistics aWp, IUnitListIf aUnitList, IconRenderer.LogisticsIconActionHandler anActionHandler)
@@ -90,6 +91,26 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         fireTableDataChanged();
     }
 
+    public void scrollToTableCellPosition(int aRowNumber)
+    {
+        Rectangle rowRect = m_table.getCellRect(m_table.convertRowIndexToView(aRowNumber), 0, true);
+        Rectangle visibleRect = m_table.getVisibleRect();
+        if (!visibleRect.contains(rowRect))
+        {
+            int visibleHeight = visibleRect.height;
+
+            if (rowRect.y > visibleHeight / 2)
+            {
+                rowRect.y = rowRect.y - visibleHeight / 2;
+            } else
+            {
+                rowRect.y = 0;
+            }
+            rowRect.height = visibleRect.height;
+            m_table.scrollRectToVisible(rowRect);
+        }
+    }
+
     private final EnumSet<IMsoManagerIf.MsoClassCode> myInterests = EnumSet.of(IMsoManagerIf.MsoClassCode.CLASSCODE_UNIT, IMsoManagerIf.MsoClassCode.CLASSCODE_ASSIGNMENT);
 
     public boolean hasInterestIn(IMsoObjectIf aMsoObject)
@@ -103,19 +124,6 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         {
             return (EnumSet.range(IUnitIf.UnitStatus.READY, IUnitIf.UnitStatus.PENDING).contains(aUnit.getStatus()) &&
                     m_unitTypeSelection.contains(aUnit.getType()));
-        }
-    };
-
-    private final static Comparator<IUnitIf> m_unitTypeAndNumberComparator = new Comparator<IUnitIf>()
-    {
-        public int compare(IUnitIf u1, IUnitIf u2)
-        {
-            int typeCompare = u1.getType().compareTo(u2.getType());
-            if (typeCompare != 0)
-            {
-                return typeCompare;
-            }
-            return u1.getNumber() - u2.getNumber();
         }
     };
 
@@ -180,7 +188,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
     void buildTable()
     {
         m_actualUnitCount = 0;
-        for (IUnitIf unit : m_unitList.selectItems(m_unitSelector, m_unitTypeAndNumberComparator))
+        for (IUnitIf unit : m_unitList.selectItems(m_unitSelector, IUnitIf.UNIT_TYPE_AND_NUMBER_COMPARATOR))
         {
             m_actualUnitCount++;
             if (m_iconRows.size() < m_actualUnitCount)
@@ -301,7 +309,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
 
         private IAssignmentIf.AssignmentPriority getHighestPriority(java.util.List<IAssignmentIf> aList)
         {
-            IAssignmentIf.AssignmentPriority retVal = IAssignmentIf.AssignmentPriority.LOW;
+            IAssignmentIf.AssignmentPriority retVal = IAssignmentIf.AssignmentPriority.NONE;
             if (aList != null)
             {
                 for (IAssignmentIf asg : aList)
@@ -362,7 +370,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
 
     public IUnitIf getUnitAt(int aRow)
     {
-     return ((IconRenderer.UnitIcon) m_iconRows.get(aRow)[0]).getUnit();
+        return ((IconRenderer.UnitIcon) m_iconRows.get(aRow)[0]).getUnit();
     }
 
     public boolean canAcceptAssignment(IAssignmentIf anAssignment, int aRow, int aColumn)
@@ -373,7 +381,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         }
         IUnitIf rowUnit = getUnitAt(aRow);
         IAssignmentIf.AssignmentStatus columnStatus = UnitTableModel.getSelectedAssignmentStatus(aColumn - 1);
-        return AssignmentTransferUtilities.assignmentCanChangeToStatus(anAssignment,columnStatus, rowUnit);
+        return AssignmentTransferUtilities.assignmentCanChangeToStatus(anAssignment, columnStatus, rowUnit);
     }
 
     public abstract static class TimeComparator implements Comparator<IconRenderer.AssignmentIcon>

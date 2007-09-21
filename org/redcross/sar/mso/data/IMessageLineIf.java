@@ -3,6 +3,7 @@ package org.redcross.sar.mso.data;
 import org.redcross.sar.mso.IMsoModelIf;
 
 import java.util.Calendar;
+import java.util.Comparator;
 
 /**
  * User: vinjar
@@ -23,6 +24,23 @@ public interface IMessageLineIf extends IMsoObjectIf
         STARTED,
         COMPLETE
     }
+
+    public final static Comparator<IMessageLineIf> MESSAGE_LINE_TIME_COMPARATOR = new Comparator<IMessageLineIf>()
+    {
+        public int compare(IMessageLineIf o1, IMessageLineIf o2)
+        {
+            return o2.getOperationTime().compareTo(o1.getOperationTime()); // Sort according to latest time
+        }
+    };
+
+    public final static Comparator<IMessageLineIf> LINE_NUMBER_COMPARATOR = new Comparator<IMessageLineIf>()
+    {
+        public int compare(IMessageLineIf m1, IMessageLineIf m2)
+        {
+            return m1.getLineNumber() - m2.getLineNumber();
+        }
+    };
+
 
     /*-------------------------------------------------------------------------------------------
     * Methods for ENUM attributes

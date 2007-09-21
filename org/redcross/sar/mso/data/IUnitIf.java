@@ -6,6 +6,7 @@ import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.util.mso.Position;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -33,6 +34,19 @@ public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf, ISerialNu
         PENDING,
         RELEASED
     }
+
+    public final static Comparator<IUnitIf> UNIT_TYPE_AND_NUMBER_COMPARATOR = new Comparator<IUnitIf>()
+    {
+        public int compare(IUnitIf u1, IUnitIf u2)
+        {
+            int typeCompare = u1.getType().compareTo(u2.getType());
+            if (typeCompare != 0)
+            {
+                return typeCompare;
+            }
+            return u1.getNumber() - u2.getNumber();
+        }
+    };
 
     /*-------------------------------------------------------------------------------------------
     * Methods for ENUM attributes

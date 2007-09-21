@@ -1,23 +1,5 @@
 package org.redcross.sar.wp.messageLog;
 
-import java.awt.BorderLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.ErrorDialog;
@@ -28,10 +10,19 @@ import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IUnitIf.UnitType;
 import org.redcross.sar.util.mso.Selector;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.*;
+import java.util.List;
+
 /**
  * The dialog for selecting unit type and number.
- * Dialog loads unit information from resource file {@link org.redcross.sar.mso.data.properties.Unit.properties}
- * 
+ * Dialog loads unit information from resource file org.redcross.sar.mso.data.properties.Unit.properties
+ *
  * @author thomasl
  */
 public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessageComponentIf, KeyListener, ActionListener
@@ -39,25 +30,25 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 	private static final long serialVersionUID = 1L;
 
 	private JPanel m_contentsPanel = null;
-	
+
 	private JPanel m_unitTypePanel = null;
 	private JTextField m_unitTypeField = null;
 	private JComponent m_unitTypePadArea = null;
 	private UnitTypeDialog m_unitTypePad = null;
-	
+
 	private JPanel m_unitNumberPanel = null;
 	private JTextField m_unitNumberField = null;
 	private JComponent m_unitNumberPadArea = null;
 	private NumPadDialog m_unitNumberPad;
-	
+
 	private IDiskoWpMessageLog m_wp;
-	
+
 	private boolean m_notebookMode = true;
-	
+
 	private boolean m_senderUnit = true;
-	
+
 	protected ResourceBundle m_unitResources;
-	
+
 	/**
 	 * @param messageLog Message log work process
 	 * @param senderUnit Whether or not dialog is editing sender field of the current message
@@ -65,16 +56,16 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 	public UnitFieldSelectionDialog(IDiskoWpMessageLog messageLog, boolean senderUnit)
 	{
 		super(messageLog.getApplication().getFrame());
-		
+
 		m_wp = messageLog;
 		m_senderUnit = senderUnit;
-		
+
 		m_contentsPanel = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.fill = GridBagConstraints.BOTH;
-		
+
 		initUnitTypePanel();
 		initUnitNumberPanel();
 		m_contentsPanel.add(m_unitTypePanel, gbc);
@@ -85,7 +76,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		m_contentsPanel.add(Box.createVerticalGlue(), gbc);
 		gbc.gridx++;
 		m_contentsPanel.add(Box.createVerticalGlue(), gbc);
-		
+
 		try
 		{
 			m_unitResources = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Unit");
@@ -94,20 +85,20 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		{
 			System.err.println("Unable to load unit resources in UnitSelectionDialog");
 		}
-		
+
 		//this.setModalityType(ModalityType.MODELESS);
 		this.add(m_contentsPanel);
 		this.pack();
 	}
-	
+
 	private void initUnitTypePanel()
 	{
 		m_unitTypePanel = new JPanel(new BorderLayout());
 		m_unitTypeField = new JTextField(8);
-		
+
 		m_unitTypeField.addKeyListener(this);
 		m_unitTypePanel.add(m_unitTypeField, BorderLayout.NORTH);
-		
+
 		// Do not create extra area if not in notebook mode
 		if(m_notebookMode)
 		{
@@ -116,7 +107,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 			m_unitTypePanel.add(m_unitTypePadArea, BorderLayout.CENTER);
 		}
 	}
-	
+
 	private void getUnitTypePad()
 	{
 		if(m_notebookMode && m_unitTypePad == null)
@@ -125,31 +116,31 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 			m_unitTypePad.setVisible(false);
 			m_unitTypePad.setAlwaysOnTop(true);
 		}
-		
+
 		// Pressing unit type should clear unit number text field
 		ActionListener numberFieldClear = new ActionListener()
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
 				m_unitNumberField.setText("");
-			}	
+			}
 		};
 		for(JButton button : m_unitTypePad.getButtons())
 		{
 			button.addActionListener(numberFieldClear);
 		}
 	}
-	
+
 
 	private void initUnitNumberPanel()
 	{
 		m_unitNumberPanel = new JPanel(new BorderLayout());
-	
+
 		m_unitNumberField = new JTextField(8);
-		
+
 		m_unitNumberField.addKeyListener(this);
 		m_unitNumberPanel.add(m_unitNumberField, BorderLayout.NORTH);
-		
+
 		if(m_notebookMode)
 		{
 			getUnitNumPad();
@@ -167,7 +158,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 			// TODO endre eigenskapar til NumPad? Kva med sjekk av data? Ikkje alltid ønskeleg å lukke dialog sjølv om OK
 			m_unitNumberPad.setAlwaysOnTop(true);
 			m_unitNumberPad.setVisible(false);
-			
+
 			// Remove previous action listeners for the ok button, this sets the visibility of the pad to false, which is
 			// not always desirable
 			ActionListener[] actionListeners = m_unitNumberPad.getOkButton().getActionListeners();
@@ -189,11 +180,11 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 								m_unitTypeField.getText() + " " + m_unitNumberField.getText() +
 								" " + m_wp.getText("NonexistingUnitErrorDetails.text"));
 					}
-				}	
+				}
 			});
 		}
 	}
-	
+
 	/**
 	 * Checks to see whether the selected unit actually exists in the unit list or not
 	 * @return true if unit in type and numpad exists, false otherwise
@@ -202,19 +193,19 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 	{
 		final String numberText = m_unitNumberField.getText();
 		final String typeText = m_unitTypeField.getText();
-		
+
 		// Empty fields, use standard value
 		if(numberText.length()==0 && typeText.length()==0)
 		{
 			return true;
 		}
-		
+
 		// TODO remove hard-coded value
 		if(typeText.equals("C") && numberText.isEmpty())
 		{
 			return true;
 		}
-		
+
 		AbstractDerivedList<ICommunicatorIf> communicatorList = m_wp.getMsoManager().getCmdPost().getCommunicatorList();
 		try
 		{
@@ -224,7 +215,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 					{
 						public boolean select(ICommunicatorIf communicator)
 						{
-							if((communicator.getCommunicatorNumber() == Integer.valueOf(numberText)) 
+							if((communicator.getCommunicatorNumber() == Integer.valueOf(numberText))
 									&& (typeText.charAt(0) == communicator.getCommunicatorNumberPrefix()))
 							{
 								return true;
@@ -234,7 +225,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 								return false;
 							}
 						}
-					}, 
+					},
 					new Comparator<ICommunicatorIf>()
 					{
 						public int compare(ICommunicatorIf arg0,
@@ -243,7 +234,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 							return 0;
 						}
 					});
-			
+
 			// If communicators is empty no units exist that match the current selection
 			if(communicators.isEmpty())
 			{
@@ -259,9 +250,9 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 			return false;
 		}
 	}
-	
+
 	/**
-	 * @param unitTypeString The text string containing the unit type code 
+	 * @param unitTypeString The text string containing the unit type code
 	 * @return The unit type
 	 */
 	protected UnitType getUnitType(String unitTypeString)
@@ -297,11 +288,11 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		{
 			System.err.println("Error getting unit resource");
 		}
-		
-		
+
+
 		return null;
 	}
-	
+
 	protected String getUnitTypeString(UnitType unitType)
 	{
 		try
@@ -345,27 +336,27 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 	public void showComponent()
 	{
 		this.setVisible(true);
-		
+
 		// Extra dialogs only exists if in notebook mode
 		if(m_notebookMode)
 		{
 			m_unitNumberPadArea.setSize(m_unitNumberPad.getSize());
 			m_unitNumberPad.setLocation(m_unitNumberPadArea.getLocationOnScreen());
 			m_unitNumberPad.setVisible(true);
-			
+
 			m_unitTypePadArea.setSize(m_unitTypePad.getSize());
 			m_unitTypePad.setLocation(m_unitTypePadArea.getLocationOnScreen());
 			m_unitTypePad.setVisible(true);
 		}
 	}
-	
+
 	/**
 	 * Hides unit type and numpad if in notebook mode
 	 */
 	public void hideComponent()
 	{
 		this.setVisible(false);
-		
+
 		if(m_notebookMode)
 		{
 			m_unitTypePad.setVisible(false);
@@ -379,7 +370,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 	public void newMessageSelected(IMessageIf message)
 	{
 		ICommunicatorIf communicator = null;
-		
+
 		if(m_senderUnit)
 		{
 			communicator = message.getSender();
@@ -435,13 +426,13 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 	private boolean isValidUnitNumber()
 	{
 		String field = m_unitNumberField.getText();
-		
+
 		// Check for empty string
 		if(field.isEmpty())
 		{
 			return true;
 		}
-		
+
 		// Check that field is a number
 		try
 		{
@@ -451,26 +442,26 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		{
 			return false;
 		}
-		
+
 		return true;
 	}
 
 	private boolean isValidUnitType()
-	{	
+	{
 		String unitType = m_unitTypeField.getText();
 		if(unitType.isEmpty())
 		{
 			return true;
 		}
-		
+
 		String[] validUnitTypes = {
 				m_unitResources.getString("UnitType.COMMAND_POST.letter"),
-				m_unitResources.getString("UnitType.BOAT.letter"), 
-				m_unitResources.getString("UnitType.AIRCRAFT.letter"), 
+				m_unitResources.getString("UnitType.BOAT.letter"),
+				m_unitResources.getString("UnitType.AIRCRAFT.letter"),
 				m_unitResources.getString("UnitType.TEAM.letter"),
 				m_unitResources.getString("UnitType.VEHICLE.letter"),
 				m_unitResources.getString("UnitType.DOG.letter")};
-		
+
 		for(int i=0; i<validUnitTypes.length; i++)
 		{
 			if(unitType.equals(validUnitTypes[i]))
@@ -478,7 +469,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -494,12 +485,12 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 	{
 		return m_unitTypeField.getText() + " " + m_unitNumberField.getText();
 	}
-	
+
 	public UnitType getUnitType()
 	{
 		return getUnitType(m_unitTypeField.getText());
 	}
-	
+
 	public int getUnitNumber()
 	{
 		try
@@ -520,7 +511,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		m_unitNumberField.setText("");
 		m_unitTypeField.setText("");
 	}
-	
+
 	public JButton getOKButton()
 	{
 		return m_unitNumberPad.getOkButton();
@@ -558,7 +549,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 	}
 
 	/**
-	 * 
+	 *
 	 * @param communicatorNumber
 	 */
 	public void setCommunicatorNumber(int communicatorNumber)
@@ -567,7 +558,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 	}
 
 	/**
-	 * 
+	 *
 	 * @return Communicator number and prefix
 	 */
 	public String getCommunicatorText()

@@ -29,23 +29,28 @@ public class LogisticsIconRenderer extends JLabel implements TableCellRenderer
                 isSelected = false;
                 table.getSelectionModel().clearSelection();
             }
-            if (column == 0)
-            {
-                // Only change if different heights. Otherwise the Drag and Drop Icon apperance will not work for anything (Java 1.6.0).
-                // Just try if you don't believe it.
-                int oldHeight = table.getRowHeight(row);
-                int newHeight = iconValue.getIconHeight() + 16;
-                if (oldHeight != newHeight)
-                {
-                    table.setRowHeight(row, iconValue.getIconHeight() + 16);
-                }
-            }
             if (row == 0)
             {
                 TableColumn col = table.getColumnModel().getColumn(column);
-                col.setMaxWidth(iconValue.getIconWidth() + 16);
-                col.setMinWidth(iconValue.getIconWidth());
-                col.setPreferredWidth(iconValue.getIconWidth() + 16);
+                int oldWidth = col.getWidth();
+                int iconWidth = iconValue.getIconWidth();
+                if (oldWidth < iconWidth + 4)
+                {
+                    col.setMaxWidth(iconWidth + 16);
+                    col.setMinWidth(iconWidth);
+                    col.setPreferredWidth(iconWidth + 16);
+                }
+                if (column == 0)
+                {
+                    // Only change if different heights. Otherwise the Drag and Drop Icon apperance will not work for anything (Java 1.6.0).
+                    // Just try if you don't believe it.
+                    int oldHeight = table.getRowHeight();
+                    int newHeight = iconValue.getIconHeight() + 16;
+                    if (oldHeight != newHeight)
+                    {
+                        table.setRowHeight(iconValue.getIconHeight() + 16);
+                    }
+                }
             }
             iconValue.setSelected(isSelected && hasFocus);
             setText("");
