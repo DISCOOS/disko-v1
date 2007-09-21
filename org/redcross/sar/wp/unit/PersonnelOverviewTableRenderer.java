@@ -65,7 +65,6 @@ public class PersonnelOverviewTableRenderer
 			m_panel.setBackground(m_table.getBackground());
 			
 			m_editButton = DiskoButtonFactory.createTableButton(m_resources.getString("EditButton.letter"));
-			m_editButton.setOpaque(true);
 			m_editButton.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent e)
@@ -76,6 +75,7 @@ public class PersonnelOverviewTableRenderer
 					IPersonnelIf selectedPersonnel = model.getPersonnel(modelIndex);
 					DiskoWpUnitImpl.setPersonnel(selectedPersonnel);
 					DiskoWpUnitImpl.setDetailView(DiskoWpUnitImpl.PERSONNEL_VIEW_ID);
+					fireEditingStopped();
 				}
 			});
 			m_panel.add(m_editButton);
@@ -97,7 +97,7 @@ public class PersonnelOverviewTableRenderer
 				Object value, boolean isSelected, boolean hasFocus, int row,
 				int column)
 		{
-			fireEditingStopped();
+//			fireEditingStopped();
 			
 			// Get personnel at row
 			PersonnelOverviewTableModel model = (PersonnelOverviewTableModel)table.getModel();

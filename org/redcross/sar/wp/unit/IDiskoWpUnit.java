@@ -5,5 +5,4 @@ import org.redcross.sar.wp.IDiskoWpModule;
 
 public interface IDiskoWpUnit extends IDiskoWpModule, IDiskoWp
 {
-
 }

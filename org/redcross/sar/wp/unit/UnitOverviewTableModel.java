@@ -1,6 +1,9 @@
 package org.redcross.sar.wp.unit;
 
+import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -10,21 +13,51 @@ import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IUnitListIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
+import org.redcross.sar.util.mso.Selector;
 
 public class UnitOverviewTableModel extends AbstractTableModel implements IMsoUpdateListenerIf
 {
 	private static final long serialVersionUID = 1L;
 
-	private IUnitListIf m_units;
+	private IUnitListIf m_allUnits;
+	private List<IUnitIf> m_units;
+	
+	private static final Selector<IUnitIf> m_unitSelector = new Selector<IUnitIf>()
+	{
+		public boolean select(IUnitIf anObject)
+		{
+			return true;
+		}
+	};
+	
+	private static final Comparator<IUnitIf> m_unitComparator = new Comparator<IUnitIf>()
+	{
+		public int compare(IUnitIf arg0, IUnitIf arg1)
+		{
+			if(arg0.getType() == arg1.getType())
+			{
+				return arg0.getNumber() - arg1.getNumber();
+			}
+			else
+			{
+				return arg0.getType().ordinal() - arg1.getType().ordinal();
+			}
+		}
+	};
 	
 	public UnitOverviewTableModel(IDiskoWpUnit wp)
 	{
 		wp.getMsoModel().getEventManager().addClientUpdateListener(this);
-		m_units = wp.getMsoManager().getCmdPost().getUnitList();
+		m_allUnits = wp.getMsoManager().getCmdPost().getUnitList();
+		m_units = new LinkedList<IUnitIf>();
+		m_units.addAll(m_allUnits.selectItems(m_unitSelector, m_unitComparator));
 	}
 	
 	public void handleMsoUpdateEvent(Update e)
 	{
+		// Rebuild list
+		m_units.clear();
+		m_units.addAll(m_allUnits.selectItems(m_unitSelector, m_unitComparator));
 		fireTableDataChanged();
 	}
 	
@@ -44,6 +77,12 @@ public class UnitOverviewTableModel extends AbstractTableModel implements IMsoUp
 	{
 		return 3;
 	}
+	
+	@Override
+	public boolean isCellEditable(int rowIndex, int columnIndex) 
+	{
+		return columnIndex == 1 || columnIndex == 2;
+	}
 
 	public int getRowCount()
 	{
@@ -52,7 +91,7 @@ public class UnitOverviewTableModel extends AbstractTableModel implements IMsoUp
 
 	public Object getValueAt(int row, int column)
 	{
-		IUnitIf unit = (IUnitIf)m_units.getItems().toArray()[row];
+		IUnitIf unit = m_units.get(row);
 		switch(column)
 		{
 		case 0:
@@ -66,7 +105,7 @@ public class UnitOverviewTableModel extends AbstractTableModel implements IMsoUp
 	 */
 	public IUnitIf getUnit(int clickedRow)
 	{
-		return clickedRow < m_units.size() ? (IUnitIf)m_units.getItems().toArray()[clickedRow] : null;
+		return clickedRow < m_units.size() ? m_units.get(clickedRow): null;
 	}
 
 }

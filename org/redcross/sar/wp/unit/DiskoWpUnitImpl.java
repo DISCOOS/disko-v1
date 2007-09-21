@@ -26,6 +26,7 @@ import javax.swing.table.TableColumn;
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.ErrorDialog;
+import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.IPersonnelIf;
 import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IPersonnelIf.PersonnelStatus;
@@ -66,6 +67,8 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 	public static final String CALLOUT_VIEW_ID = "CALLOUT_VIEW";
 	private static String m_detailsViewId = PERSONNEL_VIEW_ID;
 //	private static String m_bottomViewId = PERSONNEL_VIEW_ID;
+	
+	private static IMsoModelIf m_msoModel;
 
 	public DiskoWpUnitImpl(IDiskoRole role)
 	{
@@ -87,6 +90,8 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		
 		PersonnelUtilities.setMsoManager(this.getMsoManager());
 		PersonnelUtilities.setMsoModle(this.getMsoModel());
+		
+		m_msoModel = this.getMsoModel();
 	}
 	
 	private void initialize()
@@ -104,7 +109,7 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		m_detailsPanel.setPreferredSize(new Dimension(350, 500));
 		m_personnelDetailsPanel = new PersonnelDetailsPanel(this);
 		m_detailsPanel.add(m_personnelDetailsPanel, PERSONNEL_VIEW_ID);
-		m_unitDetailsPanel = new UnitDetailsPanel();
+		m_unitDetailsPanel = new UnitDetailsPanel(this);
 		m_detailsPanel.add(m_unitDetailsPanel, UNIT_VIEW_ID);
 		m_calloutDetailsPanel = new CalloutDetailsPanel();
 		m_detailsPanel.add(m_calloutDetailsPanel, CALLOUT_VIEW_ID);
@@ -174,6 +179,14 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		
 		UnitOverviewTableRenderer unitRenderer = new UnitOverviewTableRenderer();
 		unitRenderer.setTable(m_unitOverviewTable);
+		
+		m_unitOverviewTable.setRowHeight(DiskoButtonFactory.TABLE_BUTTON_SIZE.height + 10);
+		column = m_unitOverviewTable.getColumnModel().getColumn(1);
+		column.setPreferredWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width + 10);
+		column.setMaxWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width + 10);
+		column = m_unitOverviewTable.getColumnModel().getColumn(2);
+		column.setPreferredWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width * 2 + 15);
+		column.setMaxWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width * 2 + 15);
 		
 		tableHeader = m_unitOverviewTable.getTableHeader();
         tableHeader.setResizingAllowed(false);
@@ -453,8 +466,6 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 			case 2:
 				break;
 			}
-			
-			
 		}
 		
 		public void mouseEntered(MouseEvent arg0){}
@@ -494,5 +505,21 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		public void mouseExited(MouseEvent e){}
 		public void mousePressed(MouseEvent e){}
 		public void mouseReleased(MouseEvent e){}
+	}
+	
+	/**
+	 * Static mso commit
+	 */
+	public static void commit()
+	{
+		m_msoModel.commit();
+	}
+	
+	/**
+	 * Static mso rollback
+	 */
+	public static void rollback()
+	{
+		m_msoModel.rollback();
 	}
 }

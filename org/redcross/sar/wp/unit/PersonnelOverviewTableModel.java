@@ -1,5 +1,6 @@
 package org.redcross.sar.wp.unit;
 
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,12 +44,23 @@ public class PersonnelOverviewTableModel extends AbstractTableModel implements I
 		}
 	};
 	
+	/**
+	 * Sort personnel on name
+	 */
+	private static final Comparator<IPersonnelIf> m_personnelComparator = new Comparator<IPersonnelIf>()
+	{
+		public int compare(IPersonnelIf o1, IPersonnelIf o2)
+		{
+			return o1.getFirstname().compareTo(o2.getFirstname());
+		}
+	};
+	
 	public PersonnelOverviewTableModel(IDiskoWpUnit wp)
 	{
 		wp.getMsoModel().getEventManager().addClientUpdateListener(this);
 		m_allPersonnel = wp.getMsoManager().getCmdPost().getAttendanceList();
 		m_displayPersonnel = new LinkedList<IPersonnelIf>();
-		m_displayPersonnel.addAll(m_allPersonnel.selectItems(m_activePersonnelSelector, null));
+		m_displayPersonnel.addAll(m_allPersonnel.selectItems(m_activePersonnelSelector, m_personnelComparator));
 	}
 
 	@Override
@@ -81,11 +93,7 @@ public class PersonnelOverviewTableModel extends AbstractTableModel implements I
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) 
 	{
-		if (columnIndex == 1 || columnIndex == 2)  
-		{
-			return true;
-		}
-		return false;
+		return columnIndex == 1 || columnIndex == 2;
 	}
 
 	/**
@@ -94,7 +102,7 @@ public class PersonnelOverviewTableModel extends AbstractTableModel implements I
 	public void handleMsoUpdateEvent(Update e)
 	{
 		m_displayPersonnel.clear();
-		m_displayPersonnel.addAll(m_allPersonnel.selectItems(m_activePersonnelSelector, null));
+		m_displayPersonnel.addAll(m_allPersonnel.selectItems(m_activePersonnelSelector, m_personnelComparator));
 		fireTableDataChanged();
 	}
 

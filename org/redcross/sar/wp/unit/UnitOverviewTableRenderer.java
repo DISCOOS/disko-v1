@@ -15,8 +15,10 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.redcross.sar.gui.DiskoButtonFactory;
+import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IUnitIf.UnitStatus;
+import org.redcross.sar.util.except.IllegalOperationException;
 
 /**
  * The renderer for unit overview table
@@ -37,22 +39,17 @@ public class UnitOverviewTableRenderer
 	{
 		m_table = unitTable;
 
-		TableColumn column = m_table.getColumnModel().getColumn(1);
-
+		// Set editor and renderer for column 1
 		EditUnitCellEditor editUnit = new EditUnitCellEditor();
+		TableColumn column = m_table.getColumnModel().getColumn(1);
 		column.setCellEditor(editUnit);
 		column.setCellRenderer(editUnit);
-		column.setPreferredWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width + 10);
-		column.setMaxWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width + 10);
 
+		// Set editor and renderer for column 2
 		UnitStatusCellEditor unitStatusEditor = new UnitStatusCellEditor();
 		column = m_table.getColumnModel().getColumn(2);
 		column.setCellEditor(unitStatusEditor);
 		column.setCellRenderer(unitStatusEditor);
-		column.setPreferredWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width * 2 + 15);
-		column.setMaxWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width * 2 + 15);
-		
-		m_table.setRowHeight(DiskoButtonFactory.TABLE_BUTTON_SIZE.height + 10);
 	}
 	
 	/**
@@ -64,7 +61,7 @@ public class UnitOverviewTableRenderer
 	{
 		private static final long serialVersionUID = 1L;
 		
-		private int m_editingRow;
+		private int m_editingRow = -1;
 		
 		private JPanel m_panel;
 		private JButton m_editButton;
@@ -83,9 +80,9 @@ public class UnitOverviewTableRenderer
 					int index = m_table.convertRowIndexToModel(m_editingRow);
 					UnitOverviewTableModel model = (UnitOverviewTableModel)m_table.getModel();
 					IUnitIf unit = model.getUnit(index);
-					System.err.println("Selected unit: " + unit);
 					DiskoWpUnitImpl.setUnit(unit);
 					DiskoWpUnitImpl.setDetailView(DiskoWpUnitImpl.UNIT_VIEW_ID);
+					fireEditingStopped();
 				}
 			});
 			m_panel.add(m_editButton);
@@ -107,21 +104,17 @@ public class UnitOverviewTableRenderer
 				Object value, boolean isSelected, boolean hasFocus, int row,
 				int column)
 		{
-			fireEditingStopped();
-			updateCell(row);
-			return m_panel;
-		}
-		
-		private void updateCell(int row)
-		{
-			IUnitIf editingUnit = DiskoWpUnitImpl.getEditingUnit();
-			
 			// Get unit at row
 			int index = m_table.convertRowIndexToModel(row);
 			UnitOverviewTableModel model = (UnitOverviewTableModel)m_table.getModel();
 			IUnitIf rowUnit = model.getUnit(index);
 			
+			// Get editing unit
+			IUnitIf editingUnit = DiskoWpUnitImpl.getEditingUnit();
+			
 			m_editButton.setSelected(editingUnit == rowUnit);
+			
+			return m_panel;
 		}
 	}
 	
@@ -134,7 +127,7 @@ public class UnitOverviewTableRenderer
 	{
 		private static final long serialVersionUID = 1L;
 		
-		private int m_editingRow;
+		private int m_editingRow = -1;
 		
 		private JPanel m_panel;
 		private JButton m_pauseButton;
@@ -154,17 +147,22 @@ public class UnitOverviewTableRenderer
 					int index = m_table.convertRowIndexToModel(m_editingRow);
 					UnitOverviewTableModel model = (UnitOverviewTableModel)m_table.getModel();
 					IUnitIf unit = model.getUnit(index);
-				
-					// TODO Only possible from status ready
 					
-					if(unit.getStatus() == UnitStatus.PAUSED)
+					try
 					{
-						unit.setStatus(UnitStatus.WORKING);
-					}
-					else
+						UnitUtilities.toggleUnitPause(unit);
+						
+						// Commit
+						DiskoWpUnitImpl.commit();
+					} 
+					catch (IllegalOperationException e)
 					{
-						unit.setStatus(UnitStatus.PAUSED);
+						ErrorDialog error = new ErrorDialog(null);
+						error.showError(m_resources.getString("PauseUnitError.header"), 
+								m_resources.getString("PauseUnitError.text"));
 					}
+					
+					fireEditingStopped();
 				}
 			});
 			m_panel.add(m_pauseButton);
@@ -175,6 +173,25 @@ public class UnitOverviewTableRenderer
 				public void actionPerformed(ActionEvent e)
 				{
 					// Release unit
+					int index = m_table.convertRowIndexToModel(m_editingRow);
+					UnitOverviewTableModel model = (UnitOverviewTableModel)m_table.getModel();
+					IUnitIf unit = model.getUnit(index);
+			
+					try 
+					{
+						UnitUtilities.releaseUnit(unit);
+						
+						// Commit
+						DiskoWpUnitImpl.commit();
+					} 
+					catch (IllegalOperationException e1)
+					{
+						ErrorDialog error = new ErrorDialog(null);
+						error.showError(m_resources.getString("ReleaseUnitError.header"), 
+								m_resources.getString("ReleaseUnitError.text"));
+					}
+					
+					fireEditingStopped();
 				}
 			});
 			m_panel.add(m_releaseCheckButton);
@@ -198,7 +215,6 @@ public class UnitOverviewTableRenderer
 				int column)
 		{
 			updateCell(row);
-			fireEditingStopped();
 			return m_panel;
 		}
 		
@@ -206,7 +222,6 @@ public class UnitOverviewTableRenderer
 		{
 			int index = m_table.convertRowIndexToModel(row);
 			UnitOverviewTableModel model = (UnitOverviewTableModel)m_table.getModel();
-			
 			IUnitIf unit = model.getUnit(index);
 			
 			// Update buttons

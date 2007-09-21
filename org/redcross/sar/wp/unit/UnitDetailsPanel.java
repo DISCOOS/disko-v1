@@ -1,11 +1,16 @@
 package org.redcross.sar.wp.unit;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.EnumSet;
 import java.util.ResourceBundle;
 
+import javax.swing.AbstractCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -17,19 +22,29 @@ import javax.swing.JToggleButton;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 import org.redcross.sar.gui.DiskoButtonFactory;
+import org.redcross.sar.gui.ErrorDialog;
+import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.IAssignmentIf;
+import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.IPersonnelIf;
 import org.redcross.sar.mso.data.IPersonnelListIf;
 import org.redcross.sar.mso.data.IUnitIf;
+import org.redcross.sar.mso.data.IUnitIf.UnitStatus;
+import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
+import org.redcross.sar.mso.event.MsoEvent.Update;
+import org.redcross.sar.util.except.IllegalOperationException;
 
 /**
  * JPanel displaying unit details
  * 
  * @author thomasl
  */
-public class UnitDetailsPanel extends JPanel
+public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 {
 	private static final long serialVersionUID = 1L;
 	
@@ -39,7 +54,7 @@ public class UnitDetailsPanel extends JPanel
 	
 	private JLabel m_topPanelLabel;
 	private JToggleButton m_pauseToggleButton;
-	private JButton m_dissolveButton;
+	private JButton m_releaseButton;
 	private JButton m_showReportButton;
 	
 	private JTextField m_leaderTextField;
@@ -52,8 +67,9 @@ public class UnitDetailsPanel extends JPanel
 	private JTextField m_stopTimeTextField;
 	private JTable m_personnelTable;
 	
-	public UnitDetailsPanel()
+	public UnitDetailsPanel(IDiskoWpUnit wp)
 	{
+		wp.getMmsoEventManager().addClientUpdateListener(this);
 		initialize();
 	}
 	
@@ -73,9 +89,50 @@ public class UnitDetailsPanel extends JPanel
 		m_topPanelLabel = new JLabel();
 		topPanel.add(m_topPanelLabel, BorderLayout.CENTER);
 		m_pauseToggleButton = DiskoButtonFactory.createSmallToggleButton(m_resources.getString("PauseButton.text"));
+		m_pauseToggleButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				if(m_currentUnit != null)
+				{
+					try
+					{
+						UnitUtilities.toggleUnitPause(m_currentUnit);
+						
+						// Commit small changes right away (?)
+						DiskoWpUnitImpl.commit();
+					} 
+					catch (IllegalOperationException e)
+					{
+					}
+				}
+			}
+		});
 		topButtonsPanel.add(m_pauseToggleButton);
-		m_dissolveButton = DiskoButtonFactory.createSmallButton(m_resources.getString("DissolveButton.text")/*, ""*/);
-		topButtonsPanel.add(m_dissolveButton);
+		m_releaseButton = DiskoButtonFactory.createSmallButton(m_resources.getString("DissolveButton.text")/*, ""*/);
+		m_releaseButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				// Try to release unit
+				IUnitIf unit = DiskoWpUnitImpl.getEditingUnit();
+				
+				try
+				{
+					UnitUtilities.releaseUnit(unit);
+					
+					// Commit
+					DiskoWpUnitImpl.commit();
+				} 
+				catch (IllegalOperationException e)
+				{
+					ErrorDialog error = new ErrorDialog(null);
+					error.showError(m_resources.getString("ReleaseUnitError.header"),
+							m_resources.getString("ReleaseUnitError.text"));
+				}
+			}
+		});
+		topButtonsPanel.add(m_releaseButton);
 		m_showReportButton = DiskoButtonFactory.createSmallButton(m_resources.getString("ShowReportButton.text")/*, iconPath*/);
 		topButtonsPanel.add(m_showReportButton);
 		topPanel.add(topButtonsPanel, BorderLayout.EAST);
@@ -131,6 +188,8 @@ public class UnitDetailsPanel extends JPanel
 		{
 			e.printStackTrace();
 		}
+		UnitLeaderColumnRenderer leaderRenderer = new UnitLeaderColumnRenderer();
+		leaderRenderer.setTable(m_personnelTable);
 		
 		JTableHeader tableHeader = m_personnelTable.getTableHeader();
         tableHeader.setResizingAllowed(false);
@@ -174,6 +233,12 @@ public class UnitDetailsPanel extends JPanel
 			String topText = m_currentUnit.getTypeText() + " " + m_currentUnit.getNumber() +
 			" (" + m_currentUnit.getStatusText() + ")"; 
 			m_topPanelLabel.setText(topText);
+			
+			// Pause button
+			m_pauseToggleButton.setSelected(m_currentUnit.getStatus() == UnitStatus.PAUSED);
+			
+			// Released button
+			m_releaseButton.setSelected(m_currentUnit.getStatus() == UnitStatus.RELEASED);
 			
 			IPersonnelIf leader = m_currentUnit.getUnitLeader();
 			String leaderName = leader == null ? "" : leader.getFirstname() + " " + leader.getLastname();
@@ -222,6 +287,35 @@ public class UnitDetailsPanel extends JPanel
 	}
 	
 	/**
+	 * @return Current unit
+	 */
+	public IUnitIf getUnit()
+	{
+		return m_currentUnit;
+	}
+
+	/**
+	 * Display any updates made to current editing unit
+	 */
+	public void handleMsoUpdateEvent(Update e)
+	{
+		IUnitIf unit = (IUnitIf)e.getSource();
+		if(unit == m_currentUnit)
+		{
+			updateComponents();
+		}
+	}
+
+	/**
+	 * Interested in unit updates
+	 */
+	EnumSet<IMsoManagerIf.MsoClassCode> interestedIn = EnumSet.of(IMsoManagerIf.MsoClassCode.CLASSCODE_UNIT);
+	public boolean hasInterestIn(IMsoObjectIf msoObject)
+	{
+		return interestedIn.contains(msoObject.getMsoClassCode());
+	}
+	
+	/**
 	 * Data model for table containing current unit personnel
 	 * 
 	 * @author thomasl
@@ -257,6 +351,12 @@ public class UnitDetailsPanel extends JPanel
 		{
 			return m_personnel == null ? 0 : m_personnel.size();
 		}
+		
+		@Override
+		public boolean isCellEditable(int rowIndex, int columnIndex) 
+		{
+			return columnIndex == 2;
+		}
 
 		public Object getValueAt(int row, int column)
 		{
@@ -281,12 +381,88 @@ public class UnitDetailsPanel extends JPanel
 			return m_personnel;
 		}
 	}
-
+	
 	/**
-	 * @return Current unit
+	 * Renderer and editor for the leader selection column
+	 * 
+	 * @author thomasl
 	 */
-	public IUnitIf getUnit()
+	private class UnitLeaderColumnRenderer extends AbstractCellEditor implements TableCellEditor, TableCellRenderer
 	{
-		return m_currentUnit;
+		private static final long serialVersionUID = 1L;
+		
+		private JPanel m_panel;
+		private JButton m_leaderButton;
+		JTable m_table;
+		private int m_editingRow;
+		
+		public UnitLeaderColumnRenderer()
+		{
+		
+			m_panel = new JPanel();
+			
+			m_leaderButton = DiskoButtonFactory.createTableButton(m_resources.getString("LeaderButton.letter"));
+			m_leaderButton.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent arg0)
+				{
+					// Set unit leader to selected personnel
+					IUnitIf editingUnit = DiskoWpUnitImpl.getEditingUnit();
+					
+					int index = m_table.convertRowIndexToModel(m_editingRow);
+					UnitPersonnelTableModel model = (UnitPersonnelTableModel)m_table.getModel();
+					IPersonnelIf newLeader = model.getPersonnel(index);
+					
+					editingUnit.setUnitLeader(newLeader);
+					
+					// Commit changes
+					DiskoWpUnitImpl.commit();
+					
+					fireEditingStopped();
+				}
+			});
+			m_panel.add(m_leaderButton);
+		}
+		
+		public void setTable(JTable table)
+		{
+			m_table = table;
+			m_panel.setBackground(m_table.getBackground());
+			
+			TableColumn column = m_table.getColumnModel().getColumn(2);
+			column.setCellEditor(this);
+			column.setCellRenderer(this);
+			column.setWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width + 10);
+			m_table.setRowHeight(DiskoButtonFactory.TABLE_BUTTON_SIZE.height + 10);
+		}
+		
+		
+		public Component getTableCellEditorComponent(JTable arg0, Object arg1,
+				boolean arg2, int row, int column)
+		{
+			m_editingRow = row;
+			return m_panel;
+		}
+		
+		
+		public Object getCellEditorValue()
+		{
+			return null;
+		}
+		
+		
+		public Component getTableCellRendererComponent(JTable arg0,
+				Object arg1, boolean arg2, boolean arg3, int row, int column)
+		{
+			int index = m_table.convertRowIndexToModel(row);
+			UnitPersonnelTableModel model = (UnitPersonnelTableModel)m_table.getModel();
+			IPersonnelIf personnel  = model.getPersonnel(index);
+			
+			IUnitIf editingUnit = DiskoWpUnitImpl.getEditingUnit();
+			
+			m_leaderButton.setSelected(editingUnit.getUnitLeader() == personnel);
+			
+			return m_panel;
+		}
 	}
 }

@@ -23,8 +23,10 @@ import javax.swing.JTextField;
 import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
 import org.redcross.sar.mso.data.IPersonnelIf;
+import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IPersonnelIf.PersonnelStatus;
 import org.redcross.sar.mso.data.IPersonnelIf.PersonnelType;
+import org.redcross.sar.mso.data.IUnitIf.UnitStatus;
 import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.mso.DTG;
 
@@ -130,6 +132,7 @@ public class PersonnelDetailsPanel extends JPanel
 		
 		// Property
 		m_propertyComboBox = new JComboBox(PersonnelType.values());
+		m_propertyComboBox.setSelectedItem(null);
 		m_propertyComboBox.setRenderer(new SimpleListCellRenderer());
 		gbc.gridwidth = 3;
 		layoutComponent(0, m_resources.getString("Property.text"), m_propertyComboBox, gbc, 1);
@@ -225,7 +228,11 @@ public class PersonnelDetailsPanel extends JPanel
 		String phone = m_cellTextField.getText();
 		m_currentPersonnel.setTelephone1(phone);
 
-		PersonnelType type= (PersonnelType)m_propertyComboBox.getSelectedItem();
+		PersonnelType type = (PersonnelType)m_propertyComboBox.getSelectedItem();
+		if(type == null)
+		{
+			type = PersonnelType.VOLUNTEER;
+		}
 		m_currentPersonnel.setType(type);
 
 		String organization = m_organizationTextField.getText();
@@ -300,7 +307,7 @@ public class PersonnelDetailsPanel extends JPanel
 		{
 			m_nameTextField.setText("");
 			m_cellTextField.setText("");
-			m_propertyComboBox.setSelectedIndex(0);
+			m_propertyComboBox.setSelectedItem(null);
 			m_organizationTextField.setText("");
 			m_departmentTextField.setText("");
 			m_roleTextField.setText("");
@@ -322,7 +329,27 @@ public class PersonnelDetailsPanel extends JPanel
 			m_organizationTextField.setText(m_currentPersonnel.getOrganization());
 			m_departmentTextField.setText(m_currentPersonnel.getDepartment());
 //			m_roleTextField.setText(m_currentPersonnel.get);
-//			m_unitTextField.setText(m_currentPersonnel.get);
+			
+			// TODO Search all units ?
+			boolean hasUnit = false;
+			for(IUnitIf unit : m_wpUnit.getMsoManager().getCmdPost().getUnitListItems())
+			{
+				
+				if(unit.getStatus() != UnitStatus.RELEASED)
+				{
+					if(unit.getUnitPersonnel().contains(m_currentPersonnel))
+					{
+						m_unitTextField.setText(unit.getTypeAndNumber());
+						hasUnit = true;
+						break;
+					}
+				}
+			}
+			if(!hasUnit)
+			{
+				m_unitTextField.setText("");
+			}
+			
 			m_calloutTextField.setText(DTG.CalToDTG(m_currentPersonnel.getCallOut()));
 			m_estimatedArrivalTextField.setText(DTG.CalToDTG(m_currentPersonnel.getEstimatedArrivalAttribute().getCalendar()));
 			m_arrivedTextField.setText(DTG.CalToDTG(m_currentPersonnel.getArrived()));
