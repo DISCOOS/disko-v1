@@ -15,7 +15,6 @@ import org.redcross.sar.mso.event.MsoEvent.Update;
 import org.redcross.sar.util.AssignmentTransferUtilities;
 import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.util.mso.DTG;
-import org.redcross.sar.util.mso.Selector;
 
 import javax.swing.*;
 import java.awt.*;
@@ -52,7 +51,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	private static IDiskoWpMessageLog m_wpMessageLog;
 
 	// Current message Singleton
-	private static int m_currentMessageNr;
 	private static boolean m_newMessage;
 	private static IMessageIf m_currentMessage = null;
 	private static boolean m_messageDirty = false;
@@ -69,8 +67,15 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			m_currentMessage.setOccuredTime(Calendar.getInstance());
 			m_newMessage = true;
 			m_messageDirty = false;
-			m_currentMessageNr = m_currentMessage.getNumber();
 		}
+		return m_currentMessage;
+	}
+	
+	/**
+	 * @return Currently selected message, does not create a new message like {@link #getCurrentMessage()}
+	 */
+	public static IMessageIf getSelectedMessage()
+	{
 		return m_currentMessage;
 	}
 
@@ -147,10 +152,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     public MessageLogTopPanel(IMessageLogIf messageLog)
     {
     	m_messageLog = messageLog;
-
     	m_newMessage = true;
-    	m_currentMessageNr = 0;
-
     	m_editComponents = new LinkedList<IEditMessageComponentIf>();
     }
 
@@ -497,12 +499,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
      */
 	public void newMessageSelected(int messageNr)
 	{
-		// No need to update if current message is selected
-		if(messageNr == m_currentMessageNr)
-		{
-			return;
-		}
-
 		// Have user confirm message overwrite
 		if(m_messageDirty)
 		{
@@ -535,15 +531,17 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			}
 		}
 		m_messageDirty = false;
-		m_currentMessageNr = messageNr;
 		m_newMessage = false;
 
 		// Get the message
-		List<IMessageIf> messages = m_messageLog.selectItems(m_currentMessageSelector, IMessageIf.MESSAGE_NUMBER_COMPARATOR);
-		if(!messages.isEmpty())
+		// TODO mapping structure: message nr -> message for speed up
+		for(IMessageIf message : m_messageLog.getItems())
 		{
-			// Check that an uncommitted message is not reselected
-			m_currentMessage = messages.get(0);
+			if(message.getNumber() == messageNr)
+			{
+				m_currentMessage = message;
+				break;
+			}
 		}
 
 		updateMessageGUI();
@@ -597,21 +595,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		}
 	}
 
-	private final Selector<IMessageIf> m_currentMessageSelector = new Selector<IMessageIf>()
-    {
-        public boolean select(IMessageIf aMessage)
-        {
-        	if(aMessage.getNumber() == m_currentMessageNr)
-        	{
-        		return true;
-        	}
-        	else
-        	{
-        		return false;
-        	}
-        }
-    };
-
     /**
      * Set the message log reference
      * @param wp
@@ -650,11 +633,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		//Object sender = e.getSource();
 		m_buttonGroup.clearSelection();
 		hideEditPanels();
-	}
-
-	private boolean validMessage()
-	{
-		return (m_currentMessage != null);
 	}
 
 	/**
@@ -703,7 +681,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
 					m_buttonGroup.clearSelection();
 					clearPanelContents();
-					m_currentMessageNr = 0;
 				}
     		});
     	}
@@ -719,50 +696,41 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 
     		m_finishedStatusButton.addActionListener(new ActionListener()
     		{
+				// Commit current message
 				public void actionPerformed(ActionEvent arg0)
 				{
-					// Commit current message
-					if(validMessage())
+					// Set message status
+					if(m_currentMessage.isBroadcast())
 					{
-						// Set message status
-						if(m_currentMessage.isBroadcast())
-						{
-							if(m_currentMessage.getUnconfirmedReceivers().size() == 0)
-							{
-								m_currentMessage.setStatus(MessageStatus.CONFIRMED);
-							}
-							else
-							{
-								// If broadcast all units have to confirm to get confirmed status
-								m_currentMessage.setStatus(MessageStatus.UNCONFIRMED);
-							}
-						}
-						else
+						if(m_currentMessage.getUnconfirmedReceivers().size() == 0)
 						{
 							m_currentMessage.setStatus(MessageStatus.CONFIRMED);
 						}
-
-						// Handle assignments
-						updateAssignments();
-
-						// Commit changes
-						m_wpMessageLog.getMsoModel().commit();
-
-						m_currentMessage = null;
-						m_messageDirty = false;
-						m_currentMessageNr = 0;
-
-						// GUI clean-up
-						clearPanelContents();
-
-						m_buttonGroup.clearSelection();
+						else
+						{
+							// If broadcast all units have to confirm to get confirmed status
+							m_currentMessage.setStatus(MessageStatus.UNCONFIRMED);
+						}
 					}
 					else
 					{
-						ErrorDialog error = new ErrorDialog(m_wpMessageLog.getApplication().getFrame());
-						error.showError(m_wpMessageLog.getText("MessageNotValidError.header"),
-								"MessageNotValidError.details");
+						m_currentMessage.setStatus(MessageStatus.CONFIRMED);
 					}
+
+					// Handle assignments
+					updateAssignments();
+					
+					// Commit changes
+					m_wpMessageLog.getMsoModel().commit();
+
+					m_currentMessage = null;
+					m_messageDirty = false;
+
+					
+					// GUI clean-up
+					clearPanelContents();
+
+					m_buttonGroup.clearSelection();
 				}
     		});
     	}
@@ -1360,7 +1328,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		m_wpMessageLog.getMsoModel().rollback();
 		m_currentMessage = null;
 		m_messageDirty = false;
-		m_currentMessageNr = 0;
 
 		m_buttonGroup.clearSelection();
 

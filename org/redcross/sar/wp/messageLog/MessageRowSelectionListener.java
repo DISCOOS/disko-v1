@@ -32,6 +32,11 @@ public class MessageRowSelectionListener implements ListSelectionListener
 	public void valueChanged(ListSelectionEvent event) 
 	{		
 		ListSelectionModel lsm = (ListSelectionModel)event.getSource();
+		if(lsm.getValueIsAdjusting())
+		{
+			return;
+		}
+		
 //		if(lsm.isSelectionEmpty())
 //			return;
 		

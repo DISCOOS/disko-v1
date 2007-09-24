@@ -86,7 +86,8 @@ public class MessageTableRenderer extends JTextArea implements TableCellRenderer
         
         // Colors
         int messageNr = Integer.valueOf(((String)model.getValueAt(row, 0)).split("\\s")[0]);
-        if(MessageLogTopPanel.getCurrentMessage().getNumber() == messageNr)
+        IMessageIf selectedMessage = MessageLogTopPanel.getSelectedMessage(); 
+        if(selectedMessage != null && selectedMessage.getNumber() == messageNr)
         {
         	setForeground(table.getSelectionForeground());
         	setBackground(table.getSelectionBackground());

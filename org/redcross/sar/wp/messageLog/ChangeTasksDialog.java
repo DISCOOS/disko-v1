@@ -469,13 +469,16 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	 */
 	public void handleMsoUpdateEvent(Update e)
 	{
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
-		for(ITaskIf task : message.getMessageTasksItems())
+		IMessageIf message = MessageLogTopPanel.getSelectedMessage();
+		if(message != null)
 		{
-			TaskSubType type = getSubType(task);
-			if(type == TaskSubType.FINDING)
+			for(ITaskIf task : message.getMessageTasksItems())
 			{
-				m_findingButton.setText(task.getTaskText());
+				TaskSubType type = getSubType(task);
+				if(type == TaskSubType.FINDING)
+				{
+					m_findingButton.setText(task.getTaskText());
+				}
 			}
 		}
 	}
