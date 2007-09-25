@@ -5,8 +5,12 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.Calendar;
 import java.util.EnumSet;
 import java.util.ResourceBundle;
 
@@ -14,6 +18,7 @@ import javax.swing.AbstractCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -67,8 +72,11 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 	private JTextField m_stopTimeTextField;
 	private JTable m_personnelTable;
 	
+	private IDiskoWpUnit m_wpUnit;
+	
 	public UnitDetailsPanel(IDiskoWpUnit wp)
 	{
+		m_wpUnit = wp;
 		wp.getMmsoEventManager().addClientUpdateListener(this);
 		initialize();
 	}
@@ -99,8 +107,11 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 					{
 						UnitUtilities.toggleUnitPause(m_currentUnit);
 						
-						// Commit small changes right away (?)
-						DiskoWpUnitImpl.commit();
+						// Commit small changes right away if new unit has been committed
+						if(!m_wpUnit.getNewUnit())
+						{
+							m_wpUnit.getMsoModel().commit();
+						}
 					} 
 					catch (IllegalOperationException e)
 					{
@@ -122,7 +133,10 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 					UnitUtilities.releaseUnit(unit);
 					
 					// Commit
-					DiskoWpUnitImpl.commit();
+					if(!m_wpUnit.getNewUnit())
+					{
+						m_wpUnit.getMsoModel().commit();
+					}
 				} 
 				catch (IllegalOperationException e)
 				{
@@ -142,11 +156,13 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 		
 		// Leader
 		m_leaderTextField = new JTextField();
+		m_leaderTextField.setEditable(false);
 		gbc.gridwidth = 3;
 		layoutComponent(0, m_resources.getString("Leader.text"), m_leaderTextField, gbc, 1);
 		
 		// Cell phone
 		m_cellPhoneTextField = new JTextField();
+		m_cellPhoneTextField.setEditable(false);
 		gbc.gridwidth = 3;
 		layoutComponent(0, m_resources.getString("CellularPhone.text"), m_cellPhoneTextField, gbc, 1);
 		
@@ -156,6 +172,7 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 		
 		// Created
 		m_createdTextField = new JTextField();
+		m_createdTextField.setEditable(false);
 		layoutComponent(2, m_resources.getString("Created.text"), m_createdTextField, gbc, 1);
 		
 		// Call sign
@@ -164,25 +181,29 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 		
 		// Field time
 		m_fieldTimeTextField = new JTextField();
+		m_fieldTimeTextField.setEditable(false);
 		layoutComponent(2, m_resources.getString("FieldTime.text"), m_fieldTimeTextField, gbc, 1);
 		
 		// Assignment
 		m_assignmentTextField = new JTextField();
+		m_assignmentTextField.setEditable(false);
 		layoutComponent(0, m_resources.getString("Assignment.text"), m_assignmentTextField, gbc, 0);
 		
 		// Stop time
 		m_stopTimeTextField = new JTextField();
+		m_stopTimeTextField.setEditable(false);
 		layoutComponent(2, m_resources.getString("StopTime.text"), m_stopTimeTextField, gbc, 1);
 		
 		// Personnel table
 		m_personnelTable = new JTable();
 		m_personnelTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		m_personnelTable.addMouseListener(new UnitPersonnelMouseListener());
 		m_personnelTable.setFillsViewportHeight(true);
 		m_personnelTable.setModel(new UnitPersonnelTableModel());
 		m_personnelTable.setDragEnabled(true);
 		try
 		{
-			m_personnelTable.setTransferHandler(new PersonnelTransferHandler());
+			m_personnelTable.setTransferHandler(new PersonnelTransferHandler(m_wpUnit));
 		} 
 		catch (ClassNotFoundException e)
 		{
@@ -222,10 +243,9 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 	public void setUnit(IUnitIf unit)
 	{
 		m_currentUnit = unit;
-		updateComponents();
 	}
 
-	private void updateComponents()
+	public void updateFieldContents()
 	{
 		if(m_currentUnit != null)
 		{
@@ -251,17 +271,38 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 //			m_fiveToneTextField.setText(fiveTone); TODO
 			
 //			String created = DTG.CalToDTG(m_currentUnit.get)
-//			m_createdTextField.setText(created); TODO
+//			m_createdTextField.setText(created);
 			
 			String callsign = m_currentUnit.getCallSign();
 			m_callsignTextField.setText(callsign);
 			
-//			String fieldTime = DTG.CalToDTG(m_currentUnit.gets);
-//			m_fieldTimeTextField.setText(fieldTime); TODO
-			
 			IAssignmentIf assignment = m_currentUnit.getActiveAssignment();
 			String assignmentString = assignment == null ? "" : assignment.getTypeAndNumber();
 			m_assignmentTextField.setText(assignmentString);
+			
+			if(assignment != null)
+			{
+				Calendar timeAssigned = assignment.getTimeAssigned();
+				if(timeAssigned != null)
+				{
+					long minutes = (Calendar.getInstance().getTimeInMillis() - timeAssigned.getTimeInMillis()) / 60000;
+					String fieldTime = null;
+					if(minutes > 59)
+					{
+						fieldTime = minutes / 60 + m_resources.getString("Hours.text") 
+						+  " " + minutes % 60 + m_resources.getString("Minutes.text");
+					}
+					else
+					{
+						fieldTime = minutes + " " + m_resources.getString("Minutes.text");
+					}
+					m_fieldTimeTextField.setText(fieldTime);
+				}
+			}
+			else
+			{
+				m_fieldTimeTextField.setText("");
+			}
 			
 //			String stopTime = DTG.CalToDTG(m_currentUnit.get);
 //			m_stopTimeTextField.setText(stopTime); TODO
@@ -302,7 +343,7 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 		IUnitIf unit = (IUnitIf)e.getSource();
 		if(unit == m_currentUnit)
 		{
-			updateComponents();
+			updateFieldContents();
 		}
 	}
 
@@ -313,6 +354,70 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 	public boolean hasInterestIn(IMsoObjectIf msoObject)
 	{
 		return interestedIn.contains(msoObject.getMsoClassCode());
+	}
+	
+	
+	/**
+	 * Single click displays all personnel details in bottom panel.
+	 * Double click changes to personnel display
+	 * 
+	 * @author thomasl
+	 */
+	private class UnitPersonnelMouseListener implements MouseListener
+	{
+		public void mouseClicked(MouseEvent me)
+		{
+			Point clickedPoint = new Point(me.getX(), me.getY());
+			int row = m_personnelTable.rowAtPoint(clickedPoint);
+			int index = m_personnelTable.convertRowIndexToModel(row);
+			UnitPersonnelTableModel model = (UnitPersonnelTableModel)m_personnelTable.getModel();
+			IPersonnelIf personnel = model.getPersonnel(index);
+			
+			int clickCount = me.getClickCount();
+			
+			if(clickCount == 1)
+			{
+				// Display personnel info in bottom panel
+				DiskoWpUnitImpl.setPersonnelBottom(personnel);
+				DiskoWpUnitImpl.setBottomView(DiskoWpUnitImpl.PERSONNEL_DETAILS_VIEW_ID);
+			}
+			else if(clickCount == 2)
+			{
+				// Check if unit is new
+				if(m_wpUnit.getNewUnit())
+				{
+					String[] options = {m_resources.getString("Yes.text"), m_resources.getString("No.text")};
+					int n = JOptionPane.showOptionDialog(null,
+							m_resources.getString("ChangeToPersonnelView.text"), 
+							m_resources.getString("ChangeToPersonnelView.title"), 
+							JOptionPane.YES_NO_OPTION, 
+							JOptionPane.QUESTION_MESSAGE, 
+							null, 
+							options, 
+							options[0]);
+					if(n == JOptionPane.YES_OPTION)
+					{
+						// Commit unit
+						m_wpUnit.getMsoModel().commit();
+					}
+					else
+					{
+						// Abort view change
+						return;
+					}
+				}
+				// Change to personnel display
+				DiskoWpUnitImpl.setPersonnelLeft(personnel);
+				DiskoWpUnitImpl.setLeftView(DiskoWpUnitImpl.PERSONNEL_DETAILS_VIEW_ID);
+				DiskoWpUnitImpl.setPersonnelBottom(personnel);
+				DiskoWpUnitImpl.setBottomView(DiskoWpUnitImpl.PERSONNEL_ADDITIONAL_VIEW_ID);
+			}
+		}
+
+		public void mouseEntered(MouseEvent arg0){}
+		public void mouseExited(MouseEvent arg0){}
+		public void mousePressed(MouseEvent arg0){}
+		public void mouseReleased(MouseEvent arg0){}
 	}
 	
 	/**
@@ -373,7 +478,7 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 
 		public IPersonnelIf getPersonnel(int selectedRow)
 		{
-			return m_personnel == null ? null : (IPersonnelIf)m_personnel.getItems().toArray()[selectedRow];
+			return m_personnel == null || selectedRow < 0 ? null : (IPersonnelIf)m_personnel.getItems().toArray()[selectedRow];
 		}
 
 		public IPersonnelListIf getPersonnel()
@@ -415,8 +520,11 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 					
 					editingUnit.setUnitLeader(newLeader);
 					
-					// Commit changes
-					DiskoWpUnitImpl.commit();
+					// Commit changes¨
+					if(!m_wpUnit.getNewUnit())
+					{
+						m_wpUnit.getMsoModel().commit();
+					}
 					
 					fireEditingStopped();
 				}
@@ -432,7 +540,8 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 			TableColumn column = m_table.getColumnModel().getColumn(2);
 			column.setCellEditor(this);
 			column.setCellRenderer(this);
-			column.setWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width + 10);
+			column.setPreferredWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width + 10);
+			column.setMaxWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width + 10);
 			m_table.setRowHeight(DiskoButtonFactory.TABLE_BUTTON_SIZE.height + 10);
 		}
 		
@@ -463,6 +572,21 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 			m_leaderButton.setSelected(editingUnit.getUnitLeader() == personnel);
 			
 			return m_panel;
+		}
+	}
+
+	/**
+	 * Saves field contents in unit MSO object
+	 */
+	public void saveUnit()
+	{
+		if(m_currentUnit != null)
+		{
+//			String fiveTone = m_fiveToneTextField.getText();
+			// TODO
+			
+			String callSigne = m_callsignTextField.getText();
+			m_currentUnit.setCallSign(callSigne);
 		}
 	}
 }

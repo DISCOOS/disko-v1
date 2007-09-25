@@ -30,6 +30,13 @@ public class UnitOverviewTableRenderer
 	private static ResourceBundle m_resources = ResourceBundle.getBundle("org.redcross.sar.wp.unit.unit");
 	private JTable m_table;
 	
+	private IDiskoWpUnit m_wpUnit;
+	
+	public UnitOverviewTableRenderer(IDiskoWpUnit wp)
+	{
+		m_wpUnit = wp;
+	}
+	
 	/**
 	 * Set column renderer and editor. Column widths, as well as table row height
 	 * 
@@ -81,7 +88,7 @@ public class UnitOverviewTableRenderer
 					UnitOverviewTableModel model = (UnitOverviewTableModel)m_table.getModel();
 					IUnitIf unit = model.getUnit(index);
 					DiskoWpUnitImpl.setUnit(unit);
-					DiskoWpUnitImpl.setDetailView(DiskoWpUnitImpl.UNIT_VIEW_ID);
+					DiskoWpUnitImpl.setLeftView(DiskoWpUnitImpl.UNIT_VIEW_ID);
 					fireEditingStopped();
 				}
 			});
@@ -153,7 +160,10 @@ public class UnitOverviewTableRenderer
 						UnitUtilities.toggleUnitPause(unit);
 						
 						// Commit
-						DiskoWpUnitImpl.commit();
+						if(!m_wpUnit.getNewUnit())
+						{
+							m_wpUnit.getMsoModel().commit();
+						}
 					} 
 					catch (IllegalOperationException e)
 					{
@@ -182,7 +192,10 @@ public class UnitOverviewTableRenderer
 						UnitUtilities.releaseUnit(unit);
 						
 						// Commit
-						DiskoWpUnitImpl.commit();
+						if(!m_wpUnit.getNewUnit())
+						{
+							m_wpUnit.getMsoModel().commit();
+						}
 					} 
 					catch (IllegalOperationException e1)
 					{

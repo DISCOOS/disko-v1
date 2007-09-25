@@ -18,7 +18,7 @@ import org.redcross.sar.mso.data.IPersonnelIf;
  * 
  * @author thomasl
  */
-public class PersonnelBottomPanel extends JPanel
+public class PersonnelAddressBottomPanel extends JPanel
 {
 	private static final long serialVersionUID = 1L;
 	
@@ -31,7 +31,7 @@ public class PersonnelBottomPanel extends JPanel
 	private JTextField m_postNumberTextField;
 	private JButton m_showInMapButton;
 	
-	public PersonnelBottomPanel()
+	public PersonnelAddressBottomPanel()
 	{
 		initialize();
 	}
@@ -105,16 +105,18 @@ public class PersonnelBottomPanel extends JPanel
 	}
 
 	/**
-	 * Set the personnel the panel is currently displaying information about, updates component contents
+	 * Set the personnel the panel is currently displaying
 	 * @param personnel
 	 */
 	public void setPersonnel(IPersonnelIf personnel)
 	{
 		m_currentPersonnel = personnel;
-		updateComponentContents();
 	}
 	
-	private void updateComponentContents()
+	/**
+	 * Update field contents with current personnel values
+	 */
+	public void updateFieldContents()
 	{
 		if(m_currentPersonnel == null)
 		{
@@ -129,6 +131,17 @@ public class PersonnelBottomPanel extends JPanel
 //			m_postAreaTextField.setText()
 //			m_postNumberTextField.setText(t);
 			m_showInMapButton.setEnabled(true);
+		}
+	}
+
+	/**
+	 * Save field contents to current personnel
+	 */
+	public void savePersonnel()
+	{
+		if(m_currentPersonnel != null)
+		{
+			// TODO Save fields to current personnel
 		}
 	}
 }

@@ -73,8 +73,8 @@ public class PersonnelOverviewTableRenderer
 					int modelIndex = m_table.convertRowIndexToModel(m_editRow);
 					PersonnelOverviewTableModel model = (PersonnelOverviewTableModel)m_table.getModel();
 					IPersonnelIf selectedPersonnel = model.getPersonnel(modelIndex);
-					DiskoWpUnitImpl.setPersonnel(selectedPersonnel);
-					DiskoWpUnitImpl.setDetailView(DiskoWpUnitImpl.PERSONNEL_VIEW_ID);
+					DiskoWpUnitImpl.setPersonnelLeft(selectedPersonnel);
+					DiskoWpUnitImpl.setLeftView(DiskoWpUnitImpl.PERSONNEL_DETAILS_VIEW_ID);
 					fireEditingStopped();
 				}
 			});

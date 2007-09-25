@@ -22,11 +22,16 @@ import javax.swing.JTextField;
 
 import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
+import org.redcross.sar.mso.IMsoManagerIf;
+import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.IPersonnelIf;
 import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IPersonnelIf.PersonnelStatus;
 import org.redcross.sar.mso.data.IPersonnelIf.PersonnelType;
 import org.redcross.sar.mso.data.IUnitIf.UnitStatus;
+import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
+import org.redcross.sar.mso.event.MsoEvent.Update;
+import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.mso.DTG;
 
@@ -36,11 +41,13 @@ import org.redcross.sar.util.mso.DTG;
  * 
  * @author thomasl
  */
-public class PersonnelDetailsPanel extends JPanel
+public class PersonnelDetailsLeftPanel extends JPanel implements IMsoUpdateListenerIf
 {
 	private static final long serialVersionUID = 1L;
 	
 	private final static ResourceBundle m_resources = ResourceBundle.getBundle("org.redcross.sar.wp.unit.unit");
+	private final static ResourceBundle m_personnelBundle = 
+		ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Personnel");
 	
 	private IPersonnelIf m_currentPersonnel = null;
 	private IDiskoWpUnit m_wpUnit;
@@ -60,12 +67,11 @@ public class PersonnelDetailsPanel extends JPanel
 	private JTextField m_arrivedTextField;
 	private JTextField m_releasedTextField;
 	private JTextArea m_remarksTextArea;
-	
-	private boolean m_newPersonnel = false;
 
-	public PersonnelDetailsPanel(IDiskoWpUnit wp)
+	public PersonnelDetailsLeftPanel(IDiskoWpUnit wp)
 	{
 		m_wpUnit = wp;
+		m_wpUnit.getMmsoEventManager().addClientUpdateListener(this);
 		initialize();
 	}
 	
@@ -112,7 +118,6 @@ public class PersonnelDetailsPanel extends JPanel
 					case RELEASED:
 						PersonnelUtilities.releasePersonnel(m_currentPersonnel);
 					}
-					updateFieldContents();
 				}
 			}
 		});
@@ -133,7 +138,8 @@ public class PersonnelDetailsPanel extends JPanel
 		// Property
 		m_propertyComboBox = new JComboBox(PersonnelType.values());
 		m_propertyComboBox.setSelectedItem(null);
-		m_propertyComboBox.setRenderer(new SimpleListCellRenderer());
+		ResourceBundle personnelResources = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Personnel");
+		m_propertyComboBox.setRenderer(new SimpleListCellRenderer(personnelResources));
 		gbc.gridwidth = 3;
 		layoutComponent(0, m_resources.getString("Property.text"), m_propertyComboBox, gbc, 1);
 		
@@ -158,7 +164,7 @@ public class PersonnelDetailsPanel extends JPanel
 		
 		// Alerted
 		m_calloutTextField = new JTextField();
-		layoutComponent(0, m_resources.getString("Alerted.text"), m_calloutTextField, gbc, 0);
+		layoutComponent(0, m_resources.getString("CallOut.text"), m_calloutTextField, gbc, 0);
 		
 		// Expected
 		m_estimatedArrivalTextField = new JTextField();
@@ -170,7 +176,7 @@ public class PersonnelDetailsPanel extends JPanel
 		
 		// Dismissed
 		m_releasedTextField = new JTextField();
-		layoutComponent(2, m_resources.getString("Dismissed.text"), m_releasedTextField, gbc, 1);
+		layoutComponent(2, m_resources.getString("Released.text"), m_releasedTextField, gbc, 1);
 		
 		// Notes
 		m_remarksTextArea = new JTextArea();
@@ -182,7 +188,6 @@ public class PersonnelDetailsPanel extends JPanel
 		gbc.gridwidth = 3;
 		gbc.weighty = 1.0;
 		layoutComponent(0, m_resources.getString("Notes.text"), notesScrollPane, gbc, 5);
-		
 	}
 	
 	private void layoutComponent(int column, String label, JComponent component, GridBagConstraints gbc, int height)
@@ -201,110 +206,95 @@ public class PersonnelDetailsPanel extends JPanel
 	}
 
 	/**
-	 * Updates personnel data in MSO. Creates new personnel if needed
+	 * Updates personnel data in MSO
 	 */
 	public void savePersonnel()
 	{
-		if(m_currentPersonnel == null && m_newPersonnel)
+		if(m_currentPersonnel != null)
 		{
-			// Creating new personnel
-			m_currentPersonnel = m_wpUnit.getMsoManager().createPersonnel();
-			m_newPersonnel = false;
+			String[] name = m_nameTextField.getText().split(" ");
+			StringBuilder firstName = new StringBuilder();
+			for(int i=0; i<name.length-1; i++)
+			{
+				firstName.append(name[i] + " ");
+			}
+			
+			if(firstName.toString() != null)
+			{
+				m_currentPersonnel.setFirstname(firstName.toString().trim());
+			}
+			m_currentPersonnel.setLastname(name[name.length-1].trim());
+
+			String phone = m_cellTextField.getText();
+			m_currentPersonnel.setTelephone1(phone);
+
+			PersonnelType type = (PersonnelType)m_propertyComboBox.getSelectedItem();
+			if(type == null)
+			{
+				type = PersonnelType.OTHER;
+			}
+			m_currentPersonnel.setType(type);
+
+			String organization = m_organizationTextField.getText();
+			m_currentPersonnel.setOrganization(organization);
+
+			String department = m_departmentTextField.getText();
+			m_currentPersonnel.setDepartment(department);
+
+			try
+			{
+				Calendar callout = DTG.DTGToCal(m_calloutTextField.getText());
+				m_currentPersonnel.setCallOut(callout);
+			}
+			catch (IllegalMsoArgumentException e)
+			{
+			}
+
+			// Try to parse estimated arrival text field. Set to null if no integers are present in string
+			String[] estimatedArrivalString = m_estimatedArrivalTextField.getText().replace('-', ' ').split(" ");
+			for(String s : estimatedArrivalString)
+			{
+				try
+				{
+					int minutes = Integer.valueOf(s);
+					Calendar estimatedArrival = Calendar.getInstance();
+					estimatedArrival.add(Calendar.MINUTE, minutes);
+					m_currentPersonnel.setEstimatedArrival(estimatedArrival);
+				}
+				catch(Exception e){}
+			}
+
+			try
+			{
+				Calendar arrived = DTG.DTGToCal(m_arrivedTextField.getText());
+				m_currentPersonnel.setArrived(arrived);
+			} 
+			catch (IllegalMsoArgumentException e)
+			{
+			}
+
+			try
+			{
+				Calendar released = DTG.DTGToCal(m_releasedTextField.getText());
+				m_currentPersonnel.setReleased(released);
+			} 
+			catch (IllegalMsoArgumentException e)
+			{
+			}
+
+			String remarks = m_remarksTextArea.getText();
+			m_currentPersonnel.setRemarks(remarks);
 		}
-
-		String[] name = m_nameTextField.getText().split(" ");
-		StringBuilder firstName = new StringBuilder();
-		for(int i=0; i<name.length-1; i++)
-		{
-			firstName.append(name[i] + " ");
-		}
-		
-		if(firstName.toString() != null)
-		{
-			m_currentPersonnel.setFirstname(firstName.toString().trim());
-		}
-		m_currentPersonnel.setLastname(name[name.length-1].trim());
-
-		String phone = m_cellTextField.getText();
-		m_currentPersonnel.setTelephone1(phone);
-
-		PersonnelType type = (PersonnelType)m_propertyComboBox.getSelectedItem();
-		if(type == null)
-		{
-			type = PersonnelType.VOLUNTEER;
-		}
-		m_currentPersonnel.setType(type);
-
-		String organization = m_organizationTextField.getText();
-		m_currentPersonnel.setOrganization(organization);
-
-		String department = m_departmentTextField.getText();
-		m_currentPersonnel.setDepartment(department);
-
-//		String role = m_roleTextField.getText();
-//		m_currentPersonnel.set
-
-//		m_unitTextField.getText();
-
-		try
-		{
-			Calendar callout = DTG.DTGToCal(m_calloutTextField.getText());
-			m_currentPersonnel.setCallOut(callout);
-		}
-		catch (IllegalMsoArgumentException e)
-		{
-		}
-
-		try
-		{
-			Calendar estimatedArrival = DTG.DTGToCal(m_estimatedArrivalTextField.getText());
-			m_currentPersonnel.setEstimatedArrival(estimatedArrival);
-		} 
-		catch (IllegalMsoArgumentException e)
-		{
-		}
-
-		try
-		{
-			Calendar arrived = DTG.DTGToCal(m_arrivedTextField.getText());
-			m_currentPersonnel.setArrived(arrived);
-		} 
-		catch (IllegalMsoArgumentException e)
-		{
-		}
-
-		try
-		{
-			Calendar released = DTG.DTGToCal(m_releasedTextField.getText());
-			m_currentPersonnel.setReleased(released);
-		} 
-		catch (IllegalMsoArgumentException e)
-		{
-		}
-
-		String remarks = m_remarksTextArea.getText();
-		m_currentPersonnel.setRemarks(remarks);
-	}
-	
-	public void setNewPersonnel(boolean newPersonnel)
-	{
-		m_newPersonnel = newPersonnel;
 	}
 	
 	/**
-	 * Sets the current personnel, updates GUI contents
-	 * @param personnel
+	 * Updates field contents with current personnel attribute values
 	 */
-	public void setPersonnel(IPersonnelIf personnel)
-	{
-		m_currentPersonnel = personnel;
-		updateFieldContents();
-	}
-	
-	private void updateFieldContents()
+	public void updateFieldContents()
 	{
 		if(m_currentPersonnel == null)
 		{
+			m_topLabel.setText("");
 			m_nameTextField.setText("");
 			m_cellTextField.setText("");
 			m_propertyComboBox.setSelectedItem(null);
@@ -328,32 +318,62 @@ public class PersonnelDetailsPanel extends JPanel
 			m_propertyComboBox.setSelectedItem(m_currentPersonnel.getType());
 			m_organizationTextField.setText(m_currentPersonnel.getOrganization());
 			m_departmentTextField.setText(m_currentPersonnel.getDepartment());
-//			m_roleTextField.setText(m_currentPersonnel.get);
 			
-			// TODO Search all units ?
-			boolean hasUnit = false;
+			IUnitIf personnelUnit = null;
 			for(IUnitIf unit : m_wpUnit.getMsoManager().getCmdPost().getUnitListItems())
 			{
-				
 				if(unit.getStatus() != UnitStatus.RELEASED)
 				{
 					if(unit.getUnitPersonnel().contains(m_currentPersonnel))
 					{
-						m_unitTextField.setText(unit.getTypeAndNumber());
-						hasUnit = true;
+						personnelUnit = unit;
 						break;
 					}
 				}
 			}
-			if(!hasUnit)
+			m_unitTextField.setText(personnelUnit == null ? "" : personnelUnit.getTypeAndNumber());
+			
+			if(personnelUnit != null)
 			{
-				m_unitTextField.setText("");
+				if(personnelUnit.getUnitLeader() == m_currentPersonnel)
+				{
+					m_roleTextField.setText(m_resources.getString("Leader.text"));
+				}
+				else
+				{
+					m_roleTextField.setText(m_resources.getString("Personnel.text"));
+				}
+			}
+			else
+			{
+				m_roleTextField.setText("");
 			}
 			
 			m_calloutTextField.setText(DTG.CalToDTG(m_currentPersonnel.getCallOut()));
-			m_estimatedArrivalTextField.setText(DTG.CalToDTG(m_currentPersonnel.getEstimatedArrivalAttribute().getCalendar()));
+			
+			String arrivingText = "";
+			Calendar estimatedArrival = m_currentPersonnel.getEstimatedArrival();
+			if(m_currentPersonnel.getStatus() == PersonnelStatus.ON_ROUTE && estimatedArrival != null)
+			{
+				long minutes = (Calendar.getInstance().getTimeInMillis() - estimatedArrival.getTimeInMillis() ) / 60000;
+				arrivingText = minutes + " min";
+			}
+			else if(m_currentPersonnel.getStatus() == PersonnelStatus.ARRIVED)
+			{
+				arrivingText = m_resources.getString("Arrived.text");
+			}
+			m_estimatedArrivalTextField.setText(arrivingText);
+			
 			m_arrivedTextField.setText(DTG.CalToDTG(m_currentPersonnel.getArrived()));
-			m_releasedTextField.setText(DTG.CalToDTG(m_currentPersonnel.getReleased()));
+			if(m_currentPersonnel.getStatus() == PersonnelStatus.RELEASED)
+			{
+				m_releasedTextField.setText(m_resources.getString("Yes.text"));
+			}
+			else
+			{
+				m_releasedTextField.setText(m_resources.getString("No.text"));
+			}
+			
 			m_remarksTextArea.setText(m_currentPersonnel.shortDescriptor());
 			
 			// Get next status for 
@@ -365,13 +385,43 @@ public class PersonnelDetailsPanel extends JPanel
 				// Not possible to send personnel status back to idle, set to next
 				status = values[(status.ordinal() + 1) % values.length];
 			}
-			m_changeStatusButton.setText(status.toString());
+			m_changeStatusButton.setText(Internationalization.getEnumText(m_personnelBundle, status));
 			m_changeStatusButton.setActionCommand(status.name());
 		}
 	}
 
+	/*
+	 * Setters and getters
+	 */
 	public IPersonnelIf getPersonnel()
 	{
 		return m_currentPersonnel;
+	}
+	
+	public void setTopLabelText(String text)
+	{
+		m_topLabel.setText(text);
+	}
+	
+	public void setPersonnel(IPersonnelIf personnel)
+	{
+		m_currentPersonnel = personnel;
+	}
+
+	/**
+	 * Update fields if any changes occur in the personnel object
+	 */
+	public void handleMsoUpdateEvent(Update e)
+	{
+		IPersonnelIf personnel = (IPersonnelIf)e.getSource();
+		if(m_currentPersonnel == personnel)
+		{
+			updateFieldContents();
+		}
+	}
+
+	public boolean hasInterestIn(IMsoObjectIf msoObject)
+	{
+		return msoObject.getMsoClassCode() == IMsoManagerIf.MsoClassCode.CLASSCODE_PERSONNEL;
 	}
 }

@@ -24,13 +24,17 @@ public class PersonnelTransferHandler extends TransferHandler
 	private static final long serialVersionUID = 1L;
 
 	private static DataFlavor m_personnelFlavor;
+	
+	private static IDiskoWpUnit m_wpUnit;
 
-	public PersonnelTransferHandler() throws ClassNotFoundException
+	public PersonnelTransferHandler(IDiskoWpUnit wp) throws ClassNotFoundException
 	{
 		if (m_personnelFlavor == null)
 		{
 			m_personnelFlavor = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType + ";class=org.redcross.sar.mso.data.IPersonnelIf");
 		}
+		
+		m_wpUnit = wp;
 	}
 
 	/**
@@ -139,6 +143,12 @@ public class PersonnelTransferHandler extends TransferHandler
 					else
 					{
 						personnelList.add(personnel);
+						
+						// Commit if no new major changes exists
+						if(!(m_wpUnit.getNewCallOut() || m_wpUnit.getNewPersonnel() || m_wpUnit.getNewUnit()))
+						{
+							m_wpUnit.getMsoModel().commit();
+						}
 					}
 					unitModel.fireTableDataChanged();
 				} 
@@ -186,18 +196,20 @@ public class PersonnelTransferHandler extends TransferHandler
 				} 
 				catch (UnsupportedFlavorException e)
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} 
 				catch (IOException e)
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 		}
 		
-		// TODO Commit changes right away
+		// Commit changes right away
+		if(!(m_wpUnit.getNewCallOut() || m_wpUnit.getNewPersonnel() || m_wpUnit.getNewUnit()))
+		{
+			m_wpUnit.getMsoModel().commit();
+		}
     }
 
 	/**

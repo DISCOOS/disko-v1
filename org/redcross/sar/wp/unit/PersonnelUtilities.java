@@ -124,7 +124,7 @@ public class PersonnelUtilities
 	/**
 	 * Set personnel to arrived, checks if personnel is dismissed
 	 * @param personnel
-	 * @return New personnel instance if created (reinstated personnel), otherwise null
+	 * @return New personnel instance if created (reinstated personnel). Otherwise {@code null}
 	 * @throws IllegalOperationException
 	 */
 	public static IPersonnelIf arrivedPersonnel(IPersonnelIf personnel)
@@ -141,7 +141,8 @@ public class PersonnelUtilities
 			personnel.setStatus(PersonnelStatus.ARRIVED);
 			personnel.setArrived(Calendar.getInstance());
 		}
-		// Commit changes
+				
+		// Commit changes, TODO check for major updates in unit WP before committing
 		m_msoModel.commit();
 		
 		return newPersonnel;
