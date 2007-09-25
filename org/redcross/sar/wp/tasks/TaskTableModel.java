@@ -148,6 +148,11 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 
 	public Object getValueAt(int row, int column)
 	{
+		if(row >= m_tasks.size())
+		{
+			return null;
+		}
+		
 		ITaskIf task = (ITaskIf)m_tasks.getItems().toArray()[row];
 		switch(column)
 		{

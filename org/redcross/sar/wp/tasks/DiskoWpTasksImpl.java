@@ -140,7 +140,7 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
     @Override
     public String getName()
     {
-        return this.getText("Tasks");
+        return "Oppgaver";
     }
 
     private void initButtons()

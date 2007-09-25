@@ -53,9 +53,6 @@ public class TaskDialog extends DiskoDialog
 	private JTextArea m_sourceTextArea = null;
 	private JTextField m_objectTextField = null;
 
-	// Temp, should check DISKO global
-	private final static boolean NOTEBOOK = true;
-
 	private final static ResourceBundle m_resources = ResourceBundle.getBundle("org.redcross.sar.gui.properties.TaskDialog");
 
 	public TaskDialog(IDiskoApplication application)
