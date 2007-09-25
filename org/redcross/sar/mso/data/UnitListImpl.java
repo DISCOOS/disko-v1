@@ -65,21 +65,21 @@ public class UnitListImpl extends MsoListImpl<IUnitIf> implements IUnitListIf
     {
     	checkCreateOp();
     	IDogIf retVal = (IDogIf)getItem(objectId);
-    	return retVal != null ? retVal : (IDogIf) createdItem(new DogImpl(objectId, -1));
+    	return retVal != null ? retVal : (IDogIf) createdItem(new DogImpl(objectId, makeUnitSerialNumber(DogImpl.class)));
     }
 
 	public IAircraftIf createAircraft(IObjectIdIf objectId)
 	{
 		checkCreateOp();
 		IAircraftIf retVal = (IAircraftIf)getItem(objectId);
-		return retVal != null ? retVal : (IAircraftIf)createdItem(new AircraftImpl(objectId, -1));
+		return retVal != null ? retVal : (IAircraftIf)createdItem(new AircraftImpl(objectId, makeUnitSerialNumber(AircraftImpl.class)));
 	}
 
 	public ITeamIf createTeam(IObjectIdIf objectId)
 	{
 		checkCreateOp();
 		ITeamIf retVal = (ITeamIf)getItem(objectId);
-		return retVal != null ? retVal : (ITeamIf)createdItem(new TeamImpl(objectId, -1));
+		return retVal != null ? retVal : (ITeamIf)createdItem(new TeamImpl(objectId, makeUnitSerialNumber(TeamImpl.class)));
 	}
 
     public IUnitIf getUnit(int aUnitNr)
