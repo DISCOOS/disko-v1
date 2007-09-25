@@ -29,6 +29,7 @@ public class POITool extends AbstractCommandTool {
 	private POIDialog poiDialog = null;
 	private Point p = null;
 	private IPOIIf poi = null; // current POI
+	private boolean bMove = false;
 		
 	/**
 	 * Constructs the DrawTool
@@ -58,8 +59,20 @@ public class POITool extends AbstractCommandTool {
 			throws IOException, AutomationException {
 	}	
 	
+	public void setCurrentPOI(IPOIIf poi) {
+		this.poi = poi;
+	}
+	
 	public IPOIIf getCurrentPOI() {
 		return poi;
+	}
+	
+	public void setMove(boolean value) {
+		bMove = value && (poi != null);
+	}
+	
+	public boolean getMove() {
+		return bMove;
 	}
 	
 	public void movePOI(Point point) throws IOException, AutomationException {
@@ -118,6 +131,10 @@ public class POITool extends AbstractCommandTool {
 			throws IOException, AutomationException {
 		p = transform(x, y);
 		p.setSpatialReferenceByRef(map.getSpatialReference());
-		addPOIAt(p);
+		// move?
+		if (bMove)
+			movePOI(p);
+		else
+			addPOIAt(p);
 	}
 }

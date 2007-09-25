@@ -73,7 +73,12 @@ public class POILayer extends AbstractMsoFeatureLayer {
 					display.setSymbol(textSymbol);
 					String text = Utils.translate(poi.getType());
 					String remark = poi.getRemarks();
-					if (remark != null) text += " "+remark;
+					// replace with comment?
+					if (remark != null) {
+						if(remark.length() > 0) {
+							text = remark;
+						}
+					}
 					display.drawText(point, text);
 				}
 			}

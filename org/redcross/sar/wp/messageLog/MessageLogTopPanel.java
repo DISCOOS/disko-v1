@@ -864,7 +864,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 			public void actionPerformed(ActionEvent e)
 			{
 				// Delete if message is not committed, don't create new message when pressing delete
-				if(m_currentMessage != null && m_newMessage)
+				if(m_currentMessage != null && m_currentMessageLineType != null && m_newMessage)
 				{
 					// If line that has other assignment lines depending on it is deleted, delete them as well
 					switch(m_currentMessageLineType)

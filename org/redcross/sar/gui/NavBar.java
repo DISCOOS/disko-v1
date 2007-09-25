@@ -818,7 +818,7 @@ public class NavBar extends JPanel {
 	
 	public void switchIcon(String command, boolean first){
 		if(command.equalsIgnoreCase("maptoggle")){
-			System.out.println("spennende...");
+			//System.out.println("spennende...");
 			AbstractButton ab = this.getButton(ToolCommandType.MAP_TOGGLE_COMMAND);
 			ImageIcon icon;
 			if(first)

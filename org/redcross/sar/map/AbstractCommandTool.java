@@ -12,9 +12,11 @@ import org.redcross.sar.map.layer.OperationAreaLayer;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Properties;
+import java.awt.geom.Point2D;
 
 public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool {
 
+	protected int activeCount = 0;
 	protected DiskoMap map = null;
 	protected DiskoDialog dialog = null;
 	protected Properties properties = null;
@@ -34,19 +36,29 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 		return (Point)getTransform().toMapPoint(x,y);
 	}
 
+	protected Point2D toScreen(Point p) throws IOException, AutomationException {
+		int x[] = {0};
+		int y[] = {0};
+		getTransform().fromMapPoint(p, x, y);
+		return new Point2D.Double(x[0],y[0]);
+	}
+	
 	protected void transform(Point p) throws IOException, AutomationException {
 		p.transform(com.esri.arcgis.geometry.esriTransformDirection.esriTransformReverse, getTransform());
 	}
 
 	public void toolActivated() throws IOException, AutomationException {
 		if (dialog != null) {
-			dialog.setVisible(!dialog.isVisible());
+			if (activeCount > 0)
+				dialog.setVisible(!dialog.isVisible());
+			activeCount++;
 		}
 	}
 
 	public void toolDeactivated() throws IOException, AutomationException {
 		if (dialog != null) {
 			dialog.setVisible(false);
+			activeCount = 0;
 		}
 	}
 

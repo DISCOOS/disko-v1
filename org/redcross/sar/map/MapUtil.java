@@ -165,14 +165,14 @@ public class MapUtil {
 		point.setX(pos.getPosition().getX());
 		point.setY(pos.getPosition().getY());
 		point.setSpatialReferenceByRef(getGeographicCS());
-		return point.createMGRS(5, true, esriMGRSModeEnum.esriMGRSMode_NewStyle);
+		return point.createMGRS(5, true, esriMGRSModeEnum.esriMGRSMode_NewWith180InZone01);
 	}
 	
 	public static Position getPositionFromMGRS(String mgrs) 
 			throws UnknownHostException, IOException {
 		Point point = new Point();
 		point.setSpatialReferenceByRef(getGeographicCS());
-		point.putCoordsFromMGRS(mgrs, esriMGRSModeEnum.esriMGRSMode_NewStyle);
+		point.putCoordsFromMGRS(mgrs, esriMGRSModeEnum.esriMGRSMode_NewWith180InZone01);
 		return new Position(null, point.getX(), point.getY());
 	}
 	

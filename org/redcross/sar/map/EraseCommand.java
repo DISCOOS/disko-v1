@@ -32,6 +32,7 @@ public class EraseCommand implements ICommand {
 	}
 
 	public void onClick() throws IOException, AutomationException {
+		// TODO: prompt confirmation
 		List layers = map.getMapManager().getMsoLayers();
 		for (int i = 0; i < layers.size(); i++) {
 			IMsoFeatureLayer layer = (IMsoFeatureLayer)layers.get(i);

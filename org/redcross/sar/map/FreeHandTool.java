@@ -5,6 +5,8 @@ package org.redcross.sar.map;
 
 import java.awt.Toolkit;
 import java.awt.Cursor;
+import java.awt.Robot;
+import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -85,6 +87,8 @@ public class FreeHandTool extends AbstractCommandTool {
 	private IAreaIf area = null;
 	private IMsoManagerIf.MsoClassCode msoClassCode = null;
 	
+	private Robot robot = null;
+	
 	private boolean m_validatePoint = false;
 
 	/**
@@ -123,6 +127,14 @@ public class FreeHandTool extends AbstractCommandTool {
 		// dialog
 		dialog = new FreeHandDialog(app, this);
 		dialog.setIsToggable(false);
+		
+		// create robot
+		try {
+			robot = new Robot();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void onCreate(Object obj) throws IOException, AutomationException {
@@ -180,6 +192,19 @@ public class FreeHandTool extends AbstractCommandTool {
 		return polygon;
 	}
 
+	private void moveMouse(Point p) {
+		// create robot
+		try {
+			// transform to screen coordinates
+			Point2D pt = toScreen(p);
+			// move mouse pointer
+			robot.mouseMove((int)pt.getX(), (int)pt.getY());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}		
+	}
+	
 	public void onMouseDown(int button, int shift, int x, int y)
 			throws IOException, AutomationException {
 		
@@ -195,6 +220,8 @@ public class FreeHandTool extends AbstractCommandTool {
 		if (pline != null) {
 			pline.densify(getSnapTolerance(), -1);
 			p2 = getNearestPoint(pline, p2);
+			// move mouse
+			moveMouse(p2);
 		}
 		if (pathGeometry == null) {
 			pathGeometry = new Polyline();
@@ -231,6 +258,8 @@ public class FreeHandTool extends AbstractCommandTool {
 		if (pline != null) {
 			pline.densify(getSnapTolerance(), -1);
 			p2 = getNearestPoint(pline, p2);
+			// move mouse
+			moveMouse(p2);
 		}
 		// update drawn path
 		updatePath();

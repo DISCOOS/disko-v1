@@ -13,9 +13,9 @@ public interface ISearchIf extends IAssignmentIf
 
     public enum SearchSubType
     {
-        LINE,
         PATROL,
         URBAN,
+        LINE,
         SHORELINE,
         MARINE,
         AIR,

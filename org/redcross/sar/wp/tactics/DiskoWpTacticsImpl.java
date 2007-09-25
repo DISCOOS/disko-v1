@@ -154,6 +154,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		EnumSet<NavBar.ToolCommandType> myTools = EnumSet.of(NavBar.ToolCommandType.DRAW_TOOL);
 		myTools.add(NavBar.ToolCommandType.FREEHAND_TOOL);
 		myTools.add(NavBar.ToolCommandType.POI_TOOL);
+		//myTools.add(NavBar.ToolCommandType.FLANK_TOOL);
 		myTools.add(NavBar.ToolCommandType.ERASE_COMMAND);
 		
 		myTools.add(NavBar.ToolCommandType.ZOOM_IN_TOOL);
@@ -298,6 +299,9 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 
 	public void dialogFinished(DialogEvent e) {
 		// TODO Auto-generated method stub
+		if(e.getSource() instanceof POIDialog) {
+			((POIDialog)e.getSource()).setVisible(false);
+		}
 	}
 
 	public void dialogStateChanged(DialogEvent e) {
@@ -581,7 +585,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 
 		NavBar navBar = getApplication().getNavBar();
 		navBar.getPOIToggleButton().setVisible(true);
-		navBar.getPOIToggleButton().setEnabled(false);
+		navBar.getPOIToggleButton().setEnabled(true);
 		navBar.getSelectFeatureToggleButton().setVisible(true);
 		navBar.getEraseButton().setVisible(true);
 	}
