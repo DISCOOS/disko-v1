@@ -307,6 +307,7 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
         if (m_currentTask != null)
         {
             m_currentTask.setProgress(100);
+            m_currentTask.setStatus(TaskStatus.FINISHED);
             this.getMsoModel().commit();
         }
         hideDialogs();
