@@ -1,5 +1,7 @@
 package org.redcross.sar.mso.data;
 
+import org.redcross.sar.mso.data.IMsoObjectIf.IObjectIdIf;
+
 public class UnitListImpl extends MsoListImpl<IUnitIf> implements IUnitListIf
 {
     public UnitListImpl(IMsoObjectIf anOwner, String theName, boolean isMain)
@@ -58,6 +60,27 @@ public class UnitListImpl extends MsoListImpl<IUnitIf> implements IUnitListIf
         IBoatIf retVal = (IBoatIf) getItem(anObjectId);
         return retVal != null ? retVal : (IBoatIf) createdItem(new BoatImpl(anObjectId, -1));
     }
+    
+    public IDogIf createDog(IObjectIdIf objectId)
+    {
+    	checkCreateOp();
+    	IDogIf retVal = (IDogIf)getItem(objectId);
+    	return retVal != null ? retVal : (IDogIf) createdItem(new DogImpl(objectId, -1));
+    }
+
+	public IAircraftIf createAircraft(IObjectIdIf objectId)
+	{
+		checkCreateOp();
+		IAircraftIf retVal = (IAircraftIf)getItem(objectId);
+		return retVal != null ? retVal : (IAircraftIf)createdItem(new AircraftImpl(objectId, -1));
+	}
+
+	public ITeamIf createTeam(IObjectIdIf objectId)
+	{
+		checkCreateOp();
+		ITeamIf retVal = (ITeamIf)getItem(objectId);
+		return retVal != null ? retVal : (ITeamIf)createdItem(new TeamImpl(objectId, -1));
+	}
 
     public IUnitIf getUnit(int aUnitNr)
     {

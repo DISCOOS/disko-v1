@@ -24,6 +24,11 @@ public class AircraftImpl extends AbstractTransportUnit implements IAircraftIf
     {
         super(anObjectId, aNumber, anIdentifier);
     }
+    
+    public AircraftImpl(IMsoObjectIf.IObjectIdIf objectId, int number)
+    {
+    	super(objectId, number);
+    }
 
     @Override
     protected void defineAttributes()

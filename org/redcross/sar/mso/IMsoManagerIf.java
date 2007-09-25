@@ -560,5 +560,32 @@ public interface IMsoManagerIf
      * @return The created object.
      */
     public IBoatIf createBoat(IMsoObjectIf.IObjectIdIf anObjectId);
+    
+    /**
+     * Create a new {@link org.redcross.sar.mso.data.IDogIf} object and add it to the collection of Unit objects.
+     * @param objectId The Object id
+     * @return The Created object.
+     */
+    public IDogIf createDog(IMsoObjectIf.IObjectIdIf objectId);
+    
+    /**
+     * Create a new {@link org.redcross.sar.mso.data.IAircraftIf} object and add it to the collection of Unit objects.
+     * @param objectId The Object id
+     * @return The Created object.
+     */
+    public IAircraftIf createAircraft(IMsoObjectIf.IObjectIdIf objectId);
+    
+    /**
+     * Create a new {@link org.redcross.sar.mso.data.ITeamIf} object and add it to the collection of Unit objects.
+     * @param objectId The Object id
+     * @return The Created object.
+     */
+    public ITeamIf createTeam(IMsoObjectIf.IObjectIdIf objectId);
 
+//    /**
+//     * Create a new {@link org.redcross.sar.mso.data.ICmdPostIf} object and add it to the collection of Unit objects.
+//     * @param objectId The Object id
+//     * @return The Created object.
+//     */
+//    public ICmdPostIf createCommandPost(IMsoObjectIf.IObjectIdIf objectId);
 }

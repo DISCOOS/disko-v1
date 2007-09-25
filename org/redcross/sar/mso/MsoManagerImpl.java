@@ -472,5 +472,18 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getUnitList().createBoat(anObjectId);
     }
 
-
+    public IDogIf createDog(IMsoObjectIf.IObjectIdIf objectId)
+    {
+    	return getExistingCmdPost().getUnitList().createDog(objectId);
+    }
+    
+    public IAircraftIf createAircraft(IMsoObjectIf.IObjectIdIf objectId)
+    {
+    	return getExistingCmdPost().getUnitList().createAircraft(objectId);
+    }
+    
+    public ITeamIf createTeam(IMsoObjectIf.IObjectIdIf objectId)
+    {
+    	return getExistingCmdPost().getUnitList().createTeam(objectId);
+    }
 }
