@@ -34,7 +34,7 @@ public class PlannedAreaFeature extends AbstractMsoFeature {
     public void msoGeometryChanged() throws IOException, AutomationException {       // todo sjekk etter endring av GeoCollection
 		if (srs == null) return;
 		IAreaIf area = (IAreaIf)msoObject;
-        geoList = area.getAreaGeodata();
+        geoList = area.getAreaGeodata().getClone();
         if (geoList != null && geoList.size() > 0) {
 			GeometryBag geomBag = new GeometryBag();
             Iterator<IGeodataIf> iter = area.getAreaGeodataIterator();

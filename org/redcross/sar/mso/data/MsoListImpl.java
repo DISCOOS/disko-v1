@@ -526,4 +526,23 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         return true;
     }
 
+    public IMsoListIf<M> getClone()
+    {
+        MsoListImpl<M> retVal = new MsoListImpl<M>(getOwner(),getName(),isMain(),size());
+        for(M item : m_items.values())
+        {
+            retVal.m_items.put(item.getObjectId(),item);
+        }
+        for(M item : m_added.values())
+        {
+            retVal.m_added.put(item.getObjectId(),item);
+        }
+        for(M item : m_deleted.values())
+        {
+            retVal.m_deleted.put(item.getObjectId(),item);
+        }
+        return retVal;
+    }
+
+
 }

@@ -96,6 +96,20 @@ public interface IMsoListIf<M extends IMsoObjectIf>
      */
     public M selectSingleItem(Selector<M> aSelector);
 
-
+    /**
+     * Check if the list contains a specific object.
+     *
+     * @param anObject Object whose presence in this list is to be tested
+     * @return <code>true</code> if this list contains the specific object's ObjectID
+     */
     public boolean contains(M anObject);
+
+    /**
+     * Get a clone of the list.
+     *
+     * The cloned list will be a copy that refers to the same objects
+     * @return The cloned list.
+     */
+    public IMsoListIf<M> getClone();
+
 }

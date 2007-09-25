@@ -15,7 +15,6 @@ import java.util.*;
  */
 public class AreaImpl extends AbstractMsoObject implements IAreaIf
 {
-// todo remove   private final AttributeImpl.MsoGeoList m_geodata = new AttributeImpl.MsoGeoList(this, "Geodata");
     private final AttributeImpl.MsoString m_remarks = new AttributeImpl.MsoString(this, "Remarks");
     private final POIListImpl m_areaPOIs = new POIListImpl(this, "AreaPOIs", false);
     private final MsoListImpl<IMsoObjectIf> m_areaGeodata = new MsoListImpl<IMsoObjectIf>(this, "AreaGeodata", false);
@@ -164,6 +163,7 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
         {
             m_areaGeodata.add(anMsoObjectIf);
         }
+        registerModifiedData(); // in order to generate an event that the map draw tools recognize
     }
 
     private boolean setAreaSequenceNumber(IMsoObjectIf anMsoObjectIf, int aNr)
