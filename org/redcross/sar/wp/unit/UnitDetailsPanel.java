@@ -406,6 +406,7 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 						return;
 					}
 				}
+				
 				// Change to personnel display
 				DiskoWpUnitImpl.setPersonnelLeft(personnel);
 				DiskoWpUnitImpl.setLeftView(DiskoWpUnitImpl.PERSONNEL_DETAILS_VIEW_ID);
@@ -568,8 +569,10 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 			IPersonnelIf personnel  = model.getPersonnel(index);
 			
 			IUnitIf editingUnit = DiskoWpUnitImpl.getEditingUnit();
-			
-			m_leaderButton.setSelected(editingUnit.getUnitLeader() == personnel);
+			if(editingUnit != null)
+			{
+				m_leaderButton.setSelected(editingUnit.getUnitLeader() == personnel);
+			}
 			
 			return m_panel;
 		}

@@ -13,13 +13,12 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.BevelBorder;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellRenderer;
 
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.gui.DiskoButtonFactory;
@@ -39,7 +38,7 @@ public class UnitTypeDialog extends DiskoDialog
 	private JPanel m_contentsPanel;
 	private JButton m_okButton;
 	private JButton m_cancelButton;
-	private JTable m_typeTable;
+	private JList m_typeList;
 	
 	private static UnitType m_type;
 	
@@ -55,6 +54,7 @@ public class UnitTypeDialog extends DiskoDialog
 	private void initialize(JComponent parentComponent)
 	{
 		this.setLocationRelativeTo(parentComponent, DiskoDialog.POS_CENTER, false);
+		this.setPreferredSize(new Dimension(400, 500));
 		m_contentsPanel = new JPanel();
 		m_contentsPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 		m_contentsPanel.setLayout(new BoxLayout(m_contentsPanel, BoxLayout.PAGE_AXIS));
@@ -65,12 +65,13 @@ public class UnitTypeDialog extends DiskoDialog
 		m_contentsPanel.add(new JLabel(m_wpUnit.getText("ChooseUnitType.text")));
 		
 		// Table
-		m_typeTable = new JTable(new UnitTypeTableModel());
-		m_typeTable.getColumnModel().getColumn(0).setCellRenderer(new UnitTypeCellRenderer());
-		m_typeTable.setRowHeight(DiskoButtonFactory.SMALL_BUTTON_SIZE.height);
-		m_typeTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		m_typeTable.setColumnSelectionAllowed(false);
-		JScrollPane tableScroller = new JScrollPane(m_typeTable);
+		m_typeList = new JList();
+		m_typeList.setListData(UnitType.values());
+		// TODO Possible to add new command post?
+		m_typeList.setCellRenderer(new UnitTypeCellRenderer());
+		m_typeList.setFixedCellHeight(DiskoButtonFactory.SMALL_BUTTON_SIZE.height);
+		m_typeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		JScrollPane tableScroller = new JScrollPane(m_typeList);
 		m_contentsPanel.add(tableScroller);
 		
 		// Buttons
@@ -91,7 +92,7 @@ public class UnitTypeDialog extends DiskoDialog
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				int selectedType = m_typeTable.getSelectedRow();
+				int selectedType = m_typeList.getSelectedIndex();
 				m_type = UnitType.values()[selectedType];
 				fireDialogFinished();
 			}	
@@ -109,39 +110,7 @@ public class UnitTypeDialog extends DiskoDialog
 		return m_type;
 	}
 	
-	/**
-	 * Unit type table model
-	 * 
-	 * @author thomasl
-	 */
-	public class UnitTypeTableModel extends AbstractTableModel
-	{
-		private static final long serialVersionUID = 1L;
-
-		public int getColumnCount()
-		{
-			return 1;
-		}
-		
-	    @Override
-	    public String getColumnName(int column)
-	    {
-	    	return null;
-	    }
-
-		public int getRowCount()
-		{
-			return UnitType.values().length;
-		}
-
-		public Object getValueAt(int rowIndex, int columnIndex)
-		{
-			UnitType type = UnitType.values()[rowIndex]; 
-			return type;
-		}
-	}
-	
-	public class UnitTypeCellRenderer extends JLabel implements TableCellRenderer
+	public class UnitTypeCellRenderer extends JLabel implements ListCellRenderer
 	{
 		private static final long serialVersionUID = 1L;
 		
@@ -153,9 +122,8 @@ public class UnitTypeDialog extends DiskoDialog
 		}
 
 		@Override
-		public Component getTableCellRendererComponent(JTable table,
-				Object value, boolean isSelected, boolean hasFocus, int row,
-				int column)
+		public Component getListCellRendererComponent(JList list, Object value,
+				int index, boolean isSelected, boolean hasFocus)
 		{
 			UnitType type = (UnitType)value;
 			
@@ -167,13 +135,13 @@ public class UnitTypeDialog extends DiskoDialog
 			
 			if(isSelected)
 			{
-				this.setBackground(table.getSelectionBackground());
-				this.setForeground(table.getSelectionForeground());
+				this.setBackground(list.getSelectionBackground());
+				this.setForeground(list.getSelectionForeground());
 			}
 			else
 			{
-				this.setBackground(table.getBackground());
-				this.setForeground(table.getForeground());
+				this.setBackground(list.getBackground());
+				this.setForeground(list.getForeground());
 			}
 			return this;
 		}

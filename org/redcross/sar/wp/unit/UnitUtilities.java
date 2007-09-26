@@ -5,23 +5,24 @@ import java.util.ResourceBundle;
 import javax.swing.JOptionPane;
 
 import org.redcross.sar.mso.data.IAssignmentIf;
+import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IPersonnelIf;
 import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
 import org.redcross.sar.mso.data.IPersonnelIf.PersonnelStatus;
 import org.redcross.sar.mso.data.IUnitIf.UnitStatus;
 import org.redcross.sar.util.except.IllegalOperationException;
+import org.redcross.sar.wp.IDiskoWpModule;
 
 /**
  * Handles logic in units
- * 
- * TODO Common utility class?
- * 
+ *   
  * @author thomasl
  */
 public class UnitUtilities
 {
 	private final static ResourceBundle m_resources = ResourceBundle.getBundle("org.redcross.sar.wp.unit.unit");
+	
 	/**
 	 * Toggles pause status for given unit
 	 * @param unit
@@ -108,9 +109,10 @@ public class UnitUtilities
 	/**
 	 * Deletes a unit, unit is completely removed, no history is kept. Changes are not committed
 	 * @param unit The unit
+	 * @param ap Work process
 	 * @throws IllegalOperationException Thrown if unit can not be deleted
 	 */
-	public static void deleteUnit(IUnitIf unit) throws IllegalOperationException
+	public static void deleteUnit(IUnitIf unit, IDiskoWpModule wp) throws IllegalOperationException
 	{
 		// Check validity of delete
 		if(unit.getStatus() != UnitStatus.EMPTY)
@@ -118,12 +120,14 @@ public class UnitUtilities
 			throw new IllegalOperationException();
 		}
 		
-		if(unit.getUnitAssignments().size() != 0)
+		// Check message log
+		for(IMessageIf message : wp.getMsoManager().getCmdPost().getMessageLogItems())
 		{
-			throw new IllegalOperationException();
+			if(message.getSender() == unit || message.getSingleReceiver() == unit)
+			{
+				throw new IllegalOperationException();
+			}
 		}
-		
-		// TODO 
 		
 		unit.deleteObject();
 	}
