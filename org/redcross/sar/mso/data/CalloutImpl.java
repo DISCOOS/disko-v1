@@ -1,13 +1,26 @@
 package org.redcross.sar.mso.data;
 
+import java.util.Calendar;
+import java.util.Collection;
+
 import org.redcross.sar.mso.IMsoManagerIf;
+import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.DuplicateIdException;
 import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.except.MsoRuntimeException;
 
 public class CalloutImpl extends AbstractMsoObject implements ICalloutIf
 {
+	// Attributes
+	private final AttributeImpl.MsoInteger m_number = new AttributeImpl.MsoInteger(this, "Number");
+	private final AttributeImpl.MsoString m_title = new AttributeImpl.MsoString(this, "Title");
+	private final AttributeImpl.MsoCalendar m_created = new AttributeImpl.MsoCalendar(this, "Created");
+	private final AttributeImpl.MsoString m_organization = new AttributeImpl.MsoString(this, "Organization");
+	private final AttributeImpl.MsoString m_department = new AttributeImpl.MsoString(this, "Department");
+	
+	// Lists
     private final PersonnelListImpl m_personnel = new PersonnelListImpl(this, "CalloutPersonnel", false);
+    
 
     public CalloutImpl(IMsoObjectIf.IObjectIdIf anObjectId)
     {
@@ -77,10 +90,122 @@ public class CalloutImpl extends AbstractMsoObject implements ICalloutIf
             return false;
         }
     }
+    
+	public IPersonnelListIf getPersonnelList()
+	{
+		return m_personnel;
+	}
+
+	public Collection<IPersonnelIf> getPersonnelListItems()
+	{
+		return m_personnel.getItems();
+	}
 
     public IMsoManagerIf.MsoClassCode getMsoClassCode()
     {
         return IMsoManagerIf.MsoClassCode.CLASSCODE_CALLOUT;
     }
 
+    public void setNumber(int number)
+    {
+    	m_number.setValue(number);
+    }
+	
+	public int getNumber()
+	{
+		return m_number.intValue();
+	}
+	
+	public IMsoModelIf.ModificationState getNumberState()
+	{
+		return m_number.getState();
+	}
+
+    public IAttributeIf.IMsoIntegerIf getNumberAttribute()
+    {
+    	return m_number;
+    }
+    
+    
+	public void setTitle(String title)
+	{
+		m_title.setValue(title);
+	}
+	
+	public String getTitle()
+	{
+		return m_title.getString();
+	}
+	
+	public IMsoModelIf.ModificationState getTitleState()
+	{
+		return m_title.getState();
+	}
+
+    public IAttributeIf.IMsoStringIf getTitleAttribute()
+    {
+    	return m_title;
+    }
+    
+    public void setCreated(Calendar created)
+    {
+    	m_created.setValue(created);
+    }
+    
+	public Calendar getCreated()
+	{
+		return m_created.getCalendar();
+	}
+	
+	public IMsoModelIf.ModificationState getCreatedState()
+	{
+		return m_created.getState();
+	}
+
+    public IAttributeIf.IMsoCalendarIf getCreatedAttribute()
+    {
+    	return m_created;
+    }
+	
+    public void setOrganization(String organization)
+    {
+    	m_organization.setValue(organization);
+    }
+    
+	public String getOrganization()
+	{
+		return m_organization.getString();
+	}
+	
+	public IMsoModelIf.ModificationState getOrganizationState()
+	{
+		return m_organization.getState();
+	}
+
+    public IAttributeIf.IMsoStringIf getOrganizationAttribute()
+    {
+    	return m_organization;
+    }
+    
+    
+	public void setDepartment(String department)
+	{
+		m_department.setValue(department);
+	}
+	
+	public String getDepartment()
+	{
+		return m_department.getString();
+	}
+	
+	public IMsoModelIf.ModificationState getDepartmentState()
+	{
+		return m_department.getState();
+	}
+
+    public IAttributeIf.IMsoStringIf getDepartmentAttribute()
+    {
+    	return m_department;
+    }
+	
 }
