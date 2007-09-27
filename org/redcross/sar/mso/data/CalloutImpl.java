@@ -12,7 +12,6 @@ import org.redcross.sar.util.except.MsoRuntimeException;
 public class CalloutImpl extends AbstractMsoObject implements ICalloutIf
 {
 	// Attributes
-	private final AttributeImpl.MsoInteger m_number = new AttributeImpl.MsoInteger(this, "Number");
 	private final AttributeImpl.MsoString m_title = new AttributeImpl.MsoString(this, "Title");
 	private final AttributeImpl.MsoCalendar m_created = new AttributeImpl.MsoCalendar(this, "Created");
 	private final AttributeImpl.MsoString m_organization = new AttributeImpl.MsoString(this, "Organization");
@@ -21,7 +20,6 @@ public class CalloutImpl extends AbstractMsoObject implements ICalloutIf
 	// Lists
     private final PersonnelListImpl m_personnel = new PersonnelListImpl(this, "CalloutPersonnel", false);
     
-
     public CalloutImpl(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         super(anObjectId);
@@ -29,6 +27,10 @@ public class CalloutImpl extends AbstractMsoObject implements ICalloutIf
 
     protected void defineAttributes()
     {
+    	addAttribute(m_title);
+    	addAttribute(m_created);
+    	addAttribute(m_organization);
+    	addAttribute(m_department);
     }
 
     protected void defineLists()
@@ -105,27 +107,6 @@ public class CalloutImpl extends AbstractMsoObject implements ICalloutIf
     {
         return IMsoManagerIf.MsoClassCode.CLASSCODE_CALLOUT;
     }
-
-    public void setNumber(int number)
-    {
-    	m_number.setValue(number);
-    }
-	
-	public int getNumber()
-	{
-		return m_number.intValue();
-	}
-	
-	public IMsoModelIf.ModificationState getNumberState()
-	{
-		return m_number.getState();
-	}
-
-    public IAttributeIf.IMsoIntegerIf getNumberAttribute()
-    {
-    	return m_number;
-    }
-    
     
 	public void setTitle(String title)
 	{

@@ -15,16 +15,7 @@ public interface ICalloutIf extends IMsoObjectIf
 	
 	/*-------------------------------------------------------------------------------------------
 	 * Methods for attributes
-	 *-------------------------------------------------------------------------------------------*/
-	public void setNumber(int number);
-	
-	public int getNumber();
-	
-	public IMsoModelIf.ModificationState getNumberState();
-
-    public IAttributeIf.IMsoIntegerIf getNumberAttribute();
-    
-    
+	 *-------------------------------------------------------------------------------------------*/    
 	public void setTitle(String title);
 	
 	public String getTitle();

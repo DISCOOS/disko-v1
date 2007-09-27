@@ -1,10 +1,7 @@
 package org.redcross.sar.mso.data;
 
-import org.redcross.sar.util.except.DuplicateIdException;
-
 public class CalloutListImpl extends MsoListImpl<ICalloutIf> implements ICalloutListIf
 {
-
     public CalloutListImpl(IMsoObjectIf anOwner, String theName, boolean isMain)
     {
         super(anOwner, theName, isMain);
@@ -24,8 +21,7 @@ public class CalloutListImpl extends MsoListImpl<ICalloutIf> implements ICallout
     public ICalloutIf createCallout(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         checkCreateOp();
-        ICalloutIf retVal = getItem(anObjectId);
-        return retVal != null ? retVal : createdItem(new CalloutImpl(anObjectId));
+        ICalloutIf retVal = (ICalloutIf)getItem(anObjectId);
+        return retVal != null ? retVal : (ICalloutIf)createdItem(new CalloutImpl(anObjectId));
     }
-
 }
