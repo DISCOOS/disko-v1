@@ -16,7 +16,7 @@ SmallButton.height=64
 Taktikk.icon=icons/60x60/tactic.gif
 Logistikk.icon=icons/60x60/logistics.gif
 Sambandslogg.icon=icons/60x60/log.gif
-Tasks.icon=icons/60x60/task.gif
+Oppgaver.icon=icons/60x60/task.gif
 Kart.icon=icons/60x60/map.gif
 Enhet.icon=icons/60x60/unit.gif
 
@@ -38,14 +38,18 @@ PathSearch.icon=icons/path.gif
 
 ApplyButton.text=Utfør
 ApplyButton.icon=icons/
-FinishedButton.text=Ferdig
+FinishedButton.text=
 FinishedButton.icon=icons/60x60/finish.gif
 OkButton.text=OK
-OkButton.icon=OK
-CancelButton.text=Avbryt
+OkButton.icon=icons/
+CancelButton.text=
 CancelButton.icon=icons/60x60/abort.gif
-DeleteButton.text=Slett
+DeleteButton.text=
 DeleteButton.icon=icons/60x60/delete.gif
+BackButton.text=Tilbake
+BackButton.icon=
+NextButton.text=Neste
+NextButton.icon=
 
 ToolCommandType.POI_TOOL.icon=icons/60x60/poi.gif
 ToolCommandType.FLANK_TOOL.icon=icons/60x60/edge.gif

@@ -35,7 +35,9 @@ public class DiskoButtonFactory
 		CancelButton,
 		OkButton,
 		FinishedButton,
-		DeleteButton
+		DeleteButton,
+		BackButton,
+		NextButton
 	};
 	
 	private static Properties getProperties()
@@ -134,14 +136,10 @@ public class DiskoButtonFactory
 		
 		return button;
 	}
-
-	public static JButton createSmallButton(String string)
+	
+	public static JButton createSmallButton()
 	{
 		JButton button = new JButton();
-		if(!string.isEmpty())
-		{
-			button.setText(string);
-		}
 		
 		button.setMinimumSize(SMALL_BUTTON_SIZE);
 		button.setPreferredSize(SMALL_BUTTON_SIZE);
@@ -151,24 +149,45 @@ public class DiskoButtonFactory
 		
 		return button;
 	}
+
+	public static JButton createSmallButton(String string)
+	{
+		JButton button = createSmallButton();
+		
+		if(!string.isEmpty())
+		{
+			button.setText(string);
+		}
+		
+		return button;
+	}
 	
 	public static JButton createSmallButton(String name, String iconPath)
 	{
-		JButton button = createSmallButton("");
-		try
+		JButton button = createSmallButton();
+		if(name.equals(""))
 		{
-			button.setIcon(Utils.createImageIcon(iconPath, name));
-		} 
-		catch (Exception e)
-		{
-			e.printStackTrace();
+			try
+			{
+				button.setIcon(Utils.createImageIcon(iconPath, name));
+			} 
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
 		}
+		else
+		{
+			button.setText(name);
+		}
+		
 		return button;
 	}
 	
 	public static JButton createSmallButton(ButtonType type)
 	{
-		JButton button = createSmallButton("", getProperties().getProperty(type.name() + ".icon"));
+		JButton button = createSmallButton(getProperties().getProperty(type.name() + ".text"), 
+				getProperties().getProperty(type.name() + ".icon"));
 		return button;
 	}
 

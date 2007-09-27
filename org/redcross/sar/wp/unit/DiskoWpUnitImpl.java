@@ -30,6 +30,7 @@ import org.redcross.sar.event.IDialogEventListener;
 import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.mso.data.ICalloutIf;
 import org.redcross.sar.mso.data.IPersonnelIf;
 import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IMsoObjectIf.IObjectIdIf;
@@ -80,6 +81,8 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 //	private static String m_bottomViewId = PERSONNEL_DETAILS_VIEW_ID;
 	
 	UnitTypeDialog m_unitTypeDialog;
+	
+	ImportCalloutDialog m_importCalloutDialog;
 	
 	private static IMsoModelIf m_msoModel;
 	
@@ -184,6 +187,17 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 					}
 					break;
 				case 2:
+					ICalloutIf callout = m_calloutDetailsPanel.getCallOut();
+					if(callout == null)
+					{
+						m_leftMessageLabel.setText(getText("SelectCallOut.text"));
+						layout = (CardLayout)m_leftPanel.getLayout();
+						layout.show(m_leftPanel, MESSAGE_VIEW_ID);
+						m_bottomMessageLabel.setText(getText("SelectCallOut.text"));
+						layout = (CardLayout)m_bottomPanel.getLayout();
+						layout.show(m_bottomPanel, MESSAGE_VIEW_ID);
+						m_leftViewId = MESSAGE_VIEW_ID;
+					}
 					break;
 				}
 					
@@ -203,6 +217,8 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		
 		m_unitTypeDialog = new UnitTypeDialog(this, m_overviewTabPane);
 		m_unitTypeDialog.addDialogListener(this);
+		
+		m_importCalloutDialog = new ImportCalloutDialog(this);
 	}
 
 	private void initTables()
@@ -266,6 +282,11 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		m_calloutOverviewTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		m_calloutOverviewTable.addMouseListener(new CalloutTableMouseListener());
 		
+		m_calloutOverviewTable.setRowHeight(DiskoButtonFactory.TABLE_BUTTON_SIZE.height + 10);
+		column = m_calloutOverviewTable.getColumnModel().getColumn(0);
+		column.setPreferredWidth(80);
+		column.setMaxWidth(80);
+		
 		tableHeader = m_calloutOverviewTable.getTableHeader();
         tableHeader.setResizingAllowed(false);
         tableHeader.setReorderingAllowed(false);
@@ -298,8 +319,15 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		});
 		layoutButton(m_newUnitButton);
 		
-		m_importCalloutButton = DiskoButtonFactory.createSmallButton(getText("ImportAlertButton.text")/*, 
+		m_importCalloutButton = DiskoButtonFactory.createSmallButton(getText("ImportCalloutButton.text")/*, 
 			getText("ImportAlertButton.icon")*/);
+		m_importCalloutButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				importCallout();
+			}
+		});
 		layoutButton(m_importCalloutButton);
 		
 		m_deleteButton = DiskoButtonFactory.createSmallButton("", getText("DeleteButton.icon"));
@@ -364,7 +392,8 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		
 		if(m_newCallOut)
 		{
-			// TODO
+			m_calloutDetailsPanel.setCallOut(null);
+			m_calloutDetailsPanel.updateFieldContents();
 			
 			m_newCallOut = false;
 			m_importCalloutButton.setSelected(false);
@@ -408,8 +437,11 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		// Check for new call-out
 		if(m_newCallOut)
 		{
-			// TODO
+			m_calloutDetailsPanel.setCallOut(null);
+			m_calloutDetailsPanel.updateFieldContents();
+			
 			m_newCallOut = false;
+			m_importCalloutButton.setSelected(false);
 		}
 		
 		this.getMsoModel().commit();
@@ -475,6 +507,17 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 			
 			m_unitOverviewTable.setEnabled(false);
 		}
+	}
+	
+	/**
+	 * Creates call-out and imports personnel
+	 */
+	private void importCallout()
+	{
+		m_newCallOut = true;
+		m_overviewTabPane.setSelectedIndex(2);
+		m_importCalloutButton.setSelected(true);
+		m_importCalloutDialog.setVisible(true);
 	}
 	
 	/**
@@ -773,6 +816,12 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 	{
 		public void mouseClicked(MouseEvent e)
 		{
+			Point clickedPoint = new Point(e.getX(), e.getY());
+			int row = m_calloutOverviewTable.rowAtPoint(clickedPoint);
+			int index = m_calloutOverviewTable.convertRowIndexToModel(row);
+			CalloutOverviewTableModel model = (CalloutOverviewTableModel)m_calloutOverviewTable.getModel();
+			ICalloutIf callout = model.getCallout(index);
+			
 			int clickCount = e.getClickCount();
 			if(clickCount >= 2)
 			{
@@ -780,13 +829,21 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 				CardLayout layout = (CardLayout)m_leftPanel.getLayout();
 				layout.show(m_leftPanel, CALLOUT_VIEW_ID);
 				m_leftViewId = CALLOUT_VIEW_ID;
+				
+				m_calloutDetailsPanel.setCallOut(callout);
+				m_calloutDetailsPanel.updateFieldContents();
 			}
 			else if(clickCount == 1)
 			{
 				// Show personnel details only if personnel panel is showing	
-				if(m_leftViewId.equals(CALLOUT_VIEW_ID))
+				if(m_leftViewId.equals(CALLOUT_VIEW_ID) || m_leftViewId.equals(MESSAGE_VIEW_ID))
 				{
+					CardLayout layout = (CardLayout)m_leftPanel.getLayout();
+					layout.show(m_leftPanel, CALLOUT_VIEW_ID);
+					m_leftViewId = CALLOUT_VIEW_ID;
 					
+					m_calloutDetailsPanel.setCallOut(callout);
+					m_calloutDetailsPanel.updateFieldContents();
 				}
 			}
 		}

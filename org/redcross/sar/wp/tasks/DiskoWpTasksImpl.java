@@ -85,6 +85,7 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
                     @SuppressWarnings("unchecked")
                     public void run()
                     {
+                    	
                         ITaskListIf tasks = getMsoManager().getCmdPost().getTaskList();
 
                         Calendar currentTime = Calendar.getInstance();
