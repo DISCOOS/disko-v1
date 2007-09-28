@@ -55,7 +55,7 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener, I
 
     private final AssignmentLabel.AssignmentLabelActionHandler m_assignmentLabelMouseListener;
 
-    private final static long m_tickInterval = 60 * 1000; // once every minute.
+    private final static long m_timeInterval = 60 * 1000; // once every minute.
 
     private long m_timeCounter;
 
@@ -112,7 +112,7 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener, I
 
     public long getInterval()
     {
-        return m_tickInterval;
+        return m_timeInterval;
     }
 
     /**
