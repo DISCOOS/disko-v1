@@ -5,6 +5,8 @@ import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.event.DiskoWpEvent;
 import org.redcross.sar.event.IDiskoWpEventListener;
+import org.redcross.sar.event.ITickEventListenerIf;
+import org.redcross.sar.event.TickEvent;
 import org.redcross.sar.gui.MainPanel;
 import org.redcross.sar.gui.SubMenuPanel;
 import org.redcross.sar.map.IDiskoMap;
@@ -15,9 +17,8 @@ import org.redcross.sar.mso.event.IMsoEventManagerIf;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Properties;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.Timer;
 
 /**
  * This abstract class is a base class that has a default implementation of the
@@ -37,6 +38,10 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule
     protected boolean isEditing = false;
     protected ResourceBundle wpBundle;
 
+    private final ArrayList<ITickEventListenerIf> tickListeners;
+    private final TickEvent tickEvent;
+    private long tickTime = 0;
+
     /**
      * @param role
      */
@@ -45,6 +50,9 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule
         this.role = role;
         listeners = new ArrayList<IDiskoWpEventListener>();
         diskoWpEvent = new DiskoWpEvent(this);
+        tickListeners = new ArrayList<ITickEventListenerIf>();
+        tickEvent = new TickEvent(this);
+        initTickTimer();
     }
 
     public IDiskoRole getDiskoRole()
@@ -311,5 +319,89 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule
         }
     }
 
+    private static final int TIMER_DELAY = 1000; // 1 second
+    private final WpTicker ticker = new WpTicker();
+
+    /**
+     * Creates a timer for generating {@link TickEvent} objects periodically.
+     */
+    private void initTickTimer()
+    {
+        Timer timer = new Timer(true);
+        timer.schedule(new TimerTask()
+        {
+            public void run()
+            {
+                long newTickTime = Calendar.getInstance().getTimeInMillis();
+                if (tickTime == 0)
+                {
+                    tickTime = newTickTime;
+                } else if (newTickTime > tickTime)
+                {
+                    ticker.setElapsedTime(newTickTime - tickTime);
+                    SwingUtilities.invokeLater(ticker);
+                    tickTime = newTickTime;
+                }
+
+            }
+        }, 0, TIMER_DELAY);
+    }
+
+
+    public void addTickEventListener(ITickEventListenerIf listener)
+    {
+        tickListeners.add(listener);
+    }
+
+    public void removeTickEventListener(ITickEventListenerIf listener)
+    {
+        tickListeners.remove(listener);
+    }
+
+    /**
+     * Count down the interval timer for each listern and fire tick events to all listeners where interval time has expired.
+     *
+     * @param aMilli Time in milliseconds since previous call.
+     */
+    protected void fireTick(long aMilli)
+    {
+        if (tickListeners.size() == 0 || aMilli == 0)
+        {
+            return;
+        }
+
+        for (ITickEventListenerIf listener : tickListeners)
+        {
+            long timer = listener.getTimeCounter() - aMilli;
+            if (timer > 0)
+            {
+                listener.setTimeCounter(timer);
+            } else
+            {
+                listener.handleTick(tickEvent);
+                listener.setTimeCounter(listener.getInterval());
+            }
+        }
+    }
+
+    /**
+     * Class that embeds a runnable that performs the GUI updates by firing the ticks to the listeners.
+     *
+     * The class is not thread-safe. The run() method is run with the latest given elapsed time.
+     */
+    class WpTicker implements Runnable
+    {
+        long m_elapsedTime;
+
+        void setElapsedTime(long aTime)
+        {
+            m_elapsedTime = aTime;
+        }
+
+        public void run()
+        {
+            fireTick(m_elapsedTime);
+        }
+    }
 
 }

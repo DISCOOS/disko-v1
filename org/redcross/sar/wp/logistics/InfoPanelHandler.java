@@ -2,6 +2,8 @@ package org.redcross.sar.wp.logistics;
 
 import com.esri.arcgis.interop.AutomationException;
 import org.redcross.sar.app.IDiskoRole;
+import org.redcross.sar.event.ITickEventListenerIf;
+import org.redcross.sar.event.TickEvent;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
@@ -24,7 +26,7 @@ import java.util.Vector;
 /**
  *
  */
-public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
+public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener, ITickEventListenerIf
 {
     private final static String EMPTY_PANEL_NAME = "EmptyPanel";
     private final static String UNIT_PANEL_NAME = "UnitPanel";
@@ -53,6 +55,10 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
 
     private final AssignmentLabel.AssignmentLabelActionHandler m_assignmentLabelMouseListener;
 
+    private final static long m_tickInterval = 60 * 1000; // once every minute.
+
+    private long m_timeCounter;
+
     public InfoPanelHandler(JPanel anInfoPanel, IDiskoWpLogistics aWpModule, AssignmentLabel.AssignmentLabelActionHandler anActionHandler)
     {
         m_infoPanel = anInfoPanel;
@@ -64,9 +70,10 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
         initUnitInfoPanel();
         initAssignmentInfoPanel();
         initAssignmentListPanel();
+        showPanel(EMPTY_PANEL_NAME);
 
         aWpModule.getMmsoEventManager().addClientUpdateListener(this);
-        showPanel(EMPTY_PANEL_NAME);
+        aWpModule.addTickEventListener(this);
     }
 
     private final EnumSet<IMsoManagerIf.MsoClassCode> myInterests = EnumSet.of(IMsoManagerIf.MsoClassCode.CLASSCODE_UNIT,
@@ -86,6 +93,40 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
         } else if (ASSIGNMENT_LIST_PANEL_NAME.equals(m_displayedPanelName))
         {
             renderAssignmentList();
+        } else if (UNIT_PANEL_NAME.equals(m_displayedPanelName))
+        {
+            renderUnit();
+        }
+    }
+
+
+    public void setTimeCounter(long aCounter)
+    {
+        m_timeCounter = aCounter;
+    }
+
+    public long getTimeCounter()
+    {
+        return m_timeCounter;
+    }
+
+    public long getInterval()
+    {
+        return m_tickInterval;
+    }
+
+    /**
+     * Handle tick event.
+     * <p/>
+     * Update GUI due to tick events. Shall only update GUI objects that are depending on current time.
+     *
+     * @param e The evet object, not used.
+     */
+    public void handleTick(TickEvent e)
+    {
+        if (ASSIGNMENT_PANEL_NAME.equals(m_displayedPanelName))
+        {
+            renderAssignment();
         } else if (UNIT_PANEL_NAME.equals(m_displayedPanelName))
         {
             renderUnit();
@@ -127,7 +168,7 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
     {
         // Build up a scrollpane with room for assignment labels.
         JScrollPane scrollpane = new JScrollPane();
-        m_unitAssignmentsPanel = new AssignmentScrollPanel(scrollpane, new SpringLayout(),5,5,false, m_assignmentLabelMouseListener, false);
+        m_unitAssignmentsPanel = new AssignmentScrollPanel(scrollpane, new SpringLayout(), 5, 5, false, m_assignmentLabelMouseListener, false);
         m_unitAssignmentsPanel.setCols(1);
         JLabel hl = m_unitAssignmentsPanel.getHeaderLabel();
         hl.setHorizontalAlignment(SwingConstants.CENTER);
@@ -145,9 +186,10 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
 
     private void renderAssignment()
     {
-    	if (m_displayedAsssignment == null) { // added by Geodata
-    		return;
-    	}
+        if (m_displayedAsssignment == null)
+        { // added by Geodata
+            return;
+        }
         m_assignmentInfoPanel.setTopText(0, m_displayedAsssignment.getNumber() + " (" + m_displayedAsssignment.getStatusText() + ")");
         m_assignmentInfoPanel.setTopText(1, m_displayedAsssignment.getTypeText());
         IUnitIf unit = m_displayedAsssignment.getOwningUnit();
@@ -243,7 +285,7 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
         Vector<String> memberNames = new Vector<String>();
         for (IPersonnelIf p : m_displayedUnit.getUnitPersonnelItems())
         {
-            memberNames.add( p.getFirstname() + " " + p.getLastname());
+            memberNames.add(p.getFirstname() + " " + p.getLastname());
         }
         m_unitInfoPanel.setCenterText(2, memberNames);
         m_unitInfoPanel.repaint();
@@ -294,7 +336,8 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener
                     calledModule.setCallingWp(m_wpModule.getName());
                     calledModule.getMap().zoomToMsoObject(m_displayedAsssignment);
                     m_wpModule.getMap().setSelected(m_displayedAsssignment, true);
-                } else {
+                } else
+                {
                     m_wpModule.showWarning("Taktikk er ikke funnet");
                 }
             }

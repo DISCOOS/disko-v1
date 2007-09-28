@@ -3,6 +3,7 @@ package org.redcross.sar.wp;
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.event.IDiskoWpEventListener;
+import org.redcross.sar.event.ITickEventListenerIf;
 import org.redcross.sar.map.IDiskoMap;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
@@ -85,4 +86,7 @@ public interface IDiskoWpModule {
      */
     public String getText(String aKey);
 
+    public void addTickEventListener(ITickEventListenerIf listener);
+
+    public void removeTickEventListener(ITickEventListenerIf listener);
 }
