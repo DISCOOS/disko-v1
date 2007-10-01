@@ -41,6 +41,7 @@ import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.DiskoButtonFactory.ButtonType;
 import org.redcross.sar.mso.data.ICalloutIf;
 import org.redcross.sar.mso.data.IPersonnelIf;
+import org.redcross.sar.mso.data.IPersonnelIf.PersonnelImportStatus;
 import org.redcross.sar.mso.data.IPersonnelIf.PersonnelStatus;
 import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.mso.DTG;
@@ -272,7 +273,6 @@ public class ImportCalloutDialog extends DiskoDialog
 					m_currentPanel = IMPORT_ID;
 					clearContents();
 					fireDialogFinished();
-					setVisible(false);
 				}
 			}
 		});
@@ -287,7 +287,6 @@ public class ImportCalloutDialog extends DiskoDialog
 				layout.show(m_topPanel, IMPORT_ID);
 				m_currentPanel = IMPORT_ID;
 				fireDialogCanceled();
-				setVisible(false);
 			}
 		});
 		m_bottomPanel.add(m_cancelButton);
@@ -304,7 +303,6 @@ public class ImportCalloutDialog extends DiskoDialog
 				m_currentPanel = IMPORT_ID;
 				clearContents();
 				fireDialogFinished();
-				setVisible(false);
 			}
 		});
 		m_bottomPanel.add(m_okButton);
@@ -454,28 +452,43 @@ public class ImportCalloutDialog extends DiskoDialog
 					// Update existing personnel
 					if(personnel.isCreateNew())
 					{
-						// Create new personnel
+						// Create new personnel instance
 						msoPersonnel = m_wpModule.getMsoManager().createPersonnel();
 						msoPersonnel.setDataSourceID(personnel.getId());
 						msoPersonnel.setFirstname(personnel.getFirstName());
 						msoPersonnel.setLastname(personnel.getLastName());
 						msoPersonnel.setTelephone1(personnel.getPhone());
+						msoPersonnel.setImportStatus(PersonnelImportStatus.IMPORTED);
+						personnel.getPersonnelRef().setNextOccurence(msoPersonnel);
 					}
 					else if(personnel.isUpdate())
 					{
 						// Update existing personnel
 						msoPersonnel = personnel.getPersonnelRef();
+						msoPersonnel.setDataSourceID(personnel.getId());
+						msoPersonnel.setFirstname(personnel.getFirstName());
+						msoPersonnel.setLastname(personnel.getLastName());
+						msoPersonnel.setTelephone1(personnel.getPhone());
+						msoPersonnel.setImportStatus(PersonnelImportStatus.UPDATED);
 					}
 					else if(personnel.isKeepExisting())
 					{
 						// Keep personnel
 						msoPersonnel = personnel.getPersonnelRef();
+						msoPersonnel.setImportStatus(PersonnelImportStatus.KEPT);
 					}
 					
-					if(msoPersonnel.getStatus() != PersonnelStatus.ARRIVED)
+					// Reinstate released personnel
+					if(msoPersonnel.getStatus() == PersonnelStatus.RELEASED)
+					{
+						PersonnelUtilities.reinstateResource(msoPersonnel, PersonnelStatus.ON_ROUTE);
+						msoPersonnel = msoPersonnel.getNextOccurence();
+					}
+					else if(msoPersonnel.getStatus() != PersonnelStatus.ARRIVED)
 					{
 						msoPersonnel.setStatus(PersonnelStatus.ON_ROUTE);
 					}
+
 				}
 				else
 				{
@@ -483,6 +496,7 @@ public class ImportCalloutDialog extends DiskoDialog
 					msoPersonnel = m_wpModule.getMsoManager().createPersonnel();
 					msoPersonnel.setFirstname(personnel.getFirstName());
 					msoPersonnel.setLastname(personnel.getLastName());
+					msoPersonnel.setTelephone1(personnel.getPhone());
 					msoPersonnel.setStatus(PersonnelStatus.ON_ROUTE);
 				}
 			
@@ -667,7 +681,7 @@ public class ImportCalloutDialog extends DiskoDialog
 		@Override
 		public boolean isCellEditable(int rowIndex, int columnIndex) 
 		{
-			return columnIndex == 2;
+			return columnIndex == 2 || columnIndex == 0;
 		}
 		
 	    @Override
@@ -727,6 +741,7 @@ public class ImportCalloutDialog extends DiskoDialog
 					PersonnelAuxiliary personnel = m_personnelList.get(m_editingRow);
 					personnel.setUpdateType(PersonnelUpdateType.UPDATE_EXISTING);
 					fireEditingStopped();
+					m_personnelTable.repaint();
 				}
 			});
 			m_optionsPanel.add(m_updateButton);
@@ -740,6 +755,7 @@ public class ImportCalloutDialog extends DiskoDialog
 					PersonnelAuxiliary personnel = m_personnelList.get(m_editingRow);
 					personnel.setUpdateType(PersonnelUpdateType.KEEP_EXISTING);
 					fireEditingStopped();
+					m_personnelTable.repaint();
 				}	
 			});
 			m_optionsPanel.add(m_keepButton);
@@ -753,6 +769,7 @@ public class ImportCalloutDialog extends DiskoDialog
 					PersonnelAuxiliary personnel = m_personnelList.get(m_editingRow);
 					personnel.setUpdateType(PersonnelUpdateType.CREATE_NEW);
 					fireEditingStopped();
+					m_personnelTable.repaint();
 				}
 			});
 			m_optionsPanel.add(m_newButton);

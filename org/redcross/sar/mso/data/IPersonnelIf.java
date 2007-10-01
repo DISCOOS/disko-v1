@@ -27,6 +27,13 @@ public interface IPersonnelIf extends IPersonIf
         FIREFIGHTER,
         OTHER
     }
+    
+    public enum PersonnelImportStatus
+    {
+    	IMPORTED,
+    	UPDATED,
+    	KEPT
+    }
 
     public void setArrived(Calendar anArrived);
 
@@ -123,6 +130,19 @@ public interface IPersonnelIf extends IPersonIf
     public IMsoModelIf.ModificationState getTypeState();
 
     public IAttributeIf.IMsoEnumIf<PersonnelType> getTypeAttribute();
+    
+    
+    public void setImportStatus(PersonnelImportStatus status);
+
+    public void setImportStatus(String status);
+
+    public PersonnelImportStatus getImportStatus();
+
+    public String getImportStatusText();
+
+    public IMsoModelIf.ModificationState getImportStatusState();
+
+    public IAttributeIf.IMsoEnumIf<PersonnelImportStatus> getImportStatusAttribute();
 
 
     public void setNextOccurence(IPersonnelIf aPersonnel);

@@ -5,9 +5,13 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -20,7 +24,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -35,6 +41,7 @@ import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
 import org.redcross.sar.util.mso.DTG;
 import org.redcross.sar.util.mso.Selector;
+import org.redcross.sar.wp.IDiskoWpModule;
 
 /**
  * JPanel displaying alert details
@@ -56,10 +63,13 @@ public class CalloutDetailsPanel extends JPanel
 	
 	private ICalloutIf m_callout;
 	
+	private IDiskoWpUnit m_wpUnit;
+	
 	private final static ResourceBundle m_resources = ResourceBundle.getBundle("org.redcross.sar.wp.unit.unit");
 	
-	public CalloutDetailsPanel()
+	public CalloutDetailsPanel(IDiskoWpUnit wp)
 	{
+		m_wpUnit = wp;
 		initialize();
 	}
 	
@@ -85,7 +95,6 @@ public class CalloutDetailsPanel extends JPanel
 		
 		// Title
 		m_titleTextField = new JTextField();
-
 		layoutComponent(m_resources.getString("Title.text"), m_titleTextField, gbc);
 		
 		// Created
@@ -101,16 +110,23 @@ public class CalloutDetailsPanel extends JPanel
 		layoutComponent(m_resources.getString("Department.text"), m_departmentTextField, gbc);
 		
 		// Personnel table
-		m_personnelTable = new JTable(new CallOutPersonnelTableModel(null));
+		m_personnelTable = new JTable(new CallOutPersonnelTableModel(null, m_wpUnit));
+		m_personnelTable.addMouseListener(new CallOutPersonnelMouseListener());
+		m_personnelTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		CallOutPersonnelStatusEditor editor = new CallOutPersonnelStatusEditor();
-		m_personnelTable.setRowSelectionAllowed(false);
 		m_personnelTable.setColumnSelectionAllowed(false);
 		m_personnelTable.setRowHeight(DiskoButtonFactory.TABLE_BUTTON_SIZE.height + 10);
+		
 		TableColumn column = m_personnelTable.getColumnModel().getColumn(2);
 		column.setCellEditor(editor);
 		column.setCellRenderer(editor);
 		column.setPreferredWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width * 2 + 15);
 		column.setMaxWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width * 2 + 15);
+		
+		JTableHeader header = m_personnelTable.getTableHeader();
+		header.setReorderingAllowed(false);
+		header.setResizingAllowed(false);
+		
 		JScrollPane personnelTableScrollPane = new JScrollPane(m_personnelTable);
 		gbc.weighty = 1.0;
 		gbc.gridwidth = 2;
@@ -186,15 +202,18 @@ public class CalloutDetailsPanel extends JPanel
 		
 		List<IPersonnelIf> m_personnel;
 		
-		private final Selector<IPersonnelIf> m_personnelSelector = new Selector<IPersonnelIf>()
+		private final Selector<IPersonnelIf> PERSONNEL_SELECTOR = new Selector<IPersonnelIf>()
 		{
-			public boolean select(IPersonnelIf anObject)
+			public boolean select(IPersonnelIf personnel)
 			{
 				return true;
 			}
 		};
 		
-		private final Comparator<IPersonnelIf> m_personnelComparator = new Comparator<IPersonnelIf>()
+		/**
+		 * Sort personnel on name
+		 */
+		private final Comparator<IPersonnelIf> PERSONNEL_NAME_COMPARATOR = new Comparator<IPersonnelIf>()
 		{
 			public int compare(IPersonnelIf arg0, IPersonnelIf arg1)
 			{
@@ -203,10 +222,11 @@ public class CalloutDetailsPanel extends JPanel
 			}
 		};
 		
-		public CallOutPersonnelTableModel(ICalloutIf callout)
+		public CallOutPersonnelTableModel(ICalloutIf callout, IDiskoWpModule wp)
 		{
 			m_callout = callout;
 			m_personnel = new LinkedList<IPersonnelIf>();
+			wp.getMmsoEventManager().addClientUpdateListener(this);
 			buildTable();
 		}
 
@@ -228,7 +248,7 @@ public class CalloutDetailsPanel extends JPanel
 			case 0:
 				return personnel.getFirstname() + " " + personnel.getLastname();
 			case 1:
-				break;
+				return personnel.getImportStatusText();
 			case 2:
 				return personnel;
 			}
@@ -244,7 +264,7 @@ public class CalloutDetailsPanel extends JPanel
 		@Override
 		public boolean isCellEditable(int row, int column)
 		{
-			return row == 2;
+			return column == 2;
 		}
 		
 		private void buildTable()
@@ -252,7 +272,7 @@ public class CalloutDetailsPanel extends JPanel
 			if(m_callout != null)
 			{
 				m_personnel.clear();
-				m_personnel.addAll(m_callout.getPersonnelList().selectItems(m_personnelSelector, m_personnelComparator));
+				m_personnel.addAll(m_callout.getPersonnelList().selectItems(PERSONNEL_SELECTOR, PERSONNEL_NAME_COMPARATOR));
 			}
 		}
 
@@ -262,9 +282,14 @@ public class CalloutDetailsPanel extends JPanel
 			fireTableDataChanged();
 		}
 		
+		EnumSet<IMsoManagerIf.MsoClassCode> interestedIn = EnumSet.of
+		(
+				IMsoManagerIf.MsoClassCode.CLASSCODE_PERSONNEL,
+				IMsoManagerIf.MsoClassCode.CLASSCODE_CALLOUT
+		);
 		public boolean hasInterestIn(IMsoObjectIf msoObject)
 		{
-			return msoObject.getMsoClassCode() == IMsoManagerIf.MsoClassCode.CLASSCODE_CALLOUT;
+			return interestedIn.contains(msoObject.getMsoClassCode());
 		}
 		
 		public void setCallOut(ICalloutIf callout)
@@ -277,6 +302,11 @@ public class CalloutDetailsPanel extends JPanel
 		public ICalloutIf getCallOut()
 		{
 			return m_callout;
+		}
+
+		public IPersonnelIf getPersonnel(int index)
+		{
+			return m_personnel.get(index);
 		}
 	}
 	
@@ -308,9 +338,24 @@ public class CalloutDetailsPanel extends JPanel
 				{
 					// Set personnel status to arrived
 					CallOutPersonnelTableModel model = (CallOutPersonnelTableModel)m_personnelTable.getModel();
-					IPersonnelIf personnel = (IPersonnelIf)model.getValueAt(m_editingRow, 2);
+					int index = m_personnelTable.convertRowIndexToModel(m_editingRow);
+					IPersonnelIf personnel = (IPersonnelIf)model.getValueAt(index, 2);
 					PersonnelUtilities.arrivedPersonnel(personnel);
+					IPersonnelIf newPersonnelInstance = personnel.getNextOccurence();
+					if(newPersonnelInstance != null)
+					{
+						// Personnel was reinstated. Replace reference in call-out
+//						m_callout.getPersonnelList().removeReference(personnel);
+						m_callout.getPersonnelList().add(newPersonnelInstance);
+					}
+
+					if(!(m_wpUnit.getNewCallOut() || m_wpUnit.getNewPersonnel() || m_wpUnit.getNewUnit()))
+					{
+						// Commit right away if no major updates
+						m_wpUnit.getMsoModel().commit();
+					}
 					fireEditingStopped();
+					m_personnelTable.repaint();
 				}
 			});
 			m_panel.add(m_arrivedButton);
@@ -322,9 +367,16 @@ public class CalloutDetailsPanel extends JPanel
 				{
 					// Release personnel
 					CallOutPersonnelTableModel model = (CallOutPersonnelTableModel)m_personnelTable.getModel();
-					IPersonnelIf personnel = (IPersonnelIf)model.getValueAt(m_editingRow, 2);
+					int index = m_personnelTable.convertRowIndexToModel(m_editingRow);
+					IPersonnelIf personnel = (IPersonnelIf)model.getValueAt(index, 2);
 					PersonnelUtilities.releasePersonnel(personnel);
+					if(!m_wpUnit.getNewCallOut())
+					{
+						// Commit right away if not new call-out
+						m_wpUnit.getMsoModel().commit();
+					}
 					fireEditingStopped();
+					m_personnelTable.repaint();
 				}
 			});
 			m_panel.add(m_releaseButton);
@@ -342,6 +394,7 @@ public class CalloutDetailsPanel extends JPanel
 				boolean arg2, int row, int column)
 		{
 			m_editingRow = row;
+			updateCell(row);
 			return m_panel;
 		}
 
@@ -353,10 +406,52 @@ public class CalloutDetailsPanel extends JPanel
 		private void updateCell(int row)
 		{
 			CallOutPersonnelTableModel model = (CallOutPersonnelTableModel)m_personnelTable.getModel();
-			IPersonnelIf personnel = (IPersonnelIf)model.getValueAt(row, 2);
+			int index = m_personnelTable.convertRowIndexToModel(row);
+			IPersonnelIf personnel = (IPersonnelIf)model.getValueAt(index, 2);
 			
 			m_arrivedButton.setSelected(personnel.getStatus() == PersonnelStatus.ARRIVED);
 			m_releaseButton.setSelected(personnel.getStatus() == PersonnelStatus.RELEASED);
 		}
+	}
+	
+	private class CallOutPersonnelMouseListener implements MouseListener
+	{
+		public void mouseClicked(MouseEvent me)
+		{
+			Point clickedPoint = new Point(me.getX(), me.getY());
+			int row = m_personnelTable.rowAtPoint(clickedPoint);
+			int index = m_personnelTable.convertRowIndexToModel(row);
+			CallOutPersonnelTableModel model = (CallOutPersonnelTableModel)m_personnelTable.getModel();
+			IPersonnelIf personnel = model.getPersonnel(index);
+			
+			int clickCount = me.getClickCount();
+			
+			if(clickCount == 1)
+			{
+				// Display personnel info in bottom panel
+				m_wpUnit.setPersonnelBottom(personnel);
+				m_wpUnit.setBottomView(IDiskoWpUnit.PERSONNEL_DETAILS_VIEW_ID);
+			}
+			else if(clickCount == 2)
+			{
+				// Check if unit is new
+				if(m_wpUnit.getNewUnit() || m_wpUnit.getNewCallOut())
+				{
+					// Abort view change
+					return;
+				}
+				
+				// Change to personnel display
+				m_wpUnit.setPersonnelLeft(personnel);
+				m_wpUnit.setLeftView(IDiskoWpUnit.PERSONNEL_DETAILS_VIEW_ID);
+				m_wpUnit.setPersonnelBottom(personnel);
+				m_wpUnit.setBottomView(IDiskoWpUnit.PERSONNEL_ADDITIONAL_VIEW_ID);
+			}
+		}
+
+		public void mouseEntered(MouseEvent arg0){}
+		public void mouseExited(MouseEvent arg0){}
+		public void mousePressed(MouseEvent arg0){}
+		public void mouseReleased(MouseEvent arg0){}
 	}
 }

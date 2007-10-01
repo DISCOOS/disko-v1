@@ -6,7 +6,6 @@ import java.util.ResourceBundle;
 import javax.swing.JOptionPane;
 
 import org.redcross.sar.mso.IMsoManagerIf;
-import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.IPersonnelIf;
 import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IPersonnelIf.PersonnelStatus;
@@ -20,22 +19,69 @@ public class PersonnelUtilities
 	private final static ResourceBundle m_resources = ResourceBundle.getBundle("org.redcross.sar.wp.unit.unit");
 	
 	private static IMsoManagerIf m_msoManager = null;
-	private static IMsoModelIf m_msoModel = null;
 	
 	public static void setMsoManager(IMsoManagerIf manager)
 	{
 		m_msoManager = manager;
 	}
 	
-	public static void setMsoModle(IMsoModelIf model)
+	/**
+	 * Creates new personnel history instance. 
+	 * 
+	 * @param personnel Old personnel instance
+	 * @param newStatus Status of new personnel instance
+	 */
+	public static void reinstateResource(IPersonnelIf personnel, PersonnelStatus newStatus)
 	{
-		m_msoModel = model;
+		// Create new instance
+		IPersonnelIf newPersonnel = m_msoManager.createPersonnel();
+		newPersonnel.suspendNotify();
+
+		// Copy fields
+		newPersonnel.setBirthdate(personnel.getBirthdate());
+		newPersonnel.setDataSourceID(personnel.getDataSourceID());
+		newPersonnel.setDataSourceName(personnel.getDataSourceName());
+		newPersonnel.setDepartment(personnel.getDepartment());
+		newPersonnel.setEstimatedArrival(personnel.getEstimatedArrival());
+		newPersonnel.setFirstname(personnel.getFirstname());
+		newPersonnel.setGender(personnel.getGender());
+//		newPersonnel.setID(personnel.getID()); TODO Copy ID?
+		newPersonnel.setLastname(personnel.getLastname());
+		newPersonnel.setOrganization(personnel.getOrganization());
+		newPersonnel.setPhoto(personnel.getPhoto());
+		newPersonnel.setRemarks(personnel.getRemarks());
+		newPersonnel.setResidence(personnel.getResidence());
+		newPersonnel.setTelephone1(personnel.getTelephone1());
+		newPersonnel.setTelephone2(personnel.getTelephone2());
+		newPersonnel.setTelephone3(personnel.getTelephone3());
+		newPersonnel.setType(personnel.getType());
+		// TODO Attributes references are not to common objects?
+
+		// Maintain personnel history chain
+		personnel.setNextOccurence(newPersonnel);
+
+		// Set status
+		newPersonnel.setStatus(newStatus);
+		if(newStatus == PersonnelStatus.ON_ROUTE)
+		{
+			newPersonnel.setCallOut(Calendar.getInstance());
+		}
+		else if(newStatus == PersonnelStatus.ARRIVED)
+		{
+			newPersonnel.setCallOut(Calendar.getInstance());
+			newPersonnel.setArrived(Calendar.getInstance());
+		}
+
+		newPersonnel.resumeNotify();
 	}
 	
-	private static IPersonnelIf reinstateResource(IPersonnelIf personnel, PersonnelStatus newStatus)
+	/**
+	 * @return User confirmation, whether to reinstate personnel or not
+	 */
+	public static boolean confirmReinstate()
 	{
 		String[] options = {m_resources.getString("Yes.text"), m_resources.getString("No.text")};
-		int n = JOptionPane.showOptionDialog(
+		return JOptionPane.YES_OPTION == JOptionPane.showOptionDialog(
 				null, 
 				m_resources.getString("ReinstateReleasedPersonnel.text"),
 				m_resources.getString("ReinstateReleasedPersonnel.header"), 
@@ -44,61 +90,11 @@ public class PersonnelUtilities
 				null, 
 				options, 
 				options[0]);
-		if(n == JOptionPane.YES_OPTION)
-		{
-			// Create new instance
-			IPersonnelIf newPersonnel = m_msoManager.createPersonnel();
-			newPersonnel.suspendNotify();
-			
-			// Copy fields
-			newPersonnel.setBirthdate(personnel.getBirthdate());
-//			newPersonnel.setDataSourceID(personnel.getDataSourceID());
-//			newPersonnel.setDataSourceName(personnel.getDataSourceName());
-			newPersonnel.setDepartment(personnel.getDepartment());
-			newPersonnel.setEstimatedArrival(personnel.getEstimatedArrival());
-			newPersonnel.setFirstname(personnel.getFirstname());
-			newPersonnel.setGender(personnel.getGender());
-//			newPersonnel.setID(personnel.getID());
-			newPersonnel.setLastname(personnel.getLastname());
-			newPersonnel.setOrganization(personnel.getOrganization());
-			newPersonnel.setPhoto(personnel.getPhoto());
-			newPersonnel.setRemarks(personnel.getRemarks());
-			newPersonnel.setResidence(personnel.getResidence());
-			newPersonnel.setTelephone1(personnel.getTelephone1());
-			newPersonnel.setTelephone2(personnel.getTelephone2());
-			newPersonnel.setTelephone3(personnel.getTelephone3());
-			newPersonnel.setType(personnel.getType());
-			// TODO Attributes references are not to common object
-			
-			// Maintain personnel history chain
-			personnel.setNextOccurence(newPersonnel);
-			
-			// Set status
-			newPersonnel.setStatus(newStatus);
-			if(newStatus == PersonnelStatus.ON_ROUTE)
-			{
-				newPersonnel.setCallOut(Calendar.getInstance());
-			}
-			else if(newStatus == PersonnelStatus.ARRIVED)
-			{
-				newPersonnel.setCallOut(Calendar.getInstance());
-				newPersonnel.setArrived(Calendar.getInstance());
-			}
-			
-			newPersonnel.resumeNotify();
-			
-			return newPersonnel;
-		}
-		else
-		{
-			return null;
-		}
 	}
 	
 	/**
-	 * Call out personnel. Checks if personnel is released
+	 * Call out personnel. Checks if personnel is released. Does not commit changes
 	 * @param personnel
-	 * @return New personnel instance if created (reinstated personnel), otherwise null
 	 * @throws IllegalOperationException
 	 */
 	public static IPersonnelIf callOutPersonnel(IPersonnelIf personnel)
@@ -107,7 +103,10 @@ public class PersonnelUtilities
 		PersonnelStatus status = personnel.getStatus();
 		if(status == PersonnelStatus.RELEASED)
 		{
-			newPersonnel = reinstateResource(personnel, PersonnelStatus.ON_ROUTE);
+			if(confirmReinstate())
+			{
+				reinstateResource(personnel, PersonnelStatus.ON_ROUTE);
+			}
 		}
 		else
 		{
@@ -115,43 +114,39 @@ public class PersonnelUtilities
 			personnel.setCallOut(Calendar.getInstance());
 		}
 		
-		// Commit changes
-		m_msoModel.commit();
-		
 		return newPersonnel;
 	}
 	
 	/**
-	 * Set personnel to arrived, checks if personnel is dismissed
+	 * Set personnel to arrived, checks if personnel is released. Does not commit changes
 	 * @param personnel
-	 * @return New personnel instance if created (reinstated personnel). Otherwise {@code null}
 	 * @throws IllegalOperationException
 	 */
-	public static IPersonnelIf arrivedPersonnel(IPersonnelIf personnel)
+	public static void arrivedPersonnel(IPersonnelIf personnel)
 	{
-		IPersonnelIf newPersonnel = null;
 		PersonnelStatus status = personnel.getStatus();
 		
 		if(status == PersonnelStatus.RELEASED)
 		{
-			newPersonnel = reinstateResource(personnel, PersonnelStatus.ARRIVED);
+			if(confirmReinstate())
+			{
+				reinstateResource(personnel, PersonnelStatus.ARRIVED);
+			}
 		}
 		else
 		{
 			personnel.setStatus(PersonnelStatus.ARRIVED);
 			personnel.setArrived(Calendar.getInstance());
 		}
-				
-		// Commit changes, TODO check for major updates in unit WP before committing
-		m_msoModel.commit();
-		
-		return newPersonnel;
 	}
 	
+	/**
+	 * Releases personnel, changes are not committed
+	 * @param personnel
+	 */
 	public static void releasePersonnel(IPersonnelIf personnel)
 	{
 		personnel.setStatus(PersonnelStatus.RELEASED);
-		m_msoModel.commit();
 	}
 
 	/**
@@ -168,19 +163,16 @@ public class PersonnelUtilities
 		}
 		
 		// Personnel can only be assigned to ONE unit
-		// TODO Search all units for unit?
 		for(IUnitIf unit : m_msoManager.getCmdPost().getUnitList().getItems())
 		{
 			for(IPersonnelIf unitPersonnel : unit.getUnitPersonnel().getItems())
 			{
 				if(unitPersonnel == personnel)
 				{
-
 					return false;
 				}
 			}
 		}
-		
 		return true;
 	}
 }

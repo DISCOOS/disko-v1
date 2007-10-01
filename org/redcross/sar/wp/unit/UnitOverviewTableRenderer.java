@@ -87,8 +87,8 @@ public class UnitOverviewTableRenderer
 					int index = m_table.convertRowIndexToModel(m_editingRow);
 					UnitOverviewTableModel model = (UnitOverviewTableModel)m_table.getModel();
 					IUnitIf unit = model.getUnit(index);
-					DiskoWpUnitImpl.setUnit(unit);
-					DiskoWpUnitImpl.setLeftView(DiskoWpUnitImpl.UNIT_VIEW_ID);
+					m_wpUnit.setUnit(unit);
+					m_wpUnit.setLeftView(IDiskoWpUnit.UNIT_VIEW_ID);
 					fireEditingStopped();
 				}
 			});
@@ -117,7 +117,7 @@ public class UnitOverviewTableRenderer
 			IUnitIf rowUnit = model.getUnit(index);
 			
 			// Get editing unit
-			IUnitIf editingUnit = DiskoWpUnitImpl.getEditingUnit();
+			IUnitIf editingUnit = m_wpUnit.getEditingUnit();
 			
 			m_editButton.setSelected(editingUnit == rowUnit);
 			

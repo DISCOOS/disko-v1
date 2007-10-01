@@ -126,7 +126,7 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 			public void actionPerformed(ActionEvent arg0)
 			{
 				// Try to release unit
-				IUnitIf unit = DiskoWpUnitImpl.getEditingUnit();
+				IUnitIf unit = m_wpUnit.getEditingUnit();
 				
 				try
 				{
@@ -270,9 +270,8 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 //			String fiveTone = m_currentUnit.get// ?
 //			m_fiveToneTextField.setText(fiveTone); TODO
 			
-			
 //			String created = DTG.CalToDTG(m_currentUnit.get)
-//			m_createdTextField.setText(created);
+//			m_createdTextField.setText(created); TODO
 			
 			String callsign = m_currentUnit.getCallSign();
 			m_callsignTextField.setText(callsign);
@@ -379,8 +378,8 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 			if(clickCount == 1)
 			{
 				// Display personnel info in bottom panel
-				DiskoWpUnitImpl.setPersonnelBottom(personnel);
-				DiskoWpUnitImpl.setBottomView(DiskoWpUnitImpl.PERSONNEL_DETAILS_VIEW_ID);
+				m_wpUnit.setPersonnelBottom(personnel);
+				m_wpUnit.setBottomView(IDiskoWpUnit.PERSONNEL_DETAILS_VIEW_ID);
 			}
 			else if(clickCount == 2)
 			{
@@ -409,10 +408,10 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 				}
 				
 				// Change to personnel display
-				DiskoWpUnitImpl.setPersonnelLeft(personnel);
-				DiskoWpUnitImpl.setLeftView(DiskoWpUnitImpl.PERSONNEL_DETAILS_VIEW_ID);
-				DiskoWpUnitImpl.setPersonnelBottom(personnel);
-				DiskoWpUnitImpl.setBottomView(DiskoWpUnitImpl.PERSONNEL_ADDITIONAL_VIEW_ID);
+				m_wpUnit.setPersonnelLeft(personnel);
+				m_wpUnit.setLeftView(IDiskoWpUnit.PERSONNEL_DETAILS_VIEW_ID);
+				m_wpUnit.setPersonnelBottom(personnel);
+				m_wpUnit.setBottomView(IDiskoWpUnit.PERSONNEL_ADDITIONAL_VIEW_ID);
 			}
 		}
 
@@ -514,7 +513,7 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 				public void actionPerformed(ActionEvent arg0)
 				{
 					// Set unit leader to selected personnel
-					IUnitIf editingUnit = DiskoWpUnitImpl.getEditingUnit();
+					IUnitIf editingUnit = m_wpUnit.getEditingUnit();
 					
 					int index = m_table.convertRowIndexToModel(m_editingRow);
 					UnitPersonnelTableModel model = (UnitPersonnelTableModel)m_table.getModel();
@@ -569,7 +568,7 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 			UnitPersonnelTableModel model = (UnitPersonnelTableModel)m_table.getModel();
 			IPersonnelIf personnel  = model.getPersonnel(index);
 			
-			IUnitIf editingUnit = DiskoWpUnitImpl.getEditingUnit();
+			IUnitIf editingUnit = m_wpUnit.getEditingUnit();
 			if(editingUnit != null)
 			{
 				m_leaderButton.setSelected(editingUnit.getUnitLeader() == personnel);

@@ -23,6 +23,7 @@ public class PersonnelImpl extends AbstractPerson implements IPersonnelIf
 
     private final AttributeImpl.MsoEnum<PersonnelStatus> m_status = new AttributeImpl.MsoEnum<PersonnelStatus>(this, "Status", PersonnelStatus.IDLE);
     private final AttributeImpl.MsoEnum<PersonnelType> m_type = new AttributeImpl.MsoEnum<PersonnelType>(this, "Type", PersonnelType.VOLUNTEER);
+    private final AttributeImpl.MsoEnum<PersonnelImportStatus> m_importStatus = new AttributeImpl.MsoEnum<PersonnelImportStatus>(this, "ImportStatus", PersonnelImportStatus.UPDATED);
 
     private final MsoReferenceImpl<IPersonnelIf> m_nextOccurence = new MsoReferenceImpl<IPersonnelIf>(this,"NextOccurence",true);
 
@@ -48,6 +49,7 @@ public class PersonnelImpl extends AbstractPerson implements IPersonnelIf
         addAttribute(m_organization);
         addAttribute(m_status);
         addAttribute(m_type);
+        addAttribute(m_importStatus);
     }
 
     @Override
@@ -326,6 +328,38 @@ public class PersonnelImpl extends AbstractPerson implements IPersonnelIf
     {
         return Internationalization.getEnumText(bundle, m_type.getValue());
     }
+    
+    
+    public void setImportStatus(PersonnelImportStatus status)
+    {
+    	m_importStatus.setValue(status);
+    }
+
+    public void setImportStatus(String status)
+    {
+    	m_importStatus.setValue(PersonnelImportStatus.valueOf(status));
+    }
+
+    public PersonnelImportStatus getImportStatus()
+    {
+    	return m_importStatus.getValue();
+    }
+
+    public String getImportStatusText()
+    {
+    	return Internationalization.getEnumText(bundle, m_importStatus.getValue());
+    }
+
+    public IMsoModelIf.ModificationState getImportStatusState()
+    {
+    	return m_importStatus.getState();
+    }
+
+    public IAttributeIf.IMsoEnumIf<PersonnelImportStatus> getImportStatusAttribute()
+    {
+    	return m_importStatus;
+    }
+    
 
     public void setNextOccurence(IPersonnelIf aPersonnel)
     {

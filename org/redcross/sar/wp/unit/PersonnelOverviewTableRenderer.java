@@ -28,6 +28,13 @@ public class PersonnelOverviewTableRenderer
 	private static final ResourceBundle m_resources = ResourceBundle.getBundle("org.redcross.sar.wp.unit.unit");
 	private JTable m_table;
 	
+	private IDiskoWpUnit m_wpUnit;
+	
+	public PersonnelOverviewTableRenderer(IDiskoWpUnit wp)
+	{
+		m_wpUnit = wp;
+	}
+	
 	public void setTable(JTable overviewTable)
 	{
 		m_table = overviewTable;
@@ -73,8 +80,8 @@ public class PersonnelOverviewTableRenderer
 					int modelIndex = m_table.convertRowIndexToModel(m_editRow);
 					PersonnelOverviewTableModel model = (PersonnelOverviewTableModel)m_table.getModel();
 					IPersonnelIf selectedPersonnel = model.getPersonnel(modelIndex);
-					DiskoWpUnitImpl.setPersonnelLeft(selectedPersonnel);
-					DiskoWpUnitImpl.setLeftView(DiskoWpUnitImpl.PERSONNEL_DETAILS_VIEW_ID);
+					m_wpUnit.setPersonnelLeft(selectedPersonnel);
+					m_wpUnit.setLeftView(IDiskoWpUnit.PERSONNEL_DETAILS_VIEW_ID);
 					fireEditingStopped();
 				}
 			});
@@ -104,7 +111,7 @@ public class PersonnelOverviewTableRenderer
 			IPersonnelIf rowPersonnel = model.getPersonnel(table.convertRowIndexToModel(row));
 		
 			// Get personnel in personnel details panel
-			IPersonnelIf editingPersonnel = DiskoWpUnitImpl.getEditingPersonnel();
+			IPersonnelIf editingPersonnel = m_wpUnit.getEditingPersonnel();
 			
 			m_editButton.setSelected(editingPersonnel == rowPersonnel);
 			
@@ -147,6 +154,11 @@ public class PersonnelOverviewTableRenderer
 					PersonnelOverviewTableModel model = (PersonnelOverviewTableModel)m_table.getModel();
 					IPersonnelIf personnel = model.getPersonnel(m_table.convertRowIndexToModel(m_row));
 					PersonnelUtilities.callOutPersonnel(personnel);
+					
+					if(!m_wpUnit.getNewPersonnel())
+					{
+						m_wpUnit.getMsoModel().commit();
+					}
 				}
 			});
 			m_panel.add(m_calloutButton);
@@ -159,6 +171,11 @@ public class PersonnelOverviewTableRenderer
 					PersonnelOverviewTableModel model = (PersonnelOverviewTableModel)m_table.getModel();
 					IPersonnelIf personnel = model.getPersonnel(m_table.convertRowIndexToModel(m_row));
 					PersonnelUtilities.arrivedPersonnel(personnel);
+					
+					if(!m_wpUnit.getNewPersonnel())
+					{
+						m_wpUnit.getMsoModel().commit();
+					}
 				}
 			});
 			m_panel.add(m_arrivedButton);
@@ -171,6 +188,11 @@ public class PersonnelOverviewTableRenderer
 					PersonnelOverviewTableModel model = (PersonnelOverviewTableModel)m_table.getModel();
 					IPersonnelIf personnel = model.getPersonnel(m_table.convertRowIndexToModel(m_row));
 					PersonnelUtilities.releasePersonnel(personnel);
+					
+					if(!m_wpUnit.getNewPersonnel())
+					{
+						m_wpUnit.getMsoModel().commit();
+					}
 				}
 			});
 			m_panel.add(m_releasedButton);

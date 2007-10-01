@@ -33,14 +33,7 @@ public class PersonnelOverviewTableModel extends AbstractTableModel implements I
 	{
 		public boolean select(IPersonnelIf personnel)
 		{
-			if(personnel.getNextOccurence() == null)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+			return personnel.getNextOccurence() == null;
 		}
 	};
 	
