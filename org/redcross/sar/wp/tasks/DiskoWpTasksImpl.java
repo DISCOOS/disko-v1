@@ -1,6 +1,8 @@
 package org.redcross.sar.wp.tasks;
 
 import org.redcross.sar.app.IDiskoRole;
+import org.redcross.sar.event.ITickEventListenerIf;
+import org.redcross.sar.event.TickEvent;
 import org.redcross.sar.gui.*;
 import org.redcross.sar.mso.data.ITaskIf;
 import org.redcross.sar.mso.data.ITaskIf.TaskStatus;
@@ -16,7 +18,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
-import java.util.Timer;
 
 /**
  * Implementation of the tasks work process
@@ -40,6 +41,7 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
     private ITaskIf m_currentTask;
 
     private static final int TASK_ALERT_TIME = 10000;
+    private long m_timeCounter = 0;
 
     public DiskoWpTasksImpl(IDiskoRole role)
     {
@@ -68,64 +70,67 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
     }
 
     /**
-     * Creates timer for checking if any tasks have reached their alert time, and give the appropriate
-     * role a warning (marking WP button)
-     * <p/>
-     * TODO Should probably be moved to abstract WP, implemented as template pattern
+     * Checking if any tasks have reached their alert time, and give the appropriate role a warning
      */
     private void setTaskAlertTimer()
     {
-        SwingUtilities.invokeLater(new Runnable()
-        {
-            public void run()
-            {
-                Timer timer = new Timer(true);
-                timer.schedule(new TimerTask()
+    	this.addTickEventListener(new ITickEventListenerIf()
+    	{
+			public long getInterval()
+			{
+				return TASK_ALERT_TIME;
+			}
+
+			public void setTimeCounter(long counter)
+			{
+				m_timeCounter = counter;
+			}
+			
+			public long getTimeCounter()
+			{
+				return m_timeCounter;
+			}
+
+			@SuppressWarnings("unchecked")
+			public void handleTick(TickEvent e)
+			{
+				ITaskListIf tasks = getMsoManager().getCmdPost().getTaskList();
+
+                Calendar currentTime = Calendar.getInstance();
+                IDiskoRole role = getDiskoRole();
+
+                boolean alert = false;
+                boolean isAlertTime = false;
+                boolean isAlertStatus = false;
+                boolean isAlertRole = false;
+                for (ITaskIf task : tasks.getItems())
                 {
-                    @SuppressWarnings("unchecked")
-                    public void run()
+                    Calendar alertTime = task.getAlert();
+                    isAlertTime = alertTime != null && alertTime.before(currentTime);
+                    isAlertStatus = task.getStatus() != TaskStatus.FINISHED && task.getStatus() != TaskStatus.DELETED;
+                    isAlertRole = task.getResponsibleRole() == null ||
+                            task.getResponsibleRole().equals("") ||
+                            task.getResponsibleRole().equals(role.getTitle());
+                    if (isAlertTime && isAlertStatus && isAlertRole)
                     {
-                    	
-                        ITaskListIf tasks = getMsoManager().getCmdPost().getTaskList();
-
-                        Calendar currentTime = Calendar.getInstance();
-                        IDiskoRole role = getDiskoRole();
-
-                        boolean alert = false;
-                        boolean isAlertTime = false;
-                        boolean isAlertStatus = false;
-                        boolean isAlertRole = false;
-                        for (ITaskIf task : tasks.getItems())
-                        {
-                            Calendar alertTime = task.getAlert();
-                            isAlertTime = alertTime != null && alertTime.before(currentTime);
-                            isAlertStatus = task.getStatus() != TaskStatus.FINISHED && task.getStatus() != TaskStatus.DELETED;
-                            ;
-                            isAlertRole = task.getResponsibleRole() == null ||
-                                    task.getResponsibleRole().equals("") ||
-                                    task.getResponsibleRole().equals(role.getTitle());
-                            if (isAlertTime && isAlertStatus && isAlertRole)
-                            {
-                                alert = true;
-                                break;
-                            }
-                        }
-
-                        List<IDiskoWpModule> modules = role.getDiskoWpModules();
-                        int index = modules.indexOf(getDiskoWpTasks());
-                        MainMenuPanel mainMenu = getApplication().getUIFactory().getMainMenuPanel();
-                        AbstractButton button = mainMenu.getButton(role.getName(), index);
-                        if (alert)
-                        {
-                            button.setBorder(BorderFactory.createLineBorder(Color.red));
-                        } else
-                        {
-                            button.setBorder(null);
-                        }
+                        alert = true;
+                        break;
                     }
-                }, TASK_ALERT_TIME, TASK_ALERT_TIME);
-            }
-        });
+                }
+
+                List<IDiskoWpModule> modules = role.getDiskoWpModules();
+                int index = modules.indexOf(getDiskoWpTasks());
+                MainMenuPanel mainMenu = getApplication().getUIFactory().getMainMenuPanel();
+                AbstractButton button = mainMenu.getButton(role.getName(), index);
+                if (alert)
+                {
+                    button.setBorder(BorderFactory.createLineBorder(Color.red));
+                } else
+                {
+                    button.setBorder(null);
+                }
+			}
+    	});
     }
 
     /**
