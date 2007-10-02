@@ -173,3 +173,14 @@ TacticsTaskType.UNIT_TASK.icon=icons/60x60/unit.gif
 TacticsTaskType.MAKE_READY_TASK.icon=icons/60x60/ready.gif
 TacticsTaskType.MAKE_DRAFT_TASK.icon=
 TacticsTaskType.PRINT_TASK.icon=icons/60x60/printer.gif
+
+report.template.path=org/redcross/sar/output/jasperTemplates/
+report.jasperfiles.path=org/redcross/sar/output/jasper/
+report.output.path=C:\\DISKO\\output\\
+report.output.printname=diskoprint_
+report.NUMBER_OF_TEMPLATES=1
+report.TACTICS_TEMPLATE=mission_order.jrxml
+report.UNITLOG_TEMPLATE=unitlog.jrxml
+report.PARTICIPANTS_TEMPLATE=simple.jrxml
+report.COMMUNICATIONLOG_TEMPLATE=disko_testprint.jrxml
+report.MISSIONLOG_TEMPLATE=disko_testprint.jrxml
