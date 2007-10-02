@@ -65,6 +65,13 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 		msoEventManager.addClientUpdateListener(this);
 		initialize();
 	}
+	
+	/**
+	 * Default empty constructor
+	 */
+	public DiskoMap(){
+		
+	}
 
 	private void initialize() throws IOException, AutomationException {
 		setName("diskoMap");
