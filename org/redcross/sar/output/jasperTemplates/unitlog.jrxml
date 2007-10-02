@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="Unit log"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="595"
+		 pageHeight="842"
+		 columnWidth="535"
+		 columnSpacing="0"
+		 leftMargin="30"
+		 rightMargin="30"
+		 topMargin="20"
+		 bottomMargin="20"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="2" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<style 
+		name="Heading1"
+		fontSize="24"
+		isBold="true"
+	/>
+	<style 
+		name="Heading2"
+		isDefault="false"
+		fontSize="18"
+		isBold="true"
+	/>
+	<style 
+		name="Normal"
+		fontSize="12"
+	/>
+	<style 
+		name="Normal_italic"
+		fontSize="12"
+		isItalic="true"
+	/>
+	<style 
+		name="Normal_bold"
+		isDefault="false"
+		leftPadding="10"
+		fontSize="12"
+		isBold="true"
+	/>
+	<style 
+		name="Normal_small"
+	/>
+
+
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="50"  isSplitAllowed="true" >
+				<rectangle>
+					<reportElement
+						x="0"
+						y="0"
+						width="535"
+						height="50"
+						key="rectangle-1"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						style="Heading1"
+						x="100"
+						y="7"
+						width="147"
+						height="30"
+						key="staticText-3"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement isStyledText="true">
+						<font/>
+					</textElement>
+				<text><![CDATA[Enhetslogg]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="137"
+						y="37"
+						width="0"
+						height="1"
+						key="staticText-6"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font/>
+					</textElement>
+				<text><![CDATA[Static Text]]></text>
+				</staticText>
+			</band>
+		</title>
+		<pageHeader>
+			<band height="1"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="538"  isSplitAllowed="true" >
+				<rectangle>
+					<reportElement
+						x="0"
+						y="2"
+						width="535"
+						height="536"
+						key="rectangle-2"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<rectangle>
+					<reportElement
+						x="0"
+						y="2"
+						width="535"
+						height="32"
+						backcolor="#CCCCCC"
+						key="rectangle-3"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						style="Heading2"
+						x="212"
+						y="7"
+						width="98"
+						height="21"
+						key="staticText-1"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" isStyledText="true">
+						<font pdfFontName="Helvetica-Bold" size="16" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Personell]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="0"
+						y="33"
+						width="134"
+						height="109"
+						backcolor="#CCCCCC"
+						key="rectangle-4"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						style="Normal_bold"
+						mode="Transparent"
+						x="5"
+						y="39"
+						width="124"
+						height="19"
+						backcolor="#FFFFFF"
+						key="staticText-2"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" leftPadding="10" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Left" lineSpacing="Single">
+						<font/>
+					</textElement>
+				<text><![CDATA[Leder]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						style="Normal_bold"
+						mode="Transparent"
+						x="5"
+						y="64"
+						width="124"
+						height="19"
+						backcolor="#FFFFFF"
+						key="staticText-4"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" leftPadding="10" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Left" lineSpacing="Single">
+						<font/>
+					</textElement>
+				<text><![CDATA[Nestleder]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						style="Normal_bold"
+						mode="Transparent"
+						x="5"
+						y="89"
+						width="124"
+						height="19"
+						backcolor="#FFFFFF"
+						key="staticText-5"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" leftPadding="10" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Left" lineSpacing="Single">
+						<font pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				<text><![CDATA[Mannskap]]></text>
+				</staticText>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="1"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="50"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>
