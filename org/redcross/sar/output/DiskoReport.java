@@ -65,10 +65,7 @@ public class DiskoReport {
 		
 		
 		diskoMap_print = (DiskoMap) app.getCurrentMap();
-		//getSelected mso object
-		diskoMap_print.getSelection();
-		diskoMap_print.zoomToMsoObject();//zoom to selected
-		//set printscale
+		
 		try{
 			activeView = diskoMap_print.getActiveView();
 		}
