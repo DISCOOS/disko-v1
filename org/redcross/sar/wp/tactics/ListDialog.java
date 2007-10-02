@@ -1,5 +1,26 @@
 package org.redcross.sar.wp.tactics;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.gui.AssignmentTable;
 import org.redcross.sar.gui.DiskoDialog;
@@ -7,28 +28,13 @@ import org.redcross.sar.gui.renderers.EditActionTableCellEditor;
 import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
+import org.redcross.sar.output.DiskoReport;
 import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.wp.tactics.IDiskoWpTactics.TacticsTaskType;
 
 import com.esri.arcgis.interop.AutomationException;
 
-import java.awt.Dimension;
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.border.BevelBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JLabel;
-import javax.swing.JComboBox;
-import java.awt.Color;
-import java.io.IOException;
 
 public class ListDialog extends DiskoDialog {
 
@@ -43,10 +49,13 @@ public class ListDialog extends DiskoDialog {
 	private AssignmentTable assignmentTable = null;
 	private JLabel statusLabel = null;
 	private JComboBox statusComboBox = null;
+	private DiskoReport report = null;
+	private IDiskoApplication app = null;
 	
 	public ListDialog(DiskoWpTacticsImpl wp) {
 		super(wp.getApplication().getFrame());
 		this.wp = wp;
+		app = wp.getApplication();
 		buttonSize = wp.getApplication().getUIFactory().getSmallButtonSize();
 		initialize();
 	}
@@ -73,12 +82,27 @@ public class ListDialog extends DiskoDialog {
 			for (int i = 0; i < selection.length; i++) {
 				int row = selection[i];
 				IAssignmentIf assignment = (IAssignmentIf)table.getValueAt(row,1);
-				assignment.setStatus(IAssignmentIf.AssignmentStatus.READY);
+				assignment.setStatus(IAssignmentIf.AssignmentStatus.READY);				
 			}
 		} catch (IllegalOperationException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+	}
+	
+	private void sendToPrint() {
+		System.out.println("sendToPrint");
+		List<IAssignmentIf> assignments = new ArrayList<IAssignmentIf>();
+		JTable table = getAssignmentTable();
+		wp.getMap();
+		int[] selection = table.getSelectedRows();
+		for (int i = 0; i < selection.length; i++) {
+			int row = selection[i];
+			IAssignmentIf assignment = (IAssignmentIf)table.getValueAt(row,1);
+			//assignment.setStatus(IAssignmentIf.AssignmentStatus.READY);
+			assignments.add(assignment);	
+		}		
+		report.printAssignments(assignments);
 	}
 	
 	public void enableButtons() {
@@ -181,12 +205,16 @@ public class ListDialog extends DiskoDialog {
 				}
 				printButton.setPreferredSize(buttonSize);
 				printButton.setEnabled(false);
+				report = new DiskoReport(app);
 				printButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
-						System.out.println("actionPerformed()"); // TODO Auto-generated Event stub actionPerformed()
+						System.out.println("actionPerformed(): dummy print" ); // TODO Auto-generated Event stub actionPerformed()
+						sendToPrint();
+						//report.printPreview();
 					}
 				});
 			} catch (java.lang.Throwable e) {
+				e.printStackTrace();
 				// TODO: Something
 			}
 		}
