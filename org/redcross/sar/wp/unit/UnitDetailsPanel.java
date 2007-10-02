@@ -64,7 +64,7 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 	
 	private JTextField m_leaderTextField;
 	private JTextField m_cellPhoneTextField;
-	private JTextField m_fiveToneTextField;
+	private JTextField m_toneIDTextField;
 	private JTextField m_createdTextField;
 	private JTextField m_callsignTextField;
 	private JTextField m_fieldTimeTextField;
@@ -167,8 +167,8 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 		layoutComponent(0, m_resources.getString("CellularPhone.text"), m_cellPhoneTextField, gbc, 1);
 		
 		// 5-tone
-		m_fiveToneTextField = new JTextField();
-		layoutComponent(0, m_resources.getString("FiveTone.text"), m_fiveToneTextField, gbc, 0);
+		m_toneIDTextField = new JTextField();
+		layoutComponent(0, m_resources.getString("FiveTone.text"), m_toneIDTextField, gbc, 0);
 		
 		// Created
 		m_createdTextField = new JTextField();
@@ -267,8 +267,8 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 			String cell = leader == null ? "" : leader.getTelephone1();
 			m_cellPhoneTextField.setText(cell);
 			
-//			String fiveTone = m_currentUnit.get// ?
-//			m_fiveToneTextField.setText(fiveTone); TODO
+			String toneId = m_currentUnit.getToneID();
+			m_toneIDTextField.setText(toneId);
 			
 //			String created = DTG.CalToDTG(m_currentUnit.get)
 //			m_createdTextField.setText(created); TODO
@@ -316,7 +316,7 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 			m_topPanelLabel.setText("");
 			m_leaderTextField.setText("");
 			m_cellPhoneTextField.setText("");
-			m_fiveToneTextField.setText("");
+			m_toneIDTextField.setText("");
 			m_createdTextField.setText("");
 			m_callsignTextField.setText("");
 			m_fieldTimeTextField.setText("");
@@ -585,11 +585,15 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 	{
 		if(m_currentUnit != null)
 		{
-//			String fiveTone = m_fiveToneTextField.getText();
-			// TODO
+			m_currentUnit.suspendNotify();
 			
-			String callSigne = m_callsignTextField.getText();
-			m_currentUnit.setCallSign(callSigne);
+			String toneId = m_toneIDTextField.getText();
+			m_currentUnit.setToneID(toneId);
+			
+			String callSign = m_callsignTextField.getText();
+			m_currentUnit.setCallSign(callSign);
+			
+			m_currentUnit.resumeNotify();
 		}
 	}
 }

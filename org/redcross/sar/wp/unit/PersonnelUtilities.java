@@ -27,52 +27,67 @@ public class PersonnelUtilities
 	
 	/**
 	 * Creates new personnel history instance. 
-	 * 
+	 * @return The reinstated personnel
 	 * @param personnel Old personnel instance
 	 * @param newStatus Status of new personnel instance
 	 */
-	public static void reinstateResource(IPersonnelIf personnel, PersonnelStatus newStatus)
+	public static IPersonnelIf reinstateResource(IPersonnelIf personnel, PersonnelStatus newStatus)
 	{
-		// Create new instance
-		IPersonnelIf newPersonnel = m_msoManager.createPersonnel();
-		newPersonnel.suspendNotify();
-
-		// Copy fields
-		newPersonnel.setBirthdate(personnel.getBirthdate());
-		newPersonnel.setDataSourceID(personnel.getDataSourceID());
-		newPersonnel.setDataSourceName(personnel.getDataSourceName());
-		newPersonnel.setDepartment(personnel.getDepartment());
-		newPersonnel.setEstimatedArrival(personnel.getEstimatedArrival());
-		newPersonnel.setFirstname(personnel.getFirstname());
-		newPersonnel.setGender(personnel.getGender());
-//		newPersonnel.setID(personnel.getID()); TODO Copy ID?
-		newPersonnel.setLastname(personnel.getLastname());
-		newPersonnel.setOrganization(personnel.getOrganization());
-		newPersonnel.setPhoto(personnel.getPhoto());
-		newPersonnel.setRemarks(personnel.getRemarks());
-		newPersonnel.setResidence(personnel.getResidence());
-		newPersonnel.setTelephone1(personnel.getTelephone1());
-		newPersonnel.setTelephone2(personnel.getTelephone2());
-		newPersonnel.setTelephone3(personnel.getTelephone3());
-		newPersonnel.setType(personnel.getType());
-		// TODO Attributes references are not to common objects?
-
-		// Maintain personnel history chain
-		personnel.setNextOccurence(newPersonnel);
-
-		// Set status
-		newPersonnel.setStatus(newStatus);
-		if(newStatus == PersonnelStatus.ON_ROUTE)
+		// Get personnel at end of history chain
+		IPersonnelIf nextOccurence = personnel;
+		while(nextOccurence.getNextOccurence() != null)
 		{
-			newPersonnel.setCallOut(Calendar.getInstance());
+			nextOccurence = nextOccurence.getNextOccurence();
 		}
-		else if(newStatus == PersonnelStatus.ARRIVED)
+		
+		if(nextOccurence.getStatus() == PersonnelStatus.RELEASED)
 		{
-			newPersonnel.setCallOut(Calendar.getInstance());
-			newPersonnel.setArrived(Calendar.getInstance());
-		}
+			// Reinstate resource
+			IPersonnelIf newPersonnel = m_msoManager.createPersonnel();
+			newPersonnel.suspendNotify();
 
-		newPersonnel.resumeNotify();
+			// Copy fields
+			newPersonnel.setBirthdate(personnel.getBirthdate());
+			newPersonnel.setDataSourceID(personnel.getDataSourceID());
+			newPersonnel.setDataSourceName(personnel.getDataSourceName());
+			newPersonnel.setDepartment(personnel.getDepartment());
+			newPersonnel.setEstimatedArrival(personnel.getEstimatedArrival());
+			newPersonnel.setFirstname(personnel.getFirstname());
+			newPersonnel.setGender(personnel.getGender());
+			newPersonnel.setLastname(personnel.getLastname());
+			newPersonnel.setOrganization(personnel.getOrganization());
+			newPersonnel.setPhoto(personnel.getPhoto());
+			newPersonnel.setRemarks(personnel.getRemarks());
+			newPersonnel.setResidence(personnel.getResidence());
+			newPersonnel.setTelephone1(personnel.getTelephone1());
+			newPersonnel.setTelephone2(personnel.getTelephone2());
+			newPersonnel.setTelephone3(personnel.getTelephone3());
+			newPersonnel.setType(personnel.getType());
+
+			// Maintain personnel history chain
+			personnel.setNextOccurence(newPersonnel);
+
+			// Set status
+			newPersonnel.setStatus(newStatus);
+			if(newStatus == PersonnelStatus.ON_ROUTE)
+			{
+				newPersonnel.setCallOut(Calendar.getInstance());
+			}
+			else if(newStatus == PersonnelStatus.ARRIVED)
+			{
+				newPersonnel.setCallOut(Calendar.getInstance());
+				newPersonnel.setArrived(Calendar.getInstance());
+			}
+
+			newPersonnel.resumeNotify();
+			
+			return newPersonnel;
+		}
+		else
+		{
+			// Personnel at end of history chain is not released, return this
+			return nextOccurence;
+		}
 	}
 	
 	/**
@@ -122,7 +137,7 @@ public class PersonnelUtilities
 	 * @param personnel
 	 * @throws IllegalOperationException
 	 */
-	public static void arrivedPersonnel(IPersonnelIf personnel)
+	public static IPersonnelIf arrivedPersonnel(IPersonnelIf personnel)
 	{
 		PersonnelStatus status = personnel.getStatus();
 		
@@ -130,7 +145,7 @@ public class PersonnelUtilities
 		{
 			if(confirmReinstate())
 			{
-				reinstateResource(personnel, PersonnelStatus.ARRIVED);
+				personnel = reinstateResource(personnel, PersonnelStatus.ARRIVED);
 			}
 		}
 		else
@@ -138,6 +153,8 @@ public class PersonnelUtilities
 			personnel.setStatus(PersonnelStatus.ARRIVED);
 			personnel.setArrived(Calendar.getInstance());
 		}
+		
+		return personnel;
 	}
 	
 	/**
@@ -174,5 +191,23 @@ public class PersonnelUtilities
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Deletes personnel instance. History chain is kept
+	 * @param personnel The personnel
+	 * @throws IllegalOperationException Thrown if personnel can not be deleted
+	 */
+	public static void deletePersonnel(IPersonnelIf personnel) throws IllegalOperationException
+	{
+		if(personnel.getStatus() != PersonnelStatus.IDLE)
+		{
+			throw new IllegalOperationException("Personnel status not IDLE, can not delete");
+		}
+		
+		if(!personnel.deleteObject())
+		{
+			throw new IllegalOperationException("Failed to delete personnel object");
+		}
 	}
 }

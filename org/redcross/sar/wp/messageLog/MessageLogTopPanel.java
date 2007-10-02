@@ -699,38 +699,41 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 				// Commit current message
 				public void actionPerformed(ActionEvent arg0)
 				{
-					// Set message status
-					if(m_currentMessage.isBroadcast())
+					if(m_currentMessage != null)
 					{
-						if(m_currentMessage.getUnconfirmedReceivers().size() == 0)
+						// Set message status
+						if(m_currentMessage.isBroadcast())
 						{
-							m_currentMessage.setStatus(MessageStatus.CONFIRMED);
+							if(m_currentMessage.getUnconfirmedReceivers().size() == 0)
+							{
+								m_currentMessage.setStatus(MessageStatus.CONFIRMED);
+							}
+							else
+							{
+								// If broadcast all units have to confirm to get confirmed status
+								m_currentMessage.setStatus(MessageStatus.UNCONFIRMED);
+							}
 						}
 						else
 						{
-							// If broadcast all units have to confirm to get confirmed status
-							m_currentMessage.setStatus(MessageStatus.UNCONFIRMED);
+							m_currentMessage.setStatus(MessageStatus.CONFIRMED);
 						}
+
+						// Handle assignments
+						updateAssignments();
+						
+						// Commit changes
+						m_wpMessageLog.getMsoModel().commit();
+
+						m_currentMessage = null;
+						m_messageDirty = false;
+
+						
+						// GUI clean-up
+						clearPanelContents();
+
+						m_buttonGroup.clearSelection();
 					}
-					else
-					{
-						m_currentMessage.setStatus(MessageStatus.CONFIRMED);
-					}
-
-					// Handle assignments
-					updateAssignments();
-					
-					// Commit changes
-					m_wpMessageLog.getMsoModel().commit();
-
-					m_currentMessage = null;
-					m_messageDirty = false;
-
-					
-					// GUI clean-up
-					clearPanelContents();
-
-					m_buttonGroup.clearSelection();
 				}
     		});
     	}

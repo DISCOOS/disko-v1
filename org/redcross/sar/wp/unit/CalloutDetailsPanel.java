@@ -340,8 +340,7 @@ public class CalloutDetailsPanel extends JPanel
 					CallOutPersonnelTableModel model = (CallOutPersonnelTableModel)m_personnelTable.getModel();
 					int index = m_personnelTable.convertRowIndexToModel(m_editingRow);
 					IPersonnelIf personnel = (IPersonnelIf)model.getValueAt(index, 2);
-					PersonnelUtilities.arrivedPersonnel(personnel);
-					IPersonnelIf newPersonnelInstance = personnel.getNextOccurence();
+					IPersonnelIf newPersonnelInstance = PersonnelUtilities.arrivedPersonnel(personnel);
 					if(newPersonnelInstance != null)
 					{
 						// Personnel was reinstated. Replace reference in call-out

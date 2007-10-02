@@ -16,6 +16,7 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
 {
     private final AttributeImpl.MsoCalendar m_established = new AttributeImpl.MsoCalendar(this, "Established");
     private final AttributeImpl.MsoString m_callSign = new AttributeImpl.MsoString(this, "CallSign");
+    private final AttributeImpl.MsoString m_toneId = new AttributeImpl.MsoString(this, "ToneID");
     private final AttributeImpl.MsoCalendar m_released = new AttributeImpl.MsoCalendar(this, "Released");
     private final AttributeImpl.MsoInteger m_shift = new AttributeImpl.MsoInteger(this, "Shift");
     private final AttributeImpl.MsoString m_telephone1 = new AttributeImpl.MsoString(this, "Telephone1");
@@ -87,6 +88,7 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     {
         addAttribute(m_established);
         addAttribute(m_callSign);
+        addAttribute(m_toneId);
         addAttribute(m_released);
         addAttribute(m_shift);
         addAttribute(m_telephone1);
@@ -256,6 +258,26 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     public IAttributeIf.IMsoStringIf getCallSignAttribute()
     {
         return m_callSign;
+    }
+    
+    public void setToneID(String toneId)
+    {
+    	m_toneId.setValue(toneId);
+    }
+    
+    public String getToneID()
+    {
+    	return m_toneId.getString();
+    }
+    
+    public IMsoModelIf.ModificationState getToneIDState()
+    {
+    	return m_toneId.getState();
+    }
+    
+    public IAttributeIf.IMsoStringIf getToneIDAttribute()
+    {
+    	return m_toneId;
     }
 
     public void setReleased(Calendar aReleased)

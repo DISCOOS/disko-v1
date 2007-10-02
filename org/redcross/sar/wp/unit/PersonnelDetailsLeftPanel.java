@@ -20,6 +20,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import org.redcross.sar.event.ITickEventListenerIf;
+import org.redcross.sar.event.TickEvent;
 import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
 import org.redcross.sar.mso.IMsoManagerIf;
@@ -41,7 +43,7 @@ import org.redcross.sar.util.mso.DTG;
  * 
  * @author thomasl
  */
-public class PersonnelDetailsLeftPanel extends JPanel implements IMsoUpdateListenerIf
+public class PersonnelDetailsLeftPanel extends JPanel implements IMsoUpdateListenerIf, ITickEventListenerIf
 {
 	private static final long serialVersionUID = 1L;
 	
@@ -67,11 +69,15 @@ public class PersonnelDetailsLeftPanel extends JPanel implements IMsoUpdateListe
 	private JTextField m_arrivedTextField;
 	private JTextField m_releasedTextField;
 	private JTextArea m_remarksTextArea;
+	
+	private static final long UPDATE_INTERVAL = 60000;
+	private long m_timeCounter;
 
 	public PersonnelDetailsLeftPanel(IDiskoWpUnit wp)
 	{
 		m_wpUnit = wp;
 		m_wpUnit.getMmsoEventManager().addClientUpdateListener(this);
+		m_wpUnit.addTickEventListener(this);
 		initialize();
 	}
 	
@@ -156,13 +162,15 @@ public class PersonnelDetailsLeftPanel extends JPanel implements IMsoUpdateListe
 		// Role
 		gbc.gridy++;
 		m_roleTextField = new JTextField();
+		m_roleTextField.setEditable(false);
 		layoutComponent(0, m_resources.getString("Role.text"), m_roleTextField, gbc, 0);
 		
 		// Unit
 		m_unitTextField = new JTextField();
+		m_unitTextField.setEditable(false);
 		layoutComponent(2, m_resources.getString("Unit.text"), m_unitTextField, gbc, 1);
 		
-		// Alerted
+		// Call-out
 		m_calloutTextField = new JTextField();
 		layoutComponent(0, m_resources.getString("CallOut.text"), m_calloutTextField, gbc, 0);
 		
@@ -174,8 +182,9 @@ public class PersonnelDetailsLeftPanel extends JPanel implements IMsoUpdateListe
 		m_arrivedTextField = new JTextField();
 		layoutComponent(0, m_resources.getString("Arrived.text"), m_arrivedTextField, gbc, 0);
 		
-		// Dismissed
+		// Released
 		m_releasedTextField = new JTextField();
+		m_releasedTextField.setEditable(false);
 		layoutComponent(2, m_resources.getString("Released.text"), m_releasedTextField, gbc, 1);
 		
 		// Notes
@@ -212,19 +221,24 @@ public class PersonnelDetailsLeftPanel extends JPanel implements IMsoUpdateListe
 	{
 		if(m_currentPersonnel != null)
 		{
+			m_currentPersonnel.suspendNotify();
+			
 			String[] name = m_nameTextField.getText().split(" ");
-			StringBuilder firstName = new StringBuilder();
-			for(int i=0; i<name.length-1; i++)
+			if(name.length > 0)
 			{
-				firstName.append(name[i] + " ");
+				StringBuilder firstName = new StringBuilder();
+				for(int i=0; i<name.length-1; i++)
+				{
+					firstName.append(name[i] + " ");
+				}
+				
+				if(firstName.toString() != null)
+				{
+					m_currentPersonnel.setFirstname(firstName.toString().trim());
+				}
+				m_currentPersonnel.setLastname(name[name.length-1].trim());
 			}
 			
-			if(firstName.toString() != null)
-			{
-				m_currentPersonnel.setFirstname(firstName.toString().trim());
-			}
-			m_currentPersonnel.setLastname(name[name.length-1].trim());
-
 			String phone = m_cellTextField.getText();
 			m_currentPersonnel.setTelephone1(phone);
 
@@ -250,19 +264,7 @@ public class PersonnelDetailsLeftPanel extends JPanel implements IMsoUpdateListe
 			{
 			}
 
-			// Try to parse estimated arrival text field. Set to null if no integers are present in string
-			String[] estimatedArrivalString = m_estimatedArrivalTextField.getText().replace('-', ' ').split(" ");
-			for(String s : estimatedArrivalString)
-			{
-				try
-				{
-					int minutes = Integer.valueOf(s);
-					Calendar estimatedArrival = Calendar.getInstance();
-					estimatedArrival.add(Calendar.MINUTE, minutes);
-					m_currentPersonnel.setEstimatedArrival(estimatedArrival);
-				}
-				catch(Exception e){}
-			}
+			m_currentPersonnel.setEstimatedArrival(parseEstimatedArrival());
 
 			try
 			{
@@ -284,6 +286,8 @@ public class PersonnelDetailsLeftPanel extends JPanel implements IMsoUpdateListe
 
 			String remarks = m_remarksTextArea.getText();
 			m_currentPersonnel.setRemarks(remarks);
+			
+			m_currentPersonnel.resumeNotify();
 		}
 	}
 	
@@ -319,6 +323,7 @@ public class PersonnelDetailsLeftPanel extends JPanel implements IMsoUpdateListe
 			m_organizationTextField.setText(m_currentPersonnel.getOrganization());
 			m_departmentTextField.setText(m_currentPersonnel.getDepartment());
 			
+			// Set unit
 			IUnitIf personnelUnit = null;
 			for(IUnitIf unit : m_wpUnit.getMsoManager().getCmdPost().getUnitListItems())
 			{
@@ -351,20 +356,8 @@ public class PersonnelDetailsLeftPanel extends JPanel implements IMsoUpdateListe
 			
 			m_calloutTextField.setText(DTG.CalToDTG(m_currentPersonnel.getCallOut()));
 			
-			String arrivingText = "";
-			Calendar estimatedArrival = m_currentPersonnel.getEstimatedArrival();
-			if(m_currentPersonnel.getStatus() == PersonnelStatus.ON_ROUTE && estimatedArrival != null)
-			{
-				long minutes = (Calendar.getInstance().getTimeInMillis() - estimatedArrival.getTimeInMillis() ) / 60000;
-				arrivingText = minutes + " min";
-			}
-			else if(m_currentPersonnel.getStatus() == PersonnelStatus.ARRIVED)
-			{
-				arrivingText = m_resources.getString("Arrived.text");
-			}
-			m_estimatedArrivalTextField.setText(arrivingText);
+			updateEstimatedArrival();
 			
-			m_arrivedTextField.setText(DTG.CalToDTG(m_currentPersonnel.getArrived()));
 			if(m_currentPersonnel.getStatus() == PersonnelStatus.RELEASED)
 			{
 				m_releasedTextField.setText(m_resources.getString("Yes.text"));
@@ -374,7 +367,7 @@ public class PersonnelDetailsLeftPanel extends JPanel implements IMsoUpdateListe
 				m_releasedTextField.setText(m_resources.getString("No.text"));
 			}
 			
-			m_remarksTextArea.setText(m_currentPersonnel.shortDescriptor());
+			m_remarksTextArea.setText(m_currentPersonnel.getRemarks());
 			
 			// Get next status for 
 			PersonnelStatus status = m_currentPersonnel.getStatus();
@@ -388,6 +381,91 @@ public class PersonnelDetailsLeftPanel extends JPanel implements IMsoUpdateListe
 			m_changeStatusButton.setText(Internationalization.getEnumText(m_personnelBundle, status));
 			m_changeStatusButton.setActionCommand(status.name());
 		}
+	}
+	
+	private void updateEstimatedArrival()
+	{
+		// Don't update while user is editing
+		if(m_estimatedArrivalTextField.hasFocus())
+		{
+			return;
+		}
+		
+		Calendar arriving = m_currentPersonnel.getEstimatedArrival();
+		if(arriving != null)
+		{
+			Calendar now = Calendar.getInstance();
+			if(arriving.after(now))
+			{
+				long deltaMin = (arriving.getTimeInMillis() - now.getTimeInMillis()) / 60000;
+				long hours = deltaMin / 60;
+				long minutes = deltaMin % 60;
+				StringBuilder arrivingString = new StringBuilder();
+				arrivingString.append("- ");
+				if(hours != 0)
+				{
+					arrivingString.append(hours);
+					arrivingString.append(m_resources.getString("Hours.text"));
+					arrivingString.append(" ");
+				}
+				arrivingString.append(minutes);
+				arrivingString.append(m_resources.getString("Minutes.text"));
+				m_estimatedArrivalTextField.setText(arrivingString.toString());
+			}
+			else
+			{
+				if(m_currentPersonnel.getStatus() == PersonnelStatus.ARRIVED)
+				{
+					m_estimatedArrivalTextField.setText(m_resources.getString("Arrived.text"));
+				}
+				else
+				{
+					m_estimatedArrivalTextField.setText("");
+				}
+			}
+		}
+		else
+		{
+			m_estimatedArrivalTextField.setText("");
+		}
+	}
+	
+	private Calendar parseEstimatedArrival()
+	{
+		String estimatedArrivalString = m_estimatedArrivalTextField.getText();
+		String[] arrivalStringArray = estimatedArrivalString.split("\\s");
+		int hours = 0;
+		int minutes = 0;
+		String hoursString = m_resources.getString("Hours.text");
+		String minutesString = m_resources.getString("Minutes.text");
+		for(String s : arrivalStringArray)
+		{
+			if(s.contains(hoursString))
+			{
+				// Try to parse hours
+				try
+				{
+					s = s.replaceAll("\\D", "");
+					hours = Integer.valueOf(s);
+				}
+				catch(Exception e){}
+			}
+			else if(s.contains(minutesString))
+			{
+				// Try to parse minutes
+				try
+				{
+					s= s.replaceAll("\\D", "");
+					minutes = Integer.valueOf(s);
+				}
+				catch(Exception e){}
+			}
+		}
+		
+		Calendar estimatedArrival = Calendar.getInstance();
+		estimatedArrival.add(Calendar.HOUR_OF_DAY, hours);
+		estimatedArrival.add(Calendar.MINUTE, minutes);
+		return estimatedArrival;
 	}
 
 	/*
@@ -423,5 +501,32 @@ public class PersonnelDetailsLeftPanel extends JPanel implements IMsoUpdateListe
 	public boolean hasInterestIn(IMsoObjectIf msoObject)
 	{
 		return msoObject.getMsoClassCode() == IMsoManagerIf.MsoClassCode.CLASSCODE_PERSONNEL;
+	}
+
+	public long getInterval()
+	{
+		return UPDATE_INTERVAL;
+	}
+	
+	public long getTimeCounter()
+	{
+		return m_timeCounter;
+	}
+
+	/**
+	 * Update time dependent fields
+	 */
+	public void handleTick(TickEvent e)
+	{
+		// Don't update if adding new personnel
+		if(m_currentPersonnel != null && !m_wpUnit.getNewPersonnel())
+		{
+			updateEstimatedArrival();
+		}
+	}
+
+	public void setTimeCounter(long counter)
+	{
+		m_timeCounter = counter;
 	}
 }

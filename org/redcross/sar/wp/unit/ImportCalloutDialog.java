@@ -420,7 +420,7 @@ public class ImportCalloutDialog extends DiskoDialog
 	}
 	
 	/**
-	 * Saves the imported call-out and personnel to MSO, then commits
+	 * Saves the imported call-out and personnel to MSO
 	 */
 	@SuppressWarnings("null")
 	private void saveCallout()
@@ -541,6 +541,11 @@ public class ImportCalloutDialog extends DiskoDialog
 			if(same)
 			{
 				m_personnelRef = personnel;
+				// Set reference to end of personnel history chain
+				while(m_personnelRef.getNextOccurence() != null)
+				{
+					m_personnelRef = m_personnelRef.getNextOccurence();
+				}
 				m_preExisting = true;
 			}
 			

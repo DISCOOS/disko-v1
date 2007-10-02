@@ -34,7 +34,6 @@ import org.redcross.sar.mso.data.ICalloutIf;
 import org.redcross.sar.mso.data.IPersonnelIf;
 import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IMsoObjectIf.IObjectIdIf;
-import org.redcross.sar.mso.data.IPersonnelIf.PersonnelStatus;
 import org.redcross.sar.mso.data.IUnitIf.UnitStatus;
 import org.redcross.sar.mso.data.IUnitIf.UnitType;
 import org.redcross.sar.util.except.IllegalOperationException;
@@ -164,7 +163,6 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 						layout = (CardLayout)m_bottomPanel.getLayout();
 						layout.show(m_bottomPanel, PERSONNEL_ADDITIONAL_VIEW_ID);
 					}
-
 					break;
 				case 1:
 					if(!m_newUnit)
@@ -515,7 +513,7 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 	}
 	
 	/**
-	 * Called when delete is pressed, determines what to delete on the contents of the details panel
+	 * Called when delete is pressed, determines what to delete based on the contents of the details panel
 	 */
 	private void delete()
 	{
@@ -525,34 +523,34 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 			IPersonnelIf personnel = m_personnelLeftDetailsPanel.getPersonnel();
 			if(personnel != null)
 			{
-				if(personnel.getStatus() == PersonnelStatus.IDLE)
+				//  Confirm delete
+				String[] options = {this.getText("Delete.text"), this.getText("Cancel.text")};
+				int n = JOptionPane.showOptionDialog(
+						this.getApplication().getFrame(), 
+						this.getText("DeletePersonnel.text"),
+						this.getText("DeletePersonnel.header"),
+						JOptionPane.YES_NO_OPTION,
+						JOptionPane.QUESTION_MESSAGE, 
+						null, 
+						options,
+						options[0]);
+
+				if(n == JOptionPane.YES_OPTION)
 				{
-					//  Confirm delete
-					String[] options = {this.getText("Delete.text"), this.getText("Cancel.text")};
-					int n = JOptionPane.showOptionDialog(
-							this.getApplication().getFrame(), 
-							this.getText("DeletePersonnel.text"),
-							this.getText("DeletePersonnel.header"),
-							JOptionPane.YES_NO_OPTION,
-							JOptionPane.QUESTION_MESSAGE, 
-							null, 
-							options,
-							options[0]);
-					
-					if(n == JOptionPane.YES_OPTION)
+					try
 					{
-						personnel.deleteObject();
+						PersonnelUtilities.deletePersonnel(personnel);
 						
 						// Commit
-						this.getMsoModel().commit();						
-					}
-				}
-				else
-				{
-					//  Can not delete, give error message
-					ErrorDialog error = new ErrorDialog(null);
-					error.showError(this.getText("CanNotDeletePersonnel.header"),
-							this.getText("CanNotDeletePersonnel.details"));
+						this.getMsoModel().commit();
+					} 
+					catch (IllegalOperationException e)
+					{
+						//  Can not delete personnel, give error message
+						ErrorDialog error = new ErrorDialog(this.getApplication().getFrame());
+						error.showError(this.getText("CanNotDeletePersonnel.header"),
+								this.getText("CanNotDeletePersonnel.details"));
+					}					
 				}
 			}
 		}
@@ -584,16 +582,13 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 					}
 					catch(IllegalOperationException e)
 					{
-						ErrorDialog error = new ErrorDialog(null);
+						ErrorDialog error = new ErrorDialog(this.getApplication().getFrame());
 						error.showError(this.getText("CanNotDeleteUnit.header"),
 								this.getText("CanNotDeleteUnit.details"));
 					}
 				}
 			}
 		}
-		
-			
-			
 	}
 	
 	/**
@@ -917,7 +912,7 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 			m_overviewTabPane.setEnabled(true);
 			this.getMsoModel().commit();
 		}
-		else
+		else if(e.getSource() instanceof UnitTypeDialog)
 		{
 			// Continue unit creation
 			IUnitIf newUnit = null;

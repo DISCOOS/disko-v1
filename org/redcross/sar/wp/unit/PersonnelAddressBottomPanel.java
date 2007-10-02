@@ -80,7 +80,7 @@ public class PersonnelAddressBottomPanel extends JPanel
 		topLeftConstraints.gridy = 0;
 		topLeftConstraints.gridheight = 2;
 		topLeftConstraints.weightx = 0.0;
-		m_showInMapButton = DiskoButtonFactory.createSmallButton("Show in map");
+		m_showInMapButton = DiskoButtonFactory.createSmallButton("", m_resources.getString("ShowInMapButton.icon"));
 		topLeftPanel.add(m_showInMapButton, topLeftConstraints);
 		
 		topLevelConstraints.gridwidth = 2;
@@ -127,9 +127,21 @@ public class PersonnelAddressBottomPanel extends JPanel
 		}
 		else
 		{
-//			m_addressTextField.setText(m_currentPersonnel.getResidence().toString());
-//			m_postAreaTextField.setText()
-//			m_postNumberTextField.setText(t);
+			String[] address = m_currentPersonnel.getAddress().split(";");
+			
+			if(address.length == 3)
+			{
+				m_addressTextField.setText(address[0]);
+				m_postAreaTextField.setText(address[1]);
+				m_postNumberTextField.setText(address[2]);
+			}
+			else
+			{
+				m_addressTextField.setText("");
+				m_postAreaTextField.setText("");
+				m_postNumberTextField.setText("");
+			}
+			
 			m_showInMapButton.setEnabled(true);
 		}
 	}
@@ -141,7 +153,15 @@ public class PersonnelAddressBottomPanel extends JPanel
 	{
 		if(m_currentPersonnel != null)
 		{
-			// TODO Save fields to current personnel
+			m_currentPersonnel.suspendNotify();
+			
+			// Store address fields in single string, separated by ;
+			String address = m_addressTextField.getText() + ";" + 
+				m_postAreaTextField.getText() + ";" + m_postNumberTextField.getText();
+			
+			m_currentPersonnel.setAddress(address);
+			
+			m_currentPersonnel.resumeNotify();
 		}
 	}
 }

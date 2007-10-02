@@ -15,6 +15,7 @@ public abstract class AbstractPerson extends AbstractMsoObject implements IPerso
     private final AttributeImpl.MsoString m_lastname = new AttributeImpl.MsoString(this, "Lastname");
     private final AttributeImpl.MsoInteger m_photo = new AttributeImpl.MsoInteger(this, "Photo");
     private final AttributeImpl.MsoPosition m_residence = new AttributeImpl.MsoPosition(this, "Residence");
+    private final AttributeImpl.MsoString m_address = new AttributeImpl.MsoString(this, "Address");
     private final AttributeImpl.MsoString m_telephone1 = new AttributeImpl.MsoString(this, "Telephone1");
     private final AttributeImpl.MsoString m_telephone2 = new AttributeImpl.MsoString(this, "Telephone2");
     private final AttributeImpl.MsoString m_telephone3 = new AttributeImpl.MsoString(this, "Telephone3");
@@ -36,6 +37,7 @@ public abstract class AbstractPerson extends AbstractMsoObject implements IPerso
         addAttribute(m_lastname);
         addAttribute(m_photo);
         addAttribute(m_residence);
+        addAttribute(m_address);
         addAttribute(m_telephone1);
         addAttribute(m_telephone2);
         addAttribute(m_telephone3);
@@ -176,6 +178,26 @@ public abstract class AbstractPerson extends AbstractMsoObject implements IPerso
     public IAttributeIf.IMsoPositionIf getResidenceAttribute()
     {
         return m_residence;
+    }
+    
+    public void setAddress(String address)
+    {
+    	m_address.setValue(address);
+    }
+    
+    public String getAddress()
+    {
+    	return m_address.getString();
+    }
+    
+    public IMsoModelIf.ModificationState getAddressState()
+    {
+    	return m_address.getState();
+    }
+    
+    public IAttributeIf.IMsoStringIf getAddressAttribute()
+    {
+    	return m_address;
     }
 
     public void setTelephone1(String aTelephone1)

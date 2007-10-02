@@ -65,6 +65,14 @@ public interface IPersonIf extends IMsoObjectIf
     public IMsoModelIf.ModificationState getResidenceState();
 
     public IAttributeIf.IMsoPositionIf getResidenceAttribute();
+    
+    public void setAddress(String address);
+    
+    public String getAddress();
+    
+    public IMsoModelIf.ModificationState getAddressState();
+    
+    public IAttributeIf.IMsoStringIf getAddressAttribute();
 
     public void setTelephone1(String aTelephone1);
 

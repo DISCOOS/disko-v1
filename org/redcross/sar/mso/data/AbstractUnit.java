@@ -20,6 +20,7 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
     private final AttributeImpl.MsoInteger m_averageSpeed = new AttributeImpl.MsoInteger(this, "AverageSpeed");
     private final AttributeImpl.MsoInteger m_bearing = new AttributeImpl.MsoInteger(this, "Bearing");
     private final AttributeImpl.MsoString m_callSign = new AttributeImpl.MsoString(this, "CallSign");
+    private final AttributeImpl.MsoString m_toneId = new AttributeImpl.MsoString(this, "ToneID");
     private final AttributeImpl.MsoInteger m_maxSpeed = new AttributeImpl.MsoInteger(this, "MaxSpeed");
     private final AttributeImpl.MsoInteger m_number = new AttributeImpl.MsoInteger(this, "Number",true);
     private final AttributeImpl.MsoPosition m_position = new AttributeImpl.MsoPosition(this, "Position");
@@ -76,6 +77,7 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
         addAttribute(m_averageSpeed);
         addAttribute(m_bearing);
         addAttribute(m_callSign);
+        addAttribute(m_toneId);
         addAttribute(m_maxSpeed);
         addAttribute(m_number);
         addAttribute(m_position);
@@ -297,6 +299,26 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
     public IAttributeIf.IMsoStringIf getCallSignAttribute()
     {
         return m_callSign;
+    }
+    
+    public void setToneID(String toneId)
+    {
+    	m_toneId.setValue(toneId);
+    }
+    
+    public String getToneID()
+    {
+    	return m_toneId.getString();
+    }
+    
+    public IMsoModelIf.ModificationState getToneIDState()
+    {
+    	return m_toneId.getState();
+    }
+    
+    public IAttributeIf.IMsoStringIf getToneIDAttribute()
+    {
+    	return m_toneId;
     }
 
     public void setMaxSpeed(int aMaxSpeed)

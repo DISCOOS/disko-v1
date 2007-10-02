@@ -14,10 +14,14 @@ public interface ICommunicatorIf extends IMsoObjectIf
             return o1.getCommunicatorNumber() - o2.getCommunicatorNumber();
         }
     };
-
+     
     public void setCallSign(String aCallsign);
 
     public String getCallSign();
+    
+    public void setToneID(String toneId);
+    
+    public String getToneID();
 
     public char getCommunicatorNumberPrefix();
 
