@@ -144,7 +144,7 @@ public class Polygon implements IGeodataIf, Cloneable
 
     @Override
     public Object clone() throws CloneNotSupportedException
-    { // todo test!!!!!
+    {
         super.clone();
         Polygon retVal = new Polygon(m_id,m_name);
         retVal.setLayout(m_layout);

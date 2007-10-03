@@ -132,23 +132,24 @@ public class GeoPos
 
         GeoPos in = (GeoPos) obj;
 
-        return closeEnough(in.getPosition());
+        return floatEquals(in.getPosition());
     }
 
-    protected boolean closeEnough(Point2D.Double aPoint)
+    protected boolean floatEquals(Point2D.Double aPoint)
     {
-        return (m_position != null ? ((aPoint != null && m_position.distanceSq(aPoint) <  MAX_EQUALITY_DISTANCE)) : aPoint != null);
+        return (m_position != null ?
+                (aPoint != null && (float)m_position.x == (float)aPoint.x && (float)m_position.y == (float)aPoint.y) :
+                aPoint != null);
     }
 
     public int hashCode()
     {
-        if (m_position == null)
+        int result = 0;
+        if (m_position != null)
         {
-            return 0;
+            result = 51 * result + Float.floatToIntBits((float) m_position.x);
+            result = 51 * result + Float.floatToIntBits((float) m_position.y);
         }
-        int result = 37;
-        result = 51 * result + (int) (Double.doubleToLongBits(getPosition().getX()) ^ ((Double.doubleToLongBits(getPosition().getX()) >>> 32)));
-        result = 51 * result + (int) (Double.doubleToLongBits(getPosition().getY()) ^ ((Double.doubleToLongBits(getPosition().getY()) >>> 32)));
         return result;
     }
 }

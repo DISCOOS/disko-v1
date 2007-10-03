@@ -95,16 +95,13 @@ public class TimePos extends GeoPos implements Comparable<TimePos>
             return false;
         }
 
-        return closeEnough(in.getPosition());
+        return floatEquals(in.getPosition());
     }
 
     public int hashCode()
     {
         int result = super.hashCode();
-        if (m_time != null)
-        {
-            result = 51 * result + m_time.hashCode();
-        }
+        result = 31 * result + (m_time != null ? m_time.hashCode() : 0);
         return result;
     }
 }
