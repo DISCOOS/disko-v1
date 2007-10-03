@@ -72,32 +72,39 @@ public class TimePos extends GeoPos implements Comparable<TimePos>
         return m_time.compareTo(aTimePos.m_time);
     }
 
-   public Calendar getTime()
-   {
-      return m_time;
-   }
+    public Calendar getTime()
+    {
+        return m_time;
+    }
 
-   public boolean equals(Object obj)
-   {
-      if(obj instanceof TimePos)
-      {
-         TimePos in=(TimePos)obj;
-         return getPosition().getY()==in.getPosition().getY() &&
-               getPosition().getX()==in.getPosition().getX() &&
-               m_time.equals(in.getTime());
-      }
-      else
-      {
-         return false;
-      }
-   }
-   public int hashCode()
-   {
-      int result=37;
-      result=51*result+(int)(Double.doubleToLongBits(getPosition().getX())^((Double.doubleToLongBits(getPosition().getX())>>>32)));
-      result=51*result+(int)(Double.doubleToLongBits(getPosition().getY())^((Double.doubleToLongBits(getPosition().getY())>>>32)));
-      result=51*result+m_time.hashCode();
-      return result;
-   }
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+        {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass())
+        {
+            return false;
+        }
 
+        TimePos in = (TimePos) obj;
+
+        if (m_time != null ? !m_time.equals(in.m_time) : in.m_time != null)
+        {
+            return false;
+        }
+
+        return closeEnough(in.getPosition());
+    }
+
+    public int hashCode()
+    {
+        int result = super.hashCode();
+        if (m_time != null)
+        {
+            result = 51 * result + m_time.hashCode();
+        }
+        return result;
+    }
 }
