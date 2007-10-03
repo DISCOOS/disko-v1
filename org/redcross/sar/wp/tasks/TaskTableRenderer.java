@@ -79,7 +79,6 @@ public class TaskTableRenderer extends JLabel implements TableCellRenderer
 			}
 		}
 
-
 		// Set bold text for unprocessed tasks
 		if(value != null)
 		{

@@ -102,7 +102,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 			public void actionPerformed(ActionEvent e)
 			{
 				m_broadcast = false;
-				MessageLogTopPanel.getCurrentMessage().setBroadcast(false);
+				MessageLogTopPanel.getCurrentMessage(true).setBroadcast(false);
 				
 				m_broadcastDialog.hideComponent();
 				m_broadcastDialog.clearSelection();
@@ -123,7 +123,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 			public void actionPerformed(ActionEvent arg0)
 			{
 				m_broadcast = true;
-				MessageLogTopPanel.getCurrentMessage().setBroadcast(true);
+				MessageLogTopPanel.getCurrentMessage(true).setBroadcast(true);
 				
 				m_nbFieldDialog.hideComponent();
 				m_nbListDialog.hideComponent();
@@ -186,7 +186,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 	 */
 	public void showComponent()
 	{
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+		IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
 		this.setVisible(true);
 		if(message.isBroadcast())
 		{

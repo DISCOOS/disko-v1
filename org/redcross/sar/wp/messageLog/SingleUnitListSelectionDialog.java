@@ -290,7 +290,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 				{
 					m_currentButton = sourceButton;
 					// Select communicator
-					IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+					IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
 					if(m_senderList)
 					{
 						message.setSender(communicator);

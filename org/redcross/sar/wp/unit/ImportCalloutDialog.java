@@ -35,6 +35,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.DiskoDialog;
@@ -201,15 +202,19 @@ public class ImportCalloutDialog extends DiskoDialog
 		
 		m_tableModel = new ImportPersonnelTableModel();
 		m_personnelTable = new JTable(m_tableModel);
+		
+		m_personnelTable.setRowHeight(DiskoButtonFactory.TABLE_BUTTON_SIZE.height + 10);
+		TableColumn column = m_personnelTable.getColumnModel().getColumn(0); 
+		column.setPreferredWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width + 10);
+		column.setMaxWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width + 10);
+
+		column = m_personnelTable.getColumnModel().getColumn(2); 
+		column.setPreferredWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width * 3 + 20);
+		column.setMaxWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width * 3 + 20);
+		
 		ImportPersonnelCellEditor editor = new ImportPersonnelCellEditor();
 		m_personnelTable.setDefaultEditor(Object.class, editor);
 		m_personnelTable.setDefaultRenderer(Object.class, editor);
-		
-		m_personnelTable.setRowHeight(DiskoButtonFactory.TABLE_BUTTON_SIZE.height + 10);
-		m_personnelTable.getColumnModel().getColumn(0).setPreferredWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width + 10);
-		m_personnelTable.getColumnModel().getColumn(0).setMaxWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width + 10);
-		m_personnelTable.getColumnModel().getColumn(2).setPreferredWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width * 3 + 20);
-		m_personnelTable.getColumnModel().getColumn(2).setMaxWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width * 3 + 20);
 		
 		JTableHeader header = m_personnelTable.getTableHeader();
 		header.setReorderingAllowed(false);
@@ -481,14 +486,12 @@ public class ImportCalloutDialog extends DiskoDialog
 					// Reinstate released personnel
 					if(msoPersonnel.getStatus() == PersonnelStatus.RELEASED)
 					{
-						PersonnelUtilities.reinstateResource(msoPersonnel, PersonnelStatus.ON_ROUTE);
-						msoPersonnel = msoPersonnel.getNextOccurence();
+						msoPersonnel = PersonnelUtilities.reinstateResource(msoPersonnel, PersonnelStatus.ON_ROUTE);
 					}
 					else if(msoPersonnel.getStatus() != PersonnelStatus.ARRIVED)
 					{
 						msoPersonnel.setStatus(PersonnelStatus.ON_ROUTE);
 					}
-
 				}
 				else
 				{

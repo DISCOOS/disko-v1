@@ -81,7 +81,7 @@ public class SinglePOITool extends AbstractCommandTool
 	public void onMouseUp(int button, int shift, int x, int y) throws IOException, AutomationException 
 	{
 		
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+		IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
 		IMessageLineIf messageLine;
 		
 		POIType type = m_panel.getSelectedPOIType();

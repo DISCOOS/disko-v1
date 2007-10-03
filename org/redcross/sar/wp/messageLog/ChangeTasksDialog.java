@@ -145,7 +145,7 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	 */
 	private void toggleTask(ActionEvent ae, TaskSubType type)
 	{
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+		IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
 
 		JToggleButton button = (JToggleButton)ae.getSource();
 		JButton changeButton = m_buttonMap.get(button);
@@ -170,7 +170,6 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 					if(!task.deleteObject())
 					{
 						System.err.println("Error removing task");
-						// TODO warning?
 					}
 				}
 			}
@@ -187,6 +186,8 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	 */
 	private void initTaskValues(ITaskIf task, TaskSubType type)
 	{
+		IMessageIf message = MessageLogTopPanel.getCurrentMessage(false);
+		
 		task.setCreated(Calendar.getInstance());
 
 		if(type == TaskSubType.FINDING)
@@ -238,7 +239,11 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 		task.setStatus(TaskStatus.UNPROCESSED);
 
 		// Source
-		task.setSourceClass(MessageLogTopPanel.getCurrentMessage().getMsoClassCode());
+		if(message != null)
+		{
+			task.setSourceClass(message.getMsoClassCode());
+		}
+		
 
 		// Progress
 		task.setProgress(0);
@@ -250,7 +255,10 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 		task.setCreatingWorkProcess(m_wpMessageLog.getName());
 
 		// Object
-		task.setDependentObject(MessageLogTopPanel.getCurrentMessage().getSender());
+		if(message != null)
+		{
+			task.setDependentObject(message.getSender());
+		}
 	}
 
 	/**
@@ -348,7 +356,7 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+				IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
 				for(ITaskIf task : message.getMessageTasksItems())
 				{
 					if(getSubType(task) == type)
@@ -469,7 +477,7 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	 */
 	public void handleMsoUpdateEvent(Update e)
 	{
-		IMessageIf message = MessageLogTopPanel.getSelectedMessage();
+		IMessageIf message = MessageLogTopPanel.getCurrentMessage(false);
 		if(message != null)
 		{
 			for(ITaskIf task : message.getMessageTasksItems())

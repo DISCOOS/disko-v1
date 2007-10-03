@@ -47,25 +47,28 @@ public class AssignmentListModel extends AbstractListModel
 	 */
 	public void updateList()
 	{
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
-		m_messageLines.clear();
-		Selector<IMessageLineIf> lineSelector = new Selector<IMessageLineIf>()
+		IMessageIf message = MessageLogTopPanel.getCurrentMessage(false);
+		if(message != null)
 		{
-			public boolean select(IMessageLineIf anObject)
+			m_messageLines.clear();
+			Selector<IMessageLineIf> lineSelector = new Selector<IMessageLineIf>()
 			{
-				if(anObject.getLineType() == m_lineType)
+				public boolean select(IMessageLineIf anObject)
 				{
-					return true;
+					if(anObject.getLineType() == m_lineType)
+					{
+						return true;
+					}
+					else
+					{
+						return false;
+					}
+						
 				}
-				else
-				{
-					return false;
-				}
-					
-			}
-		};
-		m_messageLines.addAll(message.getMessageLines().selectItems(lineSelector, null));
-		fireContentsChanged(this, 0, m_messageLines.size()-1);
+			};
+			m_messageLines.addAll(message.getMessageLines().selectItems(lineSelector, null));
+			fireContentsChanged(this, 0, m_messageLines.size()-1);
+		}
 	}
 	
 	/**

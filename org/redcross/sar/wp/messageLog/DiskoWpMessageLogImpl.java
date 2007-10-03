@@ -102,6 +102,5 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
     {
         // TODO Auto-generated method stub
     }
-//    private String[] options = null;
 
 }

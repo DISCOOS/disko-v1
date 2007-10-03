@@ -221,7 +221,7 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		m_personnelOverviewTable.setTransferHandler(m_personnelTransferHandler);
 		m_personnelOverviewTable.setDragEnabled(true);
 		
-		PersonnelOverviewTableRenderer personnelRenderer = new PersonnelOverviewTableRenderer(this);
+		PersonnelOverviewTableEditor personnelRenderer = new PersonnelOverviewTableEditor(this);
 		personnelRenderer.setTable(m_personnelOverviewTable);
 		
 		m_personnelOverviewTable.setRowHeight(DiskoButtonFactory.TABLE_BUTTON_SIZE.height + 10);
@@ -246,7 +246,7 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		m_unitOverviewTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		m_unitOverviewTable.addMouseListener(new UnitTableMouseListener());
 		
-		UnitOverviewTableRenderer unitRenderer = new UnitOverviewTableRenderer(this);
+		UnitOverviewTableEditor unitRenderer = new UnitOverviewTableEditor(this);
 		unitRenderer.setTable(m_unitOverviewTable);
 		
 		m_unitOverviewTable.setRowHeight(DiskoButtonFactory.TABLE_BUTTON_SIZE.height + 10);
@@ -434,6 +434,9 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 			m_newCallOut = false;
 			m_importCalloutButton.setSelected(false);
 		}
+		m_calloutDetailsPanel.saveCallOut();
+		m_calloutDetailsPanel.setCallOut(null);
+		m_calloutDetailsPanel.updateFieldContents();
 		
 		this.getMsoModel().commit();
 	}

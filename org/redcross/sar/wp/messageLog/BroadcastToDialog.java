@@ -145,7 +145,7 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageCompon
 				public void actionPerformed(ActionEvent e)
 				{
 					// Update message receiver lists. Toggle buttons gets updated through newMessageSelected, triggered by mso update
-					IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+					IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
 					JToggleButton toggleButton = (JToggleButton)e.getSource();
 					if(!toggleButton.isSelected())
 					{
@@ -311,7 +311,7 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageCompon
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+				IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
 				if(m_selectionMode)
 				{
 					for(ICommunicatorIf communicator : m_wpMessageLog.getMsoManager().getCmdPost().getActiveCommunicators())
@@ -352,7 +352,7 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageCompon
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+				IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
 				if(m_selectionMode)
 				{
 					// Need to iterate over all active communicators to avoid concurrency issues, otherwise just selected communicators
@@ -470,7 +470,7 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageCompon
 	 */
 	private void removeSelectedUnits(UnitType type)
 	{
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+		IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
 		for(ICommunicatorIf communicator : m_wpMessageLog.getMsoManager().getCmdPost().getActiveCommunicators())
 		{
 			if(communicator instanceof ICmdPostIf && type == UnitType.COMMAND_POST)
@@ -493,7 +493,7 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageCompon
 	 */
 	private void addSelectedUnits(UnitType type)
 	{
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+		IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
 		for(ICommunicatorIf communicator : m_wpMessageLog.getMsoManager().getCmdPost().getActiveCommunicators())
 		{
 			if(communicator instanceof ICmdPostIf && type == UnitType.COMMAND_POST)
@@ -593,32 +593,35 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageCompon
 	public void showComponent()
 	{
 		// If there exists unconfirmed receivers in the message, go to confirmation mode, most efficient work flow
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
-		if(message.getBroadcastUnconfirmed().size() != 0)
-		{			
-			m_selectionMode = false;
-		}
-		else
+		IMessageIf message = MessageLogTopPanel.getCurrentMessage(false);
+		if(message != null)
 		{
-			m_selectionMode = true;
+			if(message.getBroadcastUnconfirmed().size() != 0)
+			{			
+				m_selectionMode = false;
+			}
+			else
+			{
+				m_selectionMode = true;
+			}
+			
+			this.setVisible(true);
+			m_listArea.revalidate();
+			
+			// Refresh list of communicators
+			updateCommunicatorList();
+			
+			if(m_selectionMode)
+			{
+				setSelectionMode();
+			}
+			else
+			{
+				setConfirmationMode();
+			}
+			
+			updateButtonSelection();
 		}
-		
-		this.setVisible(true);
-		m_listArea.revalidate();
-		
-		// Refresh list of communicators
-		updateCommunicatorList();
-		
-		if(m_selectionMode)
-		{
-			setSelectionMode();
-		}
-		else
-		{
-			setConfirmationMode();
-		}
-		
-		updateButtonSelection();
 	}
 
 	/**

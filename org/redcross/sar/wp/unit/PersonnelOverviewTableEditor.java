@@ -23,14 +23,14 @@ import org.redcross.sar.mso.data.IPersonnelIf.PersonnelStatus;
  * 
  * @author thomasl
  */
-public class PersonnelOverviewTableRenderer
+public class PersonnelOverviewTableEditor
 {
 	private static final ResourceBundle m_resources = ResourceBundle.getBundle("org.redcross.sar.wp.unit.unit");
 	private JTable m_table;
 	
 	private IDiskoWpUnit m_wpUnit;
 	
-	public PersonnelOverviewTableRenderer(IDiskoWpUnit wp)
+	public PersonnelOverviewTableEditor(IDiskoWpUnit wp)
 	{
 		m_wpUnit = wp;
 	}

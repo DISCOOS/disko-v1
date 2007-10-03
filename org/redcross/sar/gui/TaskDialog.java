@@ -215,7 +215,7 @@ public class TaskDialog extends DiskoDialog
 			{
 				if(timesValid())
 				{
-					updateTask();
+					saveTask();
 					setVisible(false);
 				}
 				else
@@ -341,7 +341,7 @@ public class TaskDialog extends DiskoDialog
 	/**
 	 * Extracts values from swing components and updates/creates MSO task object
 	 */
-	public void updateTask()
+	public void saveTask()
 	{
 		// Get due time
 		String dueTimeString = (String)m_dueComboBox.getSelectedItem();

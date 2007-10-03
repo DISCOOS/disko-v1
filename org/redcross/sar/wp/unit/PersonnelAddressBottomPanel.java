@@ -89,7 +89,6 @@ public class PersonnelAddressBottomPanel extends JPanel
 		
 		// Bottom left
 		JPanel bottomLeftPanel = new JPanel();
-		
 		topLevelConstraints.gridy = 1;
 		topLevelConstraints.weighty = 1.0;
 		this.add(bottomLeftPanel, topLevelConstraints);

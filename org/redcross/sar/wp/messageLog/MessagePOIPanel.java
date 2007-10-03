@@ -3,10 +3,12 @@ package org.redcross.sar.wp.messageLog;
 import com.esri.arcgis.interop.AutomationException;
 
 import org.redcross.sar.gui.DiskoButtonFactory;
+import org.redcross.sar.gui.MGRSField;
 import org.redcross.sar.gui.NumPadDialog;
 import org.redcross.sar.gui.DiskoButtonFactory.ButtonType;
 import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
 import org.redcross.sar.map.IDiskoMap;
+import org.redcross.sar.map.MapUtil;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.ITaskIf;
@@ -21,17 +23,14 @@ import javax.swing.*;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.geom.Point2D;
 import java.io.IOException;
+import java.net.UnknownHostException;
 
 /**
  * Dialog used in position and finding when editing the message log. A separate POI dialog class was created for
- * the message log, should be merged with POIDialog / extract a common super class, if this should prove beneficial
+ * the message log, could be merged with POIDialog / extract a common super class, if this should prove beneficial
  * 
  * @author thomasl
  */
@@ -42,10 +41,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 	protected JButton m_okButton = null;
 	protected JButton m_cancelButton = null;
 	protected JToggleButton m_showInMapButton = null;
-	protected JLabel m_xLabel = null;
-	protected JLabel m_yLabel = null;
-	protected JTextField m_xField = null;
-	protected JTextField m_yField = null;
+	protected MGRSField m_mgrsField;
 	protected JLabel m_poiTypeLabel = null;
 	protected JComboBox m_poiTypesComboBox = null;
 	protected POIType[] m_poiTypes = null;
@@ -83,30 +79,27 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 		this.hideComponent();
 	}
 
+	/**
+	 * Update POI position and type in current message based on values in GUI fields
+	 */
 	private void updatePOI()
 	{
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
-		double xCoordinate = 0.0;
+		IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
+		Position newPosition = null;
 		try
 		{
-			xCoordinate = Double.valueOf(m_xField.getText());
-		}
-		catch(NumberFormatException nfe)
+			newPosition = MapUtil.getPositionFromMGRS(m_mgrsField.getText());
+		} 
+		catch (UnknownHostException e)
 		{
-			xCoordinate = 0.0;
-		}
-
-		double yCoordinate = 0.0;
-		try
+			e.printStackTrace();
+		} 
+		catch (IOException e)
 		{
-			yCoordinate = Double.valueOf(m_yField.getText());
+			e.printStackTrace();
 		}
-		catch(NumberFormatException nfe)
-		{
-			yCoordinate = 0.0;
-		}
-
-		// Get line
+		
+		// Get message line
 		IMessageLineIf messageLine = null;
 		if(m_poiTypes == null)
 		{
@@ -126,18 +119,10 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 		}
 
 		// Update POI
-		Position position = poi.getPosition();
-		if(position == null)
-		{
-			String id = m_wpMessageLog.getMsoModel().getModelDriver().makeObjectId().getId();
-			position = new Position(id, xCoordinate, yCoordinate);
-			poi.setPosition(position);
-		}
-		else
-		{
-			position.setPosition(xCoordinate, yCoordinate);
-		}
-		poi.setType(getSelectedPOIType());	
+		poi.suspendNotify();
+		poi.setPosition(newPosition);
+		poi.setType(getSelectedPOIType());
+		poi.resumeNotify();
 	}
 	
 	/**
@@ -145,22 +130,24 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 	 */
 	private void revertPOI()
 	{
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
-		IMessageLineIf line = null;
-		if(m_poiTypes == null)
+		IMessageIf message = MessageLogTopPanel.getCurrentMessage(false);
+		if(message != null)
 		{
-			line = message.findMessageLine(MessageLineType.POI, false);
-		}
-		else
-		{
-			line = message.findMessageLine(MessageLineType.FINDING, false);
-		}
-		
-		if(line != null)
-		{
-			IPOIIf poi = line.getLinePOI();
-			Position position = poi.getPosition();
-			setPositionFields(position.getPosition());
+			IMessageLineIf line = null;
+			if(m_poiTypes == null)
+			{
+				line = message.findMessageLine(MessageLineType.POI, false);
+			}
+			else
+			{
+				line = message.findMessageLine(MessageLineType.FINDING, false);
+			}
+			
+			if(line != null)
+			{
+				IPOIIf poi = line.getLinePOI();
+				updateMGRSField(poi);
+			}
 		}
 	}
 
@@ -203,11 +190,12 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 				if(button.isSelected())
 				{
 					MessageLogPanel.showMap();
-					//TODO Explicitly set POI in map
+					showPOI(true);
 				}
 				else
 				{
 					MessageLogPanel.hideMap();
+					showPOI(false);
 				}
 			}
 		});
@@ -245,93 +233,16 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 1.0;
 		gbc.weighty = 1.0;
-
-		// X
-		JPanel xPanel = new JPanel();
-		m_xLabel = new JLabel("X");
-		xPanel.add(m_xLabel);
-		m_xField = new JTextField(8);
-		m_xField.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent arg0)
-			{
-				updatePOI();
-			}
-		});
-		// If in notebook mode, display numpad on field focus
-		if(m_notebookMode)
-		{
-			m_xField.addFocusListener(new FocusListener()
-			{
-				public void focusGained(FocusEvent arg0)
-				{
-					NumPadDialog numPad = m_wpMessageLog.getApplication().getUIFactory().getNumPadDialog();
-					// Don't display dialog again if returning from it
-					Component component = arg0.getOppositeComponent();
-					if(component != numPad.getOkButton())
-					{
-						numPad.setTextField(m_xField);
-						Point location = m_xField.getLocationOnScreen();
-						location.x += m_xField.getWidth();
-						numPad.setLocation(location);
-						numPad.setVisible(true);
-					}
-				}
-
-				public void focusLost(FocusEvent arg0)
-				{			
-					
-				}
-			});
-		}
-		xPanel.add(m_xField, gbc);
-		this.add(xPanel, gbc);
-
-		// Y
+		
+		// MGRS
+		m_mgrsField = new MGRSField(m_wpMessageLog.getApplication());
+		this.add(m_mgrsField, gbc);
 		gbc.gridy++;
-		JPanel yPanel = new JPanel();
-		m_yLabel = new JLabel("Y");
-		yPanel.add(m_yLabel);
-		m_yField = new JTextField(8);
-		m_yField.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent arg0)
-			{
-				updatePOI();
-			}
-		});
-		// If in notebook mode, display num pad on field focus
-		if(m_notebookMode)
-		{
-			m_yField.addFocusListener(new FocusListener()
-			{
-				public void focusGained(FocusEvent arg0)
-				{
-					NumPadDialog numPad = m_wpMessageLog.getApplication().getUIFactory().getNumPadDialog();
-					// Don't display dialog again if returning from it
-					Component component = arg0.getOppositeComponent();
-					if(component != numPad.getOkButton())
-					{
-						numPad.setTextField(m_yField);
-						Point location = m_yField.getLocationOnScreen();
-						location.x += m_yField.getWidth();
-						numPad.setLocation(location);
-						numPad.setVisible(true);
-					}
-				}
-
-				public void focusLost(FocusEvent arg0)
-				{			
-				}
-			});
-		}
-		yPanel.add(m_yField, gbc);
-		this.add(yPanel, gbc);
-
+		
 		// Combo box
 		gbc.gridy++;
 		JPanel typePanel = new JPanel();
-		m_poiTypeLabel = new JLabel("Type");
+		m_poiTypeLabel = new JLabel(m_wpMessageLog.getText("Type.text"));
 		typePanel.add(m_poiTypeLabel);
 		m_poiTypesComboBox = new JComboBox();
 		m_poiTypesComboBox.setRenderer(new SimpleListCellRenderer());
@@ -343,7 +254,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 				JComboBox cb = (JComboBox)e.getSource();
 				POIType type = (POIType)cb.getSelectedItem();
 
-				IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+				IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
 				IMessageLineIf messageLine = message.findMessageLine(MessageLineType.FINDING, false);
 				if(messageLine != null)
 				{
@@ -406,8 +317,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 
 	public void clearContents()
 	{
-		m_xField.setText("");
-		m_yField.setText("");
+		m_mgrsField.setText("");
 	}
 
 	public void hideComponent()
@@ -416,6 +326,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 		numPad.setVisible(false);
 		this.setVisible(false);
         MessageLogPanel.hideMap();
+        showPOI(false);
     }
 
 	private void updateFields(IMessageIf message)
@@ -436,23 +347,20 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 			if(messageLine == null)
 			{
 				// Message don't have a POI message line
-				m_xField.setText("");
-				m_yField.setText("");
+				m_mgrsField.setText("");
 			}
 			else
 			{
 				IPOIIf poi = messageLine.getLinePOI();
 				if(poi != null)
 				{
-					Position position = poi.getPosition();
-					if(position == null)
+					if(poi.getPosition() == null)
 					{
-						m_xField.setText("");
-						m_yField.setText("");
+						m_mgrsField.setText("");
 					}
 					else
 					{
-						setPositionFields(position.getPosition());
+						updateMGRSField(poi);
 					}
 				}
 			}
@@ -460,14 +368,22 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 		catch(Exception e){}
 	}
 	
-	private void setPositionFields(Point2D.Double point)
+	private void updateMGRSField(IPOIIf poi)
 	{
-		String[] x = String.valueOf(point.x).split("\\.");
-		String[] y = String.valueOf(point.y).split("\\.");
-		int length = Math.min(3, x[1].length());
-		m_xField.setText(x[0] + "." + x[1].substring(0, length));
-		m_yField.setText(y[0] + "." + y[1].subSequence(0, length));
-		
+		String mgrs = null;
+		try
+		{
+			mgrs = MapUtil.getMGRSfromPosition(poi.getPosition());
+		} 
+		catch (AutomationException e)
+		{
+			e.printStackTrace();
+		} 
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		m_mgrsField.setText(mgrs);
 	}
 
 	private void updateComboBox(IMessageIf message)
@@ -495,31 +411,6 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 		// Update dialog
 		updateComboBox(message);
 		updateFields(message);
-
-		// Zoom to POI in map
-		IMessageLineIf messageLine = null;
-		if(m_poiTypes == null)
-		{
-			messageLine = message.findMessageLine(MessageLineType.POI, false);
-		}
-		else
-		{
-			messageLine = message.findMessageLine(MessageLineType.FINDING, false);
-		}
-
-		if(messageLine != null)
-		{
-			IPOIIf poi = messageLine.getLinePOI();
-			if(poi != null)
-			{
-				try
-				{
-					MessageLogPanel.getMap().zoomToMsoObject(poi);
-				}
-				catch (AutomationException e){}
-				catch (IOException e){}
-			}
-		}
 	}
 
 	/**
@@ -530,52 +421,11 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 		if(m_showInMapButton.isSelected())
 		{
 			MessageLogPanel.showMap();
+			showPOI(true);
 		}
 		
 		this.setVisible(true);
 	}
-	
-//	/**
-//	 * Pan to current POI object in map
-//	 */
-//	private void panToPOI()
-//	{
-//		// Pan to object
-//		POIType type = getSelectedPOIType();
-//		IMessageLineIf line = null;
-//		IPOIIf poi = null;
-//		if(type == POIType.GENERAL)
-//		{
-//			line = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.POI, false);
-//		}
-//		else
-//		{
-//			line = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.FINDING, false);
-//		}
-//
-//		if(line != null)
-//		{
-//			poi = line.getLinePOI();
-//
-//			if(poi != null)
-//			{
-//				IDiskoMap map = m_wpMessageLog.getMap();
-//				try
-//				{
-//					map.zoomToMsoObject(poi);
-//					System.err.print("zoom");
-//				} 
-//				catch (AutomationException e)
-//				{
-//					e.printStackTrace();
-//				} 
-//				catch (IOException e)
-//				{
-//					e.printStackTrace();
-//				}
-//			}
-//		}
-//	}
 
 	/**
 	 * Get the message log work process
@@ -617,6 +467,54 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 		catch (IOException e)
 		{
 			e.printStackTrace();
+		}
+	}
+	
+	
+	/**
+	 * Set selection for POI in map
+	 */
+	public void showPOI(boolean show)
+	{
+		IMessageIf message = MessageLogTopPanel.getCurrentMessage(false);
+		if(message != null)
+		{
+			IPOIIf poi = null;
+			if(m_poiTypes == null)
+			{
+				IMessageLineIf poiLine = message.findMessageLine(MessageLineType.POI, false);
+				if(poiLine != null)
+				{
+					poi = poiLine.getLinePOI();
+				}
+			}
+			else
+			{
+				IMessageLineIf findingLine = message.findMessageLine(MessageLineType.FINDING, false);
+				if(findingLine != null)
+				{
+					poi = findingLine.getLinePOI();
+				}
+			}
+			
+			
+			// Select POI object in map
+			if(poi != null)
+			{
+				// TODO map selection
+//				try
+//				{
+//					m_wpMessageLog.getMap().setSelected(poi, show);
+//				} 
+//				catch (AutomationException e1)
+//				{
+//					e1.printStackTrace();
+//				} 
+//				catch (IOException e1)
+//				{
+//					e1.printStackTrace();
+//				}
+			}	
 		}
 	}
 }

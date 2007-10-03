@@ -69,7 +69,7 @@ public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 	 */
 	protected void addNewMessageLine()
 	{
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+		IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
 		IUnitIf unit = (IUnitIf)message.getSingleReceiver();
 		
 		// Assure that unit can accept assignment
@@ -101,7 +101,7 @@ public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 	{
 		if(m_selectedAssignment != null)
 		{
-			IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+			IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
 			AssignmentTransferUtilities.createAssignmentChangeMessageLines(
 					message, 
 					MessageLineType.ASSIGNED, 

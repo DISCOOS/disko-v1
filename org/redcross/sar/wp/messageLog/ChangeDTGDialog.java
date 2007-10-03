@@ -138,7 +138,7 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 
 		try
 		{
-			IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+			IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
 			message.setOccuredTime(DTG.DTGToCal(this.getTime()));
 		}
 		catch (IllegalMsoArgumentException e1)

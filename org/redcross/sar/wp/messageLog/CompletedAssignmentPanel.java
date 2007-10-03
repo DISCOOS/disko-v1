@@ -81,7 +81,7 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 	 */
 	protected void addNewMessageLine()
 	{
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+		IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
 		IUnitIf unit = (IUnitIf)message.getSingleReceiver();
 		IAssignmentIf assignedAssignment = unit.getAssignedAssignment();
 		IAssignmentIf executingAssignment = unit.getExecutingAssigment();
@@ -151,7 +151,7 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 	{
 		if(m_selectedAssignment != null)
 		{
-			IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+			IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
 			AssignmentTransferUtilities.createAssignmentChangeMessageLines(message,
 					MessageLineType.ASSIGNED,
 					MessageLineType.COMPLETE,

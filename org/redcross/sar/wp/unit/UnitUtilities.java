@@ -30,8 +30,7 @@ public class UnitUtilities
 	 */
 	public static void toggleUnitPause(IUnitIf unit) throws IllegalOperationException
 	{
-		// Only possible from status ready
-		if(unit.getStatus() == UnitStatus.INITIALIZING)
+		if(unit.getStatus() == UnitStatus.INITIALIZING || unit.getStatus() == UnitStatus.RELEASED)
 		{
 			throw new IllegalOperationException();
 		}

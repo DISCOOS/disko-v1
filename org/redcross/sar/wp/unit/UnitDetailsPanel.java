@@ -31,6 +31,8 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import org.redcross.sar.event.ITickEventListenerIf;
+import org.redcross.sar.event.TickEvent;
 import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.mso.IMsoManagerIf;
@@ -49,7 +51,7 @@ import org.redcross.sar.util.except.IllegalOperationException;
  * 
  * @author thomasl
  */
-public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
+public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf, ITickEventListenerIf
 {
 	private static final long serialVersionUID = 1L;
 	
@@ -73,6 +75,9 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 	private JTable m_personnelTable;
 	
 	private IDiskoWpUnit m_wpUnit;
+	
+	private static final long UPDATE_INTERVAL = 60000;
+	private long m_timeCounter;
 	
 	public UnitDetailsPanel(IDiskoWpUnit wp)
 	{
@@ -279,7 +284,36 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 			IAssignmentIf assignment = m_currentUnit.getActiveAssignment();
 			String assignmentString = assignment == null ? "" : assignment.getTypeAndNumber();
 			m_assignmentTextField.setText(assignmentString);
+		
+			updateFieldTime();
+
+			updateStopTime();
 			
+			UnitPersonnelTableModel model = (UnitPersonnelTableModel)m_personnelTable.getModel();
+			model.setPersonnel(m_currentUnit.getUnitPersonnel());
+		}
+		else
+		{
+			// Unit is null, clear fields
+			m_topPanelLabel.setText("");
+			m_leaderTextField.setText("");
+			m_cellPhoneTextField.setText("");
+			m_toneIDTextField.setText("");
+			m_createdTextField.setText("");
+			m_callsignTextField.setText("");
+			m_fieldTimeTextField.setText("");
+			m_assignmentTextField.setText("");
+			m_stopTimeTextField.setText("");
+			UnitPersonnelTableModel model = (UnitPersonnelTableModel)m_personnelTable.getModel();
+			model.setPersonnel(null);
+		}
+	}
+	
+	private void updateFieldTime()
+	{
+		if(m_currentUnit != null)
+		{
+			IAssignmentIf assignment = m_currentUnit.getActiveAssignment();
 			if(assignment != null)
 			{
 				Calendar timeAssigned = assignment.getTimeAssigned();
@@ -302,29 +336,13 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 			else
 			{
 				m_fieldTimeTextField.setText("");
-			}
-			
-//			String stopTime = DTG.CalToDTG(m_currentUnit.get);
-//			m_stopTimeTextField.setText(stopTime); TODO
-			
-			UnitPersonnelTableModel model = (UnitPersonnelTableModel)m_personnelTable.getModel();
-			model.setPersonnel(m_currentUnit.getUnitPersonnel());
+			}	
 		}
-		else
-		{
-			// Unit is null, clear fields
-			m_topPanelLabel.setText("");
-			m_leaderTextField.setText("");
-			m_cellPhoneTextField.setText("");
-			m_toneIDTextField.setText("");
-			m_createdTextField.setText("");
-			m_callsignTextField.setText("");
-			m_fieldTimeTextField.setText("");
-			m_assignmentTextField.setText("");
-			m_stopTimeTextField.setText("");
-			UnitPersonnelTableModel model = (UnitPersonnelTableModel)m_personnelTable.getModel();
-			model.setPersonnel(null);
-		}
+	}
+	
+	private void updateStopTime()
+	{
+		// TODO 
 	}
 	
 	/**
@@ -595,5 +613,29 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf
 			
 			m_currentUnit.resumeNotify();
 		}
+	}
+
+	public long getInterval()
+	{
+		return UPDATE_INTERVAL;
+	}
+
+	public long getTimeCounter()
+	{
+		return m_timeCounter;
+	}
+
+	/**
+	 * Update time dependent fields
+	 */
+	public void handleTick(TickEvent e)
+	{
+		updateFieldTime();
+		updateStopTime();
+	}
+
+	public void setTimeCounter(long counter)
+	{
+		m_timeCounter = counter;
 	}
 }

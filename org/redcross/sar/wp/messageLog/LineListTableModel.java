@@ -72,7 +72,7 @@ public class LineListTableModel extends AbstractTableModel
 		}
 		else
 		{
-			IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+			IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
 			IMessageLineIf line = m_messageLines.get(rowIndex);
 			ICommunicatorIf singleReceiver = message.getSingleReceiver();
 			String lineText = null;

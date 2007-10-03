@@ -63,7 +63,7 @@ public class StartedAssignmentPanel extends AbstractAssignmentPanel
 	protected void showHasAssignment()
 	{
 		// Must have started message line to reach this point
-		IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage().findMessageLine(MessageLineType.STARTED, false);
+		IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage(true).findMessageLine(MessageLineType.STARTED, false);
 		
 		String time = DTG.CalToDTG(messageLine.getOperationTime());
 		if(time.isEmpty())
@@ -84,7 +84,7 @@ public class StartedAssignmentPanel extends AbstractAssignmentPanel
 
 	protected void addNewMessageLine()
 	{
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+		IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
 		IUnitIf unit = (IUnitIf)message.getSingleReceiver();
 		IAssignmentIf assignment = null;
 		
@@ -143,7 +143,7 @@ public class StartedAssignmentPanel extends AbstractAssignmentPanel
 	{
 		if(m_selectedAssignment != null)
 		{
-			IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+			IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
 			AssignmentTransferUtilities.createAssignmentChangeMessageLines(message, 
 					MessageLineType.ASSIGNED, 
 					MessageLineType.STARTED, 

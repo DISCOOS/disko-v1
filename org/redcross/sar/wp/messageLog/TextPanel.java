@@ -68,11 +68,18 @@ public class TextPanel extends JPanel implements IEditMessageComponentIf
 			public void actionPerformed(ActionEvent e)
 			{
 				// Reset components to what is currently stored in MSO
-				IMessageIf message = MessageLogTopPanel.getCurrentMessage();
-				IMessageLineIf line = message.findMessageLine(MessageLineType.TEXT, false);
-				if(line != null)
+				IMessageIf message = MessageLogTopPanel.getCurrentMessage(false);
+				if(message != null)
 				{
-					m_textArea.setText(line.getLineText());
+					IMessageLineIf line = message.findMessageLine(MessageLineType.TEXT, false);
+					if(line != null)
+					{
+						m_textArea.setText(line.getLineText());
+					}
+					else
+					{
+						m_textArea.setText("");
+					}
 				}
 				else
 				{
@@ -89,7 +96,7 @@ public class TextPanel extends JPanel implements IEditMessageComponentIf
 			public void actionPerformed(ActionEvent e)
 			{
 				// Store text in current message
-				IMessageIf message = MessageLogTopPanel.getCurrentMessage();
+				IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
 				IMessageLineIf textLine = message.findMessageLine(MessageLineType.TEXT, true);
 				textLine.setLineText(m_textArea.getText());
 			}	

@@ -25,14 +25,14 @@ import org.redcross.sar.util.except.IllegalOperationException;
  * 
  * @author thomasl
  */
-public class UnitOverviewTableRenderer
+public class UnitOverviewTableEditor
 {
 	private static ResourceBundle m_resources = ResourceBundle.getBundle("org.redcross.sar.wp.unit.unit");
 	private JTable m_table;
 	
 	private IDiskoWpUnit m_wpUnit;
 	
-	public UnitOverviewTableRenderer(IDiskoWpUnit wp)
+	public UnitOverviewTableEditor(IDiskoWpUnit wp)
 	{
 		m_wpUnit = wp;
 	}
@@ -158,7 +158,7 @@ public class UnitOverviewTableRenderer
 					try
 					{
 						UnitUtilities.toggleUnitPause(unit);
-						
+
 						// Commit
 						if(!m_wpUnit.getNewUnit())
 						{
@@ -170,7 +170,7 @@ public class UnitOverviewTableRenderer
 						ErrorDialog error = new ErrorDialog(null);
 						error.showError(m_resources.getString("PauseUnitError.header"), 
 								m_resources.getString("PauseUnitError.text"));
-					}
+					}	
 					
 					fireEditingStopped();
 				}

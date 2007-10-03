@@ -99,6 +99,7 @@ public class CalloutDetailsPanel extends JPanel
 		
 		// Created
 		m_createdTextField = new JTextField();
+		m_createdTextField.setEditable(false);
 		layoutComponent(m_resources.getString("Created.text"), m_createdTextField, gbc);
 		
 		// Organization
@@ -189,6 +190,23 @@ public class CalloutDetailsPanel extends JPanel
 	public void setCallOut(ICalloutIf callout)
 	{
 		m_callout = callout;
+	}
+	
+	/**
+	 * Updates attributes	 
+	 */  
+	public void saveCallOut()
+	{
+		if(m_callout != null)
+		{
+			m_callout.suspendNotify();
+			
+			m_callout.setTitle(m_titleTextField.getText());
+			m_callout.setOrganization(m_organizationTextField.getText());
+			m_callout.setDepartment(m_departmentTextField.getText());
+			
+			m_callout.resumeNotify();
+		}
 	}
 	
 	/**
@@ -341,11 +359,14 @@ public class CalloutDetailsPanel extends JPanel
 					int index = m_personnelTable.convertRowIndexToModel(m_editingRow);
 					IPersonnelIf personnel = (IPersonnelIf)model.getValueAt(index, 2);
 					IPersonnelIf newPersonnelInstance = PersonnelUtilities.arrivedPersonnel(personnel);
-					if(newPersonnelInstance != null)
+					if(newPersonnelInstance != personnel)
 					{
 						// Personnel was reinstated. Replace reference in call-out
-//						m_callout.getPersonnelList().removeReference(personnel);
-						m_callout.getPersonnelList().add(newPersonnelInstance);
+						m_callout.getPersonnelList().removeReference(personnel);
+						if(!m_callout.getPersonnelList().contains(newPersonnelInstance))
+						{
+							m_callout.getPersonnelList().add(newPersonnelInstance);
+						}
 					}
 
 					if(!(m_wpUnit.getNewCallOut() || m_wpUnit.getNewPersonnel() || m_wpUnit.getNewUnit()))

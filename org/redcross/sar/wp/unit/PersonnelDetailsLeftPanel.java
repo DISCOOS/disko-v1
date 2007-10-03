@@ -111,12 +111,8 @@ public class PersonnelDetailsLeftPanel extends JPanel implements IMsoUpdateListe
 					switch(newStatus)
 					{
 					case ON_ROUTE:
-						IPersonnelIf newPersonnel = PersonnelUtilities.callOutPersonnel(m_currentPersonnel);
-						// On route command might create new history instance of personnel
-						if(newPersonnel != null)
-						{
-							m_currentPersonnel = newPersonnel;
-						}
+						m_currentPersonnel = PersonnelUtilities.callOutPersonnel(m_currentPersonnel);
+						updateFieldContents();
 						break;
 					case ARRIVED:
 						 PersonnelUtilities.arrivedPersonnel(m_currentPersonnel);

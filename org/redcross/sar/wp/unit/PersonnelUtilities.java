@@ -26,7 +26,8 @@ public class PersonnelUtilities
 	}
 	
 	/**
-	 * Creates new personnel history instance. 
+	 * Creates new personnel history instance.
+	 * 
 	 * @return The reinstated personnel
 	 * @param personnel Old personnel instance
 	 * @param newStatus Status of new personnel instance
@@ -65,7 +66,7 @@ public class PersonnelUtilities
 			newPersonnel.setType(personnel.getType());
 
 			// Maintain personnel history chain
-			personnel.setNextOccurence(newPersonnel);
+			nextOccurence.setNextOccurence(newPersonnel);
 
 			// Set status
 			newPersonnel.setStatus(newStatus);
@@ -114,13 +115,12 @@ public class PersonnelUtilities
 	 */
 	public static IPersonnelIf callOutPersonnel(IPersonnelIf personnel)
 	{	
-		IPersonnelIf newPersonnel = null;
 		PersonnelStatus status = personnel.getStatus();
 		if(status == PersonnelStatus.RELEASED)
 		{
 			if(confirmReinstate())
 			{
-				reinstateResource(personnel, PersonnelStatus.ON_ROUTE);
+				personnel = reinstateResource(personnel, PersonnelStatus.ON_ROUTE);
 			}
 		}
 		else
@@ -129,12 +129,13 @@ public class PersonnelUtilities
 			personnel.setCallOut(Calendar.getInstance());
 		}
 		
-		return newPersonnel;
+		return personnel;
 	}
 	
 	/**
 	 * Set personnel to arrived, checks if personnel is released. Does not commit changes
 	 * @param personnel
+	 * @return Reinstated personnel if any, otherwise {@code null}
 	 * @throws IllegalOperationException
 	 */
 	public static IPersonnelIf arrivedPersonnel(IPersonnelIf personnel)
