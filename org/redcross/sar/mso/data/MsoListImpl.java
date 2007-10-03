@@ -228,6 +228,8 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         }
         if (refObj != null)
         {
+//            String s = this.m_owner != null ? this.m_owner.toString() : this.toString();
+//            System.out.println("Delete reference from " + s + " to " + anObject);
             ((AbstractMsoObject) refObj).removeDeleteListener(this);
             if (m_owner != null)
             {

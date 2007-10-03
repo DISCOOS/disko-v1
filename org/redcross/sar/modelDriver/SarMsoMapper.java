@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Helper class userd to map between MSO object attributes and Sara facts
+ * Helper class used to map between MSO object attributes and Sara facts
  * User: Stian
  * Date: 08.mai.2007
  * Time: 13:54:03
@@ -121,7 +121,8 @@ public class SarMsoMapper {
         } else if (msoAttr instanceof AttributeImpl.MsoPosition) {
             AttributeImpl.MsoPosition lAttr = (AttributeImpl.MsoPosition) msoAttr;
             SarFactLocation lFact = (SarFactLocation) sarFact;    //2Sjekk med vinjar
-            lAttr.setValue(new Position(lFact.getID(), lFact.getLongValue(), lFact.getLatValue()));
+//            lAttr.setValue(new Position(lFact.getID(), lFact.getLongValue(), lFact.getLatValue()));   todo er denne feil?
+            lAttr.setValue(new Position(null, lFact.getLongValue(), lFact.getLatValue())); // todo sjekk at dette er rett!!!
         } else if (msoAttr instanceof AttributeImpl.MsoTimePos) {
             AttributeImpl.MsoTimePos lAttr = (AttributeImpl.MsoTimePos) msoAttr;
             SarFactLocation lFact = (SarFactLocation) sarFact;

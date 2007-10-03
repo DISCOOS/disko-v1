@@ -391,6 +391,11 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
     * Other methods
     *-------------------------------------------------------------------------------------------*/
 
+    public String toString()
+    {
+        return "Message " + getNumber() + " " + super.toString();
+    }
+
     public boolean addBroadcastNotAccepted(ICommunicatorIf aReceiver)
     {
         try

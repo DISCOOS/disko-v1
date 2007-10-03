@@ -120,10 +120,10 @@ public interface IMsoManagerIf
      */
     public boolean remove(IMsoObjectIf aMsoObject) throws MsoNullPointerException;
 
-    /**
-     * Might not be needed.
-     */
-    public void commit();
+//    /**
+//     * Might not be needed.
+//     */
+//    public void commit();
 
     /**
      * Perform local commit on all objects in the model.
@@ -560,21 +560,21 @@ public interface IMsoManagerIf
      * @return The created object.
      */
     public IBoatIf createBoat(IMsoObjectIf.IObjectIdIf anObjectId);
-    
+
     /**
      * Create a new {@link org.redcross.sar.mso.data.IDogIf} object and add it to the collection of Unit objects.
      * @param objectId The Object id
      * @return The Created object.
      */
     public IDogIf createDog(IMsoObjectIf.IObjectIdIf objectId);
-    
+
     /**
      * Create a new {@link org.redcross.sar.mso.data.IAircraftIf} object and add it to the collection of Unit objects.
      * @param objectId The Object id
      * @return The Created object.
      */
     public IAircraftIf createAircraft(IMsoObjectIf.IObjectIdIf objectId);
-    
+
     /**
      * Create a new {@link org.redcross.sar.mso.data.ITeamIf} object and add it to the collection of Unit objects.
      * @param objectId The Object id

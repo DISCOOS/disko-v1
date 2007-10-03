@@ -1,7 +1,5 @@
 package org.redcross.sar.mso.data;
 
-import org.redcross.sar.mso.MsoModelImpl;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -50,7 +48,7 @@ public class TimeLineImpl extends AbstractDerivedList<ITimeItemIf> implements IT
     {
         for (ITimeItemIf to : m_timeItems)
         {
-            System.out.println(to.toString());
+            System.out.println("Time item: " + to.toString());
         }
     }
 

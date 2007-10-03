@@ -118,7 +118,7 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
                 if (equal(m_serverValue, aValue))
                 {
                     newState = IMsoModelIf.ModificationState.STATE_SERVER;
-                    valueChanged = true;
+//                    valueChanged = true;  // VW todo kan denne utelates??? ?????
                 } else
                 {
                     newState = IMsoModelIf.ModificationState.STATE_LOCAL;
@@ -340,7 +340,7 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
         {
             if (m_isSequenceNumber)
             {
-                ISerialNumberedIf numberedOwner = (ISerialNumberedIf)m_owner; 
+                ISerialNumberedIf numberedOwner = (ISerialNumberedIf)m_owner;
             }
         }
 

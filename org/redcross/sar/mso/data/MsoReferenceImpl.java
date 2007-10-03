@@ -57,7 +57,7 @@ public class MsoReferenceImpl<T extends IMsoObjectIf> implements IMsoReferenceIf
     {
         if (anObject != null)
         {
-            ((AbstractMsoObject)anObject).registerRemovedReference();
+            ((AbstractMsoObject) anObject).registerRemovedReference();
         }
     }
 
@@ -65,7 +65,7 @@ public class MsoReferenceImpl<T extends IMsoObjectIf> implements IMsoReferenceIf
     {
         if (anObject != null)
         {
-            ((AbstractMsoObject)anObject).registerAddedReference();
+            ((AbstractMsoObject) anObject).registerAddedReference();
         }
     }
 
@@ -80,14 +80,14 @@ public class MsoReferenceImpl<T extends IMsoObjectIf> implements IMsoReferenceIf
         {
             if (m_serverValue != null)
             {
-                ((AbstractMsoObject)m_serverValue).removeDeleteListener(this);
+                ((AbstractMsoObject) m_serverValue).removeDeleteListener(this);
                 registerDeletedReference(m_serverValue);
             }
         } else
         {
             if (m_localValue != null)
             {
-                ((AbstractMsoObject)m_localValue).removeDeleteListener(this);
+                ((AbstractMsoObject) m_localValue).removeDeleteListener(this);
                 registerDeletedReference(m_localValue);
             }
         }
@@ -100,8 +100,8 @@ public class MsoReferenceImpl<T extends IMsoObjectIf> implements IMsoReferenceIf
                 m_serverValue = aReference;
                 if (m_serverValue != null)
                 {
-                    ((AbstractMsoObject)m_serverValue).addDeleteListener(this);
-                    ((AbstractMsoObject)m_serverValue).registerAddedReference();
+                    ((AbstractMsoObject) m_serverValue).addDeleteListener(this);
+                    ((AbstractMsoObject) m_serverValue).registerAddedReference();
                 }
                 valueChanged = true;
                 break;
@@ -112,8 +112,8 @@ public class MsoReferenceImpl<T extends IMsoObjectIf> implements IMsoReferenceIf
                 m_serverValue = aReference;
                 if (m_serverValue != null)
                 {
-                    ((AbstractMsoObject)m_serverValue).addDeleteListener(this);
-                    ((AbstractMsoObject)m_serverValue).registerAddedReference();
+                    ((AbstractMsoObject) m_serverValue).addDeleteListener(this);
+                    ((AbstractMsoObject) m_serverValue).registerAddedReference();
                 }
                 break;
             }
@@ -123,7 +123,7 @@ public class MsoReferenceImpl<T extends IMsoObjectIf> implements IMsoReferenceIf
                 m_localValue = aReference;
                 if (m_localValue != null)
                 {
-                    ((AbstractMsoObject)m_localValue).addDeleteListener(this);
+                    ((AbstractMsoObject) m_localValue).addDeleteListener(this);
                     registerAddedReference(m_localValue);
                 }
             }
@@ -165,12 +165,12 @@ public class MsoReferenceImpl<T extends IMsoObjectIf> implements IMsoReferenceIf
         {
             if (m_serverValue != null)
             {
-                ((AbstractMsoObject)m_serverValue).addDeleteListener(this);
+                ((AbstractMsoObject) m_serverValue).addDeleteListener(this);
             }
 
             if (oldLocalValue != null)
             {
-                ((AbstractMsoObject)oldLocalValue).removeDeleteListener(this);
+                ((AbstractMsoObject) oldLocalValue).removeDeleteListener(this);
             }
 
             registerAddedReference(m_serverValue);
@@ -262,7 +262,7 @@ public class MsoReferenceImpl<T extends IMsoObjectIf> implements IMsoReferenceIf
     {
         if (getReference() == anObject && !canDelete())
         {
-            throw new IllegalDeleteException("Cannot delete object " + anObject.getObjectId() + " from reference " + getName() + " referred by " + m_owner.toString());
+            throw new IllegalDeleteException("Cannot delete object " + anObject + " from reference " + getName() + " referred by " + m_owner.toString());
         }
     }
 
@@ -273,6 +273,7 @@ public class MsoReferenceImpl<T extends IMsoObjectIf> implements IMsoReferenceIf
             /*
             Remove reference the "ordinary" way. Will create event for modified reference and state in this object.
              */
+//            System.out.println("Delete reference from " + this.m_owner != null ? this.m_owner : this + " to " + anObject);
             setReference(null);
             return true;
         }

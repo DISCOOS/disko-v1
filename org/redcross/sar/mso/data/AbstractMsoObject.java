@@ -128,11 +128,13 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     public void addDeleteListener(IMsoObjectHolderIf aHolder)
     {
         m_objectHolders.add(aHolder);
+//        System.out.println("Add delete listener from: " + this + ", count = " + m_objectHolders.size());
     }
 
     public void removeDeleteListener(IMsoObjectHolderIf aHolder)
     {
         m_objectHolders.remove(aHolder);
+//        System.out.println("Remove delete listener from: " + this + ", count = " + m_objectHolders.size());
     }
 
     public int listenerCount()
@@ -151,6 +153,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
 
             for (MsoReferenceImpl reference : m_referenceObjects.values())
             {
+                System.out.println("Delete reference from " + this + " to " + reference.getReference());
                 reference.setReference(null);
             }
 
@@ -179,6 +182,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
 
     public void doDelete()
     {
+//        System.out.println("Deleting " + this);
         while (m_objectHolders.size() > 0)
         {
             Iterator<IMsoObjectHolderIf> iterator = m_objectHolders.iterator();

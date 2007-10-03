@@ -1,6 +1,7 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.util.mso.DTG;
 
 import java.util.Calendar;
 
@@ -109,7 +110,7 @@ public abstract class AbstractTimeItem extends AbstractMsoObject implements ITim
 
     public String toString()
     {
-        return "Item " + getTimeStamp();
+        return "Timeitem " + DTG.CalToDTG(getTimeStamp()) ;
     }
 
     public IMsoModelIf.ModificationState getVisibleState()

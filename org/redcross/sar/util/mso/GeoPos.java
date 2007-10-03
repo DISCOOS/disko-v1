@@ -113,14 +113,23 @@ public class GeoPos
         return 0;  // todo fix
     }
 
+    private final static double MAX_EQUALITY_DISTANCE = 10.0e-6;
+
+    /**
+     * Two positions are vonsidered to be equal if their distance in both directions (lat/long) is less than {@link #MAX_EQUALITY_DISTANCE}
+     * @param obj
+     * @return
+     */
    @Override
    public boolean equals(Object obj)
    {
       if(obj instanceof GeoPos)
       {
          GeoPos in=(GeoPos)obj;
-         return getPosition().getY()==in.getPosition().getY() &&
-               getPosition().getX()==in.getPosition().getX();
+//         return getPosition().getY()==in.getPosition().getY() &&
+//               getPosition().getX()==in.getPosition().getX();
+         return Math.abs(getPosition().getY() - in.getPosition().getY())  < MAX_EQUALITY_DISTANCE &&
+               Math.abs(getPosition().getX() - in.getPosition().getX()) < MAX_EQUALITY_DISTANCE;
       }
       else
       {

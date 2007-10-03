@@ -153,14 +153,14 @@ public class MsoManagerImpl implements IMsoManagerIf
         return m_operation;
     }
 
-    public CmdPostImpl getCmdPost(String anId)
-    {
-        return null;
-    }
-
-    public void commit()
-    {
-    }
+//    public CmdPostImpl getCmdPost(String anId)
+//    {
+//        return null;
+//    }
+//
+//    public void commit()
+//    {
+//    }
 
     public void postProcessCommit()
     {
@@ -476,12 +476,12 @@ public class MsoManagerImpl implements IMsoManagerIf
     {
     	return getExistingCmdPost().getUnitList().createDog(objectId);
     }
-    
+
     public IAircraftIf createAircraft(IMsoObjectIf.IObjectIdIf objectId)
     {
     	return getExistingCmdPost().getUnitList().createAircraft(objectId);
     }
-    
+
     public ITeamIf createTeam(IMsoObjectIf.IObjectIdIf objectId)
     {
     	return getExistingCmdPost().getUnitList().createTeam(objectId);
