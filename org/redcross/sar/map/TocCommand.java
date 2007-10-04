@@ -16,8 +16,10 @@ public class TocCommand extends AbstractCommandTool {
 	 * Constructs the DrawTool
 	 */
 	public TocCommand(IDiskoApplication app) throws IOException, AutomationException {
+		super();
 		dialog = new TocDialog(app, this);
 		dialog.setIsToggable(false);
+		showDirect = true; // shows dialog first time onClick is invoked
 	}
 	
 	public void onCreate(Object obj) throws IOException, AutomationException {

@@ -65,7 +65,7 @@ public class BuildTestData
         IUnitListIf unitList = cmdPost.getUnitList();
         IUnitIf unit;
 
-        for (int i = 10; i < 30; i++)
+        for (int i = 1; i < 3; i++)
         {
             unit = unitList.createVehicle("St 123" + i);
             unit.setRemarks("This is a red car");

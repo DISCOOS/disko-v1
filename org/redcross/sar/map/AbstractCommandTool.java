@@ -18,6 +18,7 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 
 	protected int activeCount = 0;
 	protected DiskoMap map = null;
+	protected boolean showDirect = false;
 	protected DiskoDialog dialog = null;
 	protected Properties properties = null;
 	protected IDisplayTransformation transform = null;
@@ -49,7 +50,7 @@ public abstract class AbstractCommandTool implements ICommand, ITool, IDiskoTool
 
 	public void toolActivated() throws IOException, AutomationException {
 		if (dialog != null) {
-			if (activeCount > 0)
+			if (activeCount > 0 || showDirect)
 				dialog.setVisible(!dialog.isVisible());
 			activeCount++;
 		}

@@ -378,9 +378,11 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	 */
 	public FeatureLayer getFeatureLayer(String name)
 			throws IOException, AutomationException {
-		for (int i = 0; i < getLayerCount(); i++) {
-			ILayer layer = getLayer(i);
-			if (layer instanceof FeatureLayer && layer.getName().equals(name)) {
+		// get map in focus
+		IMap m = getActiveView().getFocusMap();
+		for (int i = 0; i < m.getLayerCount(); i++) {
+			ILayer layer = m.getLayer(i);
+			if (layer instanceof FeatureLayer && layer.getName().equalsIgnoreCase(name)) {
 				return (FeatureLayer)layer;
 			}
 		}

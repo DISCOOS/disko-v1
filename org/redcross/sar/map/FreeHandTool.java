@@ -198,7 +198,7 @@ public class FreeHandTool extends AbstractCommandTool {
 			// transform to screen coordinates
 			Point2D pt = toScreen(p);
 			// move mouse pointer
-			robot.mouseMove((int)pt.getX(), (int)pt.getY());
+			//robot.mouseMove((int)pt.getX(), (int)pt.getY());
 		}
 		catch (Exception e) {
 			e.printStackTrace();

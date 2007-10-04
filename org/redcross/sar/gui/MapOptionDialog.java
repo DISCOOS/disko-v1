@@ -393,7 +393,8 @@ public class MapOptionDialog extends DiskoDialog {
 		DiskoMapManagerImpl manager = (DiskoMapManagerImpl) app.getDiskoMapManager();
 		System.out.println("mxd: " + mxd);
 		manager.setPrimarMxdDoc(mxd);
-		manager.toggleMap();
+		//manager.toggleMap();
+		manager.setMap();
 	}
 	
 	private void setSecondaryMxd(String mxd){

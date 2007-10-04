@@ -256,6 +256,8 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 				drawTool.setMsoClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
 				freeHandTool.setMsoClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
 			}
+			drawTool.setArea(null);
+			freeHandTool.setArea(null);
 			setFrameText(Utils.translate(element));
 		}
 	}
@@ -285,6 +287,8 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 				}
 				else {
 					elementList.setSelectedValue(currentMsoObj.getMsoClassCode(), false);
+					drawTool.setArea(null);
+					freeHandTool.setArea(null);
 				}
 			}
 		} catch (RuntimeException e1) {

@@ -24,6 +24,7 @@ import org.redcross.sar.util.MapInfoComparator;
 import com.esri.arcgis.carto.ILayer;
 import com.esri.arcgis.carto.IMap;
 import com.esri.arcgis.interop.AutomationException;
+import com.esri.arcgis.geometry.Envelope;
 
 public class DiskoMapManagerImpl implements IDiskoMapManager {
 
@@ -117,26 +118,43 @@ public class DiskoMapManagerImpl implements IDiskoMapManager {
 	 * 
 	 * @throws IOException
 	 */
-	public void toggleMap() throws IOException{
-		
-
-		//initWMSLayers();
-		
+	public void toggleMap() throws IOException{		
+		// toogle
+		primarActive = !primarActive;
+		// forward
+		setMap();
+	}	
+	
+	/**
+	 * 
+	 * @throws IOException
+	 */
+	public void setMap() throws IOException{
 		
 		DiskoMap map = (DiskoMap) app.getCurrentMap();
-		String mapname = map.getDocumentFilename();		
-		if(mapname.equalsIgnoreCase(this.primarMxdDoc)){ 
-			map.loadMxFile(this.secondaryMxdDoc, null, null); //sets 2.map active
-			primarActive = false;
+		String mapname = map.getDocumentFilename();
+		
+		Envelope extent = (Envelope)map.getExtent();
+		
+		// set invisible
+		map.setVisible(false);
+		
+		if(primarActive){ 
+			map.loadMxFile(this.primarMxdDoc, null, null); //sets 1.map active
 		}
 		else {
-			map.loadMxFile(this.primarMxdDoc, null, null);//sets 1.map active
-			primarActive = true;
-		}		
+			map.loadMxFile(this.secondaryMxdDoc, null, null);//sets 2.map active
+		}
+		// set previous extent?
+		if (!mapname.equalsIgnoreCase(map.getDocumentFilename())) {
+			map.setExtent(extent);
+		}
+		
+		// set visible
+		map.setVisible(true);
+		
 		//toggle icon
-		app.getNavBar().switchIcon("maptoggle", primarActive);
-		
-		
+		app.getNavBar().switchIcon("maptoggle", primarActive);				
 	}	
 	
 	public void setPrimarMxdDoc(String mxddoc){

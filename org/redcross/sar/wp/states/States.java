@@ -1,26 +1,48 @@
 package org.redcross.sar.wp.states;
 
-import javax.swing.JScrollPane;
 import java.awt.Dimension;
+
+import javax.swing.JScrollPane;
 import javax.swing.JPanel;
+import javax.swing.JButton;
 import javax.swing.BorderFactory;
 import javax.swing.border.*;
 import javax.swing.BoxLayout;
+
 import java.awt.event.ComponentListener;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
+import java.awt.event.ActionEvent;
 
-public class States extends JScrollPane implements ComponentListener{
+import java.util.Calendar;
+import java.util.logging.Logger;
 
+import org.redcross.sar.map.DiskoMap;
+import org.redcross.sar.util.mso.Route;
+import org.redcross.sar.wp.ds.RouteCostPanel;
+import org.redcross.sar.ds.RouteCost;
+
+//import java.util.Random;
+
+public class States extends JScrollPane implements ComponentListener, ActionListener {
+
+	// Logger for this object
+	private static final Logger LOGGER = Logger.getLogger(
+			"org.redcross.sar.wp.states");
+	
 	private static final long serialVersionUID = 1L;
 	private JPanel StateList = null;
 	private JPanel Resources = null;
 	private StateBar ProdState = null;
+	private JButton b1 = null;
+	private DiskoWpStatesImpl wp;
 
 	/**
 	 * This is the default constructor
 	 */
-	public States() {
+	public States(DiskoWpStatesImpl wp) {
 		super();
+		this.wp = wp;
 		initialize();
 	}
 
@@ -78,6 +100,9 @@ public class States extends JScrollPane implements ComponentListener{
 		if (Resources == null) {
 			Resources = new JPanel();
 			Resources.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(5, 5, 0, 5), BorderFactory.createEtchedBorder(EtchedBorder.LOWERED)));
+			b1 = new JButton("Run");
+			Resources.add(b1);
+	        b1.addActionListener(this);
 		}
 		return Resources;
 	}
@@ -95,6 +120,44 @@ public class States extends JScrollPane implements ComponentListener{
 	public void componentShown(ComponentEvent e) {}
 	public void componentHidden(ComponentEvent e) {}
 
-	//private class DDSCO3Paint extends
+	public void actionPerformed(ActionEvent e) {
 
+		if(e.getSource() == b1) {
+  
+			// initialize
+			double cost = 0;
+			
+			// create new route
+	    	Route r = new Route("1","Test",100);
+	    	for(int i = 0;i<100;i++){
+	        	// add positions
+	        	r.add(i, i);        		
+	    	}
+	    	
+	    	// get new time instance
+	    	Calendar t = Calendar.getInstance();
+	    	
+	    	// get first tic
+	    	long tic1 = t.getTimeInMillis();
+	    	
+	    	/*
+	    	// create estimator
+	    	RouteCost rce = new RouteCost(r,2);
+	    	
+	    	// run the route cost estimator n times
+	    	for(int i = 0; i < 100 ;i++) {
+	    		cost += rce.ete();    		
+	    	}
+	    	*/
+	    	
+	    	// get calendar
+	    	t = Calendar.getInstance();
+	    	
+	    	// get last tic
+	    	long tic2 = t.getTimeInMillis();
+	    	
+	    	// logg result
+	    	LOGGER.info("ete:=" + (int)cost + " sec calulcated in " + (tic2 - tic1) + "ms");
+		}
+	}
 }  //  @jve:decl-index=0:visual-constraint="10,-2"

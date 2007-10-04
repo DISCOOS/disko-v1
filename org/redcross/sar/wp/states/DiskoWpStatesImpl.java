@@ -30,7 +30,7 @@ public class DiskoWpStatesImpl extends AbstractDiskoWpModule
 
 	private void initialize() {
 		loadProperties("properties");						
-        m_states = new States();
+        m_states = new States(this);
         layoutComponent(m_states);
 	}
 
@@ -46,7 +46,7 @@ public class DiskoWpStatesImpl extends AbstractDiskoWpModule
 	public void activated() {
 		super.activated();
 		NavBar navBar = getApplication().getNavBar();
-		navBar.removeAll();
+		navBar.setVisible(false);
 		navBar.setEnabled(false);
 	}
 	

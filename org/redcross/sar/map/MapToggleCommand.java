@@ -15,7 +15,19 @@ public class MapToggleCommand extends AbstractCommandTool {
 	}
 
 	public void onClick() throws IOException, AutomationException {
+	}
+
+	public void toolActivated() throws IOException, AutomationException {
+		// forward
+		super.toolActivated();
+		// 
 		DiskoMapManagerImpl man = (DiskoMapManagerImpl) map.getMapManager();
 		man.toggleMap(); 
 	}
+	
+	public void toolDeactivated() throws IOException, AutomationException {
+		// forward
+		super.toolDeactivated();
+		// 
+	}	
 }
