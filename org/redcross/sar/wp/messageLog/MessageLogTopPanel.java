@@ -54,6 +54,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	private static boolean m_newMessage;
 	private static IMessageIf m_currentMessage = null;
 	private static boolean m_messageDirty = false;
+	
 	/**
 	 * Get current message. Singleton
 	 * @return The message
@@ -528,7 +529,6 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 		m_newMessage = false;
 
 		// Get the message
-		// TODO mapping structure: message nr -> message for speed up
 		for(IMessageIf message : m_messageLog.getItems())
 		{
 			if(message.getNumber() == messageNr)
@@ -660,23 +660,23 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     		{
 				public void actionPerformed(ActionEvent arg0)
 				{
-					// Assure message is not null
-					getCurrentMessage(true);
-					
-					// Commit message, set status to postponed
-					m_currentMessage.setStatus(MessageStatus.POSTPONED);
-
-					m_wpMessageLog.getMsoModel().commit();
-
-					m_messageDirty = false;
-
-					for(IEditMessageComponentIf dialog : m_editComponents)
+					if(m_currentMessage != null)
 					{
-						dialog.hideComponent();
-					}
+						// Commit message, set status to postponed
+						m_currentMessage.setStatus(MessageStatus.POSTPONED);
 
-					m_buttonGroup.clearSelection();
-					clearPanelContents();
+						m_wpMessageLog.getMsoModel().commit();
+
+						m_messageDirty = false;
+
+						for(IEditMessageComponentIf dialog : m_editComponents)
+						{
+							dialog.hideComponent();
+						}
+
+						m_buttonGroup.clearSelection();
+						clearPanelContents();
+					}
 				}
     		});
     	}

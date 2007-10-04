@@ -545,16 +545,7 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageCompon
 				m_selectedCommuicators.add(communicator);
 				m_confirmedCommunicators.add(communicator);
 			}
-			else
-			{
-				// TODO need to listen for mso events and update lists and buttons
-			}
 		}
-		
-		/* TODO run through all communicators 
-		 * 	if all is selected for one particular type 
-		 * 		mark type filter button as selected...
-		*/
 		
 		updateButtonSelection();
 		updateStatusLabel();

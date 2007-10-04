@@ -270,8 +270,10 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
             		taskBuilder.append("\n");
             	}
                 return taskBuilder.toString().split("\\n");
+            case 6:
+                return message.getStatus();
             default:
-                return message.getStatusText();
+            	return null;
         }
     }
 
@@ -380,9 +382,9 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
 	 */
 	public int numRows(int rowIndex)
 	{
-		JTextArea textArea = new JTextArea();
-		Font font = textArea.getFont();
-		FontMetrics fm = textArea.getFontMetrics(font);
+		MessageTableRenderer renderer = (MessageTableRenderer)m_table.getDefaultRenderer(Object.class);
+		Font font = renderer.getFont(); 
+		FontMetrics fm = renderer.getFontMetrics(font);
 
 		// Message lines
 		int columnWidth = m_table.getColumnModel().getColumn(4).getWidth();

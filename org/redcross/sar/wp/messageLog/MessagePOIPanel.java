@@ -239,7 +239,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 		this.add(m_mgrsField, gbc);
 		gbc.gridy++;
 		
-		// Combo box
+		// Combo-box
 		gbc.gridy++;
 		JPanel typePanel = new JPanel();
 		m_poiTypeLabel = new JLabel(m_wpMessageLog.getText("Type.text"));
@@ -254,39 +254,42 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 				JComboBox cb = (JComboBox)e.getSource();
 				POIType type = (POIType)cb.getSelectedItem();
 
-				IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
-				IMessageLineIf messageLine = message.findMessageLine(MessageLineType.FINDING, false);
-				if(messageLine != null)
+				IMessageIf message = MessageLogTopPanel.getCurrentMessage(false);
+				if(message != null)
 				{
-					// Update type
-					IPOIIf poi = messageLine.getLinePOI();
-					if(poi == null)
+					IMessageLineIf messageLine = message.findMessageLine(MessageLineType.FINDING, false);
+					if(messageLine != null)
 					{
-						poi = m_wpMessageLog.getMsoManager().createPOI();
-						messageLine.setLinePOI(poi);
-					}
-					poi.setType(type);
-					
-					// Update related intelligence task
-					String taskText = m_wpMessageLog.getText("FindingFinding.text").split(":")[0];
-					for(ITaskIf messageTask : message.getMessageTasksItems())
-					{
-						if(messageTask.getType() == TaskType.INTELLIGENCE)
+						// Update type
+						IPOIIf poi = messageLine.getLinePOI();
+						if(poi == null)
 						{
-							if(taskText.equals(messageTask.getTaskText().split(":")[0]))
+							poi = m_wpMessageLog.getMsoManager().createPOI();
+							messageLine.setLinePOI(poi);
+						}
+						poi.setType(type);
+						
+						// Update related intelligence task
+						String taskText = m_wpMessageLog.getText("FindingFinding.text").split(":")[0];
+						for(ITaskIf messageTask : message.getMessageTasksItems())
+						{
+							if(messageTask.getType() == TaskType.INTELLIGENCE)
 							{
-								String findingText = null;
-								if(type == POIType.FINDING)
+								if(taskText.equals(messageTask.getTaskText().split(":")[0]))
 								{
-									findingText = String.format(m_wpMessageLog.getText("TaskSubType.FINDING.text"),
-											m_wpMessageLog.getText("Finding.text"));
+									String findingText = null;
+									if(type == POIType.FINDING)
+									{
+										findingText = String.format(m_wpMessageLog.getText("TaskSubType.FINDING.text"),
+												m_wpMessageLog.getText("Finding.text"));
+									}
+									else
+									{
+										findingText = String.format(m_wpMessageLog.getText("TaskSubType.FINDING.text"),
+												m_wpMessageLog.getText("SilentWitness.text"));
+									}
+									messageTask.setTaskText(findingText);
 								}
-								else
-								{
-									findingText = String.format(m_wpMessageLog.getText("TaskSubType.FINDING.text"),
-											m_wpMessageLog.getText("SilentWitness.text"));
-								}
-								messageTask.setTaskText(findingText);
 							}
 						}
 					}

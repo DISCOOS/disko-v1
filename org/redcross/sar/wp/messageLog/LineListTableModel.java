@@ -93,7 +93,7 @@ public class LineListTableModel extends AbstractTableModel
 						singleReceiver.getCommunicatorNumberPrefix() + " " + singleReceiver.getCommunicatorNumber();
 					Position pos = poi.getPosition();
 					lineText = String.format(m_wpMessageLog.getText("ListItemPOI.text"), 
-							receiver, String.format("%1$.3g", pos.getPosition().x), String.format("%1$.3g", pos.getPosition().y), // TODO
+							receiver, String.format("%1$.3g", pos.getPosition().x), String.format("%1$.3g", pos.getPosition().y),
 							DTG.CalToDTG(line.getOperationTime()));
 				}
 			}

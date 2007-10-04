@@ -131,7 +131,7 @@ public class MessageLogPanel
         column.setPreferredWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH + 25);
 
         // Init custom renderer
-        m_logTable.setDefaultRenderer(Object.class, new MessageTableRenderer(m_messageLog));
+        m_logTable.setDefaultRenderer(Object.class, new MessageTableRenderer());
       
         JTableHeader tableHeader = m_logTable.getTableHeader();
         tableHeader.setResizingAllowed(false);

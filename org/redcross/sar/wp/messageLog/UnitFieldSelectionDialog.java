@@ -155,7 +155,6 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		if(m_notebookMode && m_unitNumberPad == null)
 		{
 			m_unitNumberPad = new NumPadDialog(m_wp.getApplication().getFrame());
-			// TODO endre eigenskapar til NumPad? Kva med sjekk av data? Ikkje alltid ønskeleg å lukke dialog sjølv om OK
 			m_unitNumberPad.setAlwaysOnTop(true);
 			m_unitNumberPad.setVisible(false);
 
@@ -200,7 +199,6 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 			return true;
 		}
 
-		// TODO remove hard-coded value
 		if(typeText.equals("C") && numberText.isEmpty())
 		{
 			return true;
@@ -355,6 +353,8 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 	 */
 	public void hideComponent()
 	{
+		m_unitNumberField.setText("");
+		m_unitTypeField.setText("");
 		this.setVisible(false);
 
 		if(m_notebookMode)

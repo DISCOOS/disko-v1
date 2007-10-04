@@ -92,7 +92,6 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
      */
     public void cancel()
     {
-        // TODO Auto-generated method stub
     }
 
     /* (non-Javadoc)
@@ -100,7 +99,6 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
      */
     public void finish()
     {
-        // TODO Auto-generated method stub
     }
 
 }

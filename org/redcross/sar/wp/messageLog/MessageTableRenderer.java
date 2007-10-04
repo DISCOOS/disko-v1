@@ -4,10 +4,11 @@ import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 
 import org.redcross.sar.mso.data.IMessageIf;
-import org.redcross.sar.mso.data.IMessageLogIf;
 import org.redcross.sar.mso.data.IMessageIf.MessageStatus;
+import org.redcross.sar.util.Internationalization;
 
 import java.awt.*;
+import java.util.ResourceBundle;
 
 /**
  * Custom cell renderer for message log table
@@ -18,25 +19,17 @@ public class MessageTableRenderer extends JTextArea implements TableCellRenderer
 {
 	private static final long serialVersionUID = 1L;
 	
-	private IMessageLogIf m_log = null;
-
-	/**
-	 */
-	public MessageTableRenderer()
-    {
-        setLineWrap(true);
-        setWrapStyleWord(true);
-    }
+	private static final ResourceBundle m_messageResources = 
+		ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Message");
 
 	/**
 	 * @param log
 	 */
-    public MessageTableRenderer(IMessageLogIf log)
+    public MessageTableRenderer()
 	{
     	setOpaque(true);
     	setLineWrap(true);
         setWrapStyleWord(true);
-        m_log  = log;
 	}
 
     /**
@@ -45,10 +38,12 @@ public class MessageTableRenderer extends JTextArea implements TableCellRenderer
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
     {
 		LogTableModel model = (LogTableModel)table.getModel();
+		int messageNr = Integer.valueOf(((String)model.getValueAt(table.convertRowIndexToModel(row), 0)).split("\\s")[0]);
+		
         // Contents
         if(value instanceof String[])
         {	
-        	Boolean extended = model.isMessageExpanded(row+1);
+        	Boolean extended = model.isMessageExpanded(messageNr);
         	StringBuilder messageString = new StringBuilder();
         	String[] messageLines = (String[]) value;
       
@@ -79,13 +74,12 @@ public class MessageTableRenderer extends JTextArea implements TableCellRenderer
         {
         	setText((String)value);
         }
-        
-//        // Size
-//        setSize(table.getColumnModel().getColumn(column).getWidth(),
-//                getPreferredSize().height);
+        else if(value instanceof MessageStatus)
+        {
+        	setText(Internationalization.getEnumText(m_messageResources, (MessageStatus)value));
+        }
         
         // Colors
-        int messageNr = Integer.valueOf(((String)model.getValueAt(row, 0)).split("\\s")[0]);
         IMessageIf selectedMessage = MessageLogTopPanel.getCurrentMessage(false); 
         if(selectedMessage != null && selectedMessage.getNumber() == messageNr)
         {
@@ -95,18 +89,15 @@ public class MessageTableRenderer extends JTextArea implements TableCellRenderer
         else
         {
         	setForeground(table.getForeground());
-        	setBackground(table.getBackground());
         	
-        	if(m_log != null)
-            {
-            	for(IMessageIf message : m_log.getItems())
-                {
-                	if(message.getNumber() == (row+1) && message.getStatus() == MessageStatus.POSTPONED)
-                	{
-                		setBackground(Color.pink);
-                	}
-                }
-            }
+        	if(((MessageStatus)model.getValueAt(table.convertRowIndexToModel(row), 6)) == MessageStatus.POSTPONED)
+        	{
+        		setBackground(Color.pink);
+        	}
+        	else
+        	{
+        		setBackground(table.getBackground());
+        	}
         }
         
         return this;
