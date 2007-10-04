@@ -1,8 +1,6 @@
 package org.redcross.sar.ds;
 
 import java.util.Calendar;
-import java.util.Iterator;
-import java.util.Collection;
 import java.util.ArrayList;
 
 import java.awt.geom.Point2D;
@@ -12,15 +10,12 @@ import org.redcross.sar.util.mso.Route;
 import org.redcross.sar.util.mso.GeoPos;
 import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.MapUtil;
-import org.redcross.sar.map.index.GeoInfo;
 
 import com.esri.arcgis.system.Array;
 import com.esri.arcgis.display.IDisplayTransformation;
 import com.esri.arcgis.carto.RasterLayer;
 import com.esri.arcgis.carto.FeatureLayer;
 import com.esri.arcgis.carto.IRowIdentifyObjectProxy;
-import com.esri.arcgis.carto.IIdentifyObj;
-import com.esri.arcgis.carto.IFeatureIdentifyObj;
 import com.esri.arcgis.geodatabase.IFeatureProxy;
 import com.esri.arcgis.datasourcesraster.Raster;
 import com.esri.arcgis.geometry.ISpatialReference;
@@ -28,7 +23,6 @@ import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.geometry.IPoint;
 import com.esri.arcgis.geometry.Polyline;
 import com.esri.arcgis.geometry.Envelope;
-import com.esri.arcgis.geometry.esriMGRSModeEnum;
 import com.esri.arcgis.geometry.esriSegmentExtension;
 import com.esri.arcgis.interop.AutomationException;
 
