@@ -5,10 +5,7 @@ import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.event.ITickEventListenerIf;
 import org.redcross.sar.event.TickEvent;
 import org.redcross.sar.mso.IMsoManagerIf;
-import org.redcross.sar.mso.data.IAssignmentIf;
-import org.redcross.sar.mso.data.IMsoObjectIf;
-import org.redcross.sar.mso.data.IPersonnelIf;
-import org.redcross.sar.mso.data.IUnitIf;
+import org.redcross.sar.mso.data.*;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent;
 import org.redcross.sar.wp.IDiskoWpModule;
@@ -124,6 +121,12 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener, I
      */
     public void handleTick(TickEvent e)
     {
+        ICmdPostIf cmdPost = m_wpModule.getMsoManager().getCmdPost();
+        if (cmdPost == null)
+        {
+        return;
+        }
+
         if (ASSIGNMENT_PANEL_NAME.equals(m_displayedPanelName))
         {
             renderAssignment();

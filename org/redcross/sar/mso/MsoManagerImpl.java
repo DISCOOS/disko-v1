@@ -24,7 +24,7 @@ public class MsoManagerImpl implements IMsoManagerIf
 
     public static String getClasscodeText(MsoClassCode aClassCode)
     {
-        return Internationalization.getEnumText(bundle,aClassCode);
+        return Internationalization.getEnumText(bundle, aClassCode);
     }
 
     private void eventLogg(String aText, MsoEvent.Update e)
@@ -75,18 +75,18 @@ public class MsoManagerImpl implements IMsoManagerIf
             throw new DuplicateIdException("An operation already exists");
         }
         IMsoObjectIf.IObjectIdIf operationId = MsoModelImpl.getInstance().getModelDriver().makeObjectId();
-       return createOperation(aNumberPrefix ,aNumber, operationId);
+        return createOperation(aNumberPrefix, aNumber, operationId);
     }
 
-    public IOperationIf createOperation(String aNumberPrefix, String aNumber,IMsoObjectIf.IObjectIdIf operationId)
-     {
-         if (m_operation != null)
-         {
-             throw new DuplicateIdException("An operation already exists");
-         }
-         m_operation = new OperationImpl(operationId, aNumberPrefix, aNumber);
-         return m_operation;
-     }
+    public IOperationIf createOperation(String aNumberPrefix, String aNumber, IMsoObjectIf.IObjectIdIf operationId)
+    {
+        if (m_operation != null)
+        {
+            throw new DuplicateIdException("An operation already exists");
+        }
+        m_operation = new OperationImpl(operationId, aNumberPrefix, aNumber);
+        return m_operation;
+    }
 
 
     public IOperationIf getOperation()
@@ -96,7 +96,7 @@ public class MsoManagerImpl implements IMsoManagerIf
 
     public ICmdPostIf getCmdPost()
     {
-        return m_operation.getCmdPostList().getItem();
+        return m_operation != null ? m_operation.getCmdPostList().getItem()  : null;
     }
 
     private ICmdPostIf getExistingCmdPost()
@@ -132,17 +132,16 @@ public class MsoManagerImpl implements IMsoManagerIf
             throw new MsoNullPointerException("Try to delete a null object");
         }
 
-        if( aMsoObject instanceof OperationImpl)
+        if (aMsoObject instanceof OperationImpl)
         {
-            if(aMsoObject==m_operation)
+            if (aMsoObject == m_operation)
             {
-                boolean ret=m_operation.deleteObject();
-                m_operation=null;
+                boolean ret = m_operation.deleteObject();
+                m_operation = null;
                 return ret;
             }
             return false;
-        }
-        else
+        } else
         {
             return aMsoObject.deleteObject();
         }
@@ -314,24 +313,25 @@ public class MsoManagerImpl implements IMsoManagerIf
         return getExistingCmdPost().getIntelligenceList().createIntelligence(anObjectId);
     }
 
-       public IMessageIf createMessage()
-       {
-           return getExistingCmdPost().getMessageLog().createMessage();
-       }
+    public IMessageIf createMessage()
+    {
+        return getExistingCmdPost().getMessageLog().createMessage();
+    }
 
-       public IMessageIf createMessage(IMsoObjectIf.IObjectIdIf anObjectId)
-       {
-           return getExistingCmdPost().getMessageLog().createMessage(anObjectId);
-       }
+    public IMessageIf createMessage(IMsoObjectIf.IObjectIdIf anObjectId)
+    {
+        return getExistingCmdPost().getMessageLog().createMessage(anObjectId);
+    }
+
     public IMessageLineIf createMessageLine()
-       {
-           return getExistingCmdPost().getMessageLines().createMessageLine();
-       }
+    {
+        return getExistingCmdPost().getMessageLines().createMessageLine();
+    }
 
-       public IMessageLineIf createMessageLine(IMsoObjectIf.IObjectIdIf anObjectId)
-       {
-           return getExistingCmdPost().getMessageLines().createMessageLine(anObjectId);
-       }
+    public IMessageLineIf createMessageLine(IMsoObjectIf.IObjectIdIf anObjectId)
+    {
+        return getExistingCmdPost().getMessageLines().createMessageLine(anObjectId);
+    }
 
     public IOperationAreaIf createOperationArea()
     {
@@ -474,16 +474,16 @@ public class MsoManagerImpl implements IMsoManagerIf
 
     public IDogIf createDog(IMsoObjectIf.IObjectIdIf objectId)
     {
-    	return getExistingCmdPost().getUnitList().createDog(objectId);
+        return getExistingCmdPost().getUnitList().createDog(objectId);
     }
 
     public IAircraftIf createAircraft(IMsoObjectIf.IObjectIdIf objectId)
     {
-    	return getExistingCmdPost().getUnitList().createAircraft(objectId);
+        return getExistingCmdPost().getUnitList().createAircraft(objectId);
     }
 
     public ITeamIf createTeam(IMsoObjectIf.IObjectIdIf objectId)
     {
-    	return getExistingCmdPost().getUnitList().createTeam(objectId);
+        return getExistingCmdPost().getUnitList().createTeam(objectId);
     }
 }

@@ -4,6 +4,7 @@ import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.event.ITickEventListenerIf;
 import org.redcross.sar.event.TickEvent;
 import org.redcross.sar.gui.*;
+import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.ITaskIf;
 import org.redcross.sar.mso.data.ITaskIf.TaskStatus;
 import org.redcross.sar.mso.data.ITaskListIf;
@@ -16,7 +17,8 @@ import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.*;
+import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -74,27 +76,32 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
      */
     private void setTaskAlertTimer()
     {
-    	this.addTickEventListener(new ITickEventListenerIf()
-    	{
-			public long getInterval()
-			{
-				return TASK_ALERT_TIME;
-			}
+        this.addTickEventListener(new ITickEventListenerIf()
+        {
+            public long getInterval()
+            {
+                return TASK_ALERT_TIME;
+            }
 
-			public void setTimeCounter(long counter)
-			{
-				m_timeCounter = counter;
-			}
-			
-			public long getTimeCounter()
-			{
-				return m_timeCounter;
-			}
+            public void setTimeCounter(long counter)
+            {
+                m_timeCounter = counter;
+            }
 
-			@SuppressWarnings("unchecked")
-			public void handleTick(TickEvent e)
-			{
-				ITaskListIf tasks = getMsoManager().getCmdPost().getTaskList();
+            public long getTimeCounter()
+            {
+                return m_timeCounter;
+            }
+
+            @SuppressWarnings("unchecked")
+            public void handleTick(TickEvent e)
+            {
+                ICmdPostIf cmdPost = getMsoManager().getCmdPost();
+                if (cmdPost == null)
+                {
+                    return;
+                }
+                ITaskListIf tasks = cmdPost.getTaskList();
 
                 Calendar currentTime = Calendar.getInstance();
                 IDiskoRole role = getDiskoRole();
@@ -129,8 +136,8 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
                 {
                     button.setBorder(null);
                 }
-			}
-    	});
+            }
+        });
     }
 
     /**
@@ -330,5 +337,5 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
     public void setCurrentTask(ITaskIf task)
     {
         m_currentTask = task;
-	}
+    }
 }

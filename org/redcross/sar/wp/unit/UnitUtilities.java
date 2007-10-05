@@ -1,28 +1,27 @@
 package org.redcross.sar.wp.unit;
 
-import java.util.ResourceBundle;
-
-import javax.swing.JOptionPane;
-
 import org.redcross.sar.mso.data.IAssignmentIf;
+import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IPersonnelIf;
-import org.redcross.sar.mso.data.IUnitIf;
-import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
 import org.redcross.sar.mso.data.IPersonnelIf.PersonnelStatus;
+import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IUnitIf.UnitStatus;
 import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.wp.IDiskoWpModule;
 
+import javax.swing.*;
+import java.util.ResourceBundle;
+
 /**
  * Handles logic in units
- *   
+ *
  * @author thomasl
  */
 public class UnitUtilities
 {
 	private final static ResourceBundle m_resources = ResourceBundle.getBundle("org.redcross.sar.wp.unit.unit");
-	
+
 	/**
 	 * Toggles pause status for given unit
 	 * @param unit
@@ -34,7 +33,7 @@ public class UnitUtilities
 		{
 			throw new IllegalOperationException();
 		}
-		
+
 		// Toggle pause
 		if(unit.getStatus() == UnitStatus.PAUSED)
 		{
@@ -45,7 +44,7 @@ public class UnitUtilities
 			unit.setStatus(UnitStatus.PAUSED);
 		}
 	}
-	
+
 	/**
 	 * Releases a unit
 	 * @param unit The unit
@@ -63,24 +62,24 @@ public class UnitUtilities
 			{
 				String[] options = {m_resources.getString("Yes.text"), m_resources.getString("No.text")};
 				releaseUnit = JOptionPane.YES_OPTION == JOptionPane.showOptionDialog(null,
-						m_resources.getString("ReleaseUnitWithAssignment.text"), 
-						m_resources.getString("ReleaseUnitWithAssignment.header"), 
-						JOptionPane.YES_NO_OPTION, 
-						JOptionPane.QUESTION_MESSAGE, 
-						null,  
-						options, 
+						m_resources.getString("ReleaseUnitWithAssignment.text"),
+						m_resources.getString("ReleaseUnitWithAssignment.header"),
+						JOptionPane.YES_NO_OPTION,
+						JOptionPane.QUESTION_MESSAGE,
+						null,
+						options,
 						options[0]);
 			}
 			else
 			{
 				String[] options = {m_resources.getString("Yes.text"), m_resources.getString("No.text")};
 				releaseUnit = JOptionPane.YES_OPTION == JOptionPane.showOptionDialog(null,
-						m_resources.getString("ReleaseUnit.text"), 
-						m_resources.getString("ReleaseUnit.header"), 
-						JOptionPane.YES_NO_OPTION, 
-						JOptionPane.QUESTION_MESSAGE, 
-						null, 
-						options, 
+						m_resources.getString("ReleaseUnit.text"),
+						m_resources.getString("ReleaseUnit.header"),
+						JOptionPane.YES_NO_OPTION,
+						JOptionPane.QUESTION_MESSAGE,
+						null,
+						options,
 						options[0]);
 			}
 
@@ -104,11 +103,11 @@ public class UnitUtilities
 			}
 		}
 	}
-	
+
 	/**
 	 * Deletes a unit, unit is completely removed, no history is kept. Changes are not committed
 	 * @param unit The unit
-	 * @param ap Work process
+	 * @param wp Work process
 	 * @throws IllegalOperationException Thrown if unit can not be deleted
 	 */
 	public static void deleteUnit(IUnitIf unit, IDiskoWpModule wp) throws IllegalOperationException
@@ -118,7 +117,7 @@ public class UnitUtilities
 		{
 			throw new IllegalOperationException();
 		}
-		
+
 		// Check message log
 		for(IMessageIf message : wp.getMsoManager().getCmdPost().getMessageLogItems())
 		{
@@ -127,7 +126,7 @@ public class UnitUtilities
 				throw new IllegalOperationException();
 			}
 		}
-		
+
 		unit.deleteObject();
 	}
 }

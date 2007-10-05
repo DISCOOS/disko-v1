@@ -60,7 +60,42 @@ public class MessageLogPanel
 
         initMessagePanel();
         initTablePanel();
-        
+
+// todo delete-test. shall be removed.
+
+//        IMessageIf m = m_messageLog.selectSingleItem(new Selector<IMessageIf>()
+//        {
+//            public boolean select(IMessageIf anObject)
+//            {
+//                return anObject.getNumber() == 82;
+//            }
+//        });
+//
+//        if (m != null)
+//        {
+//            boolean  d;
+//            IMessageLineIf ml  = m.getMessageLines().getItem();
+//            while (ml != null)
+//            {
+//                d = ml.deleteObject();
+//                System.out.println("Deleted line" + ml + ":" + d);
+//                ml  = m.getMessageLines().getItem();
+//            }
+//
+//            ITaskIf t = m.getMessageTasks().getItem();
+//            while (t != null)
+//            {
+//                d = t.deleteObject();
+//                System.out.println("Deleted task" + t + ":" + d);
+//                t = m.getMessageTasks().getItem();
+//            }
+//
+//            d = m.deleteObject();
+//            System.out.println("Deleted message" + m + ":" + d);
+//            m_wpModule.getMsoModel().commit();
+//        }
+
+
 //        m_splitter1.setDividerLocation(m_topPanel.getHeight());
     }
 
@@ -71,7 +106,7 @@ public class MessageLogPanel
         m_topPanel.initialize();
         m_topPanel.setMinimumSize(new Dimension(PANEL_WIDTH, MessageLogTopPanel.PANEL_HEIGHT));
         m_topPanel.setPreferredSize(new Dimension(PANEL_WIDTH, MessageLogTopPanel.PANEL_HEIGHT));
-        
+
         // Top panel should be informed of updates to mso model
         m_wpModule.getMmsoEventManager().addClientUpdateListener(m_topPanel);
 
@@ -88,15 +123,15 @@ public class MessageLogPanel
     	m_bottomPanel.setFocusCycleRoot(true);
     	m_splitter1.setLeftComponent(m_bottomPanel);
 
-    	m_scrollPane1 = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-    	m_scrollPane1.setOpaque(false);
+        m_scrollPane1 = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        m_scrollPane1.setOpaque(false);
 
         m_bottomPanel.add(m_scrollPane1, LOG_ID);
-        m_bottomPanel.add((JComponent)m_map, MAP_ID);
+        m_bottomPanel.add((JComponent) m_map, MAP_ID);
 
         m_logTable = new JTable();
         m_scrollPane1.setViewportView(m_logTable);
-        
+
         m_rowSelectionListener = new MessageRowSelectionListener(m_topPanel);
         m_logTable.getSelectionModel().addListSelectionListener(m_rowSelectionListener);
 
@@ -134,7 +169,7 @@ public class MessageLogPanel
 
         // Init custom renderer
         m_logTable.setDefaultRenderer(Object.class, new MessageTableRenderer());
-      
+
         JTableHeader tableHeader = m_logTable.getTableHeader();
         tableHeader.setResizingAllowed(false);
         tableHeader.setReorderingAllowed(false);
@@ -178,8 +213,8 @@ public class MessageLogPanel
     {
         if (m_bottomPanel != null)
         {
-        	CardLayout cards = (CardLayout) m_bottomPanel.getLayout();
-            cards.show(m_bottomPanel, MAP_ID);     
+            CardLayout cards = (CardLayout) m_bottomPanel.getLayout();
+            cards.show(m_bottomPanel, MAP_ID);
         }
     }
 

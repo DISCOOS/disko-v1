@@ -1,12 +1,5 @@
 package org.redcross.sar.wp.unit;
 
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.swing.table.AbstractTableModel;
-
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.IUnitIf;
@@ -15,13 +8,19 @@ import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
 import org.redcross.sar.util.mso.Selector;
 
+import javax.swing.table.AbstractTableModel;
+import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.LinkedList;
+import java.util.List;
+
 public class UnitOverviewTableModel extends AbstractTableModel implements IMsoUpdateListenerIf
 {
 	private static final long serialVersionUID = 1L;
 
 	private IUnitListIf m_allUnits;
 	private List<IUnitIf> m_units;
-	
+
 	private static final Selector<IUnitIf> m_unitSelector = new Selector<IUnitIf>()
 	{
 		public boolean select(IUnitIf anObject)
@@ -29,7 +28,7 @@ public class UnitOverviewTableModel extends AbstractTableModel implements IMsoUp
 			return true;
 		}
 	};
-	
+
 	private static final Comparator<IUnitIf> m_unitComparator = new Comparator<IUnitIf>()
 	{
 		public int compare(IUnitIf arg0, IUnitIf arg1)
@@ -44,29 +43,29 @@ public class UnitOverviewTableModel extends AbstractTableModel implements IMsoUp
 			}
 		}
 	};
-	
+
 	public UnitOverviewTableModel(IDiskoWpUnit wp)
 	{
 		wp.getMsoModel().getEventManager().addClientUpdateListener(this);
 		m_allUnits = wp.getMsoManager().getCmdPost().getUnitList();
-		m_units = new LinkedList<IUnitIf>();
+		m_units = new LinkedList<IUnitIf>();                                     // todo use linked list directly
 		m_units.addAll(m_allUnits.selectItems(m_unitSelector, m_unitComparator));
 	}
-	
+
 	public void handleMsoUpdateEvent(Update e)
 	{
 		// Rebuild list
-		m_units.clear();
+		m_units.clear();                                                         // todo use linked list directly
 		m_units.addAll(m_allUnits.selectItems(m_unitSelector, m_unitComparator));
 		fireTableDataChanged();
 	}
-	
+
 	EnumSet<IMsoManagerIf.MsoClassCode> interestedIn = EnumSet.of(IMsoManagerIf.MsoClassCode.CLASSCODE_UNIT);
 	public boolean hasInterestIn(IMsoObjectIf msoObject)
 	{
 		return interestedIn.contains(msoObject.getMsoClassCode());
 	}
-	
+
 	@Override
     public String getColumnName(int column)
     {
@@ -77,9 +76,9 @@ public class UnitOverviewTableModel extends AbstractTableModel implements IMsoUp
 	{
 		return 3;
 	}
-	
+
 	@Override
-	public boolean isCellEditable(int rowIndex, int columnIndex) 
+	public boolean isCellEditable(int rowIndex, int columnIndex)
 	{
 		return columnIndex == 1 || columnIndex == 2;
 	}

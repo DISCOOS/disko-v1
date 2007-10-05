@@ -17,6 +17,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.IOException;
@@ -64,6 +66,8 @@ public class LogisticsPanel implements IMsoUpdateListenerIf, IMsoLayerEventListe
 
     private IconRenderer.LogisticsIconActionHandler m_iconActionHandler;
 
+    private boolean m_mapSelectedByButton = false;
+
     public LogisticsPanel(IDiskoWpLogistics aWp)
     {
         setupUI();
@@ -79,13 +83,38 @@ public class LogisticsPanel implements IMsoUpdateListenerIf, IMsoLayerEventListe
         }
         defineSubpanelActionHandlers();
         m_splitter3.setLeftComponent((JComponent) m_map);
-        setSplitters();
-        setPanelSizes();
+//        setSplitters();
+//        setPanelSizes();
         initUnitTable();
         initInfoPanels();
         initAssignmentPanels();
-
         addToListeners();
+        WorkspacePanel.addComponentListener(new ComponentListener()
+        {
+            boolean initialized = false;
+            public void componentResized(ComponentEvent e)
+            {
+            }
+
+            public void componentMoved(ComponentEvent e)
+            {
+            }
+
+            public void componentShown(ComponentEvent e)
+            {
+                if (! initialized)
+                {
+                    setSplitters();
+                    setPanelSizes();
+                    WorkspacePanel.validate();
+                    initialized = true;
+                }
+            }
+
+            public void componentHidden(ComponentEvent e)
+            {
+            }
+        });
     }
 
     private boolean defineTransferHandler()
@@ -157,7 +186,9 @@ public class LogisticsPanel implements IMsoUpdateListenerIf, IMsoLayerEventListe
             {
                 m_mapSelectedAssignment = anAssignment;
                 m_map.zoomToMsoObject(m_mapSelectedAssignment);
+                m_mapSelectedByButton = true;
                 m_map.setSelected(m_mapSelectedAssignment, true);
+                m_mapSelectedByButton = false;
             }
         }
         catch (AutomationException e)
@@ -357,7 +388,11 @@ public class LogisticsPanel implements IMsoUpdateListenerIf, IMsoLayerEventListe
                 {
                     m_mapSelectedAssignment = ((IAreaIf) msoObject).getOwningAssignment();
                     setSelectedAssignmentInPanels(m_mapSelectedAssignment);
-                    getInfoPanelHandler().setAssignment(m_mapSelectedAssignment, false);
+                    if (!m_mapSelectedByButton)
+                    {
+                        getInfoPanelHandler().setAssignment(m_mapSelectedAssignment, false);
+                    }
+                    m_map.zoomToMsoObject(m_mapSelectedAssignment);
                 }
             }
         }

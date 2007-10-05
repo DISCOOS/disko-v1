@@ -1,15 +1,14 @@
 package org.redcross.sar.wp.unit;
 
-import java.util.Calendar;
-import java.util.ResourceBundle;
-
-import javax.swing.JOptionPane;
-
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.IPersonnelIf;
-import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IPersonnelIf.PersonnelStatus;
+import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.util.except.IllegalOperationException;
+
+import javax.swing.*;
+import java.util.Calendar;
+import java.util.ResourceBundle;
 
 /**
  * Handles personnel logic
@@ -17,17 +16,17 @@ import org.redcross.sar.util.except.IllegalOperationException;
 public class PersonnelUtilities
 {
 	private final static ResourceBundle m_resources = ResourceBundle.getBundle("org.redcross.sar.wp.unit.unit");
-	
+
 	private static IMsoManagerIf m_msoManager = null;
-	
+
 	public static void setMsoManager(IMsoManagerIf manager)
 	{
 		m_msoManager = manager;
 	}
-	
+
 	/**
 	 * Creates new personnel history instance.
-	 * 
+	 *
 	 * @return The reinstated personnel
 	 * @param personnel Old personnel instance
 	 * @param newStatus Status of new personnel instance
@@ -40,7 +39,7 @@ public class PersonnelUtilities
 		{
 			nextOccurence = nextOccurence.getNextOccurence();
 		}
-		
+
 		if(nextOccurence.getStatus() == PersonnelStatus.RELEASED)
 		{
 			// Reinstate resource
@@ -81,7 +80,7 @@ public class PersonnelUtilities
 			}
 
 			newPersonnel.resumeNotify();
-			
+
 			return newPersonnel;
 		}
 		else
@@ -90,7 +89,7 @@ public class PersonnelUtilities
 			return nextOccurence;
 		}
 	}
-	
+
 	/**
 	 * @return User confirmation, whether to reinstate personnel or not
 	 */
@@ -98,23 +97,23 @@ public class PersonnelUtilities
 	{
 		String[] options = {m_resources.getString("Yes.text"), m_resources.getString("No.text")};
 		return JOptionPane.YES_OPTION == JOptionPane.showOptionDialog(
-				null, 
+				null,
 				m_resources.getString("ReinstateReleasedPersonnel.text"),
-				m_resources.getString("ReinstateReleasedPersonnel.header"), 
-				JOptionPane.YES_NO_OPTION, 
-				JOptionPane.QUESTION_MESSAGE, 
-				null, 
-				options, 
+				m_resources.getString("ReinstateReleasedPersonnel.header"),
+				JOptionPane.YES_NO_OPTION,
+				JOptionPane.QUESTION_MESSAGE,
+				null,
+				options,
 				options[0]);
 	}
-	
+
 	/**
 	 * Call out personnel. Checks if personnel is released. Does not commit changes
 	 * @param personnel
 	 * @throws IllegalOperationException
 	 */
 	public static IPersonnelIf callOutPersonnel(IPersonnelIf personnel)
-	{	
+	{
 		PersonnelStatus status = personnel.getStatus();
 		if(status == PersonnelStatus.RELEASED)
 		{
@@ -128,10 +127,10 @@ public class PersonnelUtilities
 			personnel.setStatus(PersonnelStatus.ON_ROUTE);
 			personnel.setCallOut(Calendar.getInstance());
 		}
-		
+
 		return personnel;
 	}
-	
+
 	/**
 	 * Set personnel to arrived, checks if personnel is released. Does not commit changes
 	 * @param personnel
@@ -141,7 +140,7 @@ public class PersonnelUtilities
 	public static IPersonnelIf arrivedPersonnel(IPersonnelIf personnel)
 	{
 		PersonnelStatus status = personnel.getStatus();
-		
+
 		if(status == PersonnelStatus.RELEASED)
 		{
 			if(confirmReinstate())
@@ -154,10 +153,10 @@ public class PersonnelUtilities
 			personnel.setStatus(PersonnelStatus.ARRIVED);
 			personnel.setArrived(Calendar.getInstance());
 		}
-		
+
 		return personnel;
 	}
-	
+
 	/**
 	 * Releases personnel, changes are not committed
 	 * @param personnel
@@ -174,13 +173,13 @@ public class PersonnelUtilities
 	public static boolean canAssignPersonnelToUnit(IPersonnelIf personnel)
 	{
 		// Only on route or arrived personnel can be assigned to a unit
-		if(!(personnel.getStatus() == PersonnelStatus.ON_ROUTE || 
+		if(!(personnel.getStatus() == PersonnelStatus.ON_ROUTE ||
 				personnel.getStatus() == PersonnelStatus.ARRIVED))
 		{
 			return false;
 		}
-		
-		// Personnel can only be assigned to ONE unit
+
+		// Personnel can only be assigned to ONE unit                          // todo replace with more general method
 		for(IUnitIf unit : m_msoManager.getCmdPost().getUnitList().getItems())
 		{
 			for(IPersonnelIf unitPersonnel : unit.getUnitPersonnel().getItems())
@@ -203,9 +202,9 @@ public class PersonnelUtilities
 	{
 		if(personnel.getStatus() != PersonnelStatus.IDLE)
 		{
-			throw new IllegalOperationException("Personnel status not IDLE, can not delete");
+			throw new IllegalOperationException("Personnel status not IDLE, cannot delete");
 		}
-		
+
 		if(!personnel.deleteObject())
 		{
 			throw new IllegalOperationException("Failed to delete personnel object");
