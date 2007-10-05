@@ -1,5 +1,6 @@
 package org.redcross.sar.wp.messageLog;
 
+import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.gui.NumPadDialog;
@@ -55,8 +56,8 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 		{
             this.setContentPane(getContentPanel());
 			this.pack();
-			this.setMinimumSize(new Dimension((int)(MessageLogPanel.SMALL_BUTTON_SIZE.getWidth()*3.5),
-					(int)(MessageLogPanel.SMALL_BUTTON_SIZE.getHeight()*1.5)));
+			this.setMinimumSize(new Dimension((int)(DiskoButtonFactory.SMALL_BUTTON_SIZE.width*3.5),
+					(int)(DiskoButtonFactory.SMALL_BUTTON_SIZE.height*1.5)));
 			m_timeTextField.requestFocus();
 		}
 		catch (java.lang.Throwable e){}
@@ -138,7 +139,7 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 
 		try
 		{
-			IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
+			IMessageIf message = MessageLogBottomPanel.getCurrentMessage(true);
 			message.setOccuredTime(DTG.DTGToCal(this.getTime()));
 		}
 		catch (IllegalMsoArgumentException e1)

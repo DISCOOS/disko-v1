@@ -26,7 +26,7 @@ public class MessageLogPanel
     private static final String LOG_ID = "LOG";
 
     private JPanel WorkspacePanel;
-    private MessageLogTopPanel m_topPanel;
+    private MessageLogBottomPanel m_topPanel;
     private static JSplitPane m_splitter1;
     private static IDiskoWpMessageLog m_wpModule;
     private static IDiskoMap m_map;
@@ -35,9 +35,6 @@ public class MessageLogPanel
     private static JScrollPane m_scrollPane1;
     private static JPanel m_bottomPanel;
     private IMessageLogIf m_messageLog;
-
-
-    public static Dimension SMALL_BUTTON_SIZE = new Dimension(60, 60);
 
     /**
      * @param aWp Message log work process
@@ -101,18 +98,18 @@ public class MessageLogPanel
 
     private void initMessagePanel()
     {
-        m_topPanel = new MessageLogTopPanel(m_messageLog);
+        m_topPanel = new MessageLogBottomPanel(m_messageLog);
         m_topPanel.setWp(m_wpModule);
         m_topPanel.initialize();
-        m_topPanel.setMinimumSize(new Dimension(PANEL_WIDTH, MessageLogTopPanel.PANEL_HEIGHT));
-        m_topPanel.setPreferredSize(new Dimension(PANEL_WIDTH, MessageLogTopPanel.PANEL_HEIGHT));
+        m_topPanel.setMinimumSize(new Dimension(PANEL_WIDTH, MessageLogBottomPanel.PANEL_HEIGHT));
+        m_topPanel.setPreferredSize(new Dimension(PANEL_WIDTH, MessageLogBottomPanel.PANEL_HEIGHT));
 
         // Top panel should be informed of updates to mso model
         m_wpModule.getMmsoEventManager().addClientUpdateListener(m_topPanel);
 
         m_splitter1.setContinuousLayout(true);
-        m_splitter1.setResizeWeight(0.0);
-        m_splitter1.setLeftComponent(m_topPanel);
+        m_splitter1.setResizeWeight(1.0);
+        m_splitter1.setRightComponent(m_topPanel);
     }
 
     private void initTablePanel()
@@ -121,7 +118,7 @@ public class MessageLogPanel
     	CardLayout layout = new CardLayout();
     	m_bottomPanel.setLayout(layout);
     	m_bottomPanel.setFocusCycleRoot(true);
-    	m_splitter1.setRightComponent(m_bottomPanel);
+    	m_splitter1.setLeftComponent(m_bottomPanel);
 
         m_scrollPane1 = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         m_scrollPane1.setOpaque(false);
@@ -153,19 +150,19 @@ public class MessageLogPanel
 
         // Set column widths
         TableColumn column = m_logTable.getColumnModel().getColumn(0);
-        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH);
+        column.setMaxWidth(MessageLogBottomPanel.SMALL_PANEL_WIDTH);
         column = m_logTable.getColumnModel().getColumn(1);
-        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH + 1);
+        column.setMaxWidth(MessageLogBottomPanel.SMALL_PANEL_WIDTH + 1);
         column = m_logTable.getColumnModel().getColumn(2);
-        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH + 1);
+        column.setMaxWidth(MessageLogBottomPanel.SMALL_PANEL_WIDTH + 1);
         column = m_logTable.getColumnModel().getColumn(3);
-        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH + 1);
+        column.setMaxWidth(MessageLogBottomPanel.SMALL_PANEL_WIDTH + 1);
         column = m_logTable.getColumnModel().getColumn(5);
-        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH * 2);
-        column.setMinWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH * 2);
+        column.setMaxWidth(MessageLogBottomPanel.SMALL_PANEL_WIDTH * 2);
+        column.setMinWidth(MessageLogBottomPanel.SMALL_PANEL_WIDTH * 2);
         column = m_logTable.getColumnModel().getColumn(6);
-        column.setMaxWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH + 25);
-        column.setPreferredWidth(MessageLogTopPanel.SMALL_PANEL_WIDTH + 25);
+        column.setMaxWidth(MessageLogBottomPanel.SMALL_PANEL_WIDTH + 25);
+        column.setPreferredWidth(MessageLogBottomPanel.SMALL_PANEL_WIDTH + 25);
 
         // Init custom renderer
         m_logTable.setDefaultRenderer(Object.class, new MessageTableRenderer());

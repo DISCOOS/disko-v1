@@ -57,13 +57,13 @@ public class StartedAssignmentPanel extends AbstractAssignmentPanel
 		super.updateMessageLine();
 		
 		// Perform action show in list
-		MessageLogTopPanel.showListPanel();
+		MessageLogBottomPanel.showListPanel();
 	}
 
 	protected void showHasAssignment()
 	{
 		// Must have started message line to reach this point
-		IMessageLineIf messageLine = MessageLogTopPanel.getCurrentMessage(true).findMessageLine(MessageLineType.STARTED, false);
+		IMessageLineIf messageLine = MessageLogBottomPanel.getCurrentMessage(true).findMessageLine(MessageLineType.STARTED, false);
 		
 		String time = DTG.CalToDTG(messageLine.getOperationTime());
 		if(time.isEmpty())
@@ -84,7 +84,7 @@ public class StartedAssignmentPanel extends AbstractAssignmentPanel
 
 	protected void addNewMessageLine()
 	{
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
+		IMessageIf message = MessageLogBottomPanel.getCurrentMessage(true);
 		IUnitIf unit = (IUnitIf)message.getSingleReceiver();
 		IAssignmentIf assignment = null;
 		
@@ -124,7 +124,7 @@ public class StartedAssignmentPanel extends AbstractAssignmentPanel
 				
 				m_addedLines.add(message.findMessageLine(MessageLineType.STARTED, assignment, false));
 
-				MessageLogTopPanel.showStartPanel();
+				MessageLogBottomPanel.showStartPanel();
 			}
 		}
 		else if(unitHasNextAssignment())
@@ -143,7 +143,7 @@ public class StartedAssignmentPanel extends AbstractAssignmentPanel
 	{
 		if(m_selectedAssignment != null)
 		{
-			IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
+			IMessageIf message = MessageLogBottomPanel.getCurrentMessage(true);
 			AssignmentTransferUtilities.createAssignmentChangeMessageLines(message, 
 					MessageLineType.ASSIGNED, 
 					MessageLineType.STARTED, 
@@ -154,6 +154,6 @@ public class StartedAssignmentPanel extends AbstractAssignmentPanel
 			m_addedLines.add(message.findMessageLine(MessageLineType.STARTED, m_selectedAssignment, false));
 		}
 		
-		MessageLogTopPanel.showStartPanel();
+		MessageLogBottomPanel.showStartPanel();
 	}
 }

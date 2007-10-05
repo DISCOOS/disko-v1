@@ -162,7 +162,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 			// not always desirable
 			ActionListener[] actionListeners = m_unitNumberPad.getOkButton().getActionListeners();
 			m_unitNumberPad.getOkButton().removeActionListener(actionListeners[0]);
-			// Add action listener to ok button. Check that unit exists, give error message if not
+			// Add action listener to OK button. Check that unit exists, give error message if not
 			m_unitNumberPad.getOkButton().addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent e)

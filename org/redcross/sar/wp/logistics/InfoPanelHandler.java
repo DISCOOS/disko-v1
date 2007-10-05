@@ -320,7 +320,10 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener, I
                 IDiskoWpUnit calledUnitModule = (IDiskoWpUnit) calledModule;
                 role.selectDiskoWpModule(calledModule);
                 calledModule.setCallingWp(m_wpModule.getName());
-                calledUnitModule.setUnit(m_displayedUnit);                           // todo use correct method
+                calledUnitModule.setOverviewPanel(1);
+                calledUnitModule.setUnit(m_displayedUnit);                       
+                calledUnitModule.setLeftView(IDiskoWpUnit.UNIT_VIEW_ID);
+                
             } else
             {
                 m_wpModule.showWarning("ChangeWPNotFound_Tactics.text");

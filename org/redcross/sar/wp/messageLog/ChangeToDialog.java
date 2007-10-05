@@ -16,6 +16,7 @@ import javax.swing.SwingConstants;
 
 import org.redcross.sar.event.DialogEvent;
 import org.redcross.sar.event.IDialogEventListener;
+import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.mso.data.IMessageIf;
 
@@ -43,8 +44,8 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 	
 	protected IDiskoWpMessageLog m_wpMessageLog;
 	
-	public static final Dimension BUTTON_SIZE = new Dimension(MessageLogPanel.SMALL_BUTTON_SIZE.width*3, 
-			MessageLogPanel.SMALL_BUTTON_SIZE.height);
+//	public static final Dimension BUTTON_SIZE = new Dimension(MessageLogPanel.SMALL_BUTTON_SIZE.width*3, 
+//			MessageLogPanel.SMALL_BUTTON_SIZE.height);
 	
 	/**
 	 * @param wp Message log work process reference
@@ -85,24 +86,22 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 		m_contentsPanel = new JPanel();
 		m_contentsPanel.setBorder(BorderFactory.createLineBorder(Color.lightGray));
 		m_contentsPanel.setLayout(new BoxLayout(m_contentsPanel, BoxLayout.LINE_AXIS));
-		m_contentsPanel.setPreferredSize(new Dimension(SingleUnitListSelectionDialog.PANEL_WIDTH+2, BUTTON_SIZE.height));
+		m_contentsPanel.setPreferredSize(new Dimension(DiskoButtonFactory.LARGE_BUTTON_SIZE.width*2,
+				DiskoButtonFactory.LARGE_BUTTON_SIZE.height));
 		this.add(m_contentsPanel);
 	}
 	
 	private void initButtons()
 	{
 		m_buttonGroup = new ButtonGroup();
-		m_nonBroadcastButton = new JToggleButton(m_wpMessageLog.getText("NonBroadcastButton.text"));
-		m_nonBroadcastButton.setMinimumSize(BUTTON_SIZE);
-		m_nonBroadcastButton.setPreferredSize(BUTTON_SIZE);
-		m_nonBroadcastButton.setMaximumSize(BUTTON_SIZE);
+		m_nonBroadcastButton = DiskoButtonFactory.createLargeToggleButton(m_wpMessageLog.getText("NonBroadcastButton.text"));
 		m_nonBroadcastButton.setHorizontalAlignment(SwingConstants.LEFT);
 		m_nonBroadcastButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
 				m_broadcast = false;
-				MessageLogTopPanel.getCurrentMessage(true).setBroadcast(false);
+				MessageLogBottomPanel.getCurrentMessage(true).setBroadcast(false);
 				
 				m_broadcastDialog.hideComponent();
 				m_broadcastDialog.clearSelection();
@@ -113,17 +112,14 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 		m_buttonGroup.add(m_nonBroadcastButton);
 		m_contentsPanel.add(m_nonBroadcastButton);
 		
-		m_broadcastButton = new JToggleButton(m_wpMessageLog.getText("BroadcastButton.text"));
-		m_broadcastButton.setMinimumSize(BUTTON_SIZE);
-		m_broadcastButton.setPreferredSize(BUTTON_SIZE);
-		m_broadcastButton.setMaximumSize(BUTTON_SIZE);
+		m_broadcastButton = DiskoButtonFactory.createLargeToggleButton(m_wpMessageLog.getText("BroadcastButton.text"));
 		m_broadcastButton.setHorizontalAlignment(SwingConstants.LEFT);
 		m_broadcastButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
 				m_broadcast = true;
-				MessageLogTopPanel.getCurrentMessage(true).setBroadcast(true);
+				MessageLogBottomPanel.getCurrentMessage(true).setBroadcast(true);
 				
 				m_nbFieldDialog.hideComponent();
 				m_nbListDialog.hideComponent();
@@ -186,7 +182,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 	 */
 	public void showComponent()
 	{
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
+		IMessageIf message = MessageLogBottomPanel.getCurrentMessage(true);
 		this.setVisible(true);
 		if(message.isBroadcast())
 		{
@@ -201,23 +197,21 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 	private void showNonBroadcast()
 	{
 		Point location = m_nonBroadcastButton.getLocationOnScreen();
-		location.y += BUTTON_SIZE.height - 1;
-		location.x--;
-		m_nbListDialog.setLocation(location);
-		m_nbListDialog.showComponent();
-		
-		location = m_nonBroadcastButton.getLocationOnScreen();
-		location.y -= (m_nbFieldDialog.getHeight() + BUTTON_SIZE.height + 5);
-		location.x--;
+		location.y -= m_nbFieldDialog.getHeight();
 		m_nbFieldDialog.setLocation(location);
 		m_nbFieldDialog.showComponent();
+		
+		location = m_nonBroadcastButton.getLocationOnScreen();
+		location.y -= m_nbListDialog.getHeight();
+		location.x += m_nbFieldDialog.getWidth();
+		m_nbListDialog.setLocation(location);
+		m_nbListDialog.showComponent();
 	}
 
 	private void showBroadcast()
 	{
 		Point location = m_nonBroadcastButton.getLocationOnScreen();
-		location.y += BUTTON_SIZE.height - 1;
-		location.x--;
+		location.y -= m_broadcastDialog.getHeight();
 		m_broadcastDialog.setLocation(location);
 		m_broadcastDialog.showComponent();
 	}

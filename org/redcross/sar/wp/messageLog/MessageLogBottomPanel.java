@@ -30,11 +30,11 @@ import java.util.List;
  *
  * @author thomasl
  */
-public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, IDialogEventListener
+public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerIf, IDialogEventListener
 {
 	private static final long serialVersionUID = 1L;
 
-	public final static int PANEL_HEIGHT = (MessageLogPanel.SMALL_BUTTON_SIZE.height) * 3 + 20;
+	public final static int PANEL_HEIGHT = (DiskoButtonFactory.SMALL_BUTTON_SIZE.height) * 3 + 20;
 	public final static int SMALL_PANEL_WIDTH = 60;
 
 	private final static String EMPTY_PANEL_ID = "EMPTY_PANEL";
@@ -143,7 +143,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
      * Constructor
      * @param messageLog Message log reference
      */
-    public MessageLogTopPanel(IMessageLogIf messageLog)
+    public MessageLogBottomPanel(IMessageLogIf messageLog)
     {
     	m_messageLog = messageLog;
     	m_newMessage = true;
@@ -348,7 +348,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
         m_nrLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         m_nrPanel.add(m_nrLabel);
         m_nrPanel.add(Box.createVerticalGlue());
-        Dimension nrBoxDimension = new Dimension(MessageLogPanel.SMALL_BUTTON_SIZE);
+        Dimension nrBoxDimension = new Dimension(DiskoButtonFactory.SMALL_BUTTON_SIZE);
         nrBoxDimension.width = SMALL_PANEL_WIDTH/2;
         JComponent nrButtonBox = (JComponent)Box.createRigidArea(nrBoxDimension);
         nrButtonBox.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -413,7 +413,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
         m_messagePanel.add(m_cardsPanel);
 
         m_buttonRow.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-        m_buttonRow.setMaximumSize(new Dimension(SMALL_PANEL_WIDTH*9, (int)MessageLogPanel.SMALL_BUTTON_SIZE.getHeight()));
+        m_buttonRow.setMaximumSize(new Dimension(SMALL_PANEL_WIDTH*9, 
+        		(int)DiskoButtonFactory.SMALL_BUTTON_SIZE.getHeight()));
         m_buttonRow.setAlignmentX(0.0f);
         m_messagePanel.add(m_buttonRow);
         gbc.gridx++;
@@ -464,6 +465,9 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
     	getCompletedPanel();
     	getChangeTasksDialog();
     	getMessageListPanel();
+    	
+    	// Register listeners
+		m_fieldFromDialog.addActionListener(m_listFromDialog);
     }
 
     private void initButtons()
@@ -787,8 +791,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 						getChangeTasksDialog();
 						hideEditPanels();
 						Point location = m_changeTasksButton.getLocationOnScreen();
-		    			location.y += m_changeTasksButton.getHeight();
-		    			location.x -= DiskoButtonFactory.LARGE_BUTTON_SIZE.width;
+		    			location.y -= m_changeTasksDialog.getHeight();
 		    			m_changeTasksDialog.setLocation(location);
 						m_changeTasksDialog.showComponent();
 					}
@@ -817,21 +820,18 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					}
 					else
 					{
-						getFieldChangeFromDialog();
 						hideEditPanels();
-						Point location = m_changeDTGButton.getLocationOnScreen();
-		    			location.y -= m_fieldFromDialog.getHeight();
-		    			m_fieldFromDialog.setLocation(location);
+						
+						Point location = m_changeFromButton.getLocationOnScreen();
+						location.y -= m_fieldFromDialog.getHeight();
+						m_fieldFromDialog.setLocation(location);
 						m_fieldFromDialog.showComponent();
-
-						getListChangeFromDialog();
-						location = m_changeDTGButton.getLocationOnScreen();
-						location.y += MessageLogPanel.SMALL_BUTTON_SIZE.height;
+						
+						location = m_changeFromButton.getLocationOnScreen();
+						location.y -= m_listFromDialog.getHeight();
+						location.x += m_fieldFromDialog.getWidth();
 						m_listFromDialog.setLocation(location);
 						m_listFromDialog.showComponent();
-
-						// Register listeners
-						m_fieldFromDialog.addActionListener(m_listFromDialog);
 					}
 				}
     		});
@@ -858,8 +858,8 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 					{
 						getChangeToDialog();
 						hideEditPanels();
-						Point location = m_changeDTGButton.getLocationOnScreen();
-						location.y += MessageLogPanel.SMALL_BUTTON_SIZE.height;
+						Point location = m_changeToButton.getLocationOnScreen();
+						location.y -= DiskoButtonFactory.LARGE_BUTTON_SIZE.height;
 						m_changeToDialog.setLocation(location);
 						m_changeToDialog.showComponent();
 					}
@@ -924,7 +924,7 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 						m_messageCompletedPanel.lineRemoved(null);
 						break;
 					default:
-						IMessageIf message = MessageLogTopPanel.getCurrentMessage(false);
+						IMessageIf message = MessageLogBottomPanel.getCurrentMessage(false);
 						IMessageLineIf line = null;
 						if(message != null)
 						{

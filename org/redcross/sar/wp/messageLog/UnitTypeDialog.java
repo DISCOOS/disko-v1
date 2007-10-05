@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.redcross.sar.app.Utils;
+import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IUnitIf.UnitType;
@@ -110,7 +111,7 @@ public class UnitTypeDialog extends DiskoDialog implements IEditMessageComponent
 	
 	private JButton addButton(String name, final String unitTypeLetter, String iconPath, UnitType unitType)
 	{
-		JButton button = new JButton();
+		JButton button = DiskoButtonFactory.createSmallButton();
 		button.setActionCommand(unitType.name());
 		try
 		{
@@ -137,11 +138,6 @@ public class UnitTypeDialog extends DiskoDialog implements IEditMessageComponent
 				}
 			}	
 		});
-		
-		// Button layout
-		button.setPreferredSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-		button.setMinimumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
-		button.setMaximumSize(MessageLogPanel.SMALL_BUTTON_SIZE);
 		
 		m_contentsPanel.add(button);
 		

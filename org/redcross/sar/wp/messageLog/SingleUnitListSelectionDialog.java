@@ -40,10 +40,8 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	protected HashMap<ICommunicatorIf, JToggleButton> m_communicatorButtonMap = null;
 	protected JToggleButton m_currentButton = null;
 
-	final private static Dimension BUTTON_SIZE = new Dimension(MessageLogPanel.SMALL_BUTTON_SIZE.width*3,
-			MessageLogPanel.SMALL_BUTTON_SIZE.height);
-	final public static int PANEL_WIDTH = BUTTON_SIZE.width * 5;
-	private final int NUMBER_OF_ROWS = 7;
+	final public static int PANEL_WIDTH = DiskoButtonFactory.LARGE_BUTTON_SIZE.width * 5;
+	private final int NUMBER_OF_ROWS = 6;
 
 	/**
 	 * @param wp Message log work process
@@ -126,12 +124,14 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	private void initContentsPanel()
 	{
 		m_contentsPanel = new JPanel();
-		m_contentsPanel.setLayout(new BoxLayout(m_contentsPanel, BoxLayout.LINE_AXIS));
+		m_contentsPanel.setLayout(new BoxLayout(m_contentsPanel, BoxLayout.LINE_AXIS));		
+		
 		m_scrollPane = new JScrollPane(m_contentsPanel);
-		m_scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		m_scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+		m_scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		m_scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
 		m_scrollPane.setPreferredSize(new Dimension(PANEL_WIDTH,
-				MessageLogPanel.SMALL_BUTTON_SIZE.height*NUMBER_OF_ROWS + 6));
+				DiskoButtonFactory.SMALL_BUTTON_SIZE.height*NUMBER_OF_ROWS + 20));
+//		
 		this.add(m_scrollPane);
 		
 		buildList();
@@ -179,7 +179,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	
 	private void updateButtonSelection()
 	{
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage(false);
+		IMessageIf message = MessageLogBottomPanel.getCurrentMessage(false);
 		if(message != null)
 		{
 			JToggleButton button = null;
@@ -253,6 +253,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	public void setUnitTypeFilter(UnitType typeFilter)
 	{
 		m_unitTypeFilter = typeFilter;
+		m_dirtyList = true;
 		buildList();
 		updateButtonSelection();
 	}
@@ -277,15 +278,15 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 			{
 				if(i%NUMBER_OF_ROWS == 0)
 				{
-					panel = new JPanel();
-					panel.setAlignmentX(Component.LEFT_ALIGNMENT);
-					panel.setAlignmentY(Component.TOP_ALIGNMENT);
-					panel.setPreferredSize(new Dimension(MessageLogPanel.SMALL_BUTTON_SIZE.width*3,
-							MessageLogPanel.SMALL_BUTTON_SIZE.height*NUMBER_OF_ROWS));
-					panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-					m_contentsPanel.add(panel);
+				panel = new JPanel();
+				panel.setAlignmentX(Component.LEFT_ALIGNMENT);
+				panel.setAlignmentY(Component.TOP_ALIGNMENT);
+				panel.setPreferredSize(new Dimension(DiskoButtonFactory.LARGE_BUTTON_SIZE.width,
+				DiskoButtonFactory.LARGE_BUTTON_SIZE.height*NUMBER_OF_ROWS));
+				panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+				m_contentsPanel.add(panel);
 				}
-				this.addUnitButton(commnicator, panel);
+				addUnitButton(commnicator, panel);
 				i++;
 			}
 			
@@ -304,7 +305,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
+				IMessageIf message = MessageLogBottomPanel.getCurrentMessage(true);
 				JToggleButton sourceButton  = (JToggleButton)arg0.getSource();
 				if(m_currentButton == sourceButton)
 				{

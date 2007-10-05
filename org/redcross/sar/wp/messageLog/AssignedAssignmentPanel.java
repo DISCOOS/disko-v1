@@ -51,7 +51,7 @@ public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 	protected void updateMessageLine()
 	{
 		super.updateMessageLine();
-		MessageLogTopPanel.showListPanel();
+		MessageLogBottomPanel.showListPanel();
 	}
 
 	/**
@@ -69,7 +69,7 @@ public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 	 */
 	protected void addNewMessageLine()
 	{
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
+		IMessageIf message = MessageLogBottomPanel.getCurrentMessage(true);
 		IUnitIf unit = (IUnitIf)message.getSingleReceiver();
 		
 		// Assure that unit can accept assignment
@@ -101,7 +101,7 @@ public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 	{
 		if(m_selectedAssignment != null)
 		{
-			IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
+			IMessageIf message = MessageLogBottomPanel.getCurrentMessage(true);
 			AssignmentTransferUtilities.createAssignmentChangeMessageLines(
 					message, 
 					MessageLineType.ASSIGNED, 
@@ -112,6 +112,6 @@ public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 			m_addedLines.add(message.findMessageLine(MessageLineType.ASSIGNED, m_selectedAssignment, false));
 		}
 		
-		MessageLogTopPanel.showAssignPanel();
+		MessageLogBottomPanel.showAssignPanel();
 	}
 }

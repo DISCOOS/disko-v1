@@ -13,7 +13,7 @@ import javax.swing.event.ListSelectionListener;
  */
 public class MessageRowSelectionListener implements ListSelectionListener
 {
-	protected MessageLogTopPanel m_topPanel;
+	protected MessageLogBottomPanel m_topPanel;
 	protected JTable m_messageTable;
 	protected LogTableModel m_tableModel;
 	protected boolean m_msoUpdate = false;
@@ -21,7 +21,7 @@ public class MessageRowSelectionListener implements ListSelectionListener
 	/**
 	 * @param panel Reference to top panel
 	 */
-	public MessageRowSelectionListener(MessageLogTopPanel panel) 
+	public MessageRowSelectionListener(MessageLogBottomPanel panel) 
 	{
 		m_topPanel = panel;
 	}
@@ -73,7 +73,7 @@ public class MessageRowSelectionListener implements ListSelectionListener
 		
 		// Update top message panel
 		m_topPanel.newMessageSelected(messageNr);
-		MessageLogTopPanel.showListPanel();
+		MessageLogBottomPanel.showListPanel();
 	}
 
 	/**

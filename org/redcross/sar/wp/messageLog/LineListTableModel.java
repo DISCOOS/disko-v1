@@ -72,7 +72,7 @@ public class LineListTableModel extends AbstractTableModel
 		}
 		else
 		{
-			IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
+			IMessageIf message = MessageLogBottomPanel.getCurrentMessage(true);
 			IMessageLineIf line = m_messageLines.get(rowIndex);
 			ICommunicatorIf singleReceiver = message.getSingleReceiver();
 			String lineText = null;
@@ -92,9 +92,12 @@ public class LineListTableModel extends AbstractTableModel
 					String receiver = message.isBroadcast() || singleReceiver == null ? m_wpMessageLog.getText("Unit.text") :
 						singleReceiver.getCommunicatorNumberPrefix() + " " + singleReceiver.getCommunicatorNumber();
 					Position pos = poi.getPosition();
-					lineText = String.format(m_wpMessageLog.getText("ListItemPOI.text"), 
-							receiver, String.format("%1$.3g", pos.getPosition().x), String.format("%1$.3g", pos.getPosition().y),
-							DTG.CalToDTG(line.getOperationTime()));
+					if(pos != null)
+					{
+						lineText = String.format(m_wpMessageLog.getText("ListItemPOI.text"), 
+								receiver, String.format("%1$.3g", pos.getPosition().x), String.format("%1$.3g", pos.getPosition().y),
+								DTG.CalToDTG(line.getOperationTime()));
+					}
 				}
 			}
 			break;
@@ -105,8 +108,11 @@ public class LineListTableModel extends AbstractTableModel
 				{
 					String type = poi.getTypeText();
 					Position pos = line.getLinePOI().getPosition();
-					lineText = String.format(m_wpMessageLog.getText("ListItemFinding.text"),
-							type, String.format("%1$.3g", pos.getPosition().x), String.format("%1$.3g", pos.getPosition().y));
+					if(pos != null)
+					{
+						lineText = String.format(m_wpMessageLog.getText("ListItemFinding.text"),
+								type, String.format("%1$.3g", pos.getPosition().x), String.format("%1$.3g", pos.getPosition().y));
+					}
 				}
 			}
 			break;

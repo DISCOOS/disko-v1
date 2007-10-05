@@ -47,7 +47,7 @@ public class AssignmentListModel extends AbstractListModel
 	 */
 	public void updateList()
 	{
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage(false);
+		IMessageIf message = MessageLogBottomPanel.getCurrentMessage(false);
 		if(message != null)
 		{
 			m_messageLines.clear();

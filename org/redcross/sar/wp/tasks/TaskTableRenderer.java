@@ -45,7 +45,11 @@ public class TaskTableRenderer extends JLabel implements TableCellRenderer
 			cellText = String.valueOf(table.getValueAt(row, 0));
 			break;
 		case 1:
-			cellText = TaskImpl.getEnumText((TaskPriority)table.getValueAt(row, 1));
+			TaskPriority priority = (TaskPriority)table.getValueAt(row, 1);
+			if(priority != null)
+			{
+				cellText = TaskImpl.getEnumText(priority);
+			}
 			break;
 		case 2:
 			cellText = (String)table.getValueAt(row, 2);
@@ -54,10 +58,16 @@ public class TaskTableRenderer extends JLabel implements TableCellRenderer
 			cellText = (String)table.getValueAt(row, column);
 			break;
 		case 4:
-			cellText = DTG.CalToDTG(dueTime);
+			if(dueTime != null)
+			{
+				cellText = DTG.CalToDTG(dueTime);
+			}
 			break;
 		case 5:
-			cellText = TaskImpl.getEnumText(taskStatus);
+			if(taskStatus != null)
+			{
+				cellText = TaskImpl.getEnumText(taskStatus);
+			}
 			break;
 		}
 		
@@ -68,7 +78,8 @@ public class TaskTableRenderer extends JLabel implements TableCellRenderer
 		}
 		else
 		{
-			if(taskStatus != TaskStatus.FINISHED && 
+			
+			if(taskStatus != TaskStatus.FINISHED && dueTime != null &&
 					dueTime.before(Calendar.getInstance()))
 			{
 				this.setBackground(Color.pink);

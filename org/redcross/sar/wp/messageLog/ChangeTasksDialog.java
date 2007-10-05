@@ -145,7 +145,7 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	 */
 	private void toggleTask(ActionEvent ae, TaskSubType type)
 	{
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
+		IMessageIf message = MessageLogBottomPanel.getCurrentMessage(true);
 
 		JToggleButton button = (JToggleButton)ae.getSource();
 		JButton changeButton = m_buttonMap.get(button);
@@ -186,7 +186,7 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	 */
 	private void initTaskValues(ITaskIf task, TaskSubType type)
 	{
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage(false);
+		IMessageIf message = MessageLogBottomPanel.getCurrentMessage(false);
 		
 		task.setCreated(Calendar.getInstance());
 
@@ -356,7 +356,7 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
+				IMessageIf message = MessageLogBottomPanel.getCurrentMessage(true);
 				for(ITaskIf task : message.getMessageTasksItems())
 				{
 					if(getSubType(task) == type)
@@ -477,7 +477,7 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	 */
 	public void handleMsoUpdateEvent(Update e)
 	{
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage(false);
+		IMessageIf message = MessageLogBottomPanel.getCurrentMessage(false);
 		if(message != null)
 		{
 			for(ITaskIf task : message.getMessageTasksItems())

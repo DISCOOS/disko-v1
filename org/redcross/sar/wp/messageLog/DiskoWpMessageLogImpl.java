@@ -49,9 +49,8 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
     @Override 
 	public void deactivated()
     {
-    	super.deactivated();
     	// Warn user that it work processes can't be changed if message is not committed
-    	if(MessageLogTopPanel.isMessageDirty())
+    	if(MessageLogBottomPanel.isMessageDirty())
     	{
     		Object[] dialogOptions = {getText("yes.text"), getText("no.text")};
     		int n = JOptionPane.showOptionDialog(this.getApplication().getFrame(), 
@@ -62,18 +61,22 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
     				null, 
     				dialogOptions, 
     				dialogOptions[0]);
-    		if(n == JOptionPane.NO_OPTION)
+    		boolean changeWP = (n == JOptionPane.YES_OPTION);
+    		if(changeWP)
     		{
-    			// Continue in message log
-    			return;
+    			// Delete current message, change work process
+    			MessageLogBottomPanel.clearCurrentMessage();
     		}
     		else
     		{
-    			// Delete current message, change work process
-    			MessageLogTopPanel.clearCurrentMessage();
+    			// Don't change WP
+//    			getDiskoRole().selectDiskoWpModule(this);
+    			// TODO Change selectDiskoWpModule/deactivated to allow cancellation of wp change
+    			return;
     		}
     	}
     	
+    	super.deactivated();
     	m_logPanel.hidePanels();
     	m_logPanel.clearSelection();
     }

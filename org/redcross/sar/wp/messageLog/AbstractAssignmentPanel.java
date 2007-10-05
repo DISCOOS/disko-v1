@@ -136,7 +136,7 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
      */
     protected void revertEditPanel()
     {
-        IMessageIf message = MessageLogTopPanel.getCurrentMessage(false);
+        IMessageIf message = MessageLogBottomPanel.getCurrentMessage(false);
         if (message != null)
         {
             IMessageLineIf line = null;
@@ -460,7 +460,7 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
         m_nextAssignmentButtonGroup = new ButtonGroup();
 
         // Get assignments in receiving unit's queue
-        IUnitIf unit = (IUnitIf) MessageLogTopPanel.getCurrentMessage(true).getSingleReceiver();
+        IUnitIf unit = (IUnitIf) MessageLogBottomPanel.getCurrentMessage(true).getSingleReceiver();
         List<IAssignmentIf> assignments = unit.getAllocatedAssignments();
         for (final IAssignmentIf assignment : assignments)
         {
@@ -552,7 +552,7 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
      */
     protected boolean unitHasNextAssignment()
     {
-        IMessageIf message = MessageLogTopPanel.getCurrentMessage(false);
+        IMessageIf message = MessageLogBottomPanel.getCurrentMessage(false);
         if (message != null)
         {
             IUnitIf unit = (IUnitIf) message.getSingleReceiver();
@@ -568,7 +568,7 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
      */
     protected boolean unitHasAssignedAssignment()
     {
-        IMessageIf message = MessageLogTopPanel.getCurrentMessage(false);
+        IMessageIf message = MessageLogBottomPanel.getCurrentMessage(false);
         if (message != null)
         {
             IUnitIf unit = (IUnitIf) message.getSingleReceiver();
@@ -581,7 +581,7 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 
     protected boolean unitHasStartedAssignment()
     {
-        IMessageIf message = MessageLogTopPanel.getCurrentMessage(false);
+        IMessageIf message = MessageLogBottomPanel.getCurrentMessage(false);
         if (message != null)
         {
             IUnitIf unit = (IUnitIf) message.getSingleReceiver();
@@ -597,7 +597,7 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
      */
     protected boolean messageHasAssignedAssignment()
     {
-        IMessageIf message = MessageLogTopPanel.getCurrentMessage(false);
+        IMessageIf message = MessageLogBottomPanel.getCurrentMessage(false);
         if (message != null)
         {
             IMessageLineIf messageLine = message.findMessageLine(MessageLineType.ASSIGNED, false);
@@ -611,7 +611,7 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
      */
     protected boolean messageHasStartedAssignment()
     {
-        IMessageIf message = MessageLogTopPanel.getCurrentMessage(false);
+        IMessageIf message = MessageLogBottomPanel.getCurrentMessage(false);
         if (message != null)
         {
             IMessageLineIf messageLine = message.findMessageLine(MessageLineType.STARTED, false);
@@ -622,7 +622,7 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
 
     protected boolean messageHasCompletedAssignment()
     {
-        IMessageIf message = MessageLogTopPanel.getCurrentMessage(false);
+        IMessageIf message = MessageLogBottomPanel.getCurrentMessage(false);
         if (message != null)
         {
             IMessageLineIf messageLine = message.findMessageLine(MessageLineType.COMPLETE, false);
@@ -637,7 +637,7 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
     protected IAssignmentIf getUnitAssignment()
     {
         IAssignmentIf assignment = null;
-        IMessageIf message = MessageLogTopPanel.getCurrentMessage(false);
+        IMessageIf message = MessageLogBottomPanel.getCurrentMessage(false);
         if (message != null)
         {
             IUnitIf unit = (IUnitIf) message.getSingleReceiver();

@@ -171,10 +171,13 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
         					String receiver = message.isBroadcast() || singleReceiver == null ? m_wpModule.getText("Unit.text")
         							: singleReceiver.getCommunicatorNumberPrefix() + " " + singleReceiver.getCommunicatorNumber();
         					Position pos = poi.getPosition();
-        					lineText = String.format(m_wpModule.getText("ListItemPOI.text"),
-        							receiver,
-        							String.format("%1$.3g", pos.getPosition().x), String.format("%1$.3g", pos.getPosition().y),
-        							DTG.CalToDTG(line.getOperationTime()));
+        					if(pos != null)
+        					{
+        						lineText = String.format(m_wpModule.getText("ListItemPOI.text"),
+            							receiver,
+            							String.format("%1$.3g", pos.getPosition().x), String.format("%1$.3g", pos.getPosition().y),
+            							DTG.CalToDTG(line.getOperationTime()));	
+        					}
         				}
         			}
         			break;
@@ -185,8 +188,11 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
         				{
         					String type = poi.getTypeText();
         					Position pos = line.getLinePOI().getPosition();
-        					lineText = String.format(m_wpModule.getText("ListItemFinding.text"),
-        							type, String.format("%1$.3g", pos.getPosition().x), String.format("%1$.3g", pos.getPosition().y));
+        					if(pos != null)
+        					{
+        						lineText = String.format(m_wpModule.getText("ListItemFinding.text"),
+            							type, String.format("%1$.3g", pos.getPosition().x), String.format("%1$.3g", pos.getPosition().y));
+        					}
         				}
         			}
         			break;

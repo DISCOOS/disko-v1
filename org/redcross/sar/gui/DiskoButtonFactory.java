@@ -193,17 +193,12 @@ public class DiskoButtonFactory
 
 	public static JToggleButton createSmallToggleButton(String string)
 	{
-		JToggleButton button = new JToggleButton();
+		JToggleButton button = createSmallToggleButton();
+		
 		if(!string.isEmpty())
 		{
 			button.setText(string);
 		}
-		
-		button.setMinimumSize(SMALL_BUTTON_SIZE);
-		button.setPreferredSize(SMALL_BUTTON_SIZE);
-		button.setMaximumSize(SMALL_BUTTON_SIZE);
-		
-		button.setBorder(null);
 		
 		return button;
 	}
@@ -256,11 +251,7 @@ public class DiskoButtonFactory
 
 	public static JToggleButton createSmallAssignmentToggleButton(IAssignmentIf assignment)
 	{
-		JToggleButton button = new JToggleButton();
-		
-		button.setMinimumSize(SMALL_BUTTON_SIZE);
-		button.setPreferredSize(SMALL_BUTTON_SIZE);
-		button.setMaximumSize(SMALL_BUTTON_SIZE);
+		JToggleButton button = createSmallToggleButton();
 		
 		IconRenderer.AssignmentIcon icon = new IconRenderer.AssignmentIcon(assignment, false, null);
 		button.setIcon(icon);
@@ -293,6 +284,19 @@ public class DiskoButtonFactory
 		
 		button.setFocusable(false);
 		
+		return button;
+	}
+
+	public static JToggleButton createSmallToggleButton()
+	{
+		JToggleButton button = new JToggleButton();
+
+		button.setMinimumSize(SMALL_BUTTON_SIZE);
+		button.setPreferredSize(SMALL_BUTTON_SIZE);
+		button.setMaximumSize(SMALL_BUTTON_SIZE);
+		
+		button.setBorder(null);
+
 		return button;
 	}
 }

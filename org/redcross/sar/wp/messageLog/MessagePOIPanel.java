@@ -26,7 +26,6 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.net.UnknownHostException;
 
 /**
  * Dialog used in position and finding when editing the message log. A separate POI dialog class was created for
@@ -84,20 +83,8 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 	 */
 	private void updatePOI()
 	{
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
+		IMessageIf message = MessageLogBottomPanel.getCurrentMessage(true);
 		Position newPosition = null;
-		try
-		{
-			newPosition = MapUtil.getPositionFromMGRS(m_mgrsField.getText());
-		} 
-		catch (UnknownHostException e)
-		{
-			e.printStackTrace();
-		} 
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
 		
 		// Get message line
 		IMessageLineIf messageLine = null;
@@ -116,11 +103,21 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 		{
 			poi = m_wpMessageLog.getMsoManager().createPOI();
 			messageLine.setLinePOI(poi);
-		}
-
+		}		
+		
 		// Update POI
 		poi.suspendNotify();
-		poi.setPosition(newPosition);
+		
+		try
+		{
+			newPosition = MapUtil.getPositionFromMGRS(m_mgrsField.getText());
+			poi.setPosition(newPosition);
+		} 
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
 		poi.setType(getSelectedPOIType());
 		poi.resumeNotify();
 	}
@@ -130,7 +127,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 	 */
 	private void revertPOI()
 	{
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage(false);
+		IMessageIf message = MessageLogBottomPanel.getCurrentMessage(false);
 		if(message != null)
 		{
 			IMessageLineIf line = null;
@@ -164,6 +161,8 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 				NumPadDialog numPad = m_wpMessageLog.getApplication().getUIFactory().getNumPadDialog();
 				numPad.setVisible(false);
 				updatePOI();
+				
+				MessageLogBottomPanel.showListPanel();
 			}
 		});
 
@@ -254,7 +253,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 				JComboBox cb = (JComboBox)e.getSource();
 				POIType type = (POIType)cb.getSelectedItem();
 
-				IMessageIf message = MessageLogTopPanel.getCurrentMessage(false);
+				IMessageIf message = MessageLogBottomPanel.getCurrentMessage(false);
 				if(message != null)
 				{
 					IMessageLineIf messageLine = message.findMessageLine(MessageLineType.FINDING, false);
@@ -479,7 +478,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 	 */
 	public void showPOI(boolean show)
 	{
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage(false);
+		IMessageIf message = MessageLogBottomPanel.getCurrentMessage(false);
 		if(message != null)
 		{
 			IPOIIf poi = null;

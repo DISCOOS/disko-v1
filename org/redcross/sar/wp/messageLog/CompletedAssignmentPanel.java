@@ -49,8 +49,8 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 			}
 
 			// Cancel assign and started message lines if added
-			MessageLogTopPanel.cancelAssign();
-			MessageLogTopPanel.cancelStarted();
+			MessageLogBottomPanel.cancelAssign();
+			MessageLogBottomPanel.cancelStarted();
 		}
 	}
 
@@ -63,7 +63,7 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 		super.updateMessageLine();
 		
 		// Perform action show in list
-		MessageLogTopPanel.showListPanel();
+		MessageLogBottomPanel.showListPanel();
 	}
 
 	/**
@@ -81,7 +81,7 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 	 */
 	protected void addNewMessageLine()
 	{
-		IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
+		IMessageIf message = MessageLogBottomPanel.getCurrentMessage(true);
 		IUnitIf unit = (IUnitIf)message.getSingleReceiver();
 		IAssignmentIf assignedAssignment = unit.getAssignedAssignment();
 		IAssignmentIf executingAssignment = unit.getExecutingAssigment();
@@ -129,7 +129,7 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 				
 				m_addedLines.add(message.findMessageLine(MessageLineType.COMPLETE, assignment, false));
 				
-				MessageLogTopPanel.showCompletePanel();
+				MessageLogBottomPanel.showCompletePanel();
 			}
 		}
 		else if(unitHasNextAssignment())
@@ -151,7 +151,7 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 	{
 		if(m_selectedAssignment != null)
 		{
-			IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
+			IMessageIf message = MessageLogBottomPanel.getCurrentMessage(true);
 			AssignmentTransferUtilities.createAssignmentChangeMessageLines(message,
 					MessageLineType.ASSIGNED,
 					MessageLineType.COMPLETE,
@@ -163,6 +163,6 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 			m_addedLines.add(message.findMessageLine(MessageLineType.COMPLETE, m_selectedAssignment, false));
 		}
 		
-		MessageLogTopPanel.showCompletePanel();
+		MessageLogBottomPanel.showCompletePanel();
 	}
 }
