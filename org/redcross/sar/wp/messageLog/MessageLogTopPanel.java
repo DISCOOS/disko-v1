@@ -1156,11 +1156,14 @@ public class MessageLogTopPanel extends JPanel implements IMsoUpdateListenerIf, 
 	private void updateAssignments()
 	{
 
-		if(m_currentMessage != null)
+		if(m_currentMessage != null && !m_currentMessage.isBroadcast())
 		{
 			ICommunicatorIf communicator = m_currentMessage.getSingleReceiver();
-			IUnitIf unit = (IUnitIf)communicator;
-
+			IUnitIf unit = null;
+			if(communicator instanceof IUnitIf)
+			{
+				unit = (IUnitIf)communicator;
+			}
 
 			if(unit != null)
 			{

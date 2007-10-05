@@ -53,8 +53,7 @@ public class MessageRowSelectionListener implements ListSelectionListener
 		}
 		
 		// Get message number
-		String messageNrString = (String)m_tableModel.getValueAt(rowIndex, 0);
-		int messageNr = Integer.valueOf(messageNrString.split("\\s")[0]);
+		int messageNr = (Integer)m_tableModel.getValueAt(rowIndex, 0);
 		
 		// Toggle expanded
 		Boolean expanded = m_tableModel.isMessageExpanded(messageNr);

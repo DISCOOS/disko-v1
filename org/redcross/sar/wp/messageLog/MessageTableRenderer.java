@@ -5,10 +5,8 @@ import javax.swing.table.TableCellRenderer;
 
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageIf.MessageStatus;
-import org.redcross.sar.util.Internationalization;
 
 import java.awt.*;
-import java.util.ResourceBundle;
 
 /**
  * Custom cell renderer for message log table
@@ -18,13 +16,7 @@ import java.util.ResourceBundle;
 public class MessageTableRenderer extends JTextArea implements TableCellRenderer
 {
 	private static final long serialVersionUID = 1L;
-	
-	private static final ResourceBundle m_messageResources = 
-		ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Message");
 
-	/**
-	 * @param log
-	 */
     public MessageTableRenderer()
 	{
     	setOpaque(true);
@@ -38,12 +30,34 @@ public class MessageTableRenderer extends JTextArea implements TableCellRenderer
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
     {
 		LogTableModel model = (LogTableModel)table.getModel();
-		int messageNr = Integer.valueOf(((String)model.getValueAt(table.convertRowIndexToModel(row), 0)).split("\\s")[0]);
+		IMessageIf message = (IMessageIf)model.getValueAt(table.convertRowIndexToModel(row), 7);
 		
-        // Contents
-        if(value instanceof String[])
-        {	
-        	Boolean extended = model.isMessageExpanded(messageNr);
+		int messageNr = message.getNumber();
+		
+		// Set text
+		switch(column)
+		{
+		case 0:
+			// Number cell
+			Boolean expanded = model.isMessageExpanded(message.getNumber());
+        	StringBuilder string = new StringBuilder(Integer.toString(message.getNumber()));
+        	if(model.numRows(row) > 1)
+        	{
+        		if(expanded)
+            	{
+            		string.append(" -");
+            	}
+            	else
+            	{
+            		string.append(" +");
+            	}
+        	}
+        	setText(string.toString());
+        	break;
+		case 4:
+		case 5:
+			// Message lines
+			Boolean extended = model.isMessageExpanded(messageNr);
         	StringBuilder messageString = new StringBuilder();
         	String[] messageLines = (String[]) value;
       
@@ -67,17 +81,18 @@ public class MessageTableRenderer extends JTextArea implements TableCellRenderer
         	}
         	
             setText(messageString.toString());
-            setForeground(table.getForeground());
-            
-        }
-        else if(value instanceof String)
-        {
-        	setText((String)value);
-        }
-        else if(value instanceof MessageStatus)
-        {
-        	setText(Internationalization.getEnumText(m_messageResources, (MessageStatus)value));
-        }
+			break;
+		case 6:
+			// Message status
+			setText(message.getStatusText());
+			break;
+		default:
+			if(value instanceof String)
+			{
+				setText((String)value);
+			}
+			break;
+		}
         
         // Colors
         IMessageIf selectedMessage = MessageLogTopPanel.getCurrentMessage(false); 

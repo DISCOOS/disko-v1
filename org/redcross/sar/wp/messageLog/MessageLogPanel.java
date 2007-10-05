@@ -58,33 +58,35 @@ public class MessageLogPanel
 
         WorkspacePanel.add(m_splitter1, BorderLayout.CENTER);
 
-        initTopPanel();
-        initBottomPanel();
+        initMessagePanel();
+        initTablePanel();
+        
+//        m_splitter1.setDividerLocation(m_topPanel.getHeight());
     }
 
-    private void initTopPanel()
+    private void initMessagePanel()
     {
         m_topPanel = new MessageLogTopPanel(m_messageLog);
         m_topPanel.setWp(m_wpModule);
         m_topPanel.initialize();
         m_topPanel.setMinimumSize(new Dimension(PANEL_WIDTH, MessageLogTopPanel.PANEL_HEIGHT));
+        m_topPanel.setPreferredSize(new Dimension(PANEL_WIDTH, MessageLogTopPanel.PANEL_HEIGHT));
         
         // Top panel should be informed of updates to mso model
         m_wpModule.getMmsoEventManager().addClientUpdateListener(m_topPanel);
 
         m_splitter1.setContinuousLayout(true);
-        m_splitter1.setDividerLocation(MessageLogTopPanel.PANEL_HEIGHT);
-        m_splitter1.setResizeWeight(0.0);
-        m_splitter1.setLeftComponent(m_topPanel);
+        m_splitter1.setResizeWeight(1.0);
+        m_splitter1.setRightComponent(m_topPanel);
     }
 
-    private void initBottomPanel()
+    private void initTablePanel()
     {
     	m_bottomPanel = new JPanel();
     	CardLayout layout = new CardLayout();
     	m_bottomPanel.setLayout(layout);
     	m_bottomPanel.setFocusCycleRoot(true);
-    	m_splitter1.setRightComponent(m_bottomPanel);
+    	m_splitter1.setLeftComponent(m_bottomPanel);
 
     	m_scrollPane1 = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
     	m_scrollPane1.setOpaque(false);

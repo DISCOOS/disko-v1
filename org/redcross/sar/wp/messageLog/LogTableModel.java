@@ -124,21 +124,7 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
         switch (columnIndex)
         {
             case 0:
-            	Boolean expanded = isMessageExpanded(message.getNumber());
-            	StringBuilder string = new StringBuilder(Integer.toString(message.getNumber()));
-            	if(numRows(rowIndex) > 1)
-            	{
-            		if(expanded)
-                	{
-                		string.append(" -");
-                	}
-                	else
-                	{
-                		string.append(" +");
-                	}
-            	}
-
-                return string.toString();
+            	return message.getNumber();
             case 1:
                 return DTG.CalToDTG(message.getOccuredTime());
             case 2:
@@ -272,6 +258,8 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
                 return taskBuilder.toString().split("\\n");
             case 6:
                 return message.getStatus();
+            case 7:
+            	return message;
             default:
             	return null;
         }

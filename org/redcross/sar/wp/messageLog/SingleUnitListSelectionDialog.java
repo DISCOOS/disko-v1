@@ -31,8 +31,8 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	protected JScrollPane m_scrollPane = null;
 	protected IDiskoWpMessageLog m_wpMessageLog;
 	protected UnitType m_unitTypeFilter = null;
-	protected IUnitListIf m_unitList = null;
 	protected AbstractDerivedList<ICommunicatorIf> m_communicatorList;
+	protected boolean m_dirtyList;
 	protected List<ActionListener> m_actionListeners;
 	protected ButtonGroup m_buttonGroup = null;
 	protected boolean m_senderList = true;
@@ -42,7 +42,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 
 	final private static Dimension BUTTON_SIZE = new Dimension(MessageLogPanel.SMALL_BUTTON_SIZE.width*3,
 			MessageLogPanel.SMALL_BUTTON_SIZE.height);
-	final public static int PANEL_WIDTH = BUTTON_SIZE.width * 5 ;
+	final public static int PANEL_WIDTH = BUTTON_SIZE.width * 5;
 	private final int NUMBER_OF_ROWS = 7;
 
 	/**
@@ -54,7 +54,6 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 		super(wp.getApplication().getFrame());
 		m_wpMessageLog = wp;
 		m_wpMessageLog.getMmsoEventManager().addClientUpdateListener(this);
-		m_unitList = wp.getMsoManager().getCmdPost().getUnitList();
 		m_communicatorList = wp.getMsoManager().getCmdPost().getCommunicatorList();
 
 		m_senderList = senderList;
@@ -67,6 +66,10 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 		m_buttonGroup = new ButtonGroup();
 
 		initContentsPanel();
+		
+		m_dirtyList = true;
+		buildList();
+		
 		this.pack();
 	}
 
@@ -156,33 +159,11 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	 */
 	public void newMessageSelected(IMessageIf message)
 	{
-		m_buttonGroup.clearSelection();
 		m_unitTypeFilter = null;
-
-		// Update depending on whether this is a list of senders or receivers
-		ICommunicatorIf communicator;
-		if(m_senderList)
+		if(this.isVisible())
 		{
-			communicator = message.getSender();
-		}
-		else
-		{
-			communicator = message.getSingleReceiver();
-		}
-
-		// Default value is command post
-		if(communicator == null)
-		{
-			communicator = (ICommunicatorIf)m_wpMessageLog.getMsoManager().getCmdPost();
-		}
-
-		// Get communicator button and mark it
-		JToggleButton button = m_communicatorButtonMap.get(communicator);
-
-		if(button != null)
-		{
-			button.setSelected(true);
-			m_currentButton = button;
+			buildList();
+			updateButtonSelection();
 		}
 	}
 
@@ -201,14 +182,14 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 		IMessageIf message = MessageLogTopPanel.getCurrentMessage(false);
 		if(message != null)
 		{
+			JToggleButton button = null;
 			if(m_senderList)
 			{
 				// Mark sender unit button
 				ICommunicatorIf sender = message.getSender();
 				if(sender != null)
 				{
-					JToggleButton button = m_communicatorButtonMap.get(sender);
-					m_buttonGroup.setSelected(button.getModel(), true);
+					button = m_communicatorButtonMap.get(sender);
 				}
 			}
 			else
@@ -219,14 +200,30 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 					ICommunicatorIf receiver = message.getSingleReceiver();
 					if(receiver != null)
 					{
-						JToggleButton button = m_communicatorButtonMap.get(receiver);
-						m_buttonGroup.setSelected(button.getModel(), true);
+						button = m_communicatorButtonMap.get(receiver);
 					}
 				}
+			}
+			
+			if(button != null)
+			{
+				m_buttonGroup.setSelected(button.getModel(), true);
+				m_currentButton = button;
 			}
 		}
 	}
 
+	private final EnumSet<IMsoManagerIf.MsoClassCode> myInterests = 
+		EnumSet.of(IMsoManagerIf.MsoClassCode.CLASSCODE_CMDPOST,
+				IMsoManagerIf.MsoClassCode.CLASSCODE_UNIT);
+	/**
+	 * Interested in message and message line updates
+	 */
+	public boolean hasInterestIn(IMsoObjectIf msoObject)
+	{
+		return myInterests.contains(msoObject.getMsoClassCode());
+	}
+	
 	/**
 	 * Updates unit list based on MSO communicator events
 	 * 
@@ -234,20 +231,11 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	 */
 	public void handleMsoUpdateEvent(Update e)
 	{
+		m_dirtyList = m_communicatorList.size() != m_wpMessageLog.getMsoManager().getCmdPost().getCommunicatorList().size();
 		if(this.isVisible())
 		{
 			buildList();
 		}
-	}
-
-	private final EnumSet<IMsoManagerIf.MsoClassCode> myInterests = 
-		EnumSet.of(IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGE);
-	/**
-	 * Interested in message and message line updates
-	 */
-	public boolean hasInterestIn(IMsoObjectIf msoObject)
-	{
-		return myInterests.contains(msoObject.getMsoClassCode());
 	}
 
 	/**
@@ -274,29 +262,34 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	 */
 	public void buildList()
 	{
-		// Clear previous list, brute force maintenance
-		m_contentsPanel.removeAll();
-		m_buttonGroup = new ButtonGroup();
-
-		m_buttonCommunicatorMap.clear();
-		m_communicatorButtonMap.clear();
-
-		JPanel panel = null;
-		int i = 0;
-		for(ICommunicatorIf commnicator: m_communicatorList.selectItems(m_communicatorSelector , m_communicatorComparator))
+		if(m_dirtyList)
 		{
-			if(i%NUMBER_OF_ROWS == 0)
+			// Clear previous list, brute force maintenance
+			m_contentsPanel.removeAll();
+			m_buttonGroup = new ButtonGroup();
+
+			m_buttonCommunicatorMap.clear();
+			m_communicatorButtonMap.clear();
+
+			JPanel panel = null;
+			int i = 0;
+			for(ICommunicatorIf commnicator: m_communicatorList.selectItems(m_communicatorSelector , m_communicatorComparator))
 			{
-				panel = new JPanel();
-				panel.setAlignmentX(Component.LEFT_ALIGNMENT);
-				panel.setAlignmentY(Component.TOP_ALIGNMENT);
-				panel.setPreferredSize(new Dimension(MessageLogPanel.SMALL_BUTTON_SIZE.width*3,
-						MessageLogPanel.SMALL_BUTTON_SIZE.height*NUMBER_OF_ROWS));
-				panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-				m_contentsPanel.add(panel);
+				if(i%NUMBER_OF_ROWS == 0)
+				{
+					panel = new JPanel();
+					panel.setAlignmentX(Component.LEFT_ALIGNMENT);
+					panel.setAlignmentY(Component.TOP_ALIGNMENT);
+					panel.setPreferredSize(new Dimension(MessageLogPanel.SMALL_BUTTON_SIZE.width*3,
+							MessageLogPanel.SMALL_BUTTON_SIZE.height*NUMBER_OF_ROWS));
+					panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+					m_contentsPanel.add(panel);
+				}
+				this.addUnitButton(commnicator, panel);
+				i++;
 			}
-			this.addUnitButton(commnicator, panel);
-			i++;
+			
+			m_dirtyList = false;
 		}
 	}
 
@@ -311,19 +304,31 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
+				IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
 				JToggleButton sourceButton  = (JToggleButton)arg0.getSource();
 				if(m_currentButton == sourceButton)
 				{
 					// Deselecting a button should result in standard sender value being used
 					m_currentButton = null;
-					ICommunicatorIf newCommunicator = m_wpMessageLog.getMsoManager().getCmdPostCommunicator();
-					m_communicatorButtonMap.get(newCommunicator).doClick();
+					ICommunicatorIf commandPost = m_wpMessageLog.getMsoManager().getCmdPostCommunicator();
+					if(m_senderList)
+					{
+						message.setSender(commandPost);
+					}
+					else
+					{
+						if(!message.isBroadcast())
+						{
+							message.setSingleReceiver(commandPost);
+						}
+					}
+					updateButtonSelection();
 				}
 				else
 				{
-					m_currentButton = sourceButton;
 					// Select communicator
-					IMessageIf message = MessageLogTopPanel.getCurrentMessage(true);
+					m_currentButton = sourceButton;
+					
 					if(m_senderList)
 					{
 						message.setSender(communicator);
