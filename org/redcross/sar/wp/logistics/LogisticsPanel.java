@@ -320,7 +320,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf, IMsoLayerEventListe
     {
         // Splitter between map/info panels and assignment/unit panels
         m_splitter1.setContinuousLayout(true);
-        m_splitter1.setDividerLocation(375);
+        m_splitter1.setDividerLocation(Math.max(375,m_splitter1.getWidth() - 590));
         m_splitter1.setResizeWeight(1.0);
 
         // Splitter between assignment and unit panels
@@ -330,7 +330,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf, IMsoLayerEventListe
 
         // Splitter between map and info panels, make tha map initially a square
         m_splitter3.setContinuousLayout(true);
-        m_splitter3.setDividerLocation(375);
+        m_splitter3.setDividerLocation(Math.max(375,m_splitter3.getHeight()-280));
         m_splitter3.setResizeWeight(1.0);
     }
 

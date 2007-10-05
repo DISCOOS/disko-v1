@@ -9,6 +9,7 @@ import org.redcross.sar.mso.data.*;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent;
 import org.redcross.sar.wp.IDiskoWpModule;
+import org.redcross.sar.wp.unit.IDiskoWpUnit;
 
 import javax.swing.*;
 import java.awt.*;
@@ -124,7 +125,7 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener, I
         ICmdPostIf cmdPost = m_wpModule.getMsoManager().getCmdPost();
         if (cmdPost == null)
         {
-        return;
+            return;
         }
 
         if (ASSIGNMENT_PANEL_NAME.equals(m_displayedPanelName))
@@ -301,7 +302,6 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener, I
         cl.show(m_infoPanel, aPanelName);
     }
 
-
     public void actionPerformed(ActionEvent e)
     {
         String command = e.getActionCommand();
@@ -312,6 +312,19 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener, I
         if (command.equalsIgnoreCase(UNIT_CHANGE))
         {
             System.out.println("Trykk 1: " + command + m_displayedUnit.getUnitNumber());
+            IDiskoRole role = m_wpModule.getDiskoRole();
+            String id = role.getName() + "Enhet";
+            IDiskoWpModule calledModule = role.getDiskoWpModule(id);
+            if (calledModule != null && calledModule instanceof IDiskoWpUnit)
+            {
+                IDiskoWpUnit calledUnitModule = (IDiskoWpUnit) calledModule;
+                role.selectDiskoWpModule(calledModule);
+                calledModule.setCallingWp(m_wpModule.getName());
+                calledUnitModule.setUnit(m_displayedUnit);                           // todo use correct method
+            } else
+            {
+                m_wpModule.showWarning("ChangeWPNotFound_Tactics.text");
+            }
         } else if (command.equalsIgnoreCase(UNIT_PRINT))
         {
             System.out.println("Trykk 2: " + command + m_displayedUnit.getUnitNumber());
@@ -328,31 +341,31 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener, I
             System.out.println("Trykk 5: " + command + m_displayedAsssignment.getNumber());
         } else if (command.equalsIgnoreCase(ASG_CHANGE))
         {
-            try
+            IDiskoRole role = m_wpModule.getDiskoRole();
+            String id = role.getName() + "Taktikk";
+            IDiskoWpModule calledModule = role.getDiskoWpModule(id);
+            if (calledModule != null)
             {
-                IDiskoRole role = m_wpModule.getDiskoRole();
-                String id = role.getName() + "Taktikk";
-                IDiskoWpModule calledModule = role.getDiskoWpModule(id);
-                if (calledModule != null)
+                role.selectDiskoWpModule(calledModule);
+                calledModule.setCallingWp(m_wpModule.getName());
+                try
                 {
-                    role.selectDiskoWpModule(calledModule);
-                    calledModule.setCallingWp(m_wpModule.getName());
                     calledModule.getMap().zoomToMsoObject(m_displayedAsssignment);
                     m_wpModule.getMap().setSelected(m_displayedAsssignment, true);
-                } else
-                {
-                    m_wpModule.showWarning("Taktikk er ikke funnet");
                 }
-            }
-            catch (AutomationException e1)
+                catch (AutomationException e1)
+                {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+                catch (IOException e1)
+                {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+            } else
             {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-            }
-            catch (IOException e1)
-            {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
+                m_wpModule.showWarning("ChangeWPNotFound_Tactics.text");
             }
         }
     }

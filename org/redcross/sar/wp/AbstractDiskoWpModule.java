@@ -218,14 +218,15 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule
         getApplication().getFrame().setTitle(s);
     }
 
-    public void showWarning(final String msg)
+    public void showWarning(String msg)
     {
+        final String displayMsg = getText(msg); // Internationalization
         Runnable r = new Runnable()
         {
             public void run()
             {
                 JOptionPane.showMessageDialog(getApplication().getFrame(),
-                        msg, null, JOptionPane.WARNING_MESSAGE);
+                        displayMsg, null, JOptionPane.WARNING_MESSAGE);
             }
         };
         SwingUtilities.invokeLater(r);
