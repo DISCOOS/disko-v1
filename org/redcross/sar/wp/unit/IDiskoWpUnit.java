@@ -19,6 +19,7 @@ public interface IDiskoWpUnit extends IDiskoWpModule, IDiskoWp
 	public void setPersonnelLeft(IPersonnelIf personnel);
 	public void setPersonnelBottom(IPersonnelIf personnel);
 	public void setUnit(IUnitIf unit);
+	public void setOverviewPanel(int index);
 	public void setLeftView(String viewId);
 	public void setBottomView(String viewId);
 	

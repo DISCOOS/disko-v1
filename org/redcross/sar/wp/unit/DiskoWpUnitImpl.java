@@ -660,6 +660,17 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 	}
 	
 	/**
+	 * Select which of the overview tabs that should be shown
+	 * 0 - Personnel
+	 * 1 - Unit
+	 * 2 - Call-out
+	 */
+	public void setOverviewPanel(int index)
+	{
+		m_overviewTabPane.setSelectedIndex(index);
+	}
+	
+	/**
 	 * Sets the bottom view panel
 	 * @param viewId
 	 */
