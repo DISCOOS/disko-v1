@@ -112,6 +112,7 @@ public class CalloutDetailsPanel extends JPanel
 		
 		// Personnel table
 		m_personnelTable = new JTable(new CallOutPersonnelTableModel(null, m_wpUnit));
+		m_personnelTable.setFillsViewportHeight(true);
 		m_personnelTable.addMouseListener(new CallOutPersonnelMouseListener());
 		m_personnelTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		CallOutPersonnelStatusEditor editor = new CallOutPersonnelStatusEditor();

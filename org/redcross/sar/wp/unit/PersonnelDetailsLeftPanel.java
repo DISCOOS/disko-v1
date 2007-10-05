@@ -34,11 +34,10 @@ import java.util.ResourceBundle;
 public class PersonnelDetailsLeftPanel extends JPanel implements IMsoUpdateListenerIf, ITickEventListenerIf
 {
     private static final long serialVersionUID = 1L;
-
     private final static ResourceBundle m_resources = ResourceBundle.getBundle("org.redcross.sar.wp.unit.unit");
     private final static ResourceBundle m_personnelBundle =
             ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Personnel");
-
+    
     private IPersonnelIf m_currentPersonnel = null;
     private IDiskoWpUnit m_wpUnit;
 
@@ -61,142 +60,143 @@ public class PersonnelDetailsLeftPanel extends JPanel implements IMsoUpdateListe
     private static final long UPDATE_INTERVAL = 60000;
     private long m_timeCounter;
 
-    public PersonnelDetailsLeftPanel(IDiskoWpUnit wp)
-    {
-        m_wpUnit = wp;
-        m_wpUnit.getMmsoEventManager().addClientUpdateListener(this);
-        m_wpUnit.addTickEventListener(this);
-        initialize();
-    }
-
-    private void initialize()
-    {
-        this.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(4, 4, 4, 4);
-        gbc.gridy = 0;
-        gbc.gridx = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-        gbc.weighty = 0.0;
-
-        // Top
-        gbc.gridwidth = 4;
-        gbc.gridheight = 1;
-        JPanel topPanel = new JPanel(new BorderLayout());
-        m_topLabel = new JLabel();
-        topPanel.add(m_topLabel, BorderLayout.CENTER);
-        m_changeStatusButton = DiskoButtonFactory.createSmallButton("");
-        m_changeStatusButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent arg0)
-            {
-                if (m_currentPersonnel != null)
-                {
-                    String command = arg0.getActionCommand();
-                    PersonnelStatus newStatus = PersonnelStatus.valueOf(command);
-
-                    switch (newStatus)
-                    {
-                        case ON_ROUTE:
-                            m_currentPersonnel = PersonnelUtilities.callOutPersonnel(m_currentPersonnel);
-                            updateFieldContents();
-                            break;
-                        case ARRIVED:
-                            PersonnelUtilities.arrivedPersonnel(m_currentPersonnel);
-                            break;
-                        case RELEASED:
-                            PersonnelUtilities.releasePersonnel(m_currentPersonnel);
-                    }
-                }
-            }
-        });
-        topPanel.add(m_changeStatusButton, BorderLayout.EAST);
-        this.add(topPanel, gbc);
-        gbc.gridy++;
-
-        // Name
-        m_nameTextField = new JTextField();
-        gbc.gridwidth = 3;
-        layoutComponent(0, m_resources.getString("FullName.text"), m_nameTextField, gbc, 1);
-
-        // Cell
-        m_cellTextField = new JTextField();
-        gbc.gridwidth = 3;
-        layoutComponent(0, m_resources.getString("CellularPhone.text"), m_cellTextField, gbc, 1);
-
-        // Property
-        m_propertyComboBox = new JComboBox(PersonnelType.values());
-        m_propertyComboBox.setSelectedItem(null);
-        ResourceBundle personnelResources = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Personnel");
-        m_propertyComboBox.setRenderer(new SimpleListCellRenderer(personnelResources));
-        gbc.gridwidth = 3;
-        layoutComponent(0, m_resources.getString("Property.text"), m_propertyComboBox, gbc, 1);
-
-        // Organization
-        m_organizationTextField = new JTextField();
-        gbc.gridwidth = 3;
-        layoutComponent(0, m_resources.getString("Organization.text"), m_organizationTextField, gbc, 1);
-
-        // Department
-        m_departmentTextField = new JTextField();
-        gbc.gridwidth = 3;
-        layoutComponent(0, m_resources.getString("Department.text"), m_departmentTextField, gbc, 1);
-
-        // Role
-        gbc.gridy++;
-        m_roleTextField = new JTextField();
-        m_roleTextField.setEditable(false);
-        layoutComponent(0, m_resources.getString("Role.text"), m_roleTextField, gbc, 0);
-
-        // Unit
-        m_unitTextField = new JTextField();
-        m_unitTextField.setEditable(false);
-        layoutComponent(2, m_resources.getString("Unit.text"), m_unitTextField, gbc, 1);
-
-        // Call-out
-        m_calloutTextField = new JTextField();
-        layoutComponent(0, m_resources.getString("CallOut.text"), m_calloutTextField, gbc, 0);
-
-        // Expected
-        m_estimatedArrivalTextField = new JTextField();
-        layoutComponent(2, m_resources.getString("ExpectedArrival.text"), m_estimatedArrivalTextField, gbc, 1);
-
-        // Arrived
-        m_arrivedTextField = new JTextField();
-        layoutComponent(0, m_resources.getString("Arrived.text"), m_arrivedTextField, gbc, 0);
-
-        // Released
-        m_releasedTextField = new JTextField();
-        m_releasedTextField.setEditable(false);
-        layoutComponent(2, m_resources.getString("Released.text"), m_releasedTextField, gbc, 1);
-
-        // Notes
-        m_remarksTextArea = new JTextArea();
-        m_remarksTextArea.setBorder(BorderFactory.createLineBorder(Color.lightGray));
-        m_remarksTextArea.setRows(8);
-        m_remarksTextArea.setWrapStyleWord(true);
-        m_remarksTextArea.setLineWrap(true);
-        JScrollPane notesScrollPane = new JScrollPane(m_remarksTextArea);
-        gbc.gridwidth = 3;
-        gbc.weighty = 1.0;
-        layoutComponent(0, m_resources.getString("Notes.text"), notesScrollPane, gbc, 5);
-    }
-
-    private void layoutComponent(int column, String label, JComponent component, GridBagConstraints gbc, int height)
-    {
-        gbc.weightx = 1.0;
-        gbc.gridheight = Math.max(1, height);
-        gbc.gridx = column + 1;
-        this.add(component, gbc);
-
-        gbc.weightx = 0.0;
-        gbc.gridx = column;
-        gbc.gridwidth = 1;
-        this.add(new JLabel(label), gbc);
-
-        gbc.gridy += height;
-    }
+	public PersonnelDetailsLeftPanel(IDiskoWpUnit wp)
+	{
+		m_wpUnit = wp;
+		m_wpUnit.getMmsoEventManager().addClientUpdateListener(this);
+		m_wpUnit.addTickEventListener(this);
+		initialize();
+	}
+	
+	private void initialize()
+	{
+		this.setLayout(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(4, 4, 4, 4);
+		gbc.gridy = 0;
+		gbc.gridx = 0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.weightx = 1.0;
+		gbc.weighty = 0.0;
+		
+		// Top
+		gbc.gridwidth = 4;
+		gbc.gridheight = 1;
+		JPanel topPanel = new JPanel(new BorderLayout());
+		m_topLabel = new JLabel();
+		topPanel.add(m_topLabel, BorderLayout.CENTER);
+		m_changeStatusButton = DiskoButtonFactory.createSmallButton("");
+		m_changeStatusButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				if(m_currentPersonnel != null)
+				{
+					String command = arg0.getActionCommand();
+					PersonnelStatus newStatus = PersonnelStatus.valueOf(command);
+					
+					switch(newStatus)
+					{
+					case ON_ROUTE:
+						m_currentPersonnel = PersonnelUtilities.callOutPersonnel(m_currentPersonnel);
+						updateFieldContents();
+						break;
+					case ARRIVED:
+						 PersonnelUtilities.arrivedPersonnel(m_currentPersonnel);
+						break;
+					case RELEASED:
+						PersonnelUtilities.releasePersonnel(m_currentPersonnel);
+					}
+				}
+			}
+		});
+		topPanel.add(m_changeStatusButton, BorderLayout.EAST);
+		this.add(topPanel, gbc);
+		gbc.gridy++;
+		
+		// Name
+		m_nameTextField = new JTextField();
+		gbc.gridwidth = 3;
+		layoutComponent(0, m_resources.getString("FullName.text"), m_nameTextField, gbc, 1);
+		
+		// Cell
+		m_cellTextField = new JTextField();
+		gbc.gridwidth = 3;
+		layoutComponent(0, m_resources.getString("CellularPhone.text"), m_cellTextField, gbc, 1);
+		
+		// Property
+		m_propertyComboBox = new JComboBox(PersonnelType.values());
+		m_propertyComboBox.setSelectedItem(null);
+		ResourceBundle personnelResources = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Personnel");
+		m_propertyComboBox.setRenderer(new SimpleListCellRenderer(personnelResources));
+		gbc.gridwidth = 3;
+		layoutComponent(0, m_resources.getString("Property.text"), m_propertyComboBox, gbc, 1);
+		
+		// Organization
+		m_organizationTextField = new JTextField();
+		gbc.gridwidth = 3;
+		layoutComponent(0, m_resources.getString("Organization.text"), m_organizationTextField, gbc, 1);
+		
+		// Department
+		m_departmentTextField = new JTextField();
+		gbc.gridwidth = 3;
+		layoutComponent(0, m_resources.getString("Department.text"), m_departmentTextField, gbc, 1);
+		
+		// Role
+		gbc.gridy++;
+		m_roleTextField = new JTextField();
+		m_roleTextField.setEditable(false);
+		layoutComponent(0, m_resources.getString("Role.text"), m_roleTextField, gbc, 0);
+		
+		// Unit
+		m_unitTextField = new JTextField();
+		m_unitTextField.setEditable(false);
+		layoutComponent(2, m_resources.getString("Unit.text"), m_unitTextField, gbc, 1);
+		
+		// Call-out
+		m_calloutTextField = new JTextField();
+		layoutComponent(0, m_resources.getString("CallOut.text"), m_calloutTextField, gbc, 0);
+		
+		// Expected
+		m_estimatedArrivalTextField = new JTextField();
+		layoutComponent(2, m_resources.getString("ExpectedArrival.text"), m_estimatedArrivalTextField, gbc, 1);
+		
+		// Arrived
+		m_arrivedTextField = new JTextField();
+		layoutComponent(0, m_resources.getString("Arrived.text"), m_arrivedTextField, gbc, 0);
+		
+		// Released
+		m_releasedTextField = new JTextField();
+		m_releasedTextField.setEditable(false);
+		layoutComponent(2, m_resources.getString("Released.text"), m_releasedTextField, gbc, 1);
+		
+		// Remarks
+		m_remarksTextArea = new JTextArea();
+		m_remarksTextArea.setBorder(BorderFactory.createLineBorder(Color.lightGray));
+//		m_remarksTextArea.setRows(8);
+		m_remarksTextArea.setWrapStyleWord(true);
+		m_remarksTextArea.setLineWrap(true);
+		JScrollPane notesScrollPane = new JScrollPane(m_remarksTextArea);
+		gbc.gridwidth = 3;
+		gbc.weighty = 1.0;
+		gbc.fill = GridBagConstraints.BOTH;
+		layoutComponent(0, m_resources.getString("Notes.text"), notesScrollPane, gbc, 1);
+	}
+	
+	private void layoutComponent(int column, String label, JComponent component, GridBagConstraints gbc, int height)
+	{
+		gbc.weightx = 1.0;
+		gbc.gridheight = Math.max(1, height);
+		gbc.gridx = column + 1;
+		this.add(component, gbc);
+		
+		gbc.weightx = 0.0;
+		gbc.gridx = column;
+		gbc.gridwidth = 1;
+		this.add(new JLabel(label), gbc);
+		
+		gbc.gridy += height;
+	}
 
     /**
      * Updates personnel data in MSO

@@ -118,7 +118,8 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		
 		// Left panels
 		m_leftPanel = new JPanel(new CardLayout());
-		m_leftPanel.setPreferredSize(new Dimension(350, 550));
+		m_leftPanel.setMinimumSize(new Dimension(300, 550));
+		m_leftPanel.setPreferredSize(new Dimension(390, 550));
 		m_personnelLeftDetailsPanel = new PersonnelDetailsLeftPanel(this);
 		m_leftPanel.add(m_personnelLeftDetailsPanel, PERSONNEL_DETAILS_VIEW_ID);
 		m_unitDetailsLeftPanel = new UnitDetailsPanel(this);
@@ -130,9 +131,12 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		leftMessagePanel.add(m_leftMessageLabel);
 		m_leftPanel.add(leftMessagePanel, MESSAGE_VIEW_ID);
 		
+		
 		// Bottom panels
+		Dimension bottomPanelDimension = new Dimension(100, 150);
 		m_bottomPanel = new JPanel(new CardLayout());
 		m_personnelBottomDetailsPanel = new PersonnelDetailsBottomPanel(this);
+		m_personnelBottomDetailsPanel.setPreferredSize(bottomPanelDimension);
 		m_bottomPanel.add(m_personnelBottomDetailsPanel, PERSONNEL_DETAILS_VIEW_ID);
 		m_personnelAddressBottomPanel = new PersonnelAddressBottomPanel();
 		m_bottomPanel.add(m_personnelAddressBottomPanel, PERSONNEL_ADDITIONAL_VIEW_ID);
@@ -199,7 +203,8 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		JSplitPane vertSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		vertSplit.setLeftComponent(horSplit);
 		vertSplit.setRightComponent(m_bottomPanel);
-		vertSplit.setDividerLocation(0.75);
+//		vertSplit.setDividerLocation(1.0);
+		vertSplit.setResizeWeight(1.0);
 		m_contentsPanel.add(vertSplit, BorderLayout.CENTER);
 		
 		m_unitTypeDialog = new UnitTypeDialog(this, m_overviewTabPane);
