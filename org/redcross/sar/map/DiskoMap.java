@@ -38,6 +38,7 @@ import java.util.List;
 public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateListenerIf {
 
 	private static final long serialVersionUID = 1L;
+	private static final double pixelSize = 0.000377;//meter
 	private String mxdDoc = null;
 	private IDiskoMapManager mapManager = null;
 	private MsoLayerSelectionModel msoLayerSelectionModel = null;
@@ -309,6 +310,94 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 				IMsoFeature msoFeature = msoFC.getFeature(msoObject.getObjectId());
 				IEnvelope extent = msoFeature.getExtent();
 				if (extent != null) {
+					//her bør det legges inn en extent forstørrer slik at det blir litt luft/kart rundt objectet
+					if (env == null)
+						env = extent.getEnvelope();
+					else env.union(extent);
+				}
+			}
+			if (env != null) {
+				setExtent(env);
+			}
+		}
+	}
+	
+	public void zoomToPrintMapExtent(IMsoObjectIf msoObject, double scale, int pixHeigth, int pixWidth) throws IOException, AutomationException {
+		if (msoObject instanceof IAssignmentIf) {
+			IAssignmentIf assignment = (IAssignmentIf)msoObject;
+			msoObject = assignment.getPlannedArea();			
+		}
+		if (msoObject != null) {
+			IEnvelope env = null;
+			List msoLayers = mapManager.getMsoLayers(msoObject.getMsoClassCode());
+			for (int i = 0; i < msoLayers.size(); i++) {
+				IFeatureLayer flayer = (IFeatureLayer)msoLayers.get(i);
+				MsoFeatureClass msoFC = (MsoFeatureClass)flayer.getFeatureClass();
+				IMsoFeature msoFeature = msoFC.getFeature(msoObject.getObjectId());
+				IEnvelope extent = msoFeature.getExtent();
+				//må kalkulere et extent som gir gitt skala
+				double xMax = extent.getXMax();
+				double yMax = extent.getYMax();
+				double xMin = extent.getXMin();
+				double yMin = extent.getYMin();
+				System.out.println("looper "+i+", extent.getXMax(): "+extent.getXMax() + ", extent.getYMax(): "+extent.getYMax() + ", extent.getXMin(): "+extent.getXMin() + "extent.getYMin(): "+extent.getYMin());
+				double deltaX = (pixWidth*pixelSize)*scale;
+				double deltaY = (pixWidth*pixelSize)*scale;
+				double centerX = xMin + (xMax-xMin)/2;
+				double centerY = yMin + (yMax-yMin)/2;
+				System.out.println("deltaX: "+deltaX + ", deltaY: "+deltaY);		
+				extent.setXMax(centerX+deltaX/2);
+				extent.setXMin(centerX-deltaX/2);
+				extent.setYMax(centerY+deltaY/2);
+				extent.setYMin(centerY-deltaY/2);
+				System.out.println("extent.getXMax(): "+extent.getXMax() + ", extent.getYMax(): "+extent.getYMax() + ", extent.getXMin(): "+extent.getXMin() + "extent.getYMin(): "+extent.getYMin());
+				
+				if (extent != null) {
+					
+					if (env == null)
+						env = extent.getEnvelope();
+					else env.union(extent);
+				}
+			}
+			if (env != null) {
+				setExtent(env);
+			}
+		}
+	}
+		
+	public void zoomToPrintMapExtent(IMsoObjectIf msoObject, double scale, double mapPrintHeigthSize, double mapPrintWidthSize) throws IOException, AutomationException {
+		if (msoObject instanceof IAssignmentIf) {
+			IAssignmentIf assignment = (IAssignmentIf)msoObject;
+			msoObject = assignment.getPlannedArea();
+		}
+		if (msoObject != null) {
+			IEnvelope env = null;
+			List msoLayers = mapManager.getMsoLayers(msoObject.getMsoClassCode());
+			
+			for (int i = 0; i < msoLayers.size(); i++) {
+				IFeatureLayer flayer = (IFeatureLayer)msoLayers.get(i);
+				MsoFeatureClass msoFC = (MsoFeatureClass)flayer.getFeatureClass();
+				IMsoFeature msoFeature = msoFC.getFeature(msoObject.getObjectId());
+				IEnvelope extent = msoFeature.getExtent();
+				
+				//må kalkulere et extent som gir gitt skala				
+				System.out.println("looper "+i+", extent.getXMax(): "+extent.getXMax() + ", extent.getYMax(): "+extent.getYMax() + ", extent.getXMin(): "+extent.getXMin() + "extent.getYMin(): "+extent.getYMin());				
+				double centerX = extent.getXMin() + (extent.getXMax()-extent.getXMin())/2;
+				double centerY = extent.getYMin() + (extent.getYMax()-extent.getYMin())/2;
+				
+				
+				double deltaX = mapPrintWidthSize * scale;
+				double deltaY = mapPrintHeigthSize * scale;
+				
+				System.out.println("deltaX: "+deltaX + ", deltaY: "+deltaY);		
+				extent.setXMax(centerX+deltaX/2);
+				extent.setXMin(centerX-deltaX/2);
+				extent.setYMax(centerY+deltaY/2);
+				extent.setYMin(centerY-deltaY/2);
+				System.out.println("extent.getXMax(): "+extent.getXMax() + ", extent.getYMax(): "+extent.getYMax() + ", extent.getXMin(): "+extent.getXMin() + "extent.getYMin(): "+extent.getYMin());
+				
+				if (extent != null) {
+					
 					if (env == null)
 						env = extent.getEnvelope();
 					else env.union(extent);
@@ -418,6 +507,10 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 			}
 		};
 		SwingUtilities.invokeLater(r);
+	}
+
+	public String getMxdDoc() {
+		return mxdDoc;
 	}
 	
 	/* (non-Javadoc)
