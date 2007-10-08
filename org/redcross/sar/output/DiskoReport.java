@@ -2,11 +2,11 @@ package org.redcross.sar.output;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.math.*;
 
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -14,198 +14,309 @@ import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanArrayDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.util.JRSaver;
 import net.sf.jasperreports.view.JasperViewer;
 
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.map.DiskoMap;
+import org.redcross.sar.map.IDiskoMapManager;
 import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.mso.data.IAssignmentIf;
+import org.redcross.sar.mso.data.ICmdPostIf;
+import org.redcross.sar.mso.data.IPOIListIf;
+import org.redcross.sar.mso.data.IUnitIf;
+import org.redcross.sar.mso.data.IUnitListIf;
 import org.redcross.sar.wp.tactics.DiskoWpTacticsImpl;
 
 import com.esri.arcgis.carto.IActiveView;
 import com.esri.arcgis.display.IOutputRasterSettings;
+import com.esri.arcgis.display.tagRECT;
 import com.esri.arcgis.geometry.Envelope;
 import com.esri.arcgis.geometry.IEnvelope;
+import com.esri.arcgis.geometry.ISpatialReference;
 import com.esri.arcgis.output.ExportPNG;
 import com.esri.arcgis.output.IExport;
-import com.esri.arcgis.display.tagRECT;
 
 public class DiskoReport {
 	
 	private IDiskoApplication app = null;
 	private String reportTemplate_path = null;
 	private String jasperfiles_path = null;
-	
-	private int numberOfTemplates;
-	private String[] jrxmlFiles = null;
-	private String[] jasperFiles = null;
-	private List <JasperPrint>jrprintFiles = null;
-	
+		
 	private MsoModelImpl m_msoModel = null;
 	private IActiveView activeView = null;
 	
+	private DiskoMap diskoMap = null;
 	private DiskoMap diskoMap_print = new DiskoMap();
+	private IDiskoMapManager mapManager = null;
 	
 	private final static String outputPrintFormat = ".PNG";
 	
+	private double reportMapScale;	
+	private final static double mapPrintWidthSize = 0.169;//print map size, meters. i iReport tilsvarer det 487
+	private final static double mapPrintHeigthSize = 0.169;//print map size, meters. i iReport tilsvarer det 487. pixelsize = 0.000037 meter.
+	 
 	//test
 	private com.esri.arcgis.carto.Map cartoMap = null;
 	//private IMap 
+	private ISpatialReference srs = null;
+	private String timeNow = new String();
+	public static final String DATE_FORMAT_NOW = "ddHHmm";
 	
 	private DiskoWpTacticsImpl wp = null;
 	
 	public DiskoReport(IDiskoApplication app){
 		System.out.println("test");
 		this.app = app;
-		//test
-		m_msoModel = (MsoModelImpl) app.getMsoModel();
-		//m_msoModel.getMsoManager().getOperation().
 		
+		m_msoModel = (MsoModelImpl) app.getMsoModel();	
+		this.reportMapScale = Double.parseDouble(app.getProperty("report.mapscale"));
 		
-		diskoMap_print = (DiskoMap) app.getCurrentMap();
-		
+		diskoMap = (DiskoMap) app.getCurrentMap();
 		try{
-			activeView = diskoMap_print.getActiveView();
-		}
-		catch(IOException ioe){
-			ioe.printStackTrace();
+			srs = diskoMap.getSpatialReference();
+		}catch(Exception e){
+			e.printStackTrace();
 		}
 		
-		//diskoMap.getMap().
-		try{
-			cartoMap = (com.esri.arcgis.carto.Map) diskoMap_print.getMap();
-		}
-		catch(IOException ioe){
-			System.out.println("funker ikke");
-			ioe.printStackTrace();
-		}
+		mapManager = app.getDiskoMapManager();
 		
 		this.reportTemplate_path = app.getProperty("report.template.path");
-		this.jasperfiles_path = app.getProperty("report.jasperfiles.path");
-		numberOfTemplates = Integer.parseInt(app.getProperty("report.NUMBER_OF_TEMPLATES"));
-		jrxmlFiles = new String[numberOfTemplates];
-		jasperFiles = new String[numberOfTemplates];
-		jrprintFiles = new ArrayList<JasperPrint>(numberOfTemplates);
-		System.out.println("test");
-		jrxmlFiles[0] = app.getProperty("report.TACTICS_TEMPLATE");
-		/*jrxmlFiles[1] = app.getProperty("report.UNITLOG_TEMPLATE");
-		jrxmlFiles[2] = app.getProperty("report.PARTICIPANTS_TEMPLATE");
-		jrxmlFiles[3] = app.getProperty("report.COMMUNICATIONLOG_TEMPLATE");
-		jrxmlFiles[4] = app.getProperty("report.MISSIONLOG_TEMPLATE");*/
+		this.jasperfiles_path = app.getProperty("report.jasperfiles.path");	
+		
 	}	
 	
 	/**
 	 * 
 	 *
 	 */
-	public void compile(){
+	public void compile(String jrxmlFileName, String jasperFileName){
 		System.out.println("DiskoReport: compile()");		
-		//loope igjennom og generere jasper filer		
-		String jasperFileName = new String();
 		try{			
-			for(int i=0; i < jrxmlFiles.length; i++){
-				jasperFileName = jrxmlFiles[i].substring(0,jrxmlFiles[i].indexOf(".")+1) + "jasper";
-				JasperCompileManager.compileReportToFile(this.reportTemplate_path + jrxmlFiles[i], this.jasperfiles_path + jasperFileName);
-				jasperFiles[i] = jasperFileName;
-			}			
-		}
+			JasperCompileManager.compileReportToFile(this.reportTemplate_path + jrxmlFileName, this.jasperfiles_path + jasperFileName);			
+		}		
 		catch(JRException jre){
 			jre.printStackTrace();
 			System.out.println("Kompilering av .jrxml fil feilet");
 		}		
+		
+		
 	}
 	
+	/**
+	 * Assignment report
+	 * @param assignments
+	 */
 	public void printAssignments(List<IAssignmentIf> assignments){
-		System.out.println("printAssignments()");
+			
 		//inntil videre kjøres kompilering også
-		compile();		
-		//*tar for gitt at vi skal printe oppdrag
-		//må få tilsendt aktuelt oppdrag fra ListDialog		
-		//eksportere mapobject
-		String exportMapPath = exportMap();
-		//må finne MSO object med tilhørende MSO geometri til aktuelt oppdrag
-		//ekstraherer verdrier fra assignmentslista
-		Map assignmentsMap = extractAssignmentValues(assignments, exportMapPath);
-		//lage kartutsnitt til aktuell geometri (se "rediger" i listdialog). kartutsnitt skal ha målestokk 1:50000
-		fill(jasperFiles, assignmentsMap);
-		//preview	
-		JasperPrint jPrint = (JasperPrint) jrprintFiles.get(0);
-		view(jPrint);		
+		String jrxmlFileName = app.getProperty("report.TACTICS_TEMPLATE")+".jrxml";
+		String jasperFileName = app.getProperty("report.TACTICS_TEMPLATE")+".jasper";
+		compile(jrxmlFileName, jasperFileName);	
+		
+		//lopper igjennom oppdrag som skal printes. Foreløpig bare èn
+		IAssignmentIf assignment = null;
+		IPOIListIf poiList = null;
+		String jasperFile = app.getProperty("report.TACTICS_TEMPLATE")+".jasper";
+		
+		for (int i=0;i<assignments.size(); i++){
+			//lager ett nytt tmp DiskoMap object
+			assignment = assignments.get(i);
+			makePrintMap(assignment);
+			try{
+				activeView = diskoMap_print.getActiveView();
+			}
+			catch(IOException ioe){
+				ioe.printStackTrace();
+			}
+			
+			//eksportere mapobject
+			String exportMapPath = exportMap();			
+			//ekstraherer verdrier fra assignmentslista
+			Map assignmentsMap = extractAssignmentValues(assignment, exportMapPath);
+			
+			//forsøk på subreport. Funker, men vises ikke riktig i rapporten.
+			/*
+			if (assignment instanceof ISearchIf){
+				ISearchIf search = (ISearchIf) assignment;
+				poiList = search.getPlannedArea().getAreaPOIs();
+			}			
+			
+			POIDescriptionFactory poiFactory = new POIDescriptionFactory(poiList);						
+			fill(jasperFile, assignmentsMap, poiFactory);
+			*/
+			
+			JasperPrint jPrint = fill(jasperFileName, assignmentsMap);
+			
+			//preview				
+			view(jPrint);		
+		}
+		
 	}
 	
-	public void printPreview(){
+	public void printUnitLog(int unitNr){		
+		//inntil videre kjøres kompilering også
+		String jrxmlFileName = app.getProperty("report.UNITLOG_TEMPLATE")+".jrxml";
+		String jasperFileName = app.getProperty("report.UNITLOG_TEMPLATE")+".jasper";
+		compile(jrxmlFileName, jasperFileName);
 		
+		ICmdPostIf cmdPost = app.getMsoModel().getMsoManager().getCmdPost();
+		IUnitListIf unitList = cmdPost.getUnitList();		
 		
-		//test
-		System.out.println("DiskoReport: viewPreview()");
-		compile();
-		//fylle jasperfilene med data og produserer jrprint file
-		//if(jasperFiles != null)
-		Map map = fillMap();
-		fill(jasperFiles, map);
-		//preview	
-		JasperPrint jPrint = (JasperPrint) jrprintFiles.get(0);
-		view(jPrint);
+		//testdata
+		/*TestDataUnitLog testDataUnitLog = new TestDataUnitLog();
+		unitList = testDataUnitLog.getUnitList();
+		unitNr = (int) Math.random()*10;
+		if (unitNr > 8)
+			unitNr = 8;
+		*/
+		//slutt testdata
+		
+		UnitlogReportParams unitLogParams = new UnitlogReportParams(unitList, unitNr);
+		//ekstrahere unit verdier
+		Map unitsMap = unitLogParams.getUnitlogReportParams();
+				
+		JasperPrint jPrint = fill(jasperFileName, unitsMap);
+		
+		//preview				
+		view(jPrint);	
+		
 	}
-	
-	private void fill(String[] fileNames, Map map){
-		System.out.println("DiskoReport: fill(), params: map_path = " + map.get("map_path") + ", sok_nr = " + map.get("sok_nr"));
+			
+	private JasperPrint fill(String jasperFileName, Map map){
 		File sourceFile = null;
 		File destFile = null;
-		try{
-			for (int i=0; i < fileNames.length; i++){
-				sourceFile = new File(jasperfiles_path + fileNames[i]);
-				JasperReport jasperReport = (JasperReport)JRLoader.loadObject(sourceFile);
-				
-				JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, map, new JREmptyDataSource());
-				
-				destFile = new File(sourceFile.getParent(), jasperReport.getName() + ".jrprint");
-				JRSaver.saveObject(jasperPrint, destFile);
-				
-				jrprintFiles.add(jasperPrint);
-				
-				//test
-				System.out.println("jasperPrint name: " + jasperPrint.getName() + jasperPrint.getPageHeight());
-				System.out.println("jasperprint, antall sider: " + jasperPrint.getPages().size());
-			}
+		JasperPrint jasperPrint = null;
+		try{			
+			sourceFile = new File(jasperfiles_path + jasperFileName);
+						
+			JasperReport jasperReport = (JasperReport)JRLoader.loadObject(sourceFile);
+			jasperPrint = JasperFillManager.fillReport(jasperReport, map, new JREmptyDataSource());				
+											
+			destFile = new File(sourceFile.getParent(), jasperReport.getName() + ".jrprint");
+			JRSaver.saveObject(jasperPrint, destFile);									
+			
 		} catch(JRException jre){
 			jre.printStackTrace();
 		}
 		catch (Exception e){
 			e.printStackTrace();
+		}		
+		return jasperPrint;
+	}
+	
+	private void fill(String jasperName, Map map, POIDescriptionFactory poiFactory){
+		System.out.println("DiskoReport: fill(), params: map_path = " + map.get("map_path") + ", SUBREPORT_DIR = " + map.get("SUBREPORT_DIR"));
+		File sourceFile = null;
+		File destFile = null;
+		JasperPrint jasperPrint = null;
+		try{			
+			sourceFile = new File(jasperfiles_path + jasperName);
+			
+			JasperReport jasperReport = (JasperReport)JRLoader.loadObject(sourceFile);
+			
+			System.out.println("sourceFile = " + sourceFile.getName() + " map parameter: map_path = " + map.get("map_path"));
+				
+			int j = poiFactory.getPOIArray().length;
+			
+			jasperPrint = JasperFillManager.fillReport(jasperReport, map, new JRBeanArrayDataSource(poiFactory.getPOIArray()));
+											
+			destFile = new File(sourceFile.getParent(), jasperReport.getName() + ".jrprint");
+			JRSaver.saveObject(jasperPrint, destFile);
+			
+			//jrprintFiles.add(jasperPrint);
+					
+		} catch(JRException jre){
+			jre.printStackTrace();
 		}
-		
+		catch (Exception e){
+			e.printStackTrace();
+		}		
 	}
 	
 	private void view(JasperPrint jrprintFile){		
 		System.out.println("DiskoReport: view() " + jrprintFile);
 		try{
-			JasperViewer.viewReport(jrprintFile);
+			JasperViewer.viewReport(jrprintFile, false, null);
 		}
 		catch(Exception e){
 			e.printStackTrace();
 			
 		}
 	}
-	
-	private Map fillMap(){
-		System.out.println("DiskoReport: fillMap()");
-		Map<String, String> map = new HashMap<String,String>();
-		//map.put( "map_path", "C:/1_prosjekt/DISKO/rapport/jasperreport_testdata/50248790.jpg" );
-	    //map.put( "sok_nr", "4" );
-		return map;
-	}
-	
-	private Map extractAssignmentValues(List<IAssignmentIf> assignments, String exportMapPath){
+		
+	private Map extractAssignmentValues(IAssignmentIf assignment, String exportMapPath){
 		Map<String, Object> map = new HashMap<String,Object>();
 		
-		MissionOrderPrintParams missionOrderPrint = new MissionOrderPrintParams();
-		map = missionOrderPrint.setPrintParams(assignments, exportMapPath);
-				
+		String role_name = app.getCurrentRole().getTitle() + " (" + app.getCurrentRole().getName()+ ")";
+		//legg inn datoTidsgruppe
+		timeNow = getTimeNow();
+		
+		MissionOrderReportParams missionOrderPrint = new MissionOrderReportParams();
+		map = missionOrderPrint.setPrintParams(assignment, exportMapPath, role_name, jasperfiles_path, srs, reportMapScale, timeNow);
+		
 		return map;
 		
+	}
+	
+	private void makePrintMap(IAssignmentIf assignment){
+		try{			
+			//lager nytt kart				
+			diskoMap_print = new DiskoMap(diskoMap.getMxdDoc(), diskoMap.getMapManager(), app.getMsoModel());	
+			
+			//zoome til MSO object og sett riktig skala
+			diskoMap_print.zoomToPrintMapExtent(assignment, reportMapScale, mapPrintHeigthSize, mapPrintWidthSize);			
+			
+			//sette aktivt object selected
+			diskoMap_print.setSelected(assignment, true);
+			
+			//fjerne andre MSO assignment objekter i kartet.
+			//todo			
+			/* koden under funker ikke...
+			for (int i = 0; i < diskoMap_print.getLayerCount(); i++){				
+				ILayer layer = diskoMap_print.getLayer(i);
+				if (layer instanceof PlannedAreaLayer){
+					diskoMap_print.deleteLayer(i);
+					//create IMso
+					System.out.println("test");
+					PlannedAreaLayer newLayer =  new PlannedAreaLayer(m_msoModel);
+					newLayer.createMsoFeature(assignment);
+				}
+				
+			}
+			*/
+			
+						
+			//for å legge på grid må det lages et Carto objekt
+			//todo
+			/*
+			try{
+				cartoMap = (com.esri.arcgis.carto.Map) diskoMap_print.getMap();
+				PageLayout pageLayout = (PageLayout) diskoMap_print.getMap();
+				//cartoMap.getAsIGraphicsContainer().findFrame();
+				
+				IFrameElement frameElement = pageLayout.findFrame(diskoMap_print);
+							
+				//lage grid
+				MeasuredGrid mapGrid = new MeasuredGrid();				
+				//populere grid med properties
+				IProjectedGrid projGrid = (IProjectedGrid) cartoMap.getSpatialReference();
+				
+				//mapGrid.setSpatialReferenceByRef(projGrid);
+								
+				//cartoMap.setSpatialReferenceByRef();
+			}
+			catch(IOException ioe){
+				System.out.println("funker ikke");
+				ioe.printStackTrace();
+			}
+			*/			
+		}
+		catch(IOException ioe){
+			ioe.printStackTrace();
+		}
 	}
 	
 	private String exportMap(){
@@ -215,10 +326,9 @@ public class DiskoReport {
 		long hdc;
 		tagRECT exportRECT = new tagRECT();
 		String outputDir = app.getProperty("report.output.path");
-		long randomNumber = ((long)Math.random() * 10000)+1;
+		long randomNumber = ((long)(Math.random() * 100000));
 		System.out.println("Math.random(): " + Math.random() + "randomNumber: " + randomNumber);
 		String outputFileName = app.getProperty("report.output.printname") + randomNumber;
-		//long rnd = 
 		String exportPath = outputDir+outputFileName+outputPrintFormat;
 		IExport docExport = null;
 		IEnvelope pixelBoundsEnv = null;
@@ -233,14 +343,8 @@ public class DiskoReport {
 	        docExport.setResolution(imgResolution);
 	        			
 			//always set the output quality of the DISPLAY to 1 for image export formats
-	        setOutputQuality(activeView, imgResampleRatio);				                
-	        
-	        //get the device context of the screeen (bare windows relevant)
-	        //todo
-	        
-	        //Get the bounds of the deviceframe for the screen.
-			//todo
-	        	        			
+	        setOutputQuality(activeView, imgResampleRatio);		
+	       	        	        			
 	        //Assign envelope object to the export object
 	        pixelBoundsEnv = new Envelope();
 	        exportRECT.bottom = 500;
@@ -250,9 +354,7 @@ public class DiskoReport {
 	        pixelBoundsEnv.putCoords(exportRECT.left, exportRECT.top, exportRECT.right, exportRECT.bottom);
 	       
 	        docExport.setPixelBounds(pixelBoundsEnv);
-	        
-	        //export
-	        System.out.println("starter eksport");
+	       
 	        //ready to export
 	        hdc = docExport.startExporting();
 	        
@@ -263,7 +365,6 @@ public class DiskoReport {
 	        docExport.finishExporting();
 	        docExport.cleanup();
 	        
-	        System.out.println("ferdig eksportert");
 		}catch(IOException ioe){
 			ioe.printStackTrace();
 		}
@@ -271,8 +372,7 @@ public class DiskoReport {
 		return exportPath;
 	}
 	
-	private void setOutputQuality(IActiveView activeView, long imgResampleRatio){
-		//trenger vi???
+	private void setOutputQuality(IActiveView activeView, long imgResampleRatio){		
 		try{
 			IOutputRasterSettings outputRasterSettings = (IOutputRasterSettings) activeView.getScreenDisplay().getDisplayTransformation();
 			outputRasterSettings.setResampleRatio((int)imgResampleRatio);
@@ -280,6 +380,12 @@ public class DiskoReport {
 			ioe.printStackTrace();
 		}
 		 
+	}
+	
+	private String getTimeNow(){
+	    Calendar cal = Calendar.getInstance();
+	    SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+	    return sdf.format(cal.getTime());
 	}
 	
 
