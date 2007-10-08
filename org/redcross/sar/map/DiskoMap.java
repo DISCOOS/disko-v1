@@ -128,7 +128,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 		List msoLayers = mapManager.getMsoLayers(msoObj.getMsoClassCode());
 		IMsoFeatureLayer flayer = (IMsoFeatureLayer)msoLayers.get(0);
 		if (flayer.isDirty()) {
-			partialRefresh(flayer, null);
+			refreshLayer(flayer, null);
 		}
 	}
 
@@ -137,7 +137,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 		for (int i = 0; i < msoLayers.size(); i++) {
 			IMsoFeatureLayer flayer = (IMsoFeatureLayer)msoLayers.get(i);
 			if (flayer.isDirty()) {
-				partialRefresh(flayer, null);
+				refreshLayer(flayer, null);
 			}
 		}
 	}
@@ -147,7 +147,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 		for (int i = 0; i < msoLayers.size(); i++) {
 			IMsoFeatureLayer flayer = (IMsoFeatureLayer)msoLayers.get(i);
 			if (flayer.isDirty()) {
-				partialRefresh(flayer, null);
+				refreshLayer(flayer, null);
 			}
 		}
 	}
@@ -400,14 +400,35 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	}
 
 	/* (non-Javadoc)
-	 * @see org.redcross.sar.map.IDiskoMap#partialRefresh(com.esri.arcgis.geometry.IEnvelope)
+	 * @see org.redcross.sar.map.IDiskoMap#refreshLayer(com.esri.arcgis.geometry.IEnvelope)
 	 */
-	public void partialRefresh(final Object obj, final IEnvelope env) {
+	public void refreshLayer(final Object obj, final IEnvelope env) {
 		Runnable r = new Runnable() {
 			public void run() {
 				try {
 					getActiveView().partialRefresh(
 							esriViewDrawPhase.esriViewGeography, obj, env);
+				} catch (AutomationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+		SwingUtilities.invokeLater(r);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.redcross.sar.map.IDiskoMap#refreshSelection(com.esri.arcgis.geometry.IEnvelope)
+	 */
+	public void refreshSelection(final Object obj, final IEnvelope env) {
+		Runnable r = new Runnable() {
+			public void run() {
+				try {
+					getActiveView().partialRefresh(
+							esriViewDrawPhase.esriViewGraphics, obj, env);
 				} catch (AutomationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

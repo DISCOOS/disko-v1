@@ -165,10 +165,10 @@ public class NavBar extends JPanel {
 				ToolCommandType.ZOOM_OUT_FIXED_COMMAND, ButtonPlacement.RIGHT);
 		addCommand(getFullExtentButton(), getFullExtentCommand(), 
 				ToolCommandType.ZOOM_FULL_EXTENT_COMMAND, ButtonPlacement.RIGHT);
-		addCommand(getZoomToLastExtentForwardButton(), getZoomToLastExtentForwardCommand(), 
-				ToolCommandType.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND, ButtonPlacement.RIGHT);
 		addCommand(getZoomToLastExtentBackwardButton(), getZoomToLastExtentBackCommand(), 
 				ToolCommandType.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND, ButtonPlacement.RIGHT);	
+		addCommand(getZoomToLastExtentForwardButton(), getZoomToLastExtentForwardCommand(), 
+				ToolCommandType.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND, ButtonPlacement.RIGHT);
 		addCommand(getMapToggleButton(), getMapToggleCommand(), 
 				ToolCommandType.MAP_TOGGLE_COMMAND, ButtonPlacement.RIGHT);
 		addCommand(getTocToggleButton(), getTocTool(), 

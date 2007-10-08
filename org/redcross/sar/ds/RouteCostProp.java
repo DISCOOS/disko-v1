@@ -8,12 +8,6 @@ import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.MissingResourceException;
 
-import org.redcross.sar.map.DiskoMap;
-
-import com.esri.arcgis.carto.ILayer;
-import com.esri.arcgis.carto.FeatureLayer;
-import com.esri.arcgis.carto.RasterLayer;
-
 /**
  *  Route Cost property class
  *  
@@ -26,7 +20,6 @@ public class RouteCostProp {
 	protected ResourceBundle m_res;	  	
   	
 	private int m_count;
-	private int m_default;
 	private int[] m_dims;
 	private double m_min;
 	private double m_max;
@@ -39,22 +32,15 @@ public class RouteCostProp {
   	private HashMap m_keys;
   	private String[] m_captions;
   	private Object[] m_params;
-  	private HashMap<String,String> m_fields;
-  	private HashMap<String,ILayer> m_layers;
-  	private HashMap<String,Integer> m_mapping;
-  	private DiskoMap m_map;
 	
 	/**
 	 *  Constructor initialize the maximum index value
 	 *  
 	 */		
-	public RouteCostProp(RouteCostProps parent, String key) {
+	public RouteCostProp(ResourceBundle res, String key) {
 
 		// save resource bundle handle
-		m_res = parent.getResource();
-		
-		// save map handle
-		m_map = parent.getMap();
+		m_res = res;
 		
 		// save property key
 		m_key = key;
@@ -72,14 +58,6 @@ public class RouteCostProp {
 	 */		
 	@SuppressWarnings("unchecked")
 	public void fill() {
-		
-		// create array lists
-		m_fields = new HashMap<String,String>();
-		m_layers = new HashMap<String,ILayer>();
-		m_mapping = new HashMap<String,Integer>();
-		
-		// initialize
-		m_default = 0;
 		
 		// get attribute count
 		m_count = Integer.valueOf(getProp(m_key + ".COUNT")).intValue();
@@ -134,55 +112,6 @@ public class RouteCostProp {
 			}
 			// get all parameters
 			getParams(m_params,m_key + ".PARAM");
-			// has feature class?
-			if (Boolean.valueOf(getProp(m_key + ".FEATURECLASS")).booleanValue())
-			{
-				// get feature class count
-				int count = Integer.valueOf(getProp(m_key + ".FEATURECLASS.COUNT")).intValue();
-				try {
-					// loop over the next dimensions
-					for(int i=0;i<count;i++){
-						// raster layer?
-						if (Boolean.valueOf(getProp(m_key + ".FEATURECLASS.RASTER." + i)).booleanValue()) {
-							// get name
-							String name = getProp(m_key + ".FEATURECLASS.NAME." + i);
-							// get field name
-							m_fields.put(name,"");
-							// create raster layer
-							RasterLayer layer = new RasterLayer();
-							layer.createFromFilePath(getProp(m_key + ".FEATURECLASS.FILE." + i));
-							// add layer
-							m_layers.put(name, layer);
-						}
-						else {
-							// get name
-							String name = getProp(m_key + ".FEATURECLASS.NAME." + i);
-							// get field name
-							m_fields.put(name,getProp(m_key + ".FEATURECLASS.FIELD." + i));
-							// add layer
-							m_layers.put(name, (ILayer)m_map.getFeatureLayer(getProp(m_key + ".FEATURECLASS.LAYER." + i)));
-						}
-					}
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-				}
-				// has feature class?
-				if (Boolean.valueOf(getProp(m_key + ".FEATURECLASS.MAPPING")).booleanValue()){
-					// get mapping
-					for(int i=0;i<m_count;i++){
-						String map = getProp(m_key + ".FEATURECLASS.MAPPING." + i);
-						if (map.length()>0) {
-							String[] splits = map.split("#");
-							for(int j=0; j<splits.length;j++){
-								m_mapping.put(splits[j], i);
-							}
-						}
-					}						
-					// get default map index
-					m_default = Integer.valueOf(getProp(m_key + ".FEATURECLASS.MAPPING.DEFAULT"));
-				}
-			}
 		}					
 	}
 	
@@ -219,7 +148,7 @@ public class RouteCostProp {
 	}
 	
 	/**
-	 *  Gets is property is a constant. If false, then the property have parameters
+	 *  Gets if property is a constant. If false, then the property have parameters
 	 *  
 	 */		
 	public boolean isConstant() {
@@ -254,34 +183,20 @@ public class RouteCostProp {
 	}
 	
 	/**
-	 *  Gets property index from map value
-	 *  
-	 */		
-	public int getIndexFromMap(int map) {
-		// initialize
-		int index = m_default;
-		String key = String.valueOf(map);
-		// Has map?
-		if (m_mapping.containsKey(key)) {
-			// get map index
-			index = m_mapping.get(key);
-		} 
-		// return index
-		return index;
-	}
-	
-	/**
 	 *  Gets property value at index with specified arguments
 	 *  
 	 */		
 	public double getValue(int index, int[] args, boolean weigth) {
+		// get parameters
+		double params[] = getParams(args);
+		// Calculate value
 		if(weigth){
-			// value = Weigth * Parameter * Variable
-			return m_weight * getParam(args)*getVariable(index);						
+			// value = Weigth * (A * Variable + B)
+			return m_weight * (params[0]*getVariable(index)+params[1]);						
 		}
 		else {
-			// value = Parameter * Variable
-			return getParam(args)*getVariable(index);			
+			// value = (A * Variable + B)
+			return (params[0]*getVariable(index)+params[1]);			
 		}
 	}
 	
@@ -342,51 +257,9 @@ public class RouteCostProp {
 	 *  Gets property parameter value from argument array
 	 *  
 	 */		
-	public double getParam(int[] args) {
+	public double[] getParams(int[] args) {
 		// start to recurse on first argument
-		return getParam(m_params,args,0);
-	}
-
-	/**
-	 *  Gets layer
-	 *  
-	 */		
-	public ILayer getLayer(String name) {
-		return m_layers.get(name);
-	}
-	
-	/**
-	 *  Gets field name
-	 *  
-	 */		
-	public String getField(String name) {
-		if (getLayer(name) instanceof FeatureLayer)
-			return m_fields.get(name);
-		else
-			return null;
-	}
-
-	/**
-	 *  Gets field index
-	 *  
-	 */		
-	public int getFieldIndex(String name) {
-		// initialize
-		int index = -1;
-		// get layer
-		ILayer layer = getLayer(name);
-		// get index
-		if (layer instanceof FeatureLayer) {
-			
-			try {
-				// get field index
-				index = ((FeatureLayer)layer).getFields().findField(m_fields.get(name));
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		return index;
+		return getParams(m_params,args,0);
 	}
 	
 	
@@ -445,8 +318,13 @@ public class RouteCostProp {
 				// try to get property value
 				try
 				{
-					// get parameter
-					arr[i]= Double.valueOf(m_res.getString(nextKey)).doubleValue();
+					// get parameter values
+					String[] splits = m_res.getString(nextKey).split("#");
+					double params[] = new double[2];					
+					params[0] = Double.valueOf(splits[0]);
+					params[1] = Double.valueOf(splits[1]);
+					// save parameters
+					arr[i]= params;
 				}
 				catch(MissingResourceException e)
 				{
@@ -460,18 +338,17 @@ public class RouteCostProp {
 	 *  get parameter value as function of arguments = {i1,i2,...,in}
 	 *  
 	 */		
-	private double getParam(Object[] arr, int[] ids, int i) {
+	private double[] getParams(Object[] arr, int[] ids, int i) {
 		int j = ids[i];
 		// is array?
 		if(arr[j].getClass().isArray()){
 			// cast and recurse
-			return getParam((Object[])arr[j],ids,i+1);
+			return getParams((Object[])arr[j],ids,i+1);
 		}
 		else {
-			// get parameter value
-			double param = ((Double)arr[j]).doubleValue();
+			double params[] = ((double[])arr[j]);
 			// 
-			return param;
+			return params;
 		}
 	}
 	

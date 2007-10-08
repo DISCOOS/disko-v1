@@ -104,9 +104,15 @@ public interface IDiskoMap {
 	public void deleteSelected() throws IOException;
 
 	/* (non-Javadoc)
-	 * @see org.redcross.sar.map.IDiskoMap#partialRefresh(com.esri.arcgis.geometry.IEnvelope)
+	 * @see org.redcross.sar.map.IDiskoMap#refreshLayer(com.esri.arcgis.geometry.IEnvelope)
 	 */
-	public void partialRefresh(Object obj, IEnvelope env) throws IOException,
+	public void refreshLayer(Object obj, IEnvelope env) throws IOException,
 			AutomationException;
 
+	/* (non-Javadoc)
+	 * @see org.redcross.sar.map.IDiskoMap#refreshSelection(com.esri.arcgis.geometry.IEnvelope)
+	 */
+	public void refreshSelection(Object obj, IEnvelope env) throws IOException,
+			AutomationException;
+	
 }

@@ -17,6 +17,7 @@ import java.io.File;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import javax.swing.JComponent;
 
 /**
  * Implements the DiskoApplication interface. This class is responsible for connecting to the
@@ -66,7 +67,6 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
          {
             DiskoApplicationImpl thisClass = new DiskoApplicationImpl();
             thisClass.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            thisClass.setVisible(true);
          }
       });
    }
@@ -164,13 +164,15 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
          //this.pack();
          getFrame().setExtendedState(Frame.MAXIMIZED_BOTH);
          Log.init("DISKO");
+         // show me
+         setVisible(true);         
          //initiate modeldriver
          getMsoModel().getModelDriver().initiate();
          getMsoModel().getModelDriver().setDiskoApplication(this);
          // show the login dialog
          LoginDialog loginDialog = getUIFactory().getLoginDialog();
+         loginDialog.setLocationRelativeTo((JComponent)getFrame().getContentPane(),LoginDialog.POS_CENTER,false);
          loginDialog.setVisible(true);
-         loginDialog.setLocation(300, 300);
       }
       catch (Exception e)
       {
@@ -316,7 +318,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
        bundle.getString(OPERATION_FINISHED_TITLE), JOptionPane.YES_NO_OPTION);
         if(ans==JOptionPane.YES_OPTION)
         {
-            shutDown();
+            shutdown();
         }
         if(opList.size()>0)
         {
@@ -372,7 +374,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
                      {
                          JOptionPane.showMessageDialog(uiFactory.getContentPanel(), bundle.getString(INIT_ERROR_SHUTDOWN_TEXT),
                         bundle.getString(INIT_ERROR_TEXT), JOptionPane.ERROR_MESSAGE);
-                         shutDown();
+                         shutdown();
                      }
 
                   }
@@ -383,7 +385,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
                   //modeldriver is not initiated display message to user and shut down
                   JOptionPane.showMessageDialog(uiFactory.getContentPanel(), bundle.getString(INIT_ERROR_SHUTDOWN_TEXT),
                         bundle.getString(INIT_ERROR_TEXT), JOptionPane.ERROR_MESSAGE);
-                   shutDown();
+                   shutdown();
 
                }
 
@@ -483,7 +485,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
                   {
                       JOptionPane.showMessageDialog(uiFactory.getContentPanel(), bundle.getString(INIT_ERROR_SHUTDOWN_TEXT),
                      bundle.getString(INIT_ERROR_TEXT), JOptionPane.ERROR_MESSAGE);
-                      shutDown();
+                      shutdown();
                   }
 
                }
@@ -494,7 +496,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
                //modeldriver is not initiated display message to user and shut down
                JOptionPane.showMessageDialog(uiFactory.getContentPanel(), bundle.getString(INIT_ERROR_SHUTDOWN_TEXT),
                      bundle.getString(INIT_ERROR_TEXT), JOptionPane.ERROR_MESSAGE);
-                shutDown();
+                shutdown();
 
 
             }
@@ -504,7 +506,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
       }
    }
 
-    private void shutDown()
+    public void shutdown()
     {
         getMsoModel().getModelDriver().shutDown(); //Set last
         System.exit(0);

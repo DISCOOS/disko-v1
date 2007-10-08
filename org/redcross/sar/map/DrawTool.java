@@ -16,6 +16,7 @@ import com.esri.arcgis.interop.AutomationException;
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.DrawDialog;
+import org.redcross.sar.gui.FreeHandDialog;
 import org.redcross.sar.map.index.IndexedGeometry;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.map.layer.OperationAreaLayer;
@@ -142,8 +143,19 @@ public class DrawTool extends AbstractCommandTool {
 
 	public void onDblClick() throws IOException, AutomationException {
 		Polyline polyline = pathGeometry;
-		polyline.simplify();
 		polyline.setSpatialReferenceByRef(map.getSpatialReference());
+		/*
+		// get snappeable layers
+		ArrayList<IFeatureLayer> snapTo =((DrawDialog)dialog).getSnapableLayers();
+		// snapping?
+		if (snapTo.size()>0) {
+			ArrayList<IIdentify> l = new ArrayList<IIdentify>(snapTo.size()); 
+			for (int i=0;i<snapTo.size();i++) {
+				l.add((IIdentify)snapTo.get(i));
+			}
+			MapUtil.snapPolyLineTo(polyline,l,50);
+		}*/
+		// get command post
 		ICmdPostIf cmdPost = app.getMsoModel().getMsoManager().getCmdPost();
 		IMsoObjectIf msoObj = null;
 
@@ -183,7 +195,7 @@ public class DrawTool extends AbstractCommandTool {
 		for (int i = 0; i < pline.getPointCount(); i++) {
 			polygon.addPoint(pline.getPoint(i), null, null);
 		}
-		polygon.simplify();
+		//polygon.simplify();
 		return polygon;
 	}
 
@@ -200,7 +212,8 @@ public class DrawTool extends AbstractCommandTool {
 		searchEnvelope.centerAt(p2);
 		Polyline pline = (Polyline)indexedGeometry.search(searchEnvelope);
 		if (pline != null) {
-			pline.densify(getSnapTolerance(), -1);
+			pline.densify(getSnapTolerance()/10, -1);
+			pline.generalize(1);
 			p2 = getNearestPoint(pline, p2);
 		}
 		if (pathGeometry == null) {
@@ -299,22 +312,22 @@ public class DrawTool extends AbstractCommandTool {
 	private void draw() throws IOException, AutomationException {
 		
 		if (isActive) {
-		IScreenDisplay screenDisplay = map.getActiveView().getScreenDisplay();
-		screenDisplay.startDrawing(screenDisplay.getHDC(),(short) esriScreenCache.esriNoScreenCache);
-
-		if (pathGeometry != null && !isMoving) {
-			screenDisplay.setSymbol(drawSymbol);
-			screenDisplay.drawPolyline(pathGeometry);
-		}
-		if (rubberBand != null) {
-			screenDisplay.setSymbol(drawSymbol);
-			screenDisplay.drawPolyline(rubberBand);
-		}
-		if (snapGeometry != null) {
-			screenDisplay.setSymbol(flashSymbol);
-			screenDisplay.drawPolyline(snapGeometry);
-		}
-		screenDisplay.finishDrawing();
+			IScreenDisplay screenDisplay = map.getActiveView().getScreenDisplay();
+			screenDisplay.startDrawing(screenDisplay.getHDC(),(short) esriScreenCache.esriAllScreenCaches);
+	
+			if (pathGeometry != null && !isMoving) {
+				screenDisplay.setSymbol(drawSymbol);
+				screenDisplay.drawPolyline(pathGeometry);
+			}
+			if (rubberBand != null) {
+				screenDisplay.setSymbol(drawSymbol);
+				screenDisplay.drawPolyline(rubberBand);
+			}
+			if (snapGeometry != null) {
+				screenDisplay.setSymbol(flashSymbol);
+				screenDisplay.drawPolyline(snapGeometry);
+			}
+			screenDisplay.finishDrawing();
 		}
 	}
 
@@ -335,17 +348,17 @@ public class DrawTool extends AbstractCommandTool {
 
 	private Point getNearestPoint(Polyline pline, Point point)
 			throws IOException, AutomationException {
-		double minDist = Double.MAX_VALUE;
-		Point nearestPoint = null;
-		for (int i = 0; i < pline.getPointCount(); i++) {
+		//double minDist = Double.MAX_VALUE;
+		IPoint nearestPoint = pline.returnNearestPoint(point, esriSegmentExtension.esriNoExtension);
+		/*for (int i = 0; i < pline.getPointCount(); i++) {
 			Point p = (Point)pline.getPoint(i);
 			double dist = point.returnDistance(p);
 			if (dist < minDist) {
 				minDist = dist;
 				nearestPoint = p;
 			}
-		}
-		return nearestPoint;
+		}*/
+		return (Point)nearestPoint;
 	}
 
 	public void setIsDirty() {

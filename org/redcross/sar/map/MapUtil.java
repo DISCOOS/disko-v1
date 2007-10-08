@@ -11,12 +11,16 @@ import org.redcross.sar.util.mso.GeoPos;
 import org.redcross.sar.util.mso.Position;
 import org.redcross.sar.util.mso.Route;
 
+import com.esri.arcgis.carto.IIdentify;
+import com.esri.arcgis.carto.IRowIdentifyObjectProxy;
 import com.esri.arcgis.datasourcesGDB.FileGDBWorkspaceFactory;
 import com.esri.arcgis.geodatabase.IFeatureClass;
+import com.esri.arcgis.geodatabase.IFeatureProxy;
 import com.esri.arcgis.geodatabase.Workspace;
 import com.esri.arcgis.geometry.Envelope;
 import com.esri.arcgis.geometry.IEnvelope;
 import com.esri.arcgis.geometry.IGeographicCoordinateSystem;
+import com.esri.arcgis.geometry.IGeometry;
 import com.esri.arcgis.geometry.IPoint;
 import com.esri.arcgis.geometry.ISpatialReference;
 import com.esri.arcgis.geometry.ISpatialReferenceFactory2;
@@ -26,7 +30,11 @@ import com.esri.arcgis.geometry.Polyline;
 import com.esri.arcgis.geometry.SpatialReferenceEnvironment;
 import com.esri.arcgis.geometry.esriMGRSModeEnum;
 import com.esri.arcgis.geometry.esriSRGeoCSType;
+import com.esri.arcgis.geometry.IProximityOperator;
+import com.esri.arcgis.geometry.esriSegmentExtension;
+import com.esri.arcgis.geometry.esriGeometryType;
 import com.esri.arcgis.interop.AutomationException;
+import com.esri.arcgis.system.IArray;
 
 public class MapUtil {
 	
@@ -227,4 +235,89 @@ public class MapUtil {
 		if (angle < 0) angle = 2*Math.PI + angle;
 		return angle;
 	}
+	
+	public static void snapPolyLineTo(Polyline pl, Collection<IIdentify> list, double size) {
+		
+		try {
+			// initialize
+			double min = -1; 
+			IEnvelope pSearch = null;
+			int count = pl.getPointCount();
+			IFeatureProxy pFeature = null;			
+			IProximityOperator pOperator = null;
+			IRowIdentifyObjectProxy pRowObj = null;   
+			
+			// create search envelope
+			pSearch = new Envelope();
+			pSearch.putCoords(0, 0, 0, 0);
+			pSearch.setHeight(size);
+			pSearch.setWidth(size);		
+			
+			// loop over all points
+			for(int i=0;i<count;i++) {
+			
+				// update current
+				IPoint p = pl.getPoint(i);
+							
+				// prepare search envelope
+				pSearch.centerAt(p);
+				
+				// get iterator
+				Iterator<IIdentify> it = list.iterator();
+				
+				// initialize
+				min = -1;
+				pOperator = null;				
+				
+				// loop over all
+				while(it.hasNext()) {
+				
+					// identify height below point
+					IArray arr = it.next().identify(pSearch);
+								
+					// found road?
+					if (arr != null) {
+					
+						// Get the feature that was identified by casting to IRowIdentifyObject   
+						pRowObj = new IRowIdentifyObjectProxy(arr.getElement(0));   
+						pFeature = new IFeatureProxy(pRowObj.getRow());
+						
+						// get geometry
+						IGeometry geom = pFeature.getShape(); 
+						
+						// get geometry shape
+						int type = geom.getGeometryType();
+						
+						// has proximity operator?
+						if (type == esriGeometryType.esriGeometryPoint || 
+								type == esriGeometryType.esriGeometryPolyline || 
+								type == esriGeometryType.esriGeometryPolygon) {
+							
+							// return nearest distance
+							double d = ((IProximityOperator)geom).returnDistance(p);
+							
+							// less?
+							if (min == -1 || d < min) {
+								min = d;
+								pOperator = (IProximityOperator)geom;							
+							}							
+						}
+					}
+				}
+				
+				// return nearest distance
+				if (pOperator != null) {
+					IPoint near = pOperator.returnNearestPoint(p, esriSegmentExtension.esriNoExtension);
+					// snap to nearest point?
+					if(near != null)
+						pl.updatePoint(i, near);
+				}
+				
+			}			
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}					
+	}
+	
 }

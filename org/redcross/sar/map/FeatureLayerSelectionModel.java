@@ -68,7 +68,7 @@ public abstract class FeatureLayerSelectionModel {
 			//System.out.println("setLayerVisibility");
 			IFeatureLayer flayer = layers[index];			
 			flayer.setVisible(visible);
-			map.partialRefresh(flayer, null);
+			map.refreshLayer(flayer, null);
 	}		
 	
 	/**

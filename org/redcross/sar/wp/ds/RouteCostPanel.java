@@ -241,12 +241,12 @@ public class RouteCostPanel extends JPanel
 	    	//Route r = (Route)((IAreaIf)m_currentMsoObj).getGeodata().getPositions().get(0);
 	    	Route r = ((RouteImpl)((IAreaIf)m_currentMsoObj).getGeodataAt(0)).getGeodata();
 
-	    	// update route point count
-	    	getRoutePointCountText().setText((new Integer(r.getPositions().size())).toString());
-	    	
 	    	// create estimator?
-	    	if (m_rce == null) {
+	    	if (m_rce == null || true) {
 	    		m_rce = new RouteCost(r,2,m_map);
+	    	}
+	    	else {
+	    		m_rce.setRoute(r);
 	    	}
 	    	
 	    	try {
@@ -271,15 +271,16 @@ public class RouteCostPanel extends JPanel
 			
 	    	NumberFormat nf = new DecimalFormat("0.00");
 	    	
-	    	double kph = m_rce.getLength() / m_rce.ete();
+	    	double kph = m_rce.getDistance() / m_rce.ete() * 3.6;
 	    	
-	    	double km = Math.floor(m_rce.getLength() / (1000));
-	    	double m = Math.round(m_rce.getLength() - (km * 1000));
+	    	double km = Math.floor(m_rce.getDistance() / (1000));
+	    	double m = Math.round(m_rce.getDistance() - (km * 1000));
 
 	    	double tt = Math.floor(cost / (60 * 60));
 	    	double mm = Math.round((cost / 60) - (tt * 60));
 	    	
 	    	// show result
+	    	getRoutePointCountText().setText((new Integer(r.getPositions().size())).toString());	    	
 	    	getRouteLengthText().setText((new Double(km).intValue()) + " km " + (new Double(m).intValue()) + " m");
 	    	getRouteAverageSpeedText().setText(nf.format(kph) + " km/h ");
 	    	getRouteEteText().setText((new Double(tt).intValue()) + " h " + (new Double(mm).intValue()) + " min");

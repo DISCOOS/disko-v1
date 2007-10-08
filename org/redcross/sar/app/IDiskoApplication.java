@@ -116,4 +116,7 @@ public interface IDiskoApplication {
     void newOperation();
 
     void operationAdded(String id);
+    
+    void shutdown();
+    
 }

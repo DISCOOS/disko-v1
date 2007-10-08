@@ -25,6 +25,7 @@ public class RouteCostProps {
 	private DiskoMap m_map;
 	private ResourceBundle m_res;
 	private HashMap<String,RouteCostProp> m_props;
+	private HashMap<String,RouteCostFeatureMap> m_fmaps;
 
   	private static RouteCostProps m_this;	  	
   	
@@ -79,7 +80,17 @@ public class RouteCostProps {
   	public RouteCostProp getProp(String key)
   	{
   		// get and return
-  		return (RouteCostProp)m_props.get(key);
+  		return m_props.get(key);
+  	}  	
+  	
+	/**
+	 * Gets Route Cost feature map object
+	 * 
+	 */
+  	public RouteCostFeatureMap getMap(String key)
+  	{
+  		// get and return
+  		return m_fmaps.get(key);
   	}  	
   	
   	/**
@@ -112,37 +123,61 @@ public class RouteCostProps {
   		m_props = new HashMap<String,RouteCostProp>(11);
   		
   		// get propulsion
-  		m_props.put("P", new RouteCostProp(this,"P"));
+  		m_props.put("P", new RouteCostProp(m_res,"P"));
   		
   		// get Snow State Type
-  		m_props.put("SST", new RouteCostProp(this,"SST"));
+  		m_props.put("SST", new RouteCostProp(m_res,"SST"));
   		
   		// get New Snow Depth
-  		m_props.put("NSD", new RouteCostProp(this,"NSD"));
+  		m_props.put("NSD", new RouteCostProp(m_res,"NSD"));
   		
   		// get Snow State
-  		m_props.put("SS", new RouteCostProp(this,"SS"));
+  		m_props.put("SS", new RouteCostProp(m_res,"SS"));
   		
   		// get Surface
-  		m_props.put("SU", new RouteCostProp(this,"SU"));
+  		m_props.put("SU", new RouteCostProp(m_res,"SU"));
   		
-  		// get Slope
-  		m_props.put("S", new RouteCostProp(this,"S"));
+  		// get Upward Slope
+  		m_props.put("US", new RouteCostProp(m_res,"US"));
+  		
+  		// get Easy Downward Slope
+  		m_props.put("EDS", new RouteCostProp(m_res,"EDS"));
+  		
+  		// get Steep Downward Slope
+  		m_props.put("SDS", new RouteCostProp(m_res,"SDS"));
   		
   		// get Precipitation
-  		m_props.put("PRE", new RouteCostProp(this,"PRE"));
+  		m_props.put("PRE", new RouteCostProp(m_res,"PRE"));
   		
   		// get Wind
-  		m_props.put("WIN", new RouteCostProp(this,"WIN"));
+  		m_props.put("WIN", new RouteCostProp(m_res,"WIN"));
   		
   		// get Temperature
-  		m_props.put("TEM", new RouteCostProp(this,"TEM"));
+  		m_props.put("TEM", new RouteCostProp(m_res,"TEM"));
   		
   		// get Temperature
-  		m_props.put("W", new RouteCostProp(this,"W"));
+  		m_props.put("W", new RouteCostProp(m_res,"W"));
   		
   		// get Light
-  		m_props.put("LI", new RouteCostProp(this,"LI"));
+  		m_props.put("LI", new RouteCostProp(m_res,"LI"));
+  		
+		// create array lists
+  		m_fmaps = new HashMap<String,RouteCostFeatureMap>();
+		
+		try {
+			// get feature class count
+			int icount = Integer.valueOf(m_res.getString("FEATURECLASS.COUNT")).intValue();
+			// loop over all feature classes
+			for(int i=0;i<icount;i++) {
+				// get key
+				String key = "FEATURECLASS." + i;
+				// get featur class name
+				m_fmaps.put(key,new RouteCostFeatureMap(this,key));
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}  		
   		
   	}  	
 
@@ -152,48 +187,12 @@ public class RouteCostProps {
 	 */		
 	public void create(DiskoMap map) {
 
-		long startTime = System.currentTimeMillis();
-
-		// initialize
-		String aliasName = null;
-		boolean roadsAdded = false;
-		
 		// save map
 		m_map = map;
 		
 		// update parameters
 		getProps();
 		
-		/*
-		// catch errors
-		try {
-			// get map in focus
-			IMap m = map.getActiveView().getFocusMap();
-			// add layers
-			for (int i = 0; i < m.getLayerCount(); i++) {
-				ILayer l = m.getLayer(i);
-				if (l instanceof IFeatureLayer) {
-					IFeatureLayer fl = (IFeatureLayer)l;
-					aliasName = fl.getFeatureClass().getAliasName();
-					if(aliasName != null) {
-						if (aliasName.startsWith("N50_VEG_L") && !roadsAdded ) {
-							m_analyst.addSearch(fl.getFeatureClass(),esriSpatialRelEnum.esriSpatialRelCrosses,"LTEMA");
-							roadsAdded = true;
-						} else {
-							if (aliasName.startsWith("N50_AREAL_F")) {
-								m_analyst.addSearch(fl.getFeatureClass(),esriSpatialRelEnum.esriSpatialRelCrosses,"FTEMA");									
-							}
-						}
-					}
-				}
-			}
-			long endTime = System.currentTimeMillis();
-			System.out.println("RouteCostProps.create: "+(endTime-startTime)+" ms");
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}		
-		*/
 	}
 }
 

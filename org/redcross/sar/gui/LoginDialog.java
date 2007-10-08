@@ -126,9 +126,8 @@ public class LoginDialog extends DiskoDialog {
 	private JButton getOkButton() {
 		if (okButton == null) {
 			try {
-				okButton = new JButton();
+				okButton = DiskoButtonFactory.createSmallButton("OK");
 				okButton.setPreferredSize(new Dimension(100, 50));
-				okButton.setText("OK");
 				okButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
 						fireDialogFinished();
@@ -149,9 +148,8 @@ public class LoginDialog extends DiskoDialog {
 	private JButton getCancelButton() {
 		if (cancelButton == null) {
 			try {
-				cancelButton = new JButton();
+				cancelButton = DiskoButtonFactory.createSmallButton("Avbryt");
 				cancelButton.setPreferredSize(new Dimension(100, 50));
-				cancelButton.setText("Avbryt");
 				cancelButton.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent e) {
 						fireDialogCanceled();

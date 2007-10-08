@@ -13,6 +13,7 @@ import org.redcross.sar.mso.data.IMessageLineIf;
 import org.redcross.sar.mso.data.IPOIIf;
 import org.redcross.sar.util.mso.DTG;
 import org.redcross.sar.util.mso.Position;
+import org.redcross.sar.map.MapUtil;
 
 /**
  * Table model for displaying message lines at top level edit panel
@@ -94,9 +95,20 @@ public class LineListTableModel extends AbstractTableModel
 					Position pos = poi.getPosition();
 					if(pos != null)
 					{
-						lineText = String.format(m_wpMessageLog.getText("ListItemPOI.text"), 
-								receiver, String.format("%1$.3g", pos.getPosition().x), String.format("%1$.3g", pos.getPosition().y),
-								DTG.CalToDTG(line.getOperationTime()));
+						try {
+							String mgrs = MapUtil.getMGRSfromPosition(pos);
+							// get zone
+							String zone = mgrs.subSequence(0, 3).toString();
+							String square = mgrs.subSequence(3, 5).toString();
+							String x = mgrs.subSequence(5, 10).toString();
+							String y = mgrs.subSequence(10, 15).toString();
+							// get text
+							lineText = String.format(m_wpMessageLog.getText("ListItemPOI.text"), 
+									receiver, zone, square, x, y, DTG.CalToDTG(line.getOperationTime()));
+						}
+						catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
 				}
 			}
@@ -110,8 +122,20 @@ public class LineListTableModel extends AbstractTableModel
 					Position pos = line.getLinePOI().getPosition();
 					if(pos != null)
 					{
-						lineText = String.format(m_wpMessageLog.getText("ListItemFinding.text"),
-								type, String.format("%1$.3g", pos.getPosition().x), String.format("%1$.3g", pos.getPosition().y));
+						try {
+							String mgrs = MapUtil.getMGRSfromPosition(pos);
+							// get zone
+							String zone = mgrs.subSequence(0, 3).toString();
+							String square = mgrs.subSequence(3, 5).toString();
+							String x = mgrs.subSequence(5, 10).toString();
+							String y = mgrs.subSequence(10, 15).toString();
+							// get text
+							lineText = String.format(m_wpMessageLog.getText("ListItemFinding.text"), 
+									type, zone, square, x, y);
+						}
+						catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
 				}
 			}

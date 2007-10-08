@@ -5,13 +5,12 @@ package org.redcross.sar.map;
 
 import java.awt.Toolkit;
 import java.awt.Cursor;
-import java.awt.Robot;
-import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.gui.IDrawDialog;
 import org.redcross.sar.gui.FreeHandDialog;
 import org.redcross.sar.map.index.IndexedGeometry;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
@@ -26,7 +25,6 @@ import org.redcross.sar.mso.data.IOperationAreaListIf;
 import org.redcross.sar.mso.data.IRouteIf;
 import org.redcross.sar.mso.data.ISearchAreaIf;
 import org.redcross.sar.mso.data.ISearchAreaListIf;
-import org.redcross.sar.util.mso.GeoList;
 
 import com.esri.arcgis.carto.IBasicMap;
 import com.esri.arcgis.carto.IFeatureLayer;
@@ -50,6 +48,7 @@ import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.geometry.Polygon;
 import com.esri.arcgis.geometry.Polyline;
 import com.esri.arcgis.geometry.SegmentGraph;
+import com.esri.arcgis.geometry.esriSegmentExtension;
 import com.esri.arcgis.interop.AutomationException;
 
 /**
@@ -58,7 +57,7 @@ import com.esri.arcgis.interop.AutomationException;
  * @author kennetgu
  *
  */
-public class FreeHandTool extends AbstractCommandTool {
+public class FreeHandTool extends AbstractCommandTool implements IDrawTool {
 	private static final long serialVersionUID = 1L;
 
 	private boolean isActive = false;
@@ -84,10 +83,8 @@ public class FreeHandTool extends AbstractCommandTool {
 	private SimpleLineSymbol drawSymbol = null;
 	private SimpleLineSymbol flashSymbol = null;
 	private static final int SNAP_TOL_FACTOR = 200;
-	private IAreaIf area = null;
+	private IMsoObjectIf area = null;
 	private IMsoManagerIf.MsoClassCode msoClassCode = null;
-	
-	private Robot robot = null;
 	
 	private boolean m_validatePoint = false;
 
@@ -126,15 +123,7 @@ public class FreeHandTool extends AbstractCommandTool {
 		indexedGeometry = new IndexedGeometry();
 		// dialog
 		dialog = new FreeHandDialog(app, this);
-		dialog.setIsToggable(false);
-		
-		// create robot
-		try {
-			robot = new Robot();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		dialog.setIsToggable(false);		
 	}
 
 	public void onCreate(Object obj) throws IOException, AutomationException {
@@ -159,15 +148,15 @@ public class FreeHandTool extends AbstractCommandTool {
 		searchEnvelope.setWidth(tolerance);
 	}
 
-	public double getSnapTolerance() throws IOException {
-		return searchEnvelope.getHeight();
+	public int getSnapTolerance() throws IOException {
+		return (int)searchEnvelope.getHeight();
 	}
 
 	public void setMsoClassCode(IMsoManagerIf.MsoClassCode msoClassCode) {
 		this.msoClassCode = msoClassCode;
 	}
 
-	public void setArea(IAreaIf area) {
+	public void setArea(IMsoObjectIf area) {
 		this.area = area;
 	}
 
@@ -192,19 +181,6 @@ public class FreeHandTool extends AbstractCommandTool {
 		return polygon;
 	}
 
-	private void moveMouse(Point p) {
-		// create robot
-		try {
-			// transform to screen coordinates
-			Point2D pt = toScreen(p);
-			// move mouse pointer
-			//robot.mouseMove((int)pt.getX(), (int)pt.getY());
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}		
-	}
-	
 	public void onMouseDown(int button, int shift, int x, int y)
 			throws IOException, AutomationException {
 		
@@ -220,8 +196,6 @@ public class FreeHandTool extends AbstractCommandTool {
 		if (pline != null) {
 			pline.densify(getSnapTolerance(), -1);
 			p2 = getNearestPoint(pline, p2);
-			// move mouse
-			moveMouse(p2);
 		}
 		if (pathGeometry == null) {
 			pathGeometry = new Polyline();
@@ -258,8 +232,6 @@ public class FreeHandTool extends AbstractCommandTool {
 		if (pline != null) {
 			pline.densify(getSnapTolerance(), -1);
 			p2 = getNearestPoint(pline, p2);
-			// move mouse
-			moveMouse(p2);
 		}
 		// update drawn path
 		updatePath();
@@ -273,9 +245,22 @@ public class FreeHandTool extends AbstractCommandTool {
 		
 		// get current path and simplify it
 		Polyline polyline = pathGeometry;
-		polyline.simplify();
+
 		// locate polyline
 		polyline.setSpatialReferenceByRef(map.getSpatialReference());
+		
+		// get snappeable layers
+		/*ArrayList<IFeatureLayer> snapTo =((FreeHandDialog)dialog).getSnapableLayers();
+		
+		// snapping?
+		if (snapTo.size()>0) {
+			ArrayList<IIdentify> l = new ArrayList<IIdentify>(snapTo.size()); 
+			for (int i=0;i<snapTo.size();i++) {
+				l.add((IIdentify)snapTo.get(i));
+			}
+			MapUtil.snapPolyLineTo(polyline,l,50);
+		}*/
+		
 		ICmdPostIf cmdPost = app.getMsoModel().getMsoManager().getCmdPost();
 		IMsoObjectIf msoObj = null;
 
@@ -299,17 +284,10 @@ public class FreeHandTool extends AbstractCommandTool {
 			if (area == null) {
 				IAreaListIf areaList = cmdPost.getAreaList();
 				area = areaList.createArea();
-// OLD				area.setGeodata(new GeoList(null));
 			}
-// OLD		GeoList clone = cloneGeoList(area.getGeodata());
-// OLD		clone.add(MapUtil.getMsoRoute(polyline));
-// OLD		area.setGeodata(clone);
             IRouteIf route = cmdPost.getRouteList().createRoute(MapUtil.getMsoRoute(polyline));
-            area.addAreaGeodata(route);
+            ((IAreaIf)area).addAreaGeodata(route);
 			msoObj = area;
-		}
-		else {
-			// save locally
 		}
 		map.setSelected(msoObj, true);
 		reset();
@@ -404,25 +382,25 @@ public class FreeHandTool extends AbstractCommandTool {
 
 	private void draw() throws IOException, AutomationException {
 		if (isActive) {
-		IScreenDisplay screenDisplay = map.getActiveView().getScreenDisplay();
-		screenDisplay.startDrawing(screenDisplay.getHDC(),(short) esriScreenCache.esriNoScreenCache);
-
-		if(isActive) {
-			
-			if (pathGeometry != null && !isMoving) {
-				screenDisplay.setSymbol(drawSymbol);
-				screenDisplay.drawPolyline(pathGeometry);
+			IScreenDisplay screenDisplay = map.getActiveView().getScreenDisplay();
+			screenDisplay.startDrawing(screenDisplay.getHDC(),(short) esriScreenCache.esriNoScreenCache);
+	
+			if(isActive) {
+				
+				if (pathGeometry != null && !isMoving) {
+					screenDisplay.setSymbol(drawSymbol);
+					screenDisplay.drawPolyline(pathGeometry);
+				}
+				if (rubberBand != null) {
+					screenDisplay.setSymbol(drawSymbol);
+					screenDisplay.drawPolyline(rubberBand);
+				}
+				if (snapGeometry != null) {
+					screenDisplay.setSymbol(flashSymbol);
+					screenDisplay.drawPolyline(snapGeometry);
+				}
 			}
-			if (rubberBand != null) {
-				screenDisplay.setSymbol(drawSymbol);
-				screenDisplay.drawPolyline(rubberBand);
-			}
-			if (snapGeometry != null) {
-				screenDisplay.setSymbol(flashSymbol);
-				screenDisplay.drawPolyline(snapGeometry);
-			}
-		}
-		screenDisplay.finishDrawing();
+			screenDisplay.finishDrawing();
 		}
 	}
 
@@ -443,17 +421,17 @@ public class FreeHandTool extends AbstractCommandTool {
 
 	private Point getNearestPoint(Polyline pline, Point point)
 			throws IOException, AutomationException {
-		double minDist = Double.MAX_VALUE;
-		Point nearestPoint = null;
-		for (int i = 0; i < pline.getPointCount(); i++) {
+		//double minDist = Double.MAX_VALUE;
+		IPoint nearestPoint = pline.returnNearestPoint(point, esriSegmentExtension.esriNoExtension);
+		/*for (int i = 0; i < pline.getPointCount(); i++) {
 			Point p = (Point)pline.getPoint(i);
 			double dist = point.returnDistance(p);
 			if (dist < minDist) {
 				minDist = dist;
 				nearestPoint = p;
 			}
-		}
-		return nearestPoint;
+		}*/
+		return (Point)nearestPoint;
 	}
 
 	public void setIsDirty() {
@@ -504,8 +482,8 @@ public class FreeHandTool extends AbstractCommandTool {
 				}
 			}
 		}
-		FreeHandDialog freeHandDialog = (FreeHandDialog)dialog;
-		freeHandDialog.updateLayerSelection(layers);
+		IDrawDialog freeHandDialog = (FreeHandDialog)dialog;
+		freeHandDialog.updateSnapableLayers(layers);
 		setSnapTolerance(map.getActiveView().getExtent().getWidth()/SNAP_TOL_FACTOR);
 		freeHandDialog.setSnapTolerance(getSnapTolerance());
 	}

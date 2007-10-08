@@ -70,7 +70,7 @@ public class FlankTool extends AbstractCommandTool {
                     if (route != null) {
 	    				route.setLayout(getLayout());
 		    			flankFeature.msoGeometryChanged();
-			    		map.partialRefresh(editLayer, null);
+			    		map.refreshLayer(editLayer, null);
 				    }
                 }
             }

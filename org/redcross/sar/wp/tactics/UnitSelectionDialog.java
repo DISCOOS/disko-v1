@@ -61,25 +61,29 @@ public class UnitSelectionDialog extends DiskoDialog implements IMsoLayerEventLi
 	
 	public IUnitIf getSelectedUnit() {
 		JTable table = getUnitTable();
-		int row = table.getSelectedRow();
-		int col = table.getSelectedColumn();
-		if (row > -1 && col > -1) {
-			return (IUnitIf)table.getValueAt(row, col);
+		if(table != null) {
+			int row = table.getSelectedRow();
+			int col = table.getSelectedColumn();
+			if (row > -1 && col > -1) {
+				return (IUnitIf)table.getValueAt(row, col);
+			}
 		}
 		return null;
 	}
 	
 	public void selectedAssignedUnit(IAssignmentIf assignment) {
 		JTable table = getUnitTable();
-		for (int row = 0; row < table.getRowCount(); row++) {
-			for (int col = 0; col < table.getColumnCount(); col++) {
-				IUnitIf unit = (IUnitIf)table.getValueAt(row, col);
-				if (unit != null) {
-					List list = unit.getAssignedAssignments();
-					if (list != null && list.contains(assignment)) {
-						table.setRowSelectionInterval(row, row);
-						table.setColumnSelectionInterval(col, col);
-						return;
+		if(table != null) {
+			for (int row = 0; row < table.getRowCount(); row++) {
+				for (int col = 0; col < table.getColumnCount(); col++) {
+					IUnitIf unit = (IUnitIf)table.getValueAt(row, col);
+					if (unit != null) {
+						List list = unit.getAssignedAssignments();
+						if (list != null && list.contains(assignment)) {
+							table.setRowSelectionInterval(row, row);
+							table.setColumnSelectionInterval(col, col);
+							return;
+						}
 					}
 				}
 			}

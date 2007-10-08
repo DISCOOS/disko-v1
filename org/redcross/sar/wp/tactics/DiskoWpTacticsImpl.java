@@ -23,6 +23,7 @@ import org.redcross.sar.event.IDialogEventListener;
 import org.redcross.sar.event.IMsoLayerEventListener;
 import org.redcross.sar.event.MsoLayerEvent;
 import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.gui.FreeHandDialog;
 import org.redcross.sar.gui.NavBar;
 import org.redcross.sar.gui.POIDialog;
 import org.redcross.sar.gui.SubMenuPanel;
@@ -39,6 +40,7 @@ import org.redcross.sar.map.layer.PlannedAreaLayer;
 import org.redcross.sar.map.layer.SearchAreaLayer;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.IAreaIf;
+import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IAssignmentListIf;
 import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IHypothesisIf;
@@ -52,6 +54,7 @@ import org.redcross.sar.mso.data.IPOIIf.POIType;
 import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
 
+import com.esri.arcgis.display.SimpleLineSymbol;
 import com.esri.arcgis.interop.AutomationException;
 
 /**
@@ -162,8 +165,8 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		myTools.add(NavBar.ToolCommandType.PAN_TOOL);
 		myTools.add(NavBar.ToolCommandType.SELECT_FEATURE_TOOL);
 		myTools.add(NavBar.ToolCommandType.ZOOM_FULL_EXTENT_COMMAND);
-		myTools.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND);
 		myTools.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND);
+		myTools.add(NavBar.ToolCommandType.ZOOM_TO_LAST_EXTENT_FORWARD_COMMAND);
 		myTools.add(NavBar.ToolCommandType.MAP_TOGGLE_COMMAND);
 		myTools.add(NavBar.ToolCommandType.TOC_COMMAND);
 		navBar.showButtons(myTools);
@@ -197,7 +200,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 			list.setSelectedValue(IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA, false);
 		}
 		else {
-			list.setSelectedValue(ISearchIf.SearchSubType.LINE, false);
+			list.setSelectedValue(ISearchIf.SearchSubType.PATROL, false);
 		}
 		NavBar navBar = getApplication().getNavBar();
 		JToggleButton drawButton = navBar.getDrawLineToggleButton();
@@ -255,6 +258,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 				poiDialog.setTypes(poiTypes);
 				drawTool.setMsoClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
 				freeHandTool.setMsoClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
+				
 			}
 			drawTool.setArea(null);
 			freeHandTool.setArea(null);
@@ -415,7 +419,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 				IMsoFeatureLayer msoLayer = (IMsoFeatureLayer)msoLayers.get(i);
 				if (msoLayer.getSelected().size() > 0) {
 					msoLayer.clearSelected();
-					getMap().partialRefresh(msoLayer, null);
+					getMap().refreshSelection(msoLayer, null);
 				}
 			}
 		} catch (AutomationException e) {

@@ -86,7 +86,7 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
 
         panel2.getParent().addComponentListener(this);
 
-        setSelectedStatus(IAssignmentIf.AssignmentStatus.FINISHED);
+        setSelectedStatus(IAssignmentIf.AssignmentStatus.READY);
         handleMsoUpdateEvent(null);
     }
 

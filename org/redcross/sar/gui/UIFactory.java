@@ -47,7 +47,7 @@ public class UIFactory {
 				
 				public void dialogCanceled(DialogEvent e) {
 					loginDialog.setVisible(false);
-					//System.exit(0);
+					System.exit(0);
 				}
 				public void dialogFinished(DialogEvent e) {
 					JComboBox cbox = loginDialog.getRolleComboBox();

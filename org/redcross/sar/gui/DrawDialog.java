@@ -146,7 +146,7 @@ public class DrawDialog extends DiskoDialog {
 		}
 	}
 	
-	public List getSnapableLayers() {
+	public ArrayList<IFeatureLayer> getSnapableLayers() {
 		ArrayList<IFeatureLayer> snapableLayers = new ArrayList<IFeatureLayer>();
 		for (int i = 0; i < checkBoxes.size(); i++) {
 			JCheckBox cb = (JCheckBox)checkBoxes.get(i);

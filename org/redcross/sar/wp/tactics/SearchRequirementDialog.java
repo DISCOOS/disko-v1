@@ -89,7 +89,7 @@ public class SearchRequirementDialog extends DiskoDialog implements IMsoLayerEve
 		getRemarksTextArea().setText(null);
 		getPersonelTextField().setText(null);
 
-		getPrioritySlider().setValue(3);
+		getPrioritySlider().setValue(2);
 		getAccuracySlider().setValue(50);
 	}
 
@@ -278,7 +278,7 @@ public class SearchRequirementDialog extends DiskoDialog implements IMsoLayerEve
 				prioritySlider.setSnapToTicks(true);
 				prioritySlider.setMinimum(1);
 				prioritySlider.setMaximum(3);
-				prioritySlider.setValue(3);
+				prioritySlider.setValue(2);
 				prioritySlider.setPaintTicks(true);
 				prioritySlider.addChangeListener(new javax.swing.event.ChangeListener() {
 					public void stateChanged(javax.swing.event.ChangeEvent e) {

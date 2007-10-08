@@ -1,30 +1,30 @@
 package org.redcross.sar.ds;
 
+import java.lang.Math;
+
 import java.util.Calendar;
 import java.util.ArrayList;
 
 import java.awt.geom.Point2D;
-import java.io.IOException;
 
 import org.redcross.sar.util.mso.Route;
 import org.redcross.sar.util.mso.GeoPos;
 import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.MapUtil;
 
-import com.esri.arcgis.system.Array;
-import com.esri.arcgis.display.IDisplayTransformation;
-import com.esri.arcgis.carto.RasterLayer;
-import com.esri.arcgis.carto.FeatureLayer;
+import com.esri.arcgis.system.IArray;
+import com.esri.arcgis.carto.IRasterLayer;
+import com.esri.arcgis.carto.IIdentify;
 import com.esri.arcgis.carto.IRowIdentifyObjectProxy;
 import com.esri.arcgis.geodatabase.IFeatureProxy;
 import com.esri.arcgis.datasourcesraster.Raster;
 import com.esri.arcgis.geometry.ISpatialReference;
 import com.esri.arcgis.geometry.Point;
+import com.esri.arcgis.geometry.Envelope;
 import com.esri.arcgis.geometry.IPoint;
 import com.esri.arcgis.geometry.Polyline;
-import com.esri.arcgis.geometry.Envelope;
+import com.esri.arcgis.geometry.IEnvelope;
 import com.esri.arcgis.geometry.esriSegmentExtension;
-import com.esri.arcgis.interop.AutomationException;
 
 
 /**
@@ -54,11 +54,11 @@ public class RouteCost {
 	private ArrayList<Double> m_terrainUnitCosts = null;
 	private ArrayList<Double> m_weatherUnitCosts = null;
 	private ArrayList<Double> m_lightUnitCosts = null;
-	private ArrayList<Double> m_cumulativeCosts = null;
-	private ArrayList<Double> m_cumulativeLength = null;
+	private ArrayList<Double> m_cumCost = null;
+	private ArrayList<Double> m_cumDistance = null;
 	private ArrayList<Integer> m_themes = null;
 	private ArrayList<Calendar> m_timeSteps = null;
-	private ArrayList<GeoPos> m_pl = null;
+	private ArrayList<GeoPos> m_positions = null;
 	private Calendar m_t0 = null;
 	private boolean m_isDirty = false;
     
@@ -67,39 +67,41 @@ public class RouteCost {
 	private LightInfo m_info_li = null;
 	private WeatherInfo m_info_wi = null;
 	
-	private Point m_point1 = null;	
-	private Point m_point2 = null;	
 	private Polyline m_polyline = null;
 	
 	private DiskoMap m_map = null;
-	private Envelope m_extent = null;
-	private Envelope m_search = null;
+	private IEnvelope m_extent = null;
+	private IEnvelope m_search = null;
 	private ISpatialReference m_srs = null;
-	private IDisplayTransformation m_transform = null;
 	private Raster m_altitude = null;
-	private FeatureLayer m_roads = null;
-	private FeatureLayer m_surface = null;
+	private IIdentify m_roads = null;
+	private IIdentify m_surface = null;
 	private int m_roadsIndex = 0;
 	private int m_surfaceIndex = 0;
+	private double m_h1 = 0;
 	
 	// properties
-	private RouteCostProp m_p;
-	private RouteCostProp m_sst;
-	private RouteCostProp m_nsd;
-	private RouteCostProp m_ss;
-	private RouteCostProp m_su;
-	private RouteCostProp m_s;
-	private RouteCostProp m_pre;
-	private RouteCostProp m_win;
-	private RouteCostProp m_tem;
-	private RouteCostProp m_w;
-	private RouteCostProp m_li;
+	private RouteCostProp m_p;		// propulsion type
+	private RouteCostProp m_sst;	// snow state type
+	private RouteCostProp m_nsd;	// new snow depth type
+	private RouteCostProp m_ss;		// snow state
+	private RouteCostProp m_su;		// surface type
+	private RouteCostProp m_us;		// upward slope 
+	private RouteCostProp m_eds;	// easy downward slope
+	private RouteCostProp m_sds;	// steep downward slope
+	private RouteCostProp m_pre;	// preciptiation type
+	private RouteCostProp m_win;	// wind type
+	private RouteCostProp m_tem;	// temperature type
+	private RouteCostProp m_w;		// weather
+	private RouteCostProp m_li;		// light 
+	
+	// feature maps
+	private RouteCostFeatureMap m_slopeMap;
+	private RouteCostFeatureMap m_resistanceMap;
 	
 	// arguments
-	private int[] m_arg_su = {0,0}; // {propulsion,snow state} 
-	private int[] m_arg_s = {0,0}; // {propulsion,snow state}
-	private int[] m_arg_w = {0}; // {propulsion}
-	private int[] m_arg_li = {0}; // {propulsion}
+	private int[] m_arg_p = {0,0}; // {propulsion}
+	private int[] m_arg_ps = {0,0}; // {propulsion,snow state} 
 	
 	/**
 	 *  Constructor
@@ -126,7 +128,9 @@ public class RouteCost {
 		m_nsd = m_params.getProp("NSD");
 		m_ss = m_params.getProp("SS");
 		m_su = m_params.getProp("SU");
-		m_s = m_params.getProp("S");
+		m_us = m_params.getProp("US");
+		m_eds = m_params.getProp("EDS");
+		m_sds = m_params.getProp("SDS");
 		m_pre = m_params.getProp("PRE");
 		m_win = m_params.getProp("WIN");
 		m_tem = m_params.getProp("TEM");
@@ -134,24 +138,19 @@ public class RouteCost {
 		m_li = m_params.getProp("LI");
 		
 		try {
-  			// get map spatial reference 
+  			
+			// get map spatial reference 
   			m_srs = map.getSpatialReference();
-  			// create new points
-			m_point1 = new Point();
-			m_point1.setX(0);
-			m_point1.setY(0);
-			m_point1.setSpatialReferenceByRef(MapUtil.getGeographicCS());
-			m_point2 = new Point();
-			m_point2.setX(0);
-			m_point2.setY(0);
-			m_point2.setSpatialReferenceByRef(MapUtil.getGeographicCS());
+			// get feature maps
+  			m_resistanceMap = m_params.getMap("RESISTANCE");
+  			m_slopeMap = m_params.getMap("SLOPE");
 			// create altitude information
-			m_altitude = (Raster)((RasterLayer)m_s.getLayer("ALTITUDE")).getRaster();
+			m_altitude = (Raster)((IRasterLayer)m_slopeMap.getLayer("ALTITUDE")).getRaster();
 			// get surface information
-			m_roads = (FeatureLayer)m_su.getLayer("ROADS");
-			m_surface = (FeatureLayer)m_su.getLayer("SURFACE");
-			m_roadsIndex = m_su.getFieldIndex("ROADS");
-			m_surfaceIndex = m_su.getFieldIndex("SURFACE");
+			m_roads = (IIdentify)m_resistanceMap.getLayer("ROADS");
+			m_surface = (IIdentify)m_resistanceMap.getLayer("SURFACE");
+			m_roadsIndex = m_resistanceMap.getFieldIndex("ROADS");
+			m_surfaceIndex = m_resistanceMap.getFieldIndex("SURFACE");
 			// create search envelope
 			m_search = new Envelope();
 			m_search.putCoords(0, 0, 0, 0);
@@ -187,11 +186,18 @@ public class RouteCost {
 	 *  @param The route to estimate time cost for
 	 */		
 	public void setRoute(Route route) {
+		
 		// save route
 		m_route = route;
 		try {
 			// get polyline
-			m_polyline = MapUtil.getEsriPolyline(m_route,m_map.getSpatialReference());						
+			m_polyline = MapUtil.getEsriPolyline(m_route,m_map.getSpatialReference());	
+			// get positions as array list
+			m_positions = new ArrayList<GeoPos>(m_route.getPositions());			
+			// densify the polyline 
+			double min = 25*Math.sqrt(2)+5;	// minimum length must ensure that only one point
+											// exist in each altitude cell. current cell size
+			densify(min);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -222,12 +228,10 @@ public class RouteCost {
 		// limit propulsion and save
 		m_propulsion = m_p.limitVariable(propulsion);
 		// update arguments
-		m_arg_su[0] = m_p.getIndex(m_propulsion);
-		m_arg_s[0] = m_arg_su[0];
-		m_arg_w[0] = m_arg_su[0];
-		m_arg_li[0] = m_arg_su[0];
+		m_arg_p[0] = m_p.getIndex(m_propulsion);
+		m_arg_ps[0] = m_arg_p[0];
 		// return index
-		return m_arg_su[0];
+		return m_arg_p[0];
 	}
 	
 	/**
@@ -235,10 +239,10 @@ public class RouteCost {
 	 *  
 	 *  @return Returns length of route
 	 */		
-	public double getLength() {
+	public double getDistance() {
 		// return great circle distance?
 		if (!m_isDirty)
-			return m_cumulativeLength.get(m_pl.size() - 2);
+			return m_cumDistance.get(m_positions.size() - 2);
 		else
 			return 0;
 	}	
@@ -248,13 +252,13 @@ public class RouteCost {
 	 *  
 	 *  @return Returns route length at position index
 	 */		
-	public double getLength(int index) {
+	public double getDistance(int index) {
 		// return great circle distance?
 		if (!m_isDirty)
 			if (index == 0)
 				return 0;
 			else
-				return m_cumulativeLength.get(index - 1);
+				return m_cumDistance.get(index - 1);
 		else
 			return 0;
 	}	
@@ -298,7 +302,7 @@ public class RouteCost {
 	public int ete() {
 		// return great circle distance?
 		if (!m_isDirty)
-			return m_cumulativeCosts.get(m_cumulativeCosts.size() - 2).intValue();
+			return m_cumCost.get(m_cumCost.size() - 2).intValue();
 		else
 			return 0;
 	}	
@@ -315,7 +319,7 @@ public class RouteCost {
 			if (index == 0)
 				return 0;
 			else
-				return m_cumulativeCosts.get(index - 1).intValue();
+				return m_cumCost.get(index - 1).intValue();
 		else
 			return 0;
 	}
@@ -327,7 +331,7 @@ public class RouteCost {
 	 */		
 	public Calendar eta() {
 		if (!m_isDirty)
-			return m_timeSteps.get(m_timeSteps.size() -1 );
+			return m_timeSteps.get(m_timeSteps.size()-1);
 		else
 			return null;
 	}
@@ -360,8 +364,10 @@ public class RouteCost {
 		p.setX(match.getPosition().x);
 		p.setY(match.getPosition().y);
 		p.setSpatialReferenceByRef(m_map.getSpatialReference());	
+		
 		// find closest
 		p = m_polyline.returnNearestPoint(p, esriSegmentExtension.esriNoExtension);
+		
 		// update match
 		gp = new GeoPos(p.getX(),p.getY());
 
@@ -385,11 +391,11 @@ public class RouteCost {
 	/**
 	 *  Get the position count in the internal route
 	 *  
-	 *  @return Returns the position count in the internal route
+	 *  @return Returns the position count of the densified route
 	 */		
 	private int getCount() {
 		// get count
-		return m_route.getPositions().size();
+		return m_positions.size();
 	}	
 	
 	/**
@@ -412,37 +418,69 @@ public class RouteCost {
 	}
 	
 	/**
-	 *  Get distance between two positions
+	 *  Densify route
 	 *  
-	 *  @param p1 Start position in desimal degrees
-	 * 	@param p2 Stop position  in desimal degrees
-	 *  @return Returns distance between two positions in desimal degrees
+	 *  @param int min Minimum distance between two points
 	 */		
-	private double getDistance(GeoPos p1, GeoPos p2) {
-		// initialize
-		double d = 0 ;
+	private void densify(double min) {
 		try {
-			/*String mgrs1 = null;
-			String mgrs2 = null;
-			mgrs1 = MapUtil.getMGRSfromPosition(new Position("P1",p1.getPosition()));
-			mgrs2 = MapUtil.getMGRSfromPosition(new Position("P2",p2.getPosition()));
-			System.out.println(mgrs1);
-			System.out.println(mgrs2);
-			// print positions in lon/lat format
-			System.out.println(point1.toString());
-			System.out.println(point2.toString());*/
-			// create positions
-			Point2D.Double point1 = p1.getPosition();
-			Point2D.Double point2 = p2.getPosition();
-			// calculate distance
-			d = MapUtil.greatCircleDistance(point1.y, point1.x, point2.y, point2.x);
+			// initialize
+			double d = 0;
+			double sum = 0;
+			GeoPos p = null;
+			int count = m_polyline.getPointCount();
+			// has points?
+			if(count > 0) {				
+				// get new polyline
+				Polyline newPolyline = new Polyline();				
+				newPolyline.setSpatialReferenceByRef(m_polyline.getSpatialReference());
+				// get new position array
+				ArrayList<GeoPos> newPositions = new ArrayList<GeoPos>();
+				// get first position
+				p = m_positions.get(0);
+				// get first position
+				Point2D.Double p1 = p.getPosition();
+				// add first point to densified polyline
+				newPolyline.addPoint(m_polyline.getPoint(0), null, null);
+				// add first position to densified positions array
+				newPositions.add(p);		
+				// create arrays
+				m_distances = new ArrayList<Double>(count - 2);
+				m_cumDistance = new ArrayList<Double>(count - 2);
+				// loop over all
+				for(int i=1;i<count;i++) {
+					// get next point
+					Point2D.Double p2 = m_positions.get(i).getPosition();
+					// calculate distance
+					d += MapUtil.greatCircleDistance(p1.y, p1.x, p2.y, p2.x);
+					// large or equal minimum length?
+					if(d > min || i == count-1) {						
+						// add segment distance 
+						m_distances.add(d);						
+						// add to cumulative distance
+						sum += d;						
+						// save cumulative cost
+						m_cumDistance.add(sum);						
+						// add to densified polyline
+						newPolyline.addPoint(m_polyline.getPoint(i), null, null);						
+						// add to densified positions array
+						newPositions.add(p);								
+						// reset distanse
+						d = 0;						
+					} 
+					// save current point
+					p1 = p2;
+				}
+				// replace
+				m_polyline = newPolyline;
+				m_positions = newPositions;
+			}
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
-		// return distance
-		return d;			
+		return;
 	}
 
 	/**
@@ -451,20 +489,42 @@ public class RouteCost {
 	 *  If returned slope is positive: uphill.
 	 *  If returned slope is negative: downhill.
 	 *  
-	 *  @param p1 Start position
-	 * 	@param p2 Stop position 
+	 * 	@param i Stop position 
+	 * 	@param d horizontal distance from start position
 	 *  @return Returns slope between two positions
 	 */		
-	private double getSlope(GeoPos p1, GeoPos p2) {
+	private double getSlope(int i, double d) {
 		// initialize
+		double h2 = 0;
 		double s = 0;
 		int[] col = {0};
 		int[] row = {0};
 		try {
-			// get heigth from model
-			m_altitude.mapToPixel(m_point1.getX(), m_point1.getY(), col, row);
-			// get height
-			s = new Double(m_altitude.getPixelValue(0, col[0], row[0]).toString());
+			
+			// update current
+			IPoint p = m_polyline.getPoint(i);
+			// get pixel cell for heigth 2
+			m_altitude.mapToPixel(p.getX(), p.getY(), col, row);
+			// get height 2
+			h2 = Double.valueOf(m_altitude.getPixelValue(0, col[0], row[0]).toString());
+			// get height 1?
+			if (i == 1) {
+				// update current
+				p = m_polyline.getPoint(i);
+				// get pixel cell for heigth 1
+				m_altitude.mapToPixel(p.getX(), p.getY(), col, row);
+				// get height 1
+				m_h1 = Double.valueOf(m_altitude.getPixelValue(0, col[0], row[0]).toString());
+			}				
+			// Calculate slope?
+			if (i > 0 && d > 0) {
+				// calculate hight diffence
+				double h = m_h1 - h2;
+				// calculate
+				s = Math.signum(h)*Math.toDegrees(Math.atan(Math.abs(h/d)));
+			}
+			// save current height
+			m_h1 = h2;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -504,11 +564,11 @@ public class RouteCost {
 	 *  @param i Current position  
 	 *  @return Returns weather unit cost at position i
 	 */		
-	private double getWeatherCost(Calendar t, GeoPos i) {
+	private double getWeatherCost(Calendar t, int i) {
 		// get weather type
 		int wt = getWeatherType(t,i);		
 		// return lookup value
-		return m_w.getValue(wt, m_arg_w, false);
+		return m_w.getValue(wt, m_arg_p, false);
 	}
 	
 	/**
@@ -519,12 +579,12 @@ public class RouteCost {
 	 *  @param tem Temperature type
 	 *  @return Returns weather type
 	 */		
-	private int getWeatherType(Calendar t, GeoPos i) {
+	private int getWeatherType(Calendar t, int i) {
 		// initialize
 		double wt = 0;
 		try {
 			// get point
-			Point2D.Double p = i.getPosition();
+			Point2D.Double p = m_positions.get(i).getPosition();
 			// get forecasted weather at position
 			WeatherInfoPoint wf = m_info_wi.getForecast(t,p.x,p.y);
 			// found?
@@ -549,11 +609,11 @@ public class RouteCost {
 	 *  @param i Current position  
 	 *  @return Returns light unit cost at position i
 	 */		
-	private double getLightCost(Calendar t, GeoPos i) {
+	private double getLightCost(Calendar t, int i) {
 		// get day or night at position and time
 		int lt = getLightType(t,i);				
 		// return lookup value
-		return m_li.getValue(lt, m_arg_li, false);
+		return m_li.getValue(lt, m_arg_p, false);
 	}
 
 	/**
@@ -565,9 +625,9 @@ public class RouteCost {
 	 */		
 	private double getSurfaceCost(int ss, int su) {
 		// update snow state
-		m_arg_su[1] = ss;
+		m_arg_ps[1] = ss;
 		// return lookup value
-		return m_su.getValue(su, m_arg_su, false);
+		return m_su.getValue(su, m_arg_ps, false);
 	}
 
 	/**
@@ -581,11 +641,27 @@ public class RouteCost {
 	 */		
 	private double getSlopeCost(int ss, double s) {
 		// update snow state
-		m_arg_s[1] = ss;
-		// get slope type
-		int st = getSlopeType(s);
-		// return lookup
-		return m_s.getValue(st, m_arg_s, false);			
+		m_arg_ps[1] = ss;
+
+		if(s>=0) {
+			// limit variable and return slope type index
+			int st = (int)m_us.getIndex(s);			
+			// return lookup
+			return m_us.getValue(st, m_arg_ps, false);			
+		}
+		if(s <= 15) {
+			// limit variable and return slope type index
+			int st = (int)m_eds.getIndex(s);			
+			// return lookup
+			return m_eds.getValue(st, m_arg_ps, false);			
+			
+		}
+		else {
+			// limit variable and return slope type index
+			int st = (int)m_sds.getIndex(s);			
+			// return lookup
+			return m_sds.getValue(st, m_arg_ps, false);							
+		}
 	}
 
 	/**
@@ -597,24 +673,23 @@ public class RouteCost {
 	 *  @return Returns resistance type between position pair (pi,i)
 	 */		
 	private int getResistanceType(int i) {
+		// initialize
+		int rt = 0;
 		try {
 			
 			// initialize
 			IFeatureProxy pFeature = null;			
 			IRowIdentifyObjectProxy pRowObj = null;   
 			
-			// save current
-			m_point2 = m_point1;
-			
 			// update current
-			m_point1 = (Point)m_polyline.getPoint(i);
-			
+			IPoint p = m_polyline.getPoint(i);
+						
 			// prepare search envelope
-			m_search.centerAt(m_point1);
+			m_search.centerAt(p);
 			
 			// identify height below point
-			Array arr = (Array)m_roads.identify(m_search);
-			
+			IArray arr = m_roads.identify(m_search);
+						
 			// found road?
 			if (arr != null) {
 			
@@ -626,16 +701,16 @@ public class RouteCost {
 				int map = Integer.valueOf(pFeature.getValue(m_roadsIndex).toString());
 				
 				// get variable index
-				int index = m_su.getIndexFromMap(map);
+				rt = m_resistanceMap.getIndexFromMap(map);
 				
 				// get feature value
-				m_themes.add(index);
+				m_themes.add(rt);
 			
 			} 
 			else {
 			
 				// identify surface below point
-				arr = (Array)m_surface.identify(m_search);
+				arr = (IArray)m_surface.identify(m_search);
 				
 				// found anything?
 				if (arr != null) {
@@ -648,10 +723,10 @@ public class RouteCost {
 					int map = Integer.valueOf(pFeature.getValue(m_surfaceIndex).toString());
 					
 					// get variable index
-					int index = m_su.getIndexFromMap(map);
+					rt = m_resistanceMap.getIndexFromMap(map);
 					
 					// get feature value
-					m_themes.add(index);
+					m_themes.add(rt);
 				
 				}
 			}
@@ -660,20 +735,9 @@ public class RouteCost {
 			e.printStackTrace();
 		}
 		// return default
-		return 0;
+		return rt;
 	}
 	
-	/**
-	 *  Get slope type index
-	 *  
-	 *  @param s Slope angle between position pair (pi,i)
-	 *  @return Returns slope type between position pair (pi,i)
-	 */		
-	private int getSlopeType(double s) {
-		// limit variable and return slope type index
-		return (int)m_s.getIndex(s);
-	}	
-
 	/**
 	 *  Get snow state index at position i
 	 *  
@@ -686,7 +750,7 @@ public class RouteCost {
 		double st = 0;
 		try {
 			// get position
-			Point2D.Double p = m_pl.get(i).getPosition();
+			Point2D.Double p = m_positions.get(i).getPosition();
 			// get forecasted snow state at position
 			SnowInfoPoint sf = m_info_si.getForecast(t,p.x,p.y);
 			// found?
@@ -710,12 +774,12 @@ public class RouteCost {
 	 *  @param i Current position  
 	 *  @return Returns light type at position and time
 	 */		
-	private int getLightType(Calendar t, GeoPos i) {
+	private int getLightType(Calendar t, int i) {
 		// initialize
 		double lt = 0;
 		try {
 			// get point
-			Point2D.Double p = i.getPosition();
+			Point2D.Double p = m_positions.get(i).getPosition();
 			// get forecasted light at position
 			LightInfoPoint lf = m_info_li.getForecast(t,p.x,p.y);
 			// found?
@@ -728,42 +792,6 @@ public class RouteCost {
 			e.printStackTrace();
 		}
 		return (int)lt;
-	}
-
-	/**
-	 *  identify point
-	 */		
-	private void identify(int i) throws IOException, AutomationException {
-		
-		/*
-		// initialize
-		IFeatureProxy pFeature = null;			
-		IRowIdentifyObjectProxy pRowObj = null;   
-		
-		// save current
-		m_point2 = m_point1;
-		
-		// update current
-		m_point1 = (Point)m_polyline.getPoint(i);
-		
-		// get field index
-		int index = m_surface.getFields().findField("FTEMA");
-
-		// identify surface below point
-		Array arr = (Array)m_surface.identify(m_point1);
-		
-		// found anything?
-		if (arr.getCount()>0) {
-		
-			// Get the feature that was identified by casting to IRowIdentifyObject   
-			pRowObj = new IRowIdentifyObjectProxy(arr.getElement(0));   
-			pFeature = new IFeatureProxy(pRowObj.getRow());
-			
-			// get feature value
-			m_themes.add((Double)pFeature.getValue(index));
-		
-		}*/
-		
 	}
 	
 	/**
@@ -808,13 +836,10 @@ public class RouteCost {
 	private double createEstimate(Calendar t0) throws Exception  {
 
 		// initialize
-		GeoPos i  = null;			// current slope
-		GeoPos pi = null;			// previous position
 		double d = 0;				// distance between previous and current position
 		double s = 0;				// slope between previous and current position
 		Calendar t = null;			// set current time
 		double cost = 0;			// cumulative time cost in seconds
-		double length = 0;			// route length in meters
 		double utc = 0;				// unit terrain cost in seconds
 		double uwc = 0;				// unit weather cost in seconds
 		double ulc = 0;				// unit light cost in seconds
@@ -824,52 +849,43 @@ public class RouteCost {
 		int count = getCount();
 		
 		// create objects
-		m_distances = new ArrayList<Double>(count - 2);
 		m_slopes = new ArrayList<Double>(count - 2);
-		m_cumulativeCosts = new ArrayList<Double>(count - 2);
-		m_cumulativeLength = new ArrayList<Double>(count - 2);
+		m_cumCost = new ArrayList<Double>(count - 2);
 		m_terrainUnitCosts = new ArrayList<Double>(count - 2);
 		m_weatherUnitCosts = new ArrayList<Double>(count - 2);
 		m_lightUnitCosts = new ArrayList<Double>(count - 2);
 		m_timeSteps = new ArrayList<Calendar>(count - 1);
 		m_themes = new ArrayList<Integer>(count);
-
 						
-		// get positions as array list
-		m_pl = new ArrayList<GeoPos>(m_route.getPositions());
-		
-		// initialize time
+		// initialize
 		m_t0 = t0;
+		m_h1 = 0;
 			
 		// update local time
 		t = t0;
 		
 		// loop over all positions
-		for(int j = 0; j < count; j++){
-			
-			// get position
-			i = m_pl.get(j);
+		for(int i = 0; i < count; i++){
 			
 			// set to list
 			m_timeSteps.add(t);
 			
 			// valid paramter?
-			if(pi != null) {
+			if(i > 0) {
 
+				// get distance
+				d = m_distances.get(i-1);
+				
+				// get slope angle
+				s = getSlope(i,d);
+				
 				// get current time
 				t.add(Calendar.SECOND, (int)cost);
 				
-				// get distance and slope angle
-				d = getDistance(pi,i);
-				s = getSlope(pi,i);
-				
-				// update segment distance
-				m_distances.add(d);
-				
 				// estimate unit costs
-				utc = getTerrainCost(s,t,j);
-				uwc = getWeatherCost(t,pi);
-				ulc = getLightCost(t,pi);
+				utc = getTerrainCost(s,t,i);
+				uwc = getWeatherCost(t,i-1);
+				ulc = getLightCost(t,i-1);
 				
 				// save unit costs
 				m_terrainUnitCosts.add(utc);
@@ -883,16 +899,91 @@ public class RouteCost {
 				cost += cd;
 				
 				// save cumulative cost
-				m_cumulativeCosts.add(cost);
+				m_cumCost.add(cost);
 				
-				// add segment length
-				length += d;
+			}
+		}						
+
+		// reset flag
+		m_isDirty = false;			
+
+		// return estimated cost
+		return cost;
+		
+	}	
+	
+	/**
+	 *  Create spatial estimate information
+	 */		
+	private double spatialEstimate(Calendar t0) throws Exception  {
+
+		// initialize
+		double d = 0;				// distance between previous and current position
+		double s = 0;				// slope between previous and current position
+		Calendar t = null;			// set current time
+		double cost = 0;			// cumulative time cost in seconds
+		double utc = 0;				// unit terrain cost in seconds
+		double uwc = 0;				// unit weather cost in seconds
+		double ulc = 0;				// unit light cost in seconds
+		double cd = 0;				// segment time cost in seconds
+	
+		// get point count
+		int count = getCount();
+		
+		// create objects
+		m_slopes = new ArrayList<Double>(count - 2);
+		m_cumCost = new ArrayList<Double>(count - 2);
+		m_terrainUnitCosts = new ArrayList<Double>(count - 2);
+		m_weatherUnitCosts = new ArrayList<Double>(count - 2);
+		m_lightUnitCosts = new ArrayList<Double>(count - 2);
+		m_timeSteps = new ArrayList<Calendar>(count - 1);
+		m_themes = new ArrayList<Integer>(count);
+						
+		// initialize
+		m_t0 = t0;
+		m_h1 = 0;
+			
+		// update local time
+		t = t0;
+		
+		// loop over all positions
+		for(int i = 0; i < count; i++){
+			
+			// set to list
+			m_timeSteps.add(t);
+			
+			// valid paramter?
+			if(i > 0) {
+
+				// get distance
+				d = m_distances.get(i-1);
+				
+				// get slope angle
+				s = getSlope(i,d);
+				
+				// get current time
+				t.add(Calendar.SECOND, (int)cost);
+				
+				// estimate unit costs
+				utc = getTerrainCost(s,t,i);
+				uwc = getWeatherCost(t,i-1);
+				ulc = getLightCost(t,i-1);
+				
+				// save unit costs
+				m_terrainUnitCosts.add(utc);
+				m_weatherUnitCosts.add(uwc);
+				m_lightUnitCosts.add(ulc);
+				
+				// calculate segment cost
+				cd = d*(utc + uwc + ulc);
+				
+				// add segment cost
+				cost += cd;
 				
 				// save cumulative cost
-				m_cumulativeLength.add(length);
+				m_cumCost.add(cost);
+				
 			}
-			// update last position
-			pi = i;
 		}						
 
 		// reset flag
@@ -914,7 +1005,6 @@ public class RouteCost {
 		double d = 0;				// distance between previous and current position
 		Calendar t = null;			// set current time
 		double cost = 0;			// cumulative time cost in seconds
-		double length = 0;			// route length in meters
 		double utc = 0;				// unit terrain cost in seconds
 		double uwc = 0;				// unit weather cost in seconds
 		double ulc = 0;				// unit light cost in seconds
@@ -930,7 +1020,7 @@ public class RouteCost {
 		for(int j = offset; j < count; j++){
 			
 			// get position
-			i = m_pl.get(j);
+			i = m_positions.get(j);
 			
 			// set to list
 			m_timeSteps.set(j,t);
@@ -956,13 +1046,8 @@ public class RouteCost {
 				cost += cd;
 				
 				// save cumulative cost
-				m_cumulativeCosts.set(j - 1,cost);
+				m_cumCost.set(j - 1,cost);
 				
-				// add segment length
-				length += d;
-				
-				// save cumulative cost
-				m_cumulativeLength.set(j - 1,length);
 			}
 			// update last position
 			pi = i;

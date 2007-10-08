@@ -1,5 +1,6 @@
 package org.redcross.sar.wp.messageLog;
 
+import org.redcross.sar.map.MapUtil;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.*;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
@@ -173,10 +174,20 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
         					Position pos = poi.getPosition();
         					if(pos != null)
         					{
-        						lineText = String.format(m_wpModule.getText("ListItemPOI.text"),
-            							receiver,
-            							String.format("%1$.3g", pos.getPosition().x), String.format("%1$.3g", pos.getPosition().y),
-            							DTG.CalToDTG(line.getOperationTime()));	
+        						try {
+        							String mgrs = MapUtil.getMGRSfromPosition(pos);
+        							// get zone
+        							String zone = mgrs.subSequence(0, 3).toString();
+        							String square = mgrs.subSequence(3, 5).toString();
+        							String x = mgrs.subSequence(5, 10).toString();
+        							String y = mgrs.subSequence(10, 15).toString();
+        							// get text
+        							lineText = String.format(m_wpModule.getText("ListItemPOI.text"), 
+        									receiver, zone, square, x, y, DTG.CalToDTG(line.getOperationTime()));
+        						}
+        						catch (Exception e) {
+        							e.printStackTrace();
+        						}
         					}
         				}
         			}
@@ -190,8 +201,20 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
         					Position pos = line.getLinePOI().getPosition();
         					if(pos != null)
         					{
-        						lineText = String.format(m_wpModule.getText("ListItemFinding.text"),
-            							type, String.format("%1$.3g", pos.getPosition().x), String.format("%1$.3g", pos.getPosition().y));
+        						try {
+        							String mgrs = MapUtil.getMGRSfromPosition(pos);
+        							// get zone
+        							String zone = mgrs.subSequence(0, 3).toString();
+        							String square = mgrs.subSequence(3, 5).toString();
+        							String x = mgrs.subSequence(5, 10).toString();
+        							String y = mgrs.subSequence(10, 15).toString();
+        							// get text
+        							lineText = String.format(m_wpModule.getText("ListItemFinding.text"), 
+        									type, zone, square, x, y);
+        						}
+        						catch (Exception e) {
+        							e.printStackTrace();
+        						}
         					}
         				}
         			}

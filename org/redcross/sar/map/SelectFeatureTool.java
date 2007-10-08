@@ -58,7 +58,7 @@ public class SelectFeatureTool extends AbstractCommandTool {
 				IFeature feature = search(fc, p);
 				if (feature != null && feature instanceof IMsoFeature) {
 					layer.setSelected((IMsoFeature)feature, true);
-					map.partialRefresh(layer, null);
+					map.refreshSelection(feature, null);
 					break;
 				}
 			}
