@@ -30,6 +30,8 @@ public class DiskoButtonFactory
 	private static Properties m_properties = null;
 	private final static ResourceBundle m_unitResources = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Unit");
 	
+	private final static Font BUTTON_FONT = new Font("TableButtonFont", Font.BOLD, 12);
+	
 	public enum ButtonType
 	{
 		CancelButton,
@@ -141,6 +143,8 @@ public class DiskoButtonFactory
 	{
 		JButton button = new JButton();
 		
+		button.setFont(BUTTON_FONT);
+		
 		button.setMinimumSize(SMALL_BUTTON_SIZE);
 		button.setPreferredSize(SMALL_BUTTON_SIZE);
 		button.setMaximumSize(SMALL_BUTTON_SIZE);
@@ -243,8 +247,6 @@ public class DiskoButtonFactory
 		button.setMaximumSize(LARGE_BUTTON_SIZE);
 
 		button.setText(assignment.getTypeText()+ " " + assignment.getNumber());
-//		IconRenderer.AssignmentIcon icon = new IconRenderer.AssignmentIcon(assignment, false, null);
-//		button.setIcon(icon);
 
 		return button;
 	}
@@ -275,7 +277,7 @@ public class DiskoButtonFactory
 	public static JButton createTableButton(String text)
 	{
 		JButton button = new JButton(text);
-		button.setFont(new Font("TableButtonFont", Font.BOLD, 12));
+		button.setFont(BUTTON_FONT);
 		button.setBorder(null);
 		
 		button.setMinimumSize(TABLE_BUTTON_SIZE);
@@ -290,6 +292,8 @@ public class DiskoButtonFactory
 	public static JToggleButton createSmallToggleButton()
 	{
 		JToggleButton button = new JToggleButton();
+		
+		button.setFont(BUTTON_FONT);
 
 		button.setMinimumSize(SMALL_BUTTON_SIZE);
 		button.setPreferredSize(SMALL_BUTTON_SIZE);

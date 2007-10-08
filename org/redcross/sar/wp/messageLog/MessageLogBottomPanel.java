@@ -17,6 +17,8 @@ import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.util.mso.DTG;
 
 import javax.swing.*;
+import javax.swing.table.JTableHeader;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,8 +36,8 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 {
 	private static final long serialVersionUID = 1L;
 
-	public final static int PANEL_HEIGHT = (DiskoButtonFactory.SMALL_BUTTON_SIZE.height) * 3 + 20;
-	public final static int SMALL_PANEL_WIDTH = 60;
+	public final static int PANEL_HEIGHT = (DiskoButtonFactory.SMALL_BUTTON_SIZE.height) * 3 + 24;
+	public final static int SMALL_PANEL_WIDTH = DiskoButtonFactory.SMALL_BUTTON_SIZE.width;
 
 	private final static String EMPTY_PANEL_ID = "EMPTY_PANEL";
 	private final static String TEXT_PANEL_ID = "TEXT_PANEL";
@@ -108,7 +110,6 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
     private JToggleButton  m_changeToButton;
 
     private JPanel m_messagePanel;
-    private JLabel m_messagePanelTopLabel;
 
     private JPanel m_buttonRow;
 	private static JToggleButton  m_textButton;
@@ -153,36 +154,23 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
     /**
 	 * Initialize GUI components
 	 */
-	public void initialize()
+	public void initialize(JTable logTable)
 	{
 		initButtons();
-    	initPanels();
+    	initPanels(logTable);
     	initComponents();
 	}
 
-    private JPanel createPanel(int width, int height, String labelString)
+    private JPanel createPanel(int width, int height)
     {
     	JPanel panel = new JPanel();
-    	panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+    	panel.setLayout(new BorderLayout());
 
     	panel.setMinimumSize(new Dimension(width, height));
     	panel.setPreferredSize(new Dimension(width, height));
     	panel.setMaximumSize(new Dimension(width, height));
 
-    	// Top row label
-        JLabel label = new JLabel(labelString);
-        label.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        panel.add(label);
     	return panel;
-    }
-
-    private JToggleButton createChangeButton()
-    {
-    	JToggleButton  button = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("ChangeButton.text"),
-    			m_wpMessageLog.getText("ChangeButton.icon"));
-        button.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-        return button;
     }
 
     private ChangeDTGDialog getChangeDTGDialog()
@@ -331,81 +319,74 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 		}
 	}
 
-    private void initPanels()
+    private void initPanels(JTable logTable)
     {
     	this.setLayout(new GridBagLayout());
     	GridBagConstraints gbc = new GridBagConstraints();
     	gbc.fill = GridBagConstraints.BOTH;
-    	gbc.weightx = 0.0;
-    	gbc.weighty = 1.0;
+    	gbc.weightx = 1.0;
+    	gbc.weighty = 0.0;
     	gbc.gridx = 0;
     	gbc.gridy = 0;
+    	
+    	// Add table header
+    	gbc.gridwidth = 15;
+    	JTableHeader header = logTable.getTableHeader();
+    	this.add(header, gbc);
+    	logTable.setTableHeader(null);
+    	
+    	gbc.gridwidth = 1;
+    	gbc.weighty = 1.0;
+    	gbc.weightx = 0.0;
 
     	// Nr panel
-        m_nrPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT, m_wpMessageLog.getText("MessagePanelNrLabel.text"));
-        m_nrPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
+        m_nrPanel = createPanel(SMALL_PANEL_WIDTH - 2, PANEL_HEIGHT - header.getHeight());
         m_nrLabel = new JLabel();
-        m_nrLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        m_nrPanel.add(m_nrLabel);
-        m_nrPanel.add(Box.createVerticalGlue());
-        Dimension nrBoxDimension = new Dimension(DiskoButtonFactory.SMALL_BUTTON_SIZE);
-        nrBoxDimension.width = SMALL_PANEL_WIDTH/2;
-        JComponent nrButtonBox = (JComponent)Box.createRigidArea(nrBoxDimension);
-        nrButtonBox.setAlignmentX(Component.LEFT_ALIGNMENT);
-        m_nrPanel.add(nrButtonBox);
+        m_nrPanel.add(m_nrLabel, BorderLayout.CENTER);
+        m_nrPanel.add(Box.createRigidArea(DiskoButtonFactory.SMALL_BUTTON_SIZE), BorderLayout.SOUTH);
+        gbc.gridy = 1;
         this.add(m_nrPanel, gbc);
         gbc.gridx++;
-        this.add(new JSeparator(SwingConstants.VERTICAL), gbc);
+        this.add(new JSeparator(JSeparator.VERTICAL), gbc);
 
         // DTG panel
-        m_dtgPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT, m_wpMessageLog.getText("MessagePanelDTGLabel.text"));
-        m_dtgPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
+        m_dtgPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT - header.getHeight());
         m_dtgLabel = new JLabel();
-        m_dtgPanel.add(m_dtgLabel);
-        m_dtgPanel.add(Box.createVerticalGlue());
-        m_dtgPanel.add(m_changeDTGButton);
+        m_dtgPanel.add(m_dtgLabel, BorderLayout.CENTER);
+        m_dtgPanel.add(m_changeDTGButton, BorderLayout.SOUTH);
         gbc.gridx++;
         this.add(m_dtgPanel, gbc);
         gbc.gridx++;
-        this.add(new JSeparator(SwingConstants.VERTICAL), gbc);
-
+        this.add(new JSeparator(JSeparator.VERTICAL), gbc);
+        
         // From panel
-        gbc.gridx++;
-        m_fromPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT, m_wpMessageLog.getText("MessagePanelFromLabel.text"));
-        m_fromPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
+        m_fromPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT - header.getHeight());
         m_fromLabel = new JLabel();
-        m_fromPanel.add(m_fromLabel);
-        m_fromPanel.add(Box.createVerticalGlue());
-        m_fromPanel.add(m_changeFromButton);
+        m_fromPanel.add(m_fromLabel, BorderLayout.CENTER);
+        m_fromPanel.add(m_changeFromButton, BorderLayout.SOUTH);
         gbc.gridx++;
         this.add(m_fromPanel, gbc);
         gbc.gridx++;
-        this.add(new JSeparator(SwingConstants.VERTICAL), gbc);
-
+        this.add(new JSeparator(JSeparator.VERTICAL), gbc);
+        
         // To panel
-        m_toPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT, m_wpMessageLog.getText("MessagePanelToLabel.text"));
-        m_toPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
+        m_toPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT - header.getHeight());
         m_toLabel = new JLabel();
-        m_toPanel.add(m_toLabel);
-        m_toPanel.add(Box.createVerticalGlue());
-        m_toPanel.add(m_changeToButton);
+        m_toPanel.add(m_toLabel, BorderLayout.CENTER);
+        m_toPanel.add(m_changeToButton, BorderLayout.SOUTH);
         gbc.gridx++;
         this.add(m_toPanel, gbc);
         gbc.gridx++;
-        this.add(new JSeparator(SwingConstants.VERTICAL), gbc);
+        this.add(new JSeparator(JSeparator.VERTICAL), gbc);
 
         // Message panel
         gbc.weightx = 1.0;
         m_messagePanel = new JPanel();
         BoxLayout boxLayout = new BoxLayout(m_messagePanel, BoxLayout.Y_AXIS);
         m_messagePanel.setLayout(boxLayout);
-        m_messagePanelTopLabel = new JLabel(m_wpMessageLog.getText("MessagePanelTextLabel.text"));
-        m_messagePanelTopLabel.setAlignmentX(0.0f);
-        m_messagePanel.add(m_messagePanelTopLabel);
-        m_messagePanel.add(new JSeparator(SwingConstants.HORIZONTAL));
         m_cardsPanel = new JPanel();
         m_cardsPanel.setLayout(new CardLayout());
-        m_cardsPanel.setPreferredSize(new Dimension(600, 120));
+        m_cardsPanel.setPreferredSize(new Dimension(600, PANEL_HEIGHT - header.getHeight()));
         m_cardsPanel.setAlignmentX(0.0f);
         m_cardsPanel.add(new JPanel(), EMPTY_PANEL_ID);
         CardLayout layout = (CardLayout)m_cardsPanel.getLayout();
@@ -421,32 +402,35 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
         this.add(m_messagePanel, gbc);
         gbc.weightx = 0.0;
         gbc.gridx++;
-        this.add(new JSeparator(SwingConstants.VERTICAL), gbc);
+        this.add(new JSeparator(JSeparator.VERTICAL), gbc);
 
         // Task panel
         gbc.weightx = 0.0;
-        m_taskPanel = createPanel(2*SMALL_PANEL_WIDTH, PANEL_HEIGHT, m_wpMessageLog.getText("MessagePanelTaskLabel.text"));
-        m_taskPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
+        m_taskPanel = createPanel(2*SMALL_PANEL_WIDTH - 1, PANEL_HEIGHT - header.getHeight());
         m_taskLabel = new JLabel();
-        m_taskPanel.add(m_taskLabel);
-        m_taskPanel.add(Box.createVerticalGlue());
-        m_taskPanel.add(m_changeTasksButton);
+        m_taskPanel.add(m_taskLabel, BorderLayout.CENTER);
+        JPanel taskButtonPanel = new JPanel();
+        taskButtonPanel.setLayout(new BoxLayout(taskButtonPanel, BoxLayout.PAGE_AXIS));
+        taskButtonPanel.setBorder(null);
+        taskButtonPanel.add(m_changeTasksButton);
+        m_taskPanel.add(taskButtonPanel, BorderLayout.SOUTH);
         gbc.gridx++;
         this.add(m_taskPanel, gbc);
         gbc.gridx++;
-        this.add(new JSeparator(SwingConstants.VERTICAL), gbc);
-
+        this.add(new JSeparator(JSeparator.VERTICAL), gbc);
+        
+        // Fill to match table scroll-bar
+        gbc.gridx++;
+        this.add(Box.createRigidArea(new Dimension(43, 10)), gbc);
+        
         // Status panel
-        m_statusPanel = new JPanel();
-        m_statusPanel.setLayout(new BoxLayout(m_statusPanel, BoxLayout.Y_AXIS));
-        m_statusPanel.setMinimumSize(new Dimension(SMALL_PANEL_WIDTH + 43, PANEL_HEIGHT));
-        m_statusPanel.setPreferredSize(new Dimension(SMALL_PANEL_WIDTH + 43, PANEL_HEIGHT));
-        m_statusPanel.setMaximumSize(new Dimension(SMALL_PANEL_WIDTH + 43, PANEL_HEIGHT));
-        m_statusPanel.add(new JLabel(" "));
-        m_statusPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
-        m_statusPanel.add(m_cancelStatusButton);
-        m_statusPanel.add(m_waitEndStatusButton);
-        m_statusPanel.add(m_finishedStatusButton);
+        m_statusPanel = createPanel(SMALL_PANEL_WIDTH + 2, PANEL_HEIGHT - header.getHeight());
+        JPanel actionButtonPanel = new JPanel();
+        actionButtonPanel.setLayout(new BoxLayout(actionButtonPanel, BoxLayout.PAGE_AXIS));
+        actionButtonPanel.add(m_cancelStatusButton);
+        actionButtonPanel.add(m_waitEndStatusButton);
+        actionButtonPanel.add(m_finishedStatusButton);
+        m_statusPanel.add(actionButtonPanel, BorderLayout.SOUTH);
         gbc.gridx++;
         this.add(m_statusPanel, gbc);
     }
@@ -499,7 +483,7 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 	public void newMessageSelected(int messageNr)
 	{
 		// Have user confirm message overwrite
-		if(m_messageDirty)
+		if(m_currentMessage != null && m_currentMessage.getNumber() != messageNr && m_messageDirty)
 		{
 
 			Object[] options = {m_wpMessageLog.getText("yes.text"), m_wpMessageLog.getText("no.text")};
@@ -742,7 +726,8 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 
     private JToggleButton createChangeDtgButton()
     {
-    	m_changeDTGButton = createChangeButton();
+    	m_changeDTGButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("DTGButton.text"));
+    	m_changeDTGButton.setAlignmentY(Component.BOTTOM_ALIGNMENT);
     	m_changeDTGButton.addActionListener(new ActionListener()
     	{
     		// Display the change DTG dialog when button is pressed
@@ -772,7 +757,8 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
     {
     	if(m_changeTasksButton == null)
     	{
-    		m_changeTasksButton = createChangeButton();
+    		m_changeTasksButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("TasksButton.text"));
+    		m_changeTasksButton.setAlignmentY(Component.BOTTOM_ALIGNMENT);
     		m_changeTasksButton.addActionListener(new ActionListener()
     		{
 				public void actionPerformed(ActionEvent e)
@@ -806,7 +792,8 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
     {
     	if(m_changeFromButton == null)
     	{
-    		m_changeFromButton = createChangeButton();
+    		m_changeFromButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("FromButton.text"));
+    		m_changeFromButton.setAlignmentY(Component.BOTTOM_ALIGNMENT);
     		m_changeFromButton.addActionListener(new ActionListener()
     		{
 				public void actionPerformed(ActionEvent arg0)
@@ -844,7 +831,8 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
     {
     	if(m_changeToButton == null)
     	{
-    		m_changeToButton = createChangeButton();
+    		m_changeToButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("ToButton.text"));
+    		m_changeToButton.setAlignmentY(Component.BOTTOM_ALIGNMENT);
     		m_changeToButton.addActionListener(new ActionListener()
     		{
 				public void actionPerformed(ActionEvent e)
@@ -890,8 +878,7 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 
     private void createDeleteButton()
 	{
-    	m_deleteButton = DiskoButtonFactory.createSmallButton(m_wpMessageLog.getText("DeleteButton.text"),
-    			m_wpMessageLog.getText("DeleteButton.icon"));
+    	m_deleteButton = DiskoButtonFactory.createSmallButton(m_wpMessageLog.getText("DeleteButton.text"));
 		m_deleteButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -952,13 +939,11 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 
 	private void createListButton()
 	{
-		m_listButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("ListButton.text"),
-				m_wpMessageLog.getText("ListButton.icon"));
+		m_listButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("ListButton.text"));
 		m_listButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelListLabel.text"));
 				getMessageListPanel();
 				hideEditPanels();
 
@@ -975,8 +960,7 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 
 	private void createCompletedButton()
 	{
-		m_completedButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("CompletedButton.text")/*,
-				m_wpMessageLog.getText("CompletedButton.icon")*/);
+		m_completedButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("CompletedButton.text"));
 		m_completedButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -1003,7 +987,6 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 				}
 				else
 				{
-					m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelCompletedLabel.text"));
 					getCompletedPanel();
 					m_currentMessageLineType = MessageLineType.COMPLETE;
 
@@ -1019,8 +1002,7 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 
 	private void createStartedButton()
 	{
-		m_startButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("StartedButton.text")/*,
-				m_wpMessageLog.getText("StartedButton.icon")*/);
+		m_startButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("StartedButton.text"));
 		m_startButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -1047,7 +1029,6 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 				}
 				else
 				{
-					m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelStartedLabel.text"));
 					getStartedPanel();
 					m_currentMessageLineType = MessageLineType.STARTED;
 
@@ -1063,8 +1044,7 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 
 	private void createAssignedButton()
 	{
-		m_assignButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("AssignedButton.text")/*,
-				m_wpMessageLog.getText("AssignedButton.icon")*/);
+		m_assignButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("AssignedButton.text"));
 		m_assignButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -1093,7 +1073,6 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 				else
 				{
 					// Task can be changed
-					m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelAssignedLabel.text"));
 					getAssignedPanel();
 					m_currentMessageLineType = MessageLineType.ASSIGNED;
 
@@ -1235,13 +1214,11 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 
 	private void createFindingButton()
 	{
-		m_findingButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("FindingButton.text"),
-				m_wpMessageLog.getText("FindingButton.icon"));
+		m_findingButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("FindingButton.text"));
 		m_findingButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelFindingLabel.text"));
 				getMessageFindingPanel();
 				hideEditPanels();
 				m_currentMessageLineType = MessageLineType.FINDING;
@@ -1259,13 +1236,11 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 
 	private void createPositionButton()
 	{
-		m_positionButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("PositionButton.text"),
-				m_wpMessageLog.getText("PositionButton.icon"));
+		m_positionButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("PositionButton.text"));
 		m_positionButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelPositionLabel.text"));
 				getMessagePOIPanel();
 				hideEditPanels();
 				m_currentMessageLineType = MessageLineType.POI;
@@ -1283,13 +1258,11 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 
 	private void createTextButton()
 	{
-		m_textButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("TextButton.text"),
-				m_wpMessageLog.getText("TextButton.icon"));
+		m_textButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("TextButton.text"));
 		m_textButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				m_messagePanelTopLabel.setText(m_wpMessageLog.getText("MessagePanelTextLabel.text"));
 				getMessageTextPanel();
 				hideEditPanels();
 				m_currentMessageLineType = MessageLineType.TEXT;

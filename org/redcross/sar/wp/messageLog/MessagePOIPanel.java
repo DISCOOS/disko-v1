@@ -20,7 +20,6 @@ import org.redcross.sar.util.mso.Position;
 
 import javax.swing.*;
 
-import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -39,7 +38,6 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 	
 	protected JButton m_okButton = null;
 	protected JButton m_cancelButton = null;
-	protected JToggleButton m_showInMapButton = null;
 	protected MGRSField m_mgrsField;
 	protected JLabel m_poiTypeLabel = null;
 	protected JComboBox m_poiTypesComboBox = null;
@@ -176,28 +174,6 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 				revertPOI();
 			}
 		});
-
-		m_showInMapButton = DiskoButtonFactory.createSmallToggleButton(m_wpMessageLog.getText("ShowInMapButton.text"),
-				m_wpMessageLog.getText("ShowInMapButton.icon"));
-		m_showInMapButton.setAlignmentY(Component.TOP_ALIGNMENT);
-		m_showInMapButton.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				// Show/hide map
-				JToggleButton button = (JToggleButton)e.getSource();
-				if(button.isSelected())
-				{
-					MessageLogPanel.showMap();
-					showPOI(true);
-				}
-				else
-				{
-					MessageLogPanel.hideMap();
-					showPOI(false);
-				}
-			}
-		});
 	}
 
 	/**
@@ -298,20 +274,13 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 		typePanel.add(m_poiTypesComboBox);
 		this.add(typePanel, gbc);
 		updatePOITypes();
-
+		
+		// Action buttons
 		gbc.weightx = 0.0;
 		gbc.weighty = 0.0;
 		gbc.gridy = 0;
 		gbc.gridx++;
-		gbc.gridheight = 3;
-		JPanel showInMapPanel = new JPanel();
-		showInMapPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 20));
-		showInMapPanel.add(m_showInMapButton);
-		this.add(showInMapPanel, gbc);
-		
-		// Action buttons
 		gbc.gridheight = 2;
-		gbc.gridx++;
 		this.add(m_cancelButton, gbc);
 		gbc.gridy += 2;
 		this.add(m_okButton, gbc);
@@ -420,11 +389,8 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 	 */
 	public void showComponent()
 	{
-		if(m_showInMapButton.isSelected())
-		{
-			MessageLogPanel.showMap();
-			showPOI(true);
-		}
+		MessageLogPanel.showMap();
+		showPOI(true);
 		
 		this.setVisible(true);
 	}

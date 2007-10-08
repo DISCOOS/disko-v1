@@ -277,6 +277,21 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     @Override
     public String getColumnName(int column)
     {
+    	switch(column)
+    	{
+    	case 0:
+    		return m_wpModule.getText("Number.text");
+    	case 1:
+    		return m_wpModule.getText("DTG.text");
+    	case 2:
+    		return m_wpModule.getText("From.text");
+    	case 3:
+    		return m_wpModule.getText("To.text");
+    	case 4:
+    		return m_wpModule.getText("MessageLines.text");
+    	case 5:
+    		return m_wpModule.getText("Tasks.text");
+    	}
     	return null;
     }
 

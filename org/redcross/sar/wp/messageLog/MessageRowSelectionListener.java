@@ -13,18 +13,12 @@ import javax.swing.event.ListSelectionListener;
  */
 public class MessageRowSelectionListener implements ListSelectionListener
 {
-	protected MessageLogBottomPanel m_topPanel;
+	protected MessageLogBottomPanel m_messagePanel;
 	protected JTable m_messageTable;
 	protected LogTableModel m_tableModel;
 	protected boolean m_msoUpdate = false;
 	
-	/**
-	 * @param panel Reference to top panel
-	 */
-	public MessageRowSelectionListener(MessageLogBottomPanel panel) 
-	{
-		m_topPanel = panel;
-	}
+
 
 	/**
 	 * Expand/collapse rows based on selection in message log table
@@ -72,7 +66,7 @@ public class MessageRowSelectionListener implements ListSelectionListener
 		m_tableModel.updateRowHeights();
 		
 		// Update top message panel
-		m_topPanel.newMessageSelected(messageNr);
+		m_messagePanel.newMessageSelected(messageNr);
 		MessageLogBottomPanel.showListPanel();
 	}
 
@@ -83,6 +77,15 @@ public class MessageRowSelectionListener implements ListSelectionListener
 	public void setTable(JTable table) 
 	{
 		m_messageTable = table;
+	}
+	
+	/**
+	 * Set the log panel to be updated
+	 * @param panel
+	 */
+	public void setPanel(MessageLogBottomPanel panel)
+	{
+		m_messagePanel = panel;
 	}
 
 	/**

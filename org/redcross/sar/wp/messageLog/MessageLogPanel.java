@@ -26,14 +26,14 @@ public class MessageLogPanel
     private static final String LOG_ID = "LOG";
 
     private JPanel WorkspacePanel;
-    private MessageLogBottomPanel m_topPanel;
+    private MessageLogBottomPanel m_messagePanel;
     private static JSplitPane m_splitter1;
     private static IDiskoWpMessageLog m_wpModule;
     private static IDiskoMap m_map;
     private static JTable m_logTable;
     private MessageRowSelectionListener m_rowSelectionListener;
     private static JScrollPane m_scrollPane1;
-    private static JPanel m_bottomPanel;
+    private static JPanel m_tablePanel;
     private IMessageLogIf m_messageLog;
 
     /**
@@ -54,9 +54,9 @@ public class MessageLogPanel
         m_splitter1.setOrientation(0);
 
         WorkspacePanel.add(m_splitter1, BorderLayout.CENTER);
-
-        initMessagePanel();
+        
         initTablePanel();
+        initMessagePanel();
 
 // todo delete-test. shall be removed.
 
@@ -98,46 +98,48 @@ public class MessageLogPanel
 
     private void initMessagePanel()
     {
-        m_topPanel = new MessageLogBottomPanel(m_messageLog);
-        m_topPanel.setWp(m_wpModule);
-        m_topPanel.initialize();
-        m_topPanel.setMinimumSize(new Dimension(PANEL_WIDTH, MessageLogBottomPanel.PANEL_HEIGHT));
-        m_topPanel.setPreferredSize(new Dimension(PANEL_WIDTH, MessageLogBottomPanel.PANEL_HEIGHT));
+        m_messagePanel = new MessageLogBottomPanel(m_messageLog);
+        m_messagePanel.setWp(m_wpModule);
+        m_messagePanel.initialize(m_logTable);
+        
+        m_messagePanel.setMinimumSize(new Dimension(PANEL_WIDTH, MessageLogBottomPanel.PANEL_HEIGHT));
+        m_messagePanel.setPreferredSize(new Dimension(PANEL_WIDTH, MessageLogBottomPanel.PANEL_HEIGHT));
 
-        // Top panel should be informed of updates to mso model
-        m_wpModule.getMmsoEventManager().addClientUpdateListener(m_topPanel);
+        // Message panel should be informed of updates to MSO-model
+        m_wpModule.getMmsoEventManager().addClientUpdateListener(m_messagePanel);
+        
+        // Let row selection listener update message panel
+        m_rowSelectionListener.setPanel(m_messagePanel);
 
         m_splitter1.setContinuousLayout(true);
         m_splitter1.setResizeWeight(1.0);
-        m_splitter1.setRightComponent(m_topPanel);
+        m_splitter1.setRightComponent(m_messagePanel);
     }
 
     private void initTablePanel()
     {
-    	m_bottomPanel = new JPanel();
-    	CardLayout layout = new CardLayout();
-    	m_bottomPanel.setLayout(layout);
-    	m_bottomPanel.setFocusCycleRoot(true);
-    	m_splitter1.setLeftComponent(m_bottomPanel);
+    	m_tablePanel = new JPanel();
+    	CardLayout layout = new CardLayout();	
+    	m_tablePanel.setLayout(layout);
+    	m_tablePanel.setFocusCycleRoot(true);
+    	m_splitter1.setLeftComponent(m_tablePanel);
 
         m_scrollPane1 = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         m_scrollPane1.setOpaque(false);
 
-        m_bottomPanel.add(m_scrollPane1, LOG_ID);
-        m_bottomPanel.add((JComponent) m_map, MAP_ID);
+        m_tablePanel.add(m_scrollPane1, LOG_ID);
+        m_tablePanel.add((JComponent) m_map, MAP_ID);
 
         m_logTable = new JTable();
         m_scrollPane1.setViewportView(m_logTable);
-
-        m_rowSelectionListener = new MessageRowSelectionListener(m_topPanel);
+        
+        m_rowSelectionListener = new MessageRowSelectionListener();
         m_logTable.getSelectionModel().addListSelectionListener(m_rowSelectionListener);
 
         final LogTableModel model = new LogTableModel(m_logTable, m_wpModule, m_messageLog, m_rowSelectionListener);
         m_rowSelectionListener.setModel(model);
         m_logTable.setModel(model);
 //        m_logTable.setAutoCreateColumnsFromModel(true);
-//        m_logTable.setShowHorizontalLines(true);
-//        m_logTable.setShowVerticalLines(true);
         m_logTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         m_logTable.setCellSelectionEnabled(false);
         m_logTable.setRowSelectionAllowed(true);
@@ -192,7 +194,7 @@ public class MessageLogPanel
      */
     public void hidePanels()
     {
-        m_topPanel.hideEditPanels();
+        m_messagePanel.hideEditPanels();
     }
 
     /**
@@ -200,7 +202,7 @@ public class MessageLogPanel
      */
     public void clearSelection()
     {
-        m_topPanel.clearSelection();
+        m_messagePanel.clearSelection();
     }
 
     /**
@@ -208,10 +210,10 @@ public class MessageLogPanel
      */
     public static void showMap()
     {
-        if (m_bottomPanel != null)
+        if (m_tablePanel != null)
         {
-            CardLayout cards = (CardLayout) m_bottomPanel.getLayout();
-            cards.show(m_bottomPanel, MAP_ID);
+            CardLayout cards = (CardLayout) m_tablePanel.getLayout();
+            cards.show(m_tablePanel, MAP_ID);
         }
     }
 
@@ -220,12 +222,12 @@ public class MessageLogPanel
      */
     public static void hideMap()
     {
-        if (m_bottomPanel == null)
+        if (m_tablePanel == null)
         {
             return;
         }
-        CardLayout cards = (CardLayout) m_bottomPanel.getLayout();
-        cards.show(m_bottomPanel, LOG_ID);
+        CardLayout cards = (CardLayout) m_tablePanel.getLayout();
+        cards.show(m_tablePanel, LOG_ID);
     }
 
     /**

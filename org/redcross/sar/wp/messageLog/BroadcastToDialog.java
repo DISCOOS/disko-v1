@@ -297,7 +297,7 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageCompon
 		m_buttonGroup.add(m_confirmButton);
 		m_buttonRowPanel.add(m_confirmButton);
 		
-		Dimension emptyAreaDimension = new Dimension(10, DiskoButtonFactory.SMALL_BUTTON_SIZE.height);
+		Dimension emptyAreaDimension = new Dimension(30, DiskoButtonFactory.SMALL_BUTTON_SIZE.height);
 		m_buttonRowPanel.add(Box.createRigidArea(emptyAreaDimension));
 
 		m_allButton = DiskoButtonFactory.createSmallButton(m_wpMessageLog.getText("AllButton.text")); 
@@ -429,8 +429,6 @@ public class BroadcastToDialog extends DiskoDialog implements IEditMessageCompon
 		m_contentsPanel = new JPanel();
 		m_contentsPanel.setBorder(BorderFactory.createLineBorder(Color.lightGray));
 		m_contentsPanel.setLayout(new BoxLayout(m_contentsPanel, BoxLayout.PAGE_AXIS));
-//		m_contentsPanel.setPreferredSize(new Dimension(SingleUnitListSelectionDialog.PANEL_WIDTH + 2, 
-//				DiskoButtonFactory.SMALL_BUTTON_SIZE.height*(NUM_ROWS_COMMUNICATOR_LIST+1)+6));
 		this.add(m_contentsPanel);
 	}
 

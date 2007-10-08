@@ -193,9 +193,10 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf, IT
         UnitLeaderColumnRenderer leaderRenderer = new UnitLeaderColumnRenderer();
         leaderRenderer.setTable(m_personnelTable);
 
-        JTableHeader tableHeader = m_personnelTable.getTableHeader();
-        tableHeader.setResizingAllowed(false);
-        tableHeader.setReorderingAllowed(false);
+//        JTableHeader tableHeader = m_personnelTable.getTableHeader();
+//        tableHeader.setResizingAllowed(false);
+//        tableHeader.setReorderingAllowed(false);
+        m_personnelTable.setTableHeader(null);
 
         JScrollPane personnelTableScrollPane = new JScrollPane(m_personnelTable);
         gbc.gridwidth = 4;

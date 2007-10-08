@@ -26,7 +26,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -125,9 +124,10 @@ public class CalloutDetailsPanel extends JPanel
 		column.setPreferredWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width * 2 + 15);
 		column.setMaxWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width * 2 + 15);
 		
-		JTableHeader header = m_personnelTable.getTableHeader();
-		header.setReorderingAllowed(false);
-		header.setResizingAllowed(false);
+//		JTableHeader header = m_personnelTable.getTableHeader();
+//		header.setReorderingAllowed(false);
+//		header.setResizingAllowed(false);
+		m_personnelTable.setTableHeader(null);
 		
 		JScrollPane personnelTableScrollPane = new JScrollPane(m_personnelTable);
 		gbc.weighty = 1.0;

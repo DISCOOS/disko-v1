@@ -32,7 +32,6 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -216,9 +215,7 @@ public class ImportCalloutDialog extends DiskoDialog
 		m_personnelTable.setDefaultEditor(Object.class, editor);
 		m_personnelTable.setDefaultRenderer(Object.class, editor);
 		
-		JTableHeader header = m_personnelTable.getTableHeader();
-		header.setReorderingAllowed(false);
-		header.setResizingAllowed(false);
+		m_personnelTable.setTableHeader(null);
 		
 		JScrollPane tableScrollPane = new JScrollPane(m_personnelTable);
 		m_confirmPanel.add(tableScrollPane);

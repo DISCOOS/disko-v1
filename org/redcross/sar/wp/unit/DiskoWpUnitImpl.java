@@ -21,7 +21,6 @@ import javax.swing.ListSelectionModel;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 
 import org.redcross.sar.app.IDiskoRole;
@@ -235,10 +234,8 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		column = m_personnelOverviewTable.getColumnModel().getColumn(2);
 		column.setPreferredWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width * 3 + 20);
 		column.setMaxWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width * 3 + 20);
-	        
-		JTableHeader tableHeader = m_personnelOverviewTable.getTableHeader();
-        tableHeader.setResizingAllowed(false);
-        tableHeader.setReorderingAllowed(false);
+	    
+		m_personnelOverviewTable.setTableHeader(null);
 		
 		JScrollPane personnelOverviewScrollPane = new JScrollPane(m_personnelOverviewTable);
 		m_overviewTabPane.addTab(getText("Personnel.text"), personnelOverviewScrollPane);
@@ -262,9 +259,7 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		column.setPreferredWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width * 2 + 15);
 		column.setMaxWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width * 2 + 15);
 		
-		tableHeader = m_unitOverviewTable.getTableHeader();
-        tableHeader.setResizingAllowed(false);
-        tableHeader.setReorderingAllowed(false);
+		m_unitOverviewTable.setTableHeader(null);
         
 		JScrollPane unitOverviewScrollPane = new JScrollPane(m_unitOverviewTable); 
 		m_overviewTabPane.addTab(getText("Unit.text"), unitOverviewScrollPane);
@@ -280,9 +275,7 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		column.setPreferredWidth(80);
 		column.setMaxWidth(80);
 		
-		tableHeader = m_calloutOverviewTable.getTableHeader();
-        tableHeader.setResizingAllowed(false);
-        tableHeader.setReorderingAllowed(false);
+		m_calloutOverviewTable.setTableHeader(null);
 		
 		JScrollPane OverviewScrollPane = new JScrollPane(m_calloutOverviewTable);
 		m_overviewTabPane.addTab(getText("CallOut.text"), OverviewScrollPane);
@@ -424,6 +417,10 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 			m_unitOverviewTable.setEnabled(true);
 			m_newUnitButton.setSelected(false);
 			m_newUnit = false;
+			
+			// Unit is set to ready on first commit
+			IUnitIf unit = m_unitDetailsLeftPanel.getUnit();
+			unit.setStatus(UnitStatus.READY);
 		}
 		m_unitDetailsLeftPanel.saveUnit();
 		m_unitDetailsLeftPanel.setUnit(null);
