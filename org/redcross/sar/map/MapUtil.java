@@ -75,6 +75,40 @@ public class MapUtil {
 		return p;
 	}
 	
+	public static String getMGRS(Point p){
+		String mgrs = new String();
+		try{
+			String west = mgrsFormat(p.getX());
+			String north = mgrsFormat(p.getY());
+			/*
+			west = west.substring(0, west.indexOf("."));
+			String north = Double.toString(p.getY()/100);
+			north = north.substring(0, north.indexOf("."));
+			System.out.println(west + " " + north);
+			*/
+			mgrs = west + " " + north;
+			
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return mgrs; 
+	}
+	
+	private static String mgrsFormat(double coord){
+		String s = Double.toString(coord/100); 
+		s = s.substring(0, s.indexOf("."));
+		if(s.length() > 3){
+			s = s.substring(s.length()-3);
+		}
+		else if (s.length()== 2){
+			s = "0" + s;
+		}
+		else if (s.length() == 1)
+			s = "00" + s;
+		return s;
+	}
+	
+	
 	public static Point getEsriPoint(double x, double y, ISpatialReference srs) 
 	throws IOException, AutomationException {
 		Point p = new Point();
