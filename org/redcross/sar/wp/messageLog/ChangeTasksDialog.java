@@ -244,7 +244,6 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 			task.setSourceClass(message.getMsoClassCode());
 		}
 		
-
 		// Progress
 		task.setProgress(0);
 
@@ -288,6 +287,8 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	{
 		TaskDialog taskDialog = m_wpMessageLog.getApplication().getUIFactory().getTaskDialog();
 		Point location = getLocationOnScreen();
+		location.y -= (taskDialog.getHeight() - getHeight());
+		location.x -= (taskDialog.getWidth() - getWidth());
 		taskDialog.setLocation(location);
 		taskDialog.setVisible(true);
 	}
@@ -298,6 +299,8 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	public void hideComponent()
 	{
 		this.setVisible(false);
+		TaskDialog taskDialog = m_wpMessageLog.getApplication().getUIFactory().getTaskDialog();
+		taskDialog.setVisible(false);
 	}
 
 	/**
@@ -351,7 +354,7 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	 */
 	private JButton createChangeButton(final TaskSubType type)
 	{
-		JButton button = DiskoButtonFactory.createSmallButton("", m_wpMessageLog.getText("ChangeButton.icon"));
+		JButton button = DiskoButtonFactory.createSmallButton(m_wpMessageLog.getText("ChangeButton.text"));
 		button.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)

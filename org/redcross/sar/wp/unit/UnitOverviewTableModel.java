@@ -7,6 +7,7 @@ import org.redcross.sar.mso.data.IUnitListIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
 import org.redcross.sar.util.mso.Selector;
+import org.redcross.sar.wp.IDiskoWpModule;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.Comparator;
@@ -18,8 +19,9 @@ public class UnitOverviewTableModel extends AbstractTableModel implements IMsoUp
 {
 	private static final long serialVersionUID = 1L;
 
-	private IUnitListIf m_allUnits;
 	private List<IUnitIf> m_units;
+	
+	private IDiskoWpModule m_wpModule;
 
 	private static final Selector<IUnitIf> m_unitSelector = new Selector<IUnitIf>()
 	{
@@ -46,17 +48,21 @@ public class UnitOverviewTableModel extends AbstractTableModel implements IMsoUp
 
 	public UnitOverviewTableModel(IDiskoWpUnit wp)
 	{
-		wp.getMsoModel().getEventManager().addClientUpdateListener(this);
-		m_allUnits = wp.getMsoManager().getCmdPost().getUnitList();
-		m_units = new LinkedList<IUnitIf>();                                     // todo use linked list directly
-		m_units.addAll(m_allUnits.selectItems(m_unitSelector, m_unitComparator));
+		m_wpModule = wp;
+		
+		m_wpModule.getMsoModel().getEventManager().addClientUpdateListener(this);
+		m_units = new LinkedList<IUnitIf>();
+		// todo use linked list directly
+		IUnitListIf allUnits = m_wpModule.getCmdPost().getUnitList();
+		m_units.addAll(allUnits.selectItems(m_unitSelector, m_unitComparator));
 	}
 
 	public void handleMsoUpdateEvent(Update e)
 	{
 		// Rebuild list
 		m_units.clear();                                                         // todo use linked list directly
-		m_units.addAll(m_allUnits.selectItems(m_unitSelector, m_unitComparator));
+		IUnitListIf allUnits = m_wpModule.getCmdPost().getUnitList();
+		m_units.addAll(allUnits.selectItems(m_unitSelector, m_unitComparator));
 		fireTableDataChanged();
 	}
 

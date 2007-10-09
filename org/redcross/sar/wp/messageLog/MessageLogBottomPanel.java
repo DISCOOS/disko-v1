@@ -48,8 +48,6 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 	private final static String COMPLETED_PANEL_ID = "COMPLETED_PANEL";
 	private final static String LIST_PANEL_ID = "LIST_PANEL";
 
-	IMessageLogIf m_messageLog;
-
 	private static IDiskoWpMessageLog m_wpMessageLog;
 
 	// Current message Singleton
@@ -144,9 +142,8 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
      * Constructor
      * @param messageLog Message log reference
      */
-    public MessageLogBottomPanel(IMessageLogIf messageLog)
+    public MessageLogBottomPanel()
     {
-    	m_messageLog = messageLog;
     	m_newMessage = true;
     	m_editComponents = new LinkedList<IEditMessageComponentIf>();
     }
@@ -190,6 +187,20 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
     	{
     		m_fieldFromDialog = new UnitFieldSelectionDialog(m_wpMessageLog, true);
     		m_fieldFromDialog.addDialogListener(this);
+    		m_fieldFromDialog.getOKButton().addActionListener(new ActionListener()
+    		{
+				public void actionPerformed(ActionEvent e)
+				{
+					ICommunicatorIf sender = m_fieldFromDialog.getCommunicator();
+					if(sender != null)
+					{
+						getCurrentMessage(true).setSender(sender);
+					}
+					m_fieldFromDialog.hideComponent();
+					m_listFromDialog.hideComponent();
+				}
+    			
+    		});
     		m_editComponents.add(m_fieldFromDialog);
     	}
 
@@ -517,7 +528,8 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 		m_newMessage = false;
 
 		// Get the message
-		for(IMessageIf message : m_messageLog.getItems())
+		IMessageLogIf messageLog = m_wpMessageLog.getCmdPost().getMessageLog();
+		for(IMessageIf message : messageLog.getItems())
 		{
 			if(message.getNumber() == messageNr)
 			{
@@ -541,7 +553,7 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 			ICommunicatorIf sender = m_currentMessage.getSender();
 			if(sender == null)
 			{
-				sender = (ICommunicatorIf)m_wpMessageLog.getMsoManager().getCmdPost();
+				sender = (ICommunicatorIf)m_wpMessageLog.getCmdPost();
 			}
 			m_fromLabel.setText(sender.getCommunicatorNumberPrefix() + " " + sender.getCommunicatorNumber());
 
@@ -778,6 +790,7 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 						hideEditPanels();
 						Point location = m_changeTasksButton.getLocationOnScreen();
 		    			location.y -= m_changeTasksDialog.getHeight();
+		    			location.x -= m_changeTasksDialog.getWidth();
 		    			m_changeTasksDialog.setLocation(location);
 						m_changeTasksDialog.showComponent();
 					}
@@ -808,6 +821,17 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 					else
 					{
 						hideEditPanels();
+						
+						// Initialize fields
+						if(m_currentMessage != null)
+						{
+							ICommunicatorIf sender = m_currentMessage.getSender();
+							if(sender != null)
+							{
+								m_fieldFromDialog.setCommunicatorNumber(sender.getCommunicatorNumber());
+								m_fieldFromDialog.setCommunicatorNumberPrefix(sender.getCommunicatorNumberPrefix());
+							}
+						}
 						
 						Point location = m_changeFromButton.getLocationOnScreen();
 						location.y -= m_fieldFromDialog.getHeight();
@@ -1093,14 +1117,7 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 			ICommunicatorIf receiver = m_currentMessage.getSingleReceiver();
 			if(receiver != null)
 			{
-				if(receiver instanceof ICmdPostIf)
-				{
-					return true;
-				}
-				else
-				{
-					return false;
-				}
+				return receiver instanceof ICmdPostIf;
 			}
 			else
 			{

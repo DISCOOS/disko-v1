@@ -615,7 +615,7 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf, IT
      */
     public void handleTick(TickEvent e)
     {
-        ICmdPostIf cmdPost = m_wpUnit.getMsoManager().getCmdPost();
+        ICmdPostIf cmdPost = m_wpUnit.getCmdPost();
         if (cmdPost == null)
         {
             return;

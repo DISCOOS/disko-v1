@@ -159,5 +159,11 @@ public class DiskoWpIntelligenceImpl extends AbstractDiskoWpModule implements ID
         return m_HypothesisButton;
     }
 
+	public void reInitWP()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

@@ -14,6 +14,7 @@ import org.redcross.sar.mso.data.IPersonnelListIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
 import org.redcross.sar.util.mso.Selector;
+import org.redcross.sar.wp.IDiskoWpModule;
 
 /**
  * Table model for the personnel overview panel
@@ -24,7 +25,7 @@ public class PersonnelOverviewTableModel extends AbstractTableModel implements I
 {
 	private static final long serialVersionUID = 1L;
 	private List<IPersonnelIf> m_displayPersonnel;
-	private IPersonnelListIf m_allPersonnel;
+	private IDiskoWpModule m_wpModule;
 	
 	/**
 	 * Select personnel at the end of the history chain
@@ -50,10 +51,11 @@ public class PersonnelOverviewTableModel extends AbstractTableModel implements I
 	
 	public PersonnelOverviewTableModel(IDiskoWpUnit wp)
 	{
+		m_wpModule = wp;
 		wp.getMsoModel().getEventManager().addClientUpdateListener(this);
-		m_allPersonnel = wp.getMsoManager().getCmdPost().getAttendanceList();
 		m_displayPersonnel = new LinkedList<IPersonnelIf>();
-		m_displayPersonnel.addAll(m_allPersonnel.selectItems(m_activePersonnelSelector, m_personnelComparator));
+		IPersonnelListIf allPersonnel = m_wpModule.getCmdPost().getAttendanceList();
+		m_displayPersonnel.addAll(allPersonnel.selectItems(m_activePersonnelSelector, m_personnelComparator));
 	}
 
 	@Override
@@ -94,8 +96,9 @@ public class PersonnelOverviewTableModel extends AbstractTableModel implements I
 	 */
 	public void handleMsoUpdateEvent(Update e)
 	{
+		IPersonnelListIf allPersonnel = m_wpModule.getCmdPost().getAttendanceList();
 		m_displayPersonnel.clear();
-		m_displayPersonnel.addAll(m_allPersonnel.selectItems(m_activePersonnelSelector, m_personnelComparator));
+		m_displayPersonnel.addAll(allPersonnel.selectItems(m_activePersonnelSelector, m_personnelComparator));
 		fireTableDataChanged();
 	}
 

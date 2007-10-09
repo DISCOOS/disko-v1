@@ -258,7 +258,7 @@ public class PersonnelDetailsBottomPanel extends JPanel implements IMsoUpdateLis
      */
     public void handleTick(TickEvent e)
     {
-        ICmdPostIf cmdPost = m_wpModule.getMsoManager().getCmdPost();
+        ICmdPostIf cmdPost = m_wpModule.getCmdPost();
         if (cmdPost == null)
         {
             return;

@@ -91,4 +91,10 @@ public class DiskoWpBriefingImpl extends AbstractDiskoWpModule implements IDisko
         }
         return m_situationButton;
     }
+
+	public void reInitWP()
+	{
+		// TODO Auto-generated method stub
+		
+	}
 }

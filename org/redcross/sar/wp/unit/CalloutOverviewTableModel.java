@@ -11,6 +11,7 @@ import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
 import org.redcross.sar.util.mso.DTG;
+import org.redcross.sar.wp.IDiskoWpModule;
 
 /**
  * Provides contents for call-out table in overview mode
@@ -21,12 +22,12 @@ public class CalloutOverviewTableModel extends AbstractTableModel implements IMs
 {
 	private static final long serialVersionUID = 1L;
 
-	private ICalloutListIf m_callouts;
+	private IDiskoWpModule m_wpModule;
 	
 	public CalloutOverviewTableModel(IDiskoWpUnit wp)
 	{
+		m_wpModule = wp;
 		wp.getMsoModel().getEventManager().addClientUpdateListener(this);
-		m_callouts = wp.getMsoManager().getCmdPost().getCalloutList();
 	}
 	
 	public void handleMsoUpdateEvent(Update e)
@@ -54,12 +55,13 @@ public class CalloutOverviewTableModel extends AbstractTableModel implements IMs
 
 	public int getRowCount()
 	{
-		return m_callouts.size();
+		return m_wpModule.getCmdPost().getCalloutList().size();
 	}
 
 	public Object getValueAt(int rowIndex, int columnIndex)
 	{
-		ICalloutIf callout = (ICalloutIf)m_callouts.getItems().toArray()[rowIndex];
+		ICalloutListIf callouts = m_wpModule.getCmdPost().getCalloutList();
+		ICalloutIf callout = (ICalloutIf)callouts.getItems().toArray()[rowIndex];
 		switch(columnIndex)
 		{
 		case 0:
@@ -77,7 +79,8 @@ public class CalloutOverviewTableModel extends AbstractTableModel implements IMs
 	 */
 	public ICalloutIf getCallout(int index)
 	{
-		return (ICalloutIf)m_callouts.getItems().toArray()[index];
+		ICalloutListIf callouts = m_wpModule.getCmdPost().getCalloutList();
+		return (ICalloutIf)callouts.getItems().toArray()[index];
 	}
 
 }

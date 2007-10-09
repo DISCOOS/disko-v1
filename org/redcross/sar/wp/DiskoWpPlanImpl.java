@@ -115,4 +115,9 @@ public class DiskoWpPlanImpl extends AbstractDiskoWpModule implements IDiskoWpPl
         }
         return m_grovplanButton;
     }
+
+	public void reInitWP()
+	{
+		// TODO Auto-generated method stub		
+	}
 }

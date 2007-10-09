@@ -27,7 +27,6 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
 {
 	private static final long serialVersionUID = 1L;
 
-	IMessageLogIf m_messageLog;
     List<IMessageIf> m_messageList;
     JTable m_table;
 
@@ -36,23 +35,19 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
 
     private HashMap<Integer, Boolean> m_rowExpandedMap;
 
-//    private MessageRowSelectionListener m_selectionListener = null;
-
     /**
      * @param aTable Log table
      * @param aModule Message log work process
      * @param aMessageLog Message log reference
      * @param listener Selection listener
      */
-    public LogTableModel(JTable aTable, IDiskoWpMessageLog aModule, IMessageLogIf aMessageLog, MessageRowSelectionListener listener)
+    public LogTableModel(JTable aTable, IDiskoWpMessageLog aModule, MessageRowSelectionListener listener)
     {
         m_table = aTable;
         m_wpModule = aModule;
         m_eventManager = aModule.getMmsoEventManager();
         m_eventManager.addClientUpdateListener(this);
-        m_messageLog = aMessageLog;
         m_rowExpandedMap = new HashMap<Integer, Boolean>();
-//        m_selectionListener = listener;
     }
 
     /**
@@ -76,7 +71,8 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
      */
     void buildTable()
     {
-        m_messageList = m_messageLog.selectItems(m_messageSelector, IMessageIf.MESSAGE_NUMBER_COMPARATOR);
+    	IMessageLogIf messageLog = m_wpModule.getCmdPost().getMessageLog();
+        m_messageList = messageLog.selectItems(m_messageSelector, IMessageIf.MESSAGE_NUMBER_COMPARATOR);
 
         // Update hash map
         HashMap<Integer, Boolean> tempMap = new HashMap<Integer, Boolean>(m_rowExpandedMap);
@@ -132,7 +128,7 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
             	ICommunicatorIf sender = message.getSender();
             	if(sender == null)
             	{
-            		sender = (ICommunicatorIf)m_wpModule.getMsoManager().getCmdPost();
+            		sender = (ICommunicatorIf)m_wpModule.getCmdPost();
             	}
             	return sender.getCommunicatorNumberPrefix() + " " + sender.getCommunicatorNumber();
             case 3:
@@ -145,7 +141,7 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
             		ICommunicatorIf receiver = message.getSingleReceiver();
             		if(receiver == null)
             		{
-            			receiver = (ICommunicatorIf)m_wpModule.getMsoManager().getCmdPost();
+            			receiver = (ICommunicatorIf)m_wpModule.getCmdPost();
             		}
             		return receiver.getCommunicatorNumberPrefix() + " " + receiver.getCommunicatorNumber();
             	}

@@ -104,4 +104,10 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
     {
     }
 
+	public void reInitWP()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }

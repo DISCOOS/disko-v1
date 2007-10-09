@@ -61,5 +61,11 @@ public class DiskoWpStatesImpl extends AbstractDiskoWpModule
 
 	public void finish() {
 		// TODO Auto-generated method stub
+	}
+
+	public void reInitWP()
+	{
+		// TODO Auto-generated method stub
+		
 	}	
 }

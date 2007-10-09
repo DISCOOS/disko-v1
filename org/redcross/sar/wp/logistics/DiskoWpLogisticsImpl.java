@@ -134,4 +134,10 @@ public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDisk
         showWarning(getText("transfer_warning.text"));
     }
 
+	public void reInitWP()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }

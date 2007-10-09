@@ -96,7 +96,7 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
             @SuppressWarnings("unchecked")
             public void handleTick(TickEvent e)
             {
-                ICmdPostIf cmdPost = getMsoManager().getCmdPost();
+                ICmdPostIf cmdPost = getCmdPost();
                 if (cmdPost == null)
                 {
                     return;
@@ -338,4 +338,10 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
     {
         m_currentTask = task;
     }
+
+	public void reInitWP()
+	{
+		// TODO Auto-generated method stub
+		
+	}
 }

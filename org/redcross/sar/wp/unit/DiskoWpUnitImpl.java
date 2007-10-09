@@ -977,4 +977,10 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 	}
 
 	public void dialogStateChanged(DialogEvent e){}
+
+	public void reInitWP()
+	{
+		// TODO Auto-generated method stub
+		
+	}
 }

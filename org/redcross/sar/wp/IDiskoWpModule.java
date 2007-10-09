@@ -7,6 +7,7 @@ import org.redcross.sar.event.ITickEventListenerIf;
 import org.redcross.sar.map.IDiskoMap;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 
 /**
@@ -74,6 +75,8 @@ public interface IDiskoWpModule {
     public void showWarning(String msg);
 
     public IMsoModelIf getMsoModel();
+    
+    public ICmdPostIf getCmdPost();
 
     public IMsoManagerIf getMsoManager();
 
@@ -89,4 +92,10 @@ public interface IDiskoWpModule {
     public void addTickEventListener(ITickEventListenerIf listener);
 
     public void removeTickEventListener(ITickEventListenerIf listener);
+    
+    /**
+     * Called when changing operation, allows WP to perform house-keeping. E.g. references to CmdPost
+     * lists should be updated.
+     */
+    public void reInitWP();
 }

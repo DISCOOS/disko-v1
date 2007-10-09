@@ -242,6 +242,8 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 							poi = m_wpMessageLog.getMsoManager().createPOI();
 							messageLine.setLinePOI(poi);
 						}
+						
+						// Update type
 						poi.setType(type);
 						
 						// Update related intelligence task
@@ -442,8 +444,9 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 	/**
 	 * Set selection for POI in map
 	 */
-	public void showPOI(boolean show)
+	public void showPOI(boolean select)
 	{
+		// Get POI
 		IMessageIf message = MessageLogBottomPanel.getCurrentMessage(false);
 		if(message != null)
 		{
@@ -465,23 +468,22 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 				}
 			}
 			
-			
 			// Select POI object in map
 			if(poi != null)
 			{
-				// TODO map selection
-//				try
-//				{
-//					m_wpMessageLog.getMap().setSelected(poi, show);
-//				} 
-//				catch (AutomationException e1)
-//				{
-//					e1.printStackTrace();
-//				} 
-//				catch (IOException e1)
-//				{
-//					e1.printStackTrace();
-//				}
+				try
+				{
+					m_wpMessageLog.getMap().setSelected(poi, select);
+					m_wpMessageLog.getMap().zoomToMsoObject(poi);
+				} 
+				catch (AutomationException e1)
+				{
+					e1.printStackTrace();
+				} 
+				catch (IOException e1)
+				{
+					e1.printStackTrace();
+				}
 			}	
 		}
 	}

@@ -13,6 +13,7 @@ import org.redcross.sar.map.IDiskoMap;
 import org.redcross.sar.map.IDiskoMapManager;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 
 import javax.swing.*;
@@ -287,6 +288,11 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule
     public IMsoEventManagerIf getMmsoEventManager()
     {
         return getMsoModel().getEventManager();
+    }
+    
+    public ICmdPostIf getCmdPost()
+    {
+    	return getMsoManager().getCmdPost();
     }
 
     public String getText(String aKey)

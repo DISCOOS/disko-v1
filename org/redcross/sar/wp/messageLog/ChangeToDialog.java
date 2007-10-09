@@ -18,6 +18,7 @@ import org.redcross.sar.event.DialogEvent;
 import org.redcross.sar.event.IDialogEventListener;
 import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.DiskoDialog;
+import org.redcross.sar.mso.data.ICommunicatorIf;
 import org.redcross.sar.mso.data.IMessageIf;
 
 /**
@@ -44,9 +45,6 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 	
 	protected IDiskoWpMessageLog m_wpMessageLog;
 	
-//	public static final Dimension BUTTON_SIZE = new Dimension(MessageLogPanel.SMALL_BUTTON_SIZE.width*3, 
-//			MessageLogPanel.SMALL_BUTTON_SIZE.height);
-	
 	/**
 	 * @param wp Message log work process reference
 	 */
@@ -70,6 +68,20 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 	private void initDialogs()
 	{
 		m_nbFieldDialog = new UnitFieldSelectionDialog(m_wpMessageLog, false);
+		m_nbFieldDialog.addDialogListener(this);
+		m_nbFieldDialog.getOKButton().addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				ICommunicatorIf singleReceiver = m_nbFieldDialog.getCommunicator();
+				if(singleReceiver != null)
+				{
+					IMessageIf message = MessageLogBottomPanel.getCurrentMessage(true);
+					message.setSingleReceiver(singleReceiver);
+				}
+				fireDialogFinished();
+			}	
+		});
 		m_nbListDialog = new SingleUnitListSelectionDialog(m_wpMessageLog, false);
 		m_broadcastDialog = new BroadcastToDialog(m_wpMessageLog);
 		
@@ -196,6 +208,17 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 
 	private void showNonBroadcast()
 	{
+		IMessageIf message = MessageLogBottomPanel.getCurrentMessage(false);
+		if(message != null)
+		{
+			ICommunicatorIf receiver = message.getSingleReceiver();
+			if(receiver != null)
+			{
+				m_nbFieldDialog.setCommunicatorNumber(receiver.getCommunicatorNumber());
+				m_nbFieldDialog.setCommunicatorNumberPrefix(receiver.getCommunicatorNumberPrefix());
+			}
+		}
+		
 		Point location = m_nonBroadcastButton.getLocationOnScreen();
 		location.y -= m_nbFieldDialog.getHeight();
 		m_nbFieldDialog.setLocation(location);
@@ -230,24 +253,26 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 	/**
 	 * {@link IDialogEventListener#dialogCanceled(DialogEvent)}
 	 */
-	public void dialogCanceled(DialogEvent e){}
+	public void dialogCanceled(DialogEvent e)
+	{
+		fireDialogCanceled();
+	}
 
 	/**
 	 * {@link IDialogEventListener#dialogFinished(DialogEvent)}
 	 */
 	public void dialogFinished(DialogEvent e)
 	{
-		Object source = e.getSource();
-		if(source instanceof SingleUnitListSelectionDialog || source instanceof UnitFieldSelectionDialog)
-		{
-			fireDialogFinished();
-		}
+		fireDialogFinished();
 	}
 
 	/**
 	 * {@link IDialogEventListener#dialogStateChanged(DialogEvent)}
 	 */
-	public void dialogStateChanged(DialogEvent e){}
+	public void dialogStateChanged(DialogEvent e)
+	{
+		fireDialogStateChanged();
+	}
 	
 	/**
 	 * Keep track of broadcast or not

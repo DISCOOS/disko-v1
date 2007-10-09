@@ -353,8 +353,6 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 	 */
 	public void hideComponent()
 	{
-		m_unitNumberField.setText("");
-		m_unitTypeField.setText("");
 		this.setVisible(false);
 
 		if(m_notebookMode)
@@ -564,5 +562,31 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 	public String getCommunicatorText()
 	{
 		return m_unitTypeField.getText() + " " + m_unitNumberField.getText();
+	}
+
+	
+	/**
+	 * @return Communicator matching fields in dialog, {@code null} otherwise
+	 */
+	public ICommunicatorIf getCommunicator()
+	{
+		ICommunicatorIf sender = null;
+		try
+		{
+			char prefix = m_unitTypeField.getText().charAt(0);
+			int number = Integer.valueOf(m_unitNumberField.getText());
+			
+			for(ICommunicatorIf communicator : m_wp.getMsoManager().getCmdPost().getActiveCommunicators())
+			{
+				if(communicator.getCommunicatorNumber() == number && 
+						communicator.getCommunicatorNumberPrefix() == prefix)
+				{
+					sender = communicator;
+					break;
+				}
+			}
+		}
+		catch(Exception e){}
+		return sender;
 	}
 }

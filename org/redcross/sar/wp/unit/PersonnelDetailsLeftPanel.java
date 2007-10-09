@@ -498,7 +498,7 @@ public class PersonnelDetailsLeftPanel extends JPanel implements IMsoUpdateListe
      */
     public void handleTick(TickEvent e)
     {
-        ICmdPostIf cmdPost = m_wpUnit.getMsoManager().getCmdPost();
+        ICmdPostIf cmdPost = m_wpUnit.getCmdPost();
         if (cmdPost == null)
         {
             return;

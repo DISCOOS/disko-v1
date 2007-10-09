@@ -1,7 +1,6 @@
 package org.redcross.sar.wp.messageLog;
 
 import org.redcross.sar.map.IDiskoMap;
-import org.redcross.sar.mso.data.IMessageLogIf;
 
 import javax.swing.*;
 import javax.swing.table.JTableHeader;
@@ -34,7 +33,6 @@ public class MessageLogPanel
     private MessageRowSelectionListener m_rowSelectionListener;
     private static JScrollPane m_scrollPane1;
     private static JPanel m_tablePanel;
-    private IMessageLogIf m_messageLog;
 
     /**
      * @param aWp Message log work process
@@ -43,7 +41,6 @@ public class MessageLogPanel
     {
         m_wpModule = aWp;
         m_map = m_wpModule.getMap();
-        m_messageLog = m_wpModule.getMsoManager().getCmdPost().getMessageLog();
 
         WorkspacePanel = new JPanel();
         WorkspacePanel.setLayout(new BorderLayout(0, 0));
@@ -98,7 +95,7 @@ public class MessageLogPanel
 
     private void initMessagePanel()
     {
-        m_messagePanel = new MessageLogBottomPanel(m_messageLog);
+        m_messagePanel = new MessageLogBottomPanel();
         m_messagePanel.setWp(m_wpModule);
         m_messagePanel.initialize(m_logTable);
         
@@ -136,10 +133,9 @@ public class MessageLogPanel
         m_rowSelectionListener = new MessageRowSelectionListener();
         m_logTable.getSelectionModel().addListSelectionListener(m_rowSelectionListener);
 
-        final LogTableModel model = new LogTableModel(m_logTable, m_wpModule, m_messageLog, m_rowSelectionListener);
+        final LogTableModel model = new LogTableModel(m_logTable, m_wpModule, m_rowSelectionListener);
         m_rowSelectionListener.setModel(model);
         m_logTable.setModel(model);
-//        m_logTable.setAutoCreateColumnsFromModel(true);
         m_logTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         m_logTable.setCellSelectionEnabled(false);
         m_logTable.setRowSelectionAllowed(true);

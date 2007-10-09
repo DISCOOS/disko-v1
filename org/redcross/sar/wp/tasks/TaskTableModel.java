@@ -47,7 +47,7 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 {
 	private static final long serialVersionUID = 1L;
 
-	protected ITaskListIf m_tasks;
+//	protected ITaskListIf m_tasks;
 	protected IDiskoWpTasks m_wpTasks;
 
 	protected JTable m_table;
@@ -110,8 +110,7 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 	{
 		m_wpTasks = wp;
 		m_table = table;
-		m_tasks = wp.getMsoManager().getCmdPost().getTaskList();
-
+		
 		wp.getMmsoEventManager().addClientUpdateListener(this);
 		
 		m_menuItemEnumMap = new HashMap<JCheckBoxMenuItem, Enum>();
@@ -137,7 +136,7 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 
 	public int getRowCount()
 	{
-		return m_tasks.size();
+		return m_wpTasks.getCmdPost().getTaskList().size();
 	}
 
     @Override
@@ -148,12 +147,13 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 
 	public Object getValueAt(int row, int column)
 	{
-		if(row >= m_tasks.size())
+		ITaskListIf taskList = m_wpTasks.getCmdPost().getTaskList();
+		if(row >= taskList.size())
 		{
 			return null;
 		}
 		
-		ITaskIf task = (ITaskIf)m_tasks.getItems().toArray()[row];
+		ITaskIf task = (ITaskIf)taskList.getItems().toArray()[row];
 		switch(column)
 		{
 		case 0:
@@ -458,7 +458,8 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 	 */
 	public ITaskIf getTask(int taskNr)
 	{
-		for(ITaskIf task : m_tasks.getItems())
+		ITaskListIf tasks = m_wpTasks.getCmdPost().getTaskList();
+		for(ITaskIf task : tasks.getItems())
 		{
 			if(taskNr == task.getNumber())
 			{

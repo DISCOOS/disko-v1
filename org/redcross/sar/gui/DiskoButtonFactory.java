@@ -16,8 +16,7 @@ import org.redcross.sar.mso.data.ICommunicatorIf;
 import org.redcross.sar.mso.data.IUnitIf;
 
 /**
- * Creates buttons. 
- * TODO Methods should probably be moved to {@link UIFactory} later on
+ * Creates buttons
  * 
  * @author thomasl
  */
@@ -30,7 +29,7 @@ public class DiskoButtonFactory
 	private static Properties m_properties = null;
 	private final static ResourceBundle m_unitResources = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Unit");
 	
-	private final static Font BUTTON_FONT = new Font("TableButtonFont", Font.BOLD, 12);
+	private final static Font BUTTON_FONT = new Font("TableButtonFont", Font.PLAIN, 12);
 	
 	public enum ButtonType
 	{
@@ -63,7 +62,7 @@ public class DiskoButtonFactory
 	 */
 	public static JToggleButton createSmallToggleButton(ICommunicatorIf communicator)
 	{
-		JToggleButton button = new JToggleButton();
+		JToggleButton button = createSmallToggleButton();
 		
 		if(communicator instanceof ICmdPostIf)
 		{
@@ -89,20 +88,15 @@ public class DiskoButtonFactory
 			}
 		}
 		
-		button.setMinimumSize(SMALL_BUTTON_SIZE);
-		button.setPreferredSize(SMALL_BUTTON_SIZE);
-		button.setMaximumSize(SMALL_BUTTON_SIZE);
-		
 		return button;
 	}
 	
 	/**
 	 * Creates a large JToggleButton based on the communicator
-	 * TODO should be moved to some utility class
 	 */
 	public static JToggleButton createLargeToggleButton(ICommunicatorIf communicator)
 	{
-		JToggleButton button = new JToggleButton();
+		JToggleButton button = createLargeToggleButton();
 		
 		if(communicator instanceof ICmdPostIf)
 		{
@@ -129,10 +123,6 @@ public class DiskoButtonFactory
 		}
 		
 		button.setText(communicator.getCommunicatorNumber() + "  " + communicator.getCallSign());
-		
-		button.setMinimumSize(LARGE_BUTTON_SIZE);
-		button.setPreferredSize(LARGE_BUTTON_SIZE);
-		button.setMaximumSize(LARGE_BUTTON_SIZE);
 		
 		button.setBorder(null);
 		
@@ -209,7 +199,7 @@ public class DiskoButtonFactory
 	
 	public static JToggleButton createSmallToggleButton(String name, String iconPath)
 	{
-		JToggleButton button = createSmallToggleButton("");
+		JToggleButton button = createSmallToggleButton();
 		
 		try
 		{
@@ -231,7 +221,6 @@ public class DiskoButtonFactory
 		button.setPreferredSize(LARGE_BUTTON_SIZE);
 		button.setMaximumSize(LARGE_BUTTON_SIZE);
 		
-//		button.setText(assignment.getTypeText() + " " + assignment.getNumber());
 		IconRenderer.AssignmentIcon icon = new IconRenderer.AssignmentIcon(assignment, false, null);
 		button.setIcon(icon);
 		
@@ -240,11 +229,7 @@ public class DiskoButtonFactory
 
 	public static JToggleButton createLargeToggleButton(IAssignmentIf assignment)
 	{
-		JToggleButton button = new JToggleButton();
-
-		button.setMinimumSize(LARGE_BUTTON_SIZE);
-		button.setPreferredSize(LARGE_BUTTON_SIZE);
-		button.setMaximumSize(LARGE_BUTTON_SIZE);
+		JToggleButton button = createLargeToggleButton();
 
 		button.setText(assignment.getTypeText()+ " " + assignment.getNumber());
 
@@ -263,9 +248,17 @@ public class DiskoButtonFactory
 
 	public static JToggleButton createLargeToggleButton(String text)
 	{
+		JToggleButton button = createLargeToggleButton();
+		
+		button.setText(text);		
+		return button;
+	}
+	
+	public static JToggleButton createLargeToggleButton()
+	{
 		JToggleButton button = new JToggleButton();
 		
-		button.setText(text);
+		button.setFont(BUTTON_FONT);
 		
 		button.setMinimumSize(LARGE_BUTTON_SIZE);
 		button.setPreferredSize(LARGE_BUTTON_SIZE);

@@ -937,4 +937,10 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		return unitToggleButton;
 	}
 
+	public void reInitWP()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }
