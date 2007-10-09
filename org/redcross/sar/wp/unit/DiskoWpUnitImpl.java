@@ -413,18 +413,18 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		
 		// Check for new unit
 		m_unitDetailsLeftPanel.saveUnit();
-		m_unitDetailsLeftPanel.setUnit(null);
-		m_unitDetailsLeftPanel.updateFieldContents();
 		if(m_newUnit)
 		{
-			m_unitOverviewTable.setEnabled(true);
-			m_newUnitButton.setSelected(false);
-			m_newUnit = false;
-			
 			// Unit is set to ready on first commit
 			IUnitIf unit = m_unitDetailsLeftPanel.getUnit();
 			unit.setStatus(UnitStatus.READY);
+			
+			m_unitOverviewTable.setEnabled(true);
+			m_newUnitButton.setSelected(false);
+			m_newUnit = false;
 		}
+		m_unitDetailsLeftPanel.setUnit(null);
+		m_unitDetailsLeftPanel.updateFieldContents();
 		
 		// Check for new call-out
 		if(m_newCallOut)

@@ -45,7 +45,7 @@ public class UnitListImpl extends MsoListImpl<IUnitIf> implements IUnitListIf
     {
         checkCreateOp();
         IVehicleIf retVal = (IVehicleIf) getItem(anObjectId);
-        return retVal != null ? retVal : (IVehicleIf) createdItem(new VehicleImpl(anObjectId, -1));
+        return retVal != null ? retVal : (IVehicleIf) createdItem(new VehicleImpl(anObjectId, makeUnitSerialNumber(VehicleImpl.class)));
     }
 
     public IBoatIf createBoat(String anIdentifier)
@@ -58,7 +58,7 @@ public class UnitListImpl extends MsoListImpl<IUnitIf> implements IUnitListIf
     {
         checkCreateOp();
         IBoatIf retVal = (IBoatIf) getItem(anObjectId);
-        return retVal != null ? retVal : (IBoatIf) createdItem(new BoatImpl(anObjectId, -1));
+        return retVal != null ? retVal : (IBoatIf) createdItem(new BoatImpl(anObjectId, makeUnitSerialNumber(BoatImpl.class)));
     }
     
     public IDogIf createDog(IObjectIdIf objectId)
