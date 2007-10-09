@@ -412,6 +412,9 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		m_personnelAddressBottomPanel.updateFieldContents();
 		
 		// Check for new unit
+		m_unitDetailsLeftPanel.saveUnit();
+		m_unitDetailsLeftPanel.setUnit(null);
+		m_unitDetailsLeftPanel.updateFieldContents();
 		if(m_newUnit)
 		{
 			m_unitOverviewTable.setEnabled(true);
@@ -422,9 +425,6 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 			IUnitIf unit = m_unitDetailsLeftPanel.getUnit();
 			unit.setStatus(UnitStatus.READY);
 		}
-		m_unitDetailsLeftPanel.saveUnit();
-		m_unitDetailsLeftPanel.setUnit(null);
-		m_unitDetailsLeftPanel.updateFieldContents();
 		
 		// Check for new call-out
 		if(m_newCallOut)
@@ -951,9 +951,6 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 			case TEAM:
 				newUnit = m_msoModel.getMsoManager().createTeam(objectId);
 				break;
-//			case COMMAND_POST:
-//				newUnit = (IUnitIf)m_msoModel.getMsoManager().createCommandPost(objectId);
-//				break;
 			}
 			
 			if(newUnit != null)

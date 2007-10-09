@@ -320,8 +320,8 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
     public void handleMsoUpdateEvent(Update e)
     {
         buildTable();
-        fireTableDataChanged();
         updateRowHeights();
+        fireTableDataChanged();
     }
 
     private final EnumSet<IMsoManagerIf.MsoClassCode> myInterests = EnumSet.of(

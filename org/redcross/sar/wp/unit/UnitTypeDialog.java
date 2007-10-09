@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.EnumSet;
 import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
@@ -38,6 +39,7 @@ public class UnitTypeDialog extends DiskoDialog
 	private JPanel m_contentsPanel;
 	private JButton m_okButton;
 	private JButton m_cancelButton;
+	private EnumSet<UnitType> m_listValues;
 	private JList m_typeList;
 	
 	private static UnitType m_type;
@@ -64,10 +66,15 @@ public class UnitTypeDialog extends DiskoDialog
 		m_contentsPanel.add(Box.createRigidArea(new Dimension(10, 20)));
 		m_contentsPanel.add(new JLabel(m_wpUnit.getText("ChooseUnitType.text")));
 		
-		// Table
+		// List
 		m_typeList = new JList();
-		m_typeList.setListData(UnitType.values());
-		// TODO Possible to add new command post?
+		m_listValues = EnumSet.of(
+				UnitType.AIRCRAFT,
+				UnitType.BOAT,
+				UnitType.DOG,
+				UnitType.TEAM,
+				UnitType.VEHICLE);
+		m_typeList.setListData(m_listValues.toArray());
 		m_typeList.setCellRenderer(new UnitTypeCellRenderer());
 		m_typeList.setFixedCellHeight(DiskoButtonFactory.SMALL_BUTTON_SIZE.height);
 		m_typeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -92,8 +99,8 @@ public class UnitTypeDialog extends DiskoDialog
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				int selectedType = m_typeList.getSelectedIndex();
-				m_type = UnitType.values()[selectedType];
+				int index = m_typeList.getSelectedIndex();
+				m_type = (UnitType)m_listValues.toArray()[index];
 				fireDialogFinished();
 			}	
 		});

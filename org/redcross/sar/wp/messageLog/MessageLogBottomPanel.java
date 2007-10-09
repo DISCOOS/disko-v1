@@ -22,6 +22,7 @@ import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 import java.util.Calendar;
 import java.util.EnumSet;
 import java.util.LinkedList;
@@ -343,6 +344,11 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
     	// Add table header
     	gbc.gridwidth = 15;
     	JTableHeader header = logTable.getTableHeader();
+    	// Remove mouse listeners, hack to bypass Swing bug 4178930
+    	for(MouseListener ml : header.getMouseListeners())
+    	{
+    		header.removeMouseListener(ml);
+    	}
     	this.add(header, gbc);
     	logTable.setTableHeader(null);
     	
@@ -1368,6 +1374,11 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 	 */
 	public static void clearCurrentMessage()
 	{
+		if(m_newMessage)
+		{
+			m_currentMessage.deleteObject();
+		}
+		
 		m_currentMessage = null;
 		m_messageDirty = false;
 		m_buttonGroup.clearSelection();

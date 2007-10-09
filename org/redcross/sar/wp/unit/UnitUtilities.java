@@ -105,26 +105,37 @@ public class UnitUtilities
 	}
 
 	/**
-	 * Deletes a unit, unit is completely removed, no history is kept. Changes are not committed
+	 * Deletes a unit, unit is completely removed, no history is kept. Changes are not committed.
+	 * Personnel is released
 	 * @param unit The unit
 	 * @param wp Work process
-	 * @throws IllegalOperationException Thrown if unit can not be deleted
+	 * @throws IllegalOperationException Thrown if unit can't be deleted
 	 */
 	public static void deleteUnit(IUnitIf unit, IDiskoWpModule wp) throws IllegalOperationException
 	{
-		// Check validity of delete
-		if(unit.getStatus() != UnitStatus.EMPTY)
+		// Check assignments
+		if(unit.getActiveAssignment() != null)
 		{
 			throw new IllegalOperationException();
 		}
-
+		
 		// Check message log
-		for(IMessageIf message : wp.getMsoManager().getCmdPost().getMessageLogItems())
+		for(IMessageIf message : wp.getCmdPost().getMessageLogItems())
 		{
 			if(message.getSender() == unit || message.getSingleReceiver() == unit)
 			{
 				throw new IllegalOperationException();
 			}
+		}
+		
+		// TODO Check finding?
+		// TODO Check intelligence?	
+		// TODO Check tasks?
+		
+		// Release personnel
+		for(IPersonnelIf personnel : unit.getUnitPersonnelItems())
+		{
+			personnel.setStatus(PersonnelStatus.RELEASED);
 		}
 
 		unit.deleteObject();
