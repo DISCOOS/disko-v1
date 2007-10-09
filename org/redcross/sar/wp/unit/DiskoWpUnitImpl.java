@@ -32,7 +32,6 @@ import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.ICalloutIf;
 import org.redcross.sar.mso.data.IPersonnelIf;
 import org.redcross.sar.mso.data.IUnitIf;
-import org.redcross.sar.mso.data.IMsoObjectIf.IObjectIdIf;
 import org.redcross.sar.mso.data.IUnitIf.UnitStatus;
 import org.redcross.sar.mso.data.IUnitIf.UnitType;
 import org.redcross.sar.util.except.IllegalOperationException;
@@ -933,23 +932,22 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 			// Continue unit creation
 			IUnitIf newUnit = null;
 			UnitType type = m_unitTypeDialog.getUnitType();
-			IObjectIdIf objectId = m_msoModel.getModelDriver().makeObjectId();
 			switch(type)
 			{
 			case BOAT:
-				newUnit = m_msoModel.getMsoManager().createBoat(objectId);
+				newUnit = m_msoModel.getMsoManager().createBoat("");
 				break;
 			case VEHICLE:
-				newUnit = m_msoModel.getMsoManager().createVehicle(objectId);
+				newUnit = m_msoModel.getMsoManager().createVehicle("");
 				break;
 			case DOG:
-				newUnit = m_msoModel.getMsoManager().createDog(objectId);
+				newUnit = m_msoModel.getMsoManager().createDog("");
 				break;
 			case AIRCRAFT:
-				newUnit = m_msoModel.getMsoManager().createAircraft(objectId);
+				newUnit = m_msoModel.getMsoManager().createAircraft("");
 				break;
 			case TEAM:
-				newUnit = m_msoModel.getMsoManager().createTeam(objectId);
+				newUnit = m_msoModel.getMsoManager().createTeam("");
 				break;
 			}
 			

@@ -15,9 +15,15 @@ public interface IUnitListIf extends IMsoListIf<IUnitIf>
 
     public IBoatIf createBoat(IMsoObjectIf.IObjectIdIf anObjectId);
     
+    public IDogIf createDog(String anIdentifier);
+    
     public IDogIf createDog(IObjectIdIf objectId);
+    
+    public IAircraftIf createAircraft(String anIdentifier);
 
 	public IAircraftIf createAircraft(IObjectIdIf objectId);
+	
+	public ITeamIf createTeam(String anIdentifier);
 
 	public ITeamIf createTeam(IObjectIdIf objectId);
 

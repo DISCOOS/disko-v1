@@ -3,7 +3,6 @@ package org.redcross.sar.wp.messageLog;
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.gui.NavBar;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
-import org.redcross.sar.wp.TestData.BuildTestData;
 
 import java.util.EnumSet;
 

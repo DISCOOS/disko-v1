@@ -45,7 +45,7 @@ public class UnitListImpl extends MsoListImpl<IUnitIf> implements IUnitListIf
     {
         checkCreateOp();
         IVehicleIf retVal = (IVehicleIf) getItem(anObjectId);
-        return retVal != null ? retVal : (IVehicleIf) createdItem(new VehicleImpl(anObjectId, makeUnitSerialNumber(VehicleImpl.class)));
+        return retVal != null ? retVal : (IVehicleIf) createdItem(new VehicleImpl(anObjectId, -1));
     }
 
     public IBoatIf createBoat(String anIdentifier)
@@ -58,28 +58,46 @@ public class UnitListImpl extends MsoListImpl<IUnitIf> implements IUnitListIf
     {
         checkCreateOp();
         IBoatIf retVal = (IBoatIf) getItem(anObjectId);
-        return retVal != null ? retVal : (IBoatIf) createdItem(new BoatImpl(anObjectId, makeUnitSerialNumber(BoatImpl.class)));
+        return retVal != null ? retVal : (IBoatIf) createdItem(new BoatImpl(anObjectId, -1));
+    }
+    
+    public IDogIf createDog(String anIdentifier)
+    {
+    	 checkCreateOp();
+         return (IDogIf) createdUniqueItem(new DogImpl(makeUniqueId(), makeUnitSerialNumber(DogImpl.class)));
     }
     
     public IDogIf createDog(IObjectIdIf objectId)
     {
     	checkCreateOp();
     	IDogIf retVal = (IDogIf)getItem(objectId);
-    	return retVal != null ? retVal : (IDogIf) createdItem(new DogImpl(objectId, makeUnitSerialNumber(DogImpl.class)));
+    	return retVal != null ? retVal : (IDogIf) createdItem(new DogImpl(objectId, -1));
     }
 
+    public IAircraftIf createAircraft(String anIdentifier)
+    {
+    	checkCreateOp();
+        return (IAircraftIf) createdUniqueItem(new AircraftImpl(makeUniqueId(), makeUnitSerialNumber(AircraftImpl.class), anIdentifier));
+    }
+    
 	public IAircraftIf createAircraft(IObjectIdIf objectId)
 	{
 		checkCreateOp();
 		IAircraftIf retVal = (IAircraftIf)getItem(objectId);
-		return retVal != null ? retVal : (IAircraftIf)createdItem(new AircraftImpl(objectId, makeUnitSerialNumber(AircraftImpl.class)));
+		return retVal != null ? retVal : (IAircraftIf)createdItem(new AircraftImpl(objectId, -1));
+	}
+	
+	public ITeamIf createTeam(String anIdentifier)
+	{
+		checkCreateOp();
+        return (ITeamIf) createdUniqueItem(new TeamImpl(makeUniqueId(), makeUnitSerialNumber(TeamImpl.class)));
 	}
 
 	public ITeamIf createTeam(IObjectIdIf objectId)
 	{
 		checkCreateOp();
 		ITeamIf retVal = (ITeamIf)getItem(objectId);
-		return retVal != null ? retVal : (ITeamIf)createdItem(new TeamImpl(objectId, makeUnitSerialNumber(TeamImpl.class)));
+		return retVal != null ? retVal : (ITeamIf)createdItem(new TeamImpl(objectId, -1));
 	}
 
     public IUnitIf getUnit(int aUnitNr)
