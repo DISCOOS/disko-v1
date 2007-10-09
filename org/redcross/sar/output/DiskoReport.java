@@ -109,12 +109,15 @@ public class DiskoReport {
 	 * Assignment report
 	 * @param assignments
 	 */
-	public void printAssignments(List<IAssignmentIf> assignments){
-			
-		//inntil videre kjøres kompilering også
-		String jrxmlFileName = app.getProperty("report.TACTICS_TEMPLATE")+".jrxml";
+	public void printAssignments(List<IAssignmentIf> assignments){		
+		
+		
 		String jasperFileName = app.getProperty("report.TACTICS_TEMPLATE")+".jasper";
+		//inntil videre kjøres kompilering også
+		/*
+		String jrxmlFileName = app.getProperty("report.TACTICS_TEMPLATE")+".jrxml";
 		compile(jrxmlFileName, jasperFileName);	
+		*/
 		
 		//lopper igjennom oppdrag som skal printes. Foreløpig bare èn
 		IAssignmentIf assignment = null;
@@ -136,17 +139,7 @@ public class DiskoReport {
 			String exportMapPath = exportMap();			
 			//ekstraherer verdrier fra assignmentslista
 			Map assignmentsMap = extractAssignmentValues(assignment, exportMapPath);
-			
-			//forsøk på subreport. Funker, men vises ikke riktig i rapporten.
-			/*
-			if (assignment instanceof ISearchIf){
-				ISearchIf search = (ISearchIf) assignment;
-				poiList = search.getPlannedArea().getAreaPOIs();
-			}			
-			
-			POIDescriptionFactory poiFactory = new POIDescriptionFactory(poiList);						
-			fill(jasperFile, assignmentsMap, poiFactory);
-			*/
+						
 			
 			JasperPrint jPrint = fill(jasperFileName, assignmentsMap);
 			
@@ -157,23 +150,17 @@ public class DiskoReport {
 	}
 	
 	public void printUnitLog(int unitNr){		
-		//inntil videre kjøres kompilering også
-		String jrxmlFileName = app.getProperty("report.UNITLOG_TEMPLATE")+".jrxml";
+				
 		String jasperFileName = app.getProperty("report.UNITLOG_TEMPLATE")+".jasper";
+		//inntil videre kjøres kompilering også
+		/*
+		String jrxmlFileName = app.getProperty("report.UNITLOG_TEMPLATE")+".jrxml";
 		compile(jrxmlFileName, jasperFileName);
+		*/
 		
 		ICmdPostIf cmdPost = app.getMsoModel().getMsoManager().getCmdPost();
 		IUnitListIf unitList = cmdPost.getUnitList();		
-		
-		//testdata
-		/*TestDataUnitLog testDataUnitLog = new TestDataUnitLog();
-		unitList = testDataUnitLog.getUnitList();
-		unitNr = (int) Math.random()*10;
-		if (unitNr > 8)
-			unitNr = 8;
-		*/
-		//slutt testdata
-		
+				
 		UnitlogReportParams unitLogParams = new UnitlogReportParams(unitList, unitNr);
 		//ekstrahere unit verdier
 		Map unitsMap = unitLogParams.getUnitlogReportParams();
@@ -207,34 +194,7 @@ public class DiskoReport {
 		return jasperPrint;
 	}
 	
-	private void fill(String jasperName, Map map, POIDescriptionFactory poiFactory){
-		System.out.println("DiskoReport: fill(), params: map_path = " + map.get("map_path") + ", SUBREPORT_DIR = " + map.get("SUBREPORT_DIR"));
-		File sourceFile = null;
-		File destFile = null;
-		JasperPrint jasperPrint = null;
-		try{			
-			sourceFile = new File(jasperfiles_path + jasperName);
-			
-			JasperReport jasperReport = (JasperReport)JRLoader.loadObject(sourceFile);
-			
-			System.out.println("sourceFile = " + sourceFile.getName() + " map parameter: map_path = " + map.get("map_path"));
-				
-			int j = poiFactory.getPOIArray().length;
-			
-			jasperPrint = JasperFillManager.fillReport(jasperReport, map, new JRBeanArrayDataSource(poiFactory.getPOIArray()));
-											
-			destFile = new File(sourceFile.getParent(), jasperReport.getName() + ".jrprint");
-			JRSaver.saveObject(jasperPrint, destFile);
-			
-			//jrprintFiles.add(jasperPrint);
-					
-		} catch(JRException jre){
-			jre.printStackTrace();
-		}
-		catch (Exception e){
-			e.printStackTrace();
-		}		
-	}
+	
 	
 	private void view(JasperPrint jrprintFile){		
 		System.out.println("DiskoReport: view() " + jrprintFile);
