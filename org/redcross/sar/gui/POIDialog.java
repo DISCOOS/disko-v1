@@ -67,10 +67,6 @@ public class POIDialog extends DiskoDialog implements IMsoLayerEventListener {
 		super(app.getFrame());
 		this.app = app;
 		this.tool = tool;
-
-		IMsoFeatureLayer msoLayer = app.getDiskoMapManager().
-		getMsoLayer(IMsoFeatureLayer.LayerCode.POI_LAYER);
-		msoLayer.addDiskoLayerEventListener(this);
 		
 		initialize();
 		// TODO Auto-generated constructor stub
