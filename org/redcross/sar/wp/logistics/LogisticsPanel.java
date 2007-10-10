@@ -1,10 +1,13 @@
 package org.redcross.sar.wp.logistics;
 
 import com.esri.arcgis.interop.AutomationException;
+
 import org.redcross.sar.event.IMsoLayerEventListener;
 import org.redcross.sar.event.MsoLayerEvent;
 import org.redcross.sar.gui.renderers.IconRenderer;
+import org.redcross.sar.gui.renderers.DiskoTableHeaderCellRenderer;
 import org.redcross.sar.map.IDiskoMap;
+import org.redcross.sar.map.IDiskoMapManager;
 import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.mso.IMsoManagerIf;
@@ -73,9 +76,9 @@ public class LogisticsPanel implements IMsoUpdateListenerIf, IMsoLayerEventListe
         setupUI();
         m_wpModule = aWp;
         m_map = m_wpModule.getMap();
+        
         m_unitList = m_wpModule.getMsoManager().getCmdPost().getUnitList();
         m_assignmentList = m_wpModule.getMsoManager().getCmdPost().getAssignmentList();
-
 
         if (!defineTransferHandler())
         {
@@ -117,6 +120,23 @@ public class LogisticsPanel implements IMsoUpdateListenerIf, IMsoLayerEventListe
         });
     }
 
+	public void setLayersSelectable() {
+        try {
+        	IDiskoMapManager manager = m_map.getMapManager();
+        	// disable
+        	manager.getMsoLayer(IMsoFeatureLayer.LayerCode.OPERATION_AREA_LAYER).setSelectable(false);
+        	manager.getMsoLayer(IMsoFeatureLayer.LayerCode.OPERATION_AREA_MASK_LAYER).setSelectable(false);
+        	manager.getMsoLayer(IMsoFeatureLayer.LayerCode.SEARCH_AREA_LAYER).setSelectable(false);
+        	manager.getMsoLayer(IMsoFeatureLayer.LayerCode.FLANK_LAYER).setSelectable(false);
+        	manager.getMsoLayer(IMsoFeatureLayer.LayerCode.POI_LAYER).setSelectable(false);
+        	// enable
+        	manager.getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER).setSelectable(true);
+        }
+        catch (Exception e) {
+        	e.printStackTrace();
+        }
+	}
+    
     private boolean defineTransferHandler()
     {
         try
@@ -185,7 +205,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf, IMsoLayerEventListe
             if (anAssignment.getPlannedArea() != null)
             {
                 m_mapSelectedAssignment = anAssignment;
-                m_map.zoomToMsoObject(m_mapSelectedAssignment);
+                //m_map.zoomToMsoObject(m_mapSelectedAssignment);
                 m_mapSelectedByButton = true;
                 m_map.setSelected(m_mapSelectedAssignment, true);
                 m_mapSelectedByButton = false;
@@ -249,6 +269,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf, IMsoLayerEventListe
         JTableHeader tableHeader = m_unitTable.getTableHeader();
         tableHeader.setResizingAllowed(false);
         tableHeader.setReorderingAllowed(false);
+        tableHeader.setDefaultRenderer(new DiskoTableHeaderCellRenderer(tableHeader.getDefaultRenderer()));
         m_unitTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         m_unitTable.setCellSelectionEnabled(true);
         JTableHeader th = m_unitTable.getTableHeader();
@@ -300,7 +321,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf, IMsoLayerEventListe
     private void addToListeners()
     {
         m_wpModule.getMmsoEventManager().addClientUpdateListener(this);
-        IMsoFeatureLayer msoLayer = m_wpModule.getApplication().getDiskoMapManager().
+        IMsoFeatureLayer msoLayer = m_map.getMapManager().
                 getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER);
         msoLayer.addDiskoLayerEventListener(this);
     }

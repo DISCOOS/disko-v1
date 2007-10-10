@@ -61,6 +61,9 @@ public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDisk
         myTools.add(NavBar.ToolCommandType.SELECT_FEATURE_TOOL);
 
         navBar.showButtons(myTools);
+        
+        // ensure that WP spesific layers are selectable
+        m_logisticsPanel.setLayersSelectable();
     }
 
     /* (non-Javadoc)
