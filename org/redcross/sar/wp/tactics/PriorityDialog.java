@@ -35,8 +35,7 @@ public class PriorityDialog extends DiskoDialog implements IMsoLayerEventListene
 	public PriorityDialog(DiskoWpTacticsImpl wp) {
 		super(wp.getApplication().getFrame());
 		//listener
-		IMsoFeatureLayer msoLayer = wp.getApplication().getDiskoMapManager().
-		getMsoLayer(IMsoFeatureLayer.LayerCode.SEARCH_AREA_LAYER);
+		IMsoFeatureLayer msoLayer = wp.getMap().getMsoLayer(IMsoFeatureLayer.LayerCode.SEARCH_AREA_LAYER);
 		msoLayer.addDiskoLayerEventListener(this);
 		initialize();
 	}

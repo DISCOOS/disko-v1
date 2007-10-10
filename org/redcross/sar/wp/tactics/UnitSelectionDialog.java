@@ -37,8 +37,7 @@ public class UnitSelectionDialog extends DiskoDialog implements IMsoLayerEventLi
 		super(wp.getApplication().getFrame());
 		this.msoModel = wp.getMsoModel();
 		//listener
-		IMsoFeatureLayer msoLayer = wp.getApplication().getDiskoMapManager().
-		getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER);
+		IMsoFeatureLayer msoLayer = wp.getMap().getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER);
 		msoLayer.addDiskoLayerEventListener(this);
 		initialize();
 		// TODO Auto-generated constructor stub

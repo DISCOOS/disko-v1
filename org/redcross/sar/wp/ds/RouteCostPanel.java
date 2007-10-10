@@ -102,8 +102,7 @@ public class RouteCostPanel extends JPanel
 
 	public RouteCostPanel(AbstractDiskoWpModule wp) {
 		m_wp = wp;
-        IDiskoMapManager mapManager = getMap().getMapManager();
-		m_plannedAreaLayer = (PlannedAreaLayer) mapManager.getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER);
+		m_plannedAreaLayer = (PlannedAreaLayer) getMap().getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER);
 		//listeners
 		m_plannedAreaLayer.addDiskoLayerEventListener(this);
 		initialize();

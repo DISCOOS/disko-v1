@@ -23,7 +23,6 @@ import org.redcross.sar.event.IDialogEventListener;
 import org.redcross.sar.event.IMsoLayerEventListener;
 import org.redcross.sar.event.MsoLayerEvent;
 import org.redcross.sar.gui.DiskoDialog;
-import org.redcross.sar.gui.FreeHandDialog;
 import org.redcross.sar.gui.NavBar;
 import org.redcross.sar.gui.POIDialog;
 import org.redcross.sar.gui.SubMenuPanel;
@@ -40,7 +39,6 @@ import org.redcross.sar.map.layer.PlannedAreaLayer;
 import org.redcross.sar.map.layer.SearchAreaLayer;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.IAreaIf;
-import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IAssignmentListIf;
 import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IHypothesisIf;
@@ -54,7 +52,6 @@ import org.redcross.sar.mso.data.IPOIIf.POIType;
 import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
 
-import com.esri.arcgis.display.SimpleLineSymbol;
 import com.esri.arcgis.interop.AutomationException;
 
 /**
@@ -106,16 +103,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		super(rolle);
 		dialogs = new ArrayList<DiskoDialog>();
 		elementListSelectionListener = new ElementListSelectionListener();
-        
         buttonSize = getApplication().getUIFactory().getLargeButtonSize();
-        IDiskoMapManager mapManager = getMap().getMapManager();
-		opAreaLayer = (OperationAreaLayer) mapManager.getMsoLayer(IMsoFeatureLayer.LayerCode.OPERATION_AREA_LAYER);
-		searchAreaLayer = (SearchAreaLayer) mapManager.getMsoLayer(IMsoFeatureLayer.LayerCode.SEARCH_AREA_LAYER);
-		plannedAreaLayer = (PlannedAreaLayer) mapManager.getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER);
-		//listeners
-		opAreaLayer.addDiskoLayerEventListener(this);
-		searchAreaLayer.addDiskoLayerEventListener(this);
-		plannedAreaLayer.addDiskoLayerEventListener(this);
 		
 		NavBar navBar = getApplication().getNavBar();
 		drawTool = navBar.getDrawTool();
@@ -170,6 +158,14 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		myTools.add(NavBar.ToolCommandType.MAP_TOGGLE_COMMAND);
 		myTools.add(NavBar.ToolCommandType.TOC_COMMAND);
 		navBar.showButtons(myTools);
+		
+		opAreaLayer = (OperationAreaLayer) getMap().getMsoLayer(IMsoFeatureLayer.LayerCode.OPERATION_AREA_LAYER);
+		searchAreaLayer = (SearchAreaLayer) getMap().getMsoLayer(IMsoFeatureLayer.LayerCode.SEARCH_AREA_LAYER);
+		plannedAreaLayer = (PlannedAreaLayer) getMap().getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER);
+		//listeners
+		opAreaLayer.addDiskoLayerEventListener(this);
+		searchAreaLayer.addDiskoLayerEventListener(this);
+		plannedAreaLayer.addDiskoLayerEventListener(this);
 
 		//this will show the Navbar
 		UIFactory uiFactory = getApplication().getUIFactory();
@@ -413,8 +409,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 	
 	private void clearSelected() {
 		try {
-			IDiskoMapManager mapManager = getMap().getMapManager();
-			List msoLayers = mapManager.getMsoLayers();
+			List msoLayers = getMap().getMsoLayers();
 			for (int i = 0; i < msoLayers.size(); i++) {
 				IMsoFeatureLayer msoLayer = (IMsoFeatureLayer)msoLayers.get(i);
 				if (msoLayer.getSelected().size() > 0) {

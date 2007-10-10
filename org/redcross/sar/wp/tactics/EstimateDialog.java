@@ -37,8 +37,7 @@ public class EstimateDialog extends DiskoDialog implements IMsoLayerEventListene
 		super(wp.getApplication().getFrame());
 		this.wp = wp;
 		//listener
-		IMsoFeatureLayer msoLayer = wp.getApplication().getDiskoMapManager().
-		getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER);
+		IMsoFeatureLayer msoLayer = wp.getMap().getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER);
 		msoLayer.addDiskoLayerEventListener(this);
 		initialize();
 		// TODO Auto-generated constructor stub

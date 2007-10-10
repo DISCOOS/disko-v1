@@ -122,15 +122,14 @@ public class LogisticsPanel implements IMsoUpdateListenerIf, IMsoLayerEventListe
 
 	public void setLayersSelectable() {
         try {
-        	IDiskoMapManager manager = m_map.getMapManager();
         	// disable
-        	manager.getMsoLayer(IMsoFeatureLayer.LayerCode.OPERATION_AREA_LAYER).setSelectable(false);
-        	manager.getMsoLayer(IMsoFeatureLayer.LayerCode.OPERATION_AREA_MASK_LAYER).setSelectable(false);
-        	manager.getMsoLayer(IMsoFeatureLayer.LayerCode.SEARCH_AREA_LAYER).setSelectable(false);
-        	manager.getMsoLayer(IMsoFeatureLayer.LayerCode.FLANK_LAYER).setSelectable(false);
-        	manager.getMsoLayer(IMsoFeatureLayer.LayerCode.POI_LAYER).setSelectable(false);
+        	m_map.getMsoLayer(IMsoFeatureLayer.LayerCode.OPERATION_AREA_LAYER).setSelectable(false);
+        	m_map.getMsoLayer(IMsoFeatureLayer.LayerCode.OPERATION_AREA_MASK_LAYER).setSelectable(false);
+        	m_map.getMsoLayer(IMsoFeatureLayer.LayerCode.SEARCH_AREA_LAYER).setSelectable(false);
+        	m_map.getMsoLayer(IMsoFeatureLayer.LayerCode.FLANK_LAYER).setSelectable(false);
+        	m_map.getMsoLayer(IMsoFeatureLayer.LayerCode.POI_LAYER).setSelectable(false);
         	// enable
-        	manager.getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER).setSelectable(true);
+        	m_map.getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER).setSelectable(true);
         }
         catch (Exception e) {
         	e.printStackTrace();
@@ -321,8 +320,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf, IMsoLayerEventListe
     private void addToListeners()
     {
         m_wpModule.getMmsoEventManager().addClientUpdateListener(this);
-        IMsoFeatureLayer msoLayer = m_map.getMapManager().
-                getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER);
+        IMsoFeatureLayer msoLayer = m_map.getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER);
         msoLayer.addDiskoLayerEventListener(this);
     }
 
