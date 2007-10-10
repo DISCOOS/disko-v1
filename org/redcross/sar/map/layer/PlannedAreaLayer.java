@@ -10,6 +10,7 @@ import org.redcross.sar.map.feature.PlannedAreaFeature;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.IAreaIf;
+import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.ISearchIf;
 import org.redcross.sar.mso.data.ISearchIf.SearchSubType;
@@ -24,6 +25,7 @@ import com.esri.arcgis.display.esriSimpleLineStyle;
 import com.esri.arcgis.geometry.GeometryBag;
 import com.esri.arcgis.geometry.IGeometry;
 import com.esri.arcgis.geometry.IPolyline;
+import com.esri.arcgis.geometry.ISpatialReference;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.system.ITrackCancel;
 
@@ -35,11 +37,13 @@ public class PlannedAreaLayer extends AbstractMsoFeatureLayer {
 	private SimpleLineSymbol defaultLineSymbol = null;
 	private TextSymbol textSymbol = null;
  	
- 	public PlannedAreaLayer(IMsoModelIf msoModel) {
+ 	public PlannedAreaLayer(IMsoModelIf msoModel, ISpatialReference srs) {
  		super(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA,
- 				LayerCode.AREA_LAYER, msoModel);
+ 				LayerCode.AREA_LAYER, msoModel, srs);
  		symbols = new Hashtable<SearchSubType, SimpleLineSymbol>();
  		createSymbols();
+ 		ICmdPostIf cmdPost = msoModel.getMsoManager().getCmdPost();
+		loadObjects(cmdPost.getAreaListItems().toArray());
 	}
  	
  	protected IMsoFeature createMsoFeature(IMsoObjectIf msoObject) 

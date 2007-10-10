@@ -12,6 +12,7 @@ import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.MsoFeatureClass;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
@@ -55,10 +56,11 @@ public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoD
 	protected EnumSet<IMsoManagerIf.MsoClassCode> myInterests = null;
 
 	public AbstractMsoFeatureLayer(IMsoManagerIf.MsoClassCode classCode, 
-			IMsoFeatureLayer.LayerCode layerCode, IMsoModelIf msoModel) {
+			IMsoFeatureLayer.LayerCode layerCode, IMsoModelIf msoModel, ISpatialReference srs) {
 		this.classCode = classCode;
 		this.layerCode = layerCode;
 		this.msoModel = msoModel;
+		this.srs = srs;
 		featureClass = new MsoFeatureClass();
 		name = Utils.translate(layerCode);
 		
@@ -116,6 +118,23 @@ public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoD
 	protected IMsoFeature createMsoFeature(IMsoObjectIf msoFeature) 
 			throws AutomationException, IOException {
 		return null;
+	}
+	
+	protected void loadObjects(Object[] objects)  {
+		try {
+			MsoFeatureClass msoFC = (MsoFeatureClass)featureClass;
+			for (int i = 0; i < objects.length; i++) {
+				IMsoObjectIf msoObj = (IMsoObjectIf)objects[i];
+				IMsoFeature msoFeature = createMsoFeature(msoObj);
+				msoFC.addFeature(msoFeature);
+			}
+		} catch (AutomationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void addDiskoLayerEventListener(IMsoLayerEventListener listener) {
@@ -248,10 +267,6 @@ public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoD
 	public void setSpatialReferenceByRef(ISpatialReference srs)
 			throws IOException, AutomationException {
 		this.srs = srs;
-		for (int i = 0; i < featureClass.featureCount(null); i++) {
-			IMsoFeature feature = (IMsoFeature)featureClass.getFeature(i);
-			feature.setSpatialReference(srs);
-		}
 	}
 
 	public ISpatialReference getSpatialReference() throws IOException, AutomationException {

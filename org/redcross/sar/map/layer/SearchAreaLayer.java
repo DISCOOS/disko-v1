@@ -8,6 +8,7 @@ import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.SearchAreaFeature;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.ISearchAreaIf;
 
@@ -16,6 +17,7 @@ import com.esri.arcgis.display.RgbColor;
 import com.esri.arcgis.display.SimpleFillSymbol;
 import com.esri.arcgis.display.SimpleLineSymbol;
 import com.esri.arcgis.display.TextSymbol;
+import com.esri.arcgis.geometry.ISpatialReference;
 import com.esri.arcgis.geometry.Polygon;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.system.ITrackCancel;
@@ -28,11 +30,13 @@ public class SearchAreaLayer extends AbstractMsoFeatureLayer {
 	private TextSymbol textSymbol = null;
 	private String[] labels = null;
  	
- 	public SearchAreaLayer(IMsoModelIf msoModel) {
+ 	public SearchAreaLayer(IMsoModelIf msoModel, ISpatialReference srs) {
  		super(IMsoManagerIf.MsoClassCode.CLASSCODE_SEARCHAREA, 
- 				LayerCode.SEARCH_AREA_LAYER, msoModel);
+ 				LayerCode.SEARCH_AREA_LAYER, msoModel, srs);
  		createlabels();
  		createSymbols();
+ 		ICmdPostIf cmdPost = msoModel.getMsoManager().getCmdPost();
+		loadObjects(cmdPost.getSearchAreaListItems().toArray());
 	}
  	
  	protected IMsoFeature createMsoFeature(IMsoObjectIf msoObject) 

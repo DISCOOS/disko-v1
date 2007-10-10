@@ -109,7 +109,7 @@ public class DrawTool extends AbstractCommandTool {
 			map.addIMapControlEvents2Listener(new MapControlAdapter());
 
 			// getting operation areas
-			opAreaLayer = (OperationAreaLayer) map.getMapManager().getMsoLayer(
+			opAreaLayer = (OperationAreaLayer) map.getMsoLayer(
 					IMsoFeatureLayer.LayerCode.OPERATION_AREA_LAYER);
 		}
 	}

@@ -4,15 +4,18 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 
 import org.redcross.sar.map.feature.IMsoFeature;
+import org.redcross.sar.map.feature.MsoFeatureClass;
 import org.redcross.sar.map.feature.OperationAreaFeature;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 
 import com.esri.arcgis.display.IDisplay;
 import com.esri.arcgis.display.RgbColor;
 import com.esri.arcgis.display.SimpleFillSymbol;
 import com.esri.arcgis.display.SimpleLineSymbol;
+import com.esri.arcgis.geometry.ISpatialReference;
 import com.esri.arcgis.geometry.Polygon;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.system.ITrackCancel;
@@ -23,10 +26,12 @@ public class OperationAreaLayer extends AbstractMsoFeatureLayer {
  	private SimpleFillSymbol symbol = null;
 	private SimpleFillSymbol selectionSymbol = null;
  	
- 	public OperationAreaLayer(IMsoModelIf msoModel) {
+ 	public OperationAreaLayer(IMsoModelIf msoModel, ISpatialReference srs) {
  		super(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA, 
- 				LayerCode.OPERATION_AREA_LAYER, msoModel);
+ 				LayerCode.OPERATION_AREA_LAYER, msoModel, srs);
  		createSymbols();
+ 		ICmdPostIf cmdPost = msoModel.getMsoManager().getCmdPost();
+		loadObjects(cmdPost.getOperationAreaListItems().toArray());
 	}
  	
  	protected IMsoFeature createMsoFeature(IMsoObjectIf msoObject) 

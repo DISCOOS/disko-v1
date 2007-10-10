@@ -1,7 +1,11 @@
 package org.redcross.sar.map;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.redcross.sar.map.layer.IMsoFeatureLayer;
+import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 
 import com.esri.arcgis.carto.FeatureLayer;
@@ -20,6 +24,13 @@ public interface IDiskoMap {
 			AutomationException;
 	
 	public void setActiveTool(ITool tool) throws IOException, AutomationException;
+	
+	public List getMsoLayers();
+
+	
+	public List getMsoLayers(IMsoManagerIf.MsoClassCode classCode);
+	
+	public IMsoFeatureLayer getMsoLayer(IMsoFeatureLayer.LayerCode layerCode);
 	
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#getClipLayerSelectionModel()

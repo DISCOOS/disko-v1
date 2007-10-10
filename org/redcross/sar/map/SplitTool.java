@@ -46,7 +46,7 @@ public class SplitTool extends AbstractCommandTool {
 		p.setY(y);
 		transform(p);
 
-		IMsoFeatureLayer editLayer = map.getMapManager().getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER);
+		IMsoFeatureLayer editLayer = map.getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER);
 		MsoFeatureClass featureClass = (MsoFeatureClass)editLayer.getFeatureClass();
 		IFeature feature = search(featureClass, p);
 		if (feature != null && feature instanceof IMsoFeature) {

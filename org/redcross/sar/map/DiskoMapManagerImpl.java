@@ -30,7 +30,6 @@ public class DiskoMapManagerImpl implements IDiskoMapManager {
 
 	private IDiskoApplication app = null;
 	private ArrayList<DiskoMap> maps = null;
-	private List<AbstractMsoFeatureLayer> msoLayers = null;
 	private String primarMxdDoc = null;
 	private String secondaryMxdDoc = null;
 	private boolean primarActive = true;
@@ -39,14 +38,6 @@ public class DiskoMapManagerImpl implements IDiskoMapManager {
 	public DiskoMapManagerImpl(IDiskoApplication app) {
 		this.app = app;
 		maps = new ArrayList<DiskoMap>();
-		
-		msoLayers = new ArrayList<AbstractMsoFeatureLayer>();
-		msoLayers.add(new POILayer(app.getMsoModel()));
-		msoLayers.add(new PlannedAreaLayer(app.getMsoModel()));
-		msoLayers.add(new FlankLayer(app.getMsoModel()));
-		msoLayers.add(new SearchAreaLayer(app.getMsoModel()));
-		msoLayers.add(new OperationAreaLayer(app.getMsoModel()));
-		msoLayers.add(new OperationAreaMaskLayer(app.getMsoModel()));
 		setInitMxdPaths();		
 	}
 
@@ -203,31 +194,6 @@ public class DiskoMapManagerImpl implements IDiskoMapManager {
 		//sort list		
 		Collections.sort(maps, new MapInfoComparator()); 
 		return maps;
-	}
-	
-	public List getMsoLayers() {
-		return msoLayers;
-	}
-	
-	public List getMsoLayers(IMsoManagerIf.MsoClassCode classCode) {
-		ArrayList<IMsoFeatureLayer> result = new ArrayList<IMsoFeatureLayer>();
-		for (int i = 0; i < msoLayers.size(); i++) {
-			IMsoFeatureLayer msoFeatureLayer = (IMsoFeatureLayer)msoLayers.get(i);
-			if (msoFeatureLayer.getClassCode() == classCode) {
-				result.add(msoFeatureLayer);
-			}
-		}
-		return result;
-	}
-	
-	public IMsoFeatureLayer getMsoLayer(IMsoFeatureLayer.LayerCode layerCode) {
-		for (int i = 0; i < msoLayers.size(); i++) {
-			IMsoFeatureLayer msoFeatureLayer = (IMsoFeatureLayer)msoLayers.get(i);
-			if (msoFeatureLayer.getLayerCode() == layerCode) {
-				return msoFeatureLayer;
-			}
-		}
-		return null;
 	}
 	
 	public void initWMSLayers() throws IOException{

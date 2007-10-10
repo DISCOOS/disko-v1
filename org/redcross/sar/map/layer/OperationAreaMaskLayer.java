@@ -7,12 +7,14 @@ import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.OperationAreaMaskFeature;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 
 import com.esri.arcgis.display.IDisplay;
 import com.esri.arcgis.display.RgbColor;
 import com.esri.arcgis.display.SimpleFillSymbol;
 import com.esri.arcgis.display.TransparencyDisplayFilter;
+import com.esri.arcgis.geometry.ISpatialReference;
 import com.esri.arcgis.geometry.Polygon;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.system.ITrackCancel;
@@ -23,10 +25,12 @@ public class OperationAreaMaskLayer extends AbstractMsoFeatureLayer {
 	private SimpleFillSymbol fill = null;
 	private TransparencyDisplayFilter filter = null;
 	
-	public OperationAreaMaskLayer(IMsoModelIf msoModel) {
+	public OperationAreaMaskLayer(IMsoModelIf msoModel, ISpatialReference srs) {
 		super(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA,
-				LayerCode.OPERATION_AREA_MASK_LAYER, msoModel);
+				LayerCode.OPERATION_AREA_MASK_LAYER, msoModel, srs);
 		createSymbols();
+		ICmdPostIf cmdPost = msoModel.getMsoManager().getCmdPost();
+		loadObjects(cmdPost.getOperationAreaListItems().toArray());
 	}
 	
 	protected IMsoFeature createMsoFeature(IMsoObjectIf msoObject) 

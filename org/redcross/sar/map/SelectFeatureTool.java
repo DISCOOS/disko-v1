@@ -44,7 +44,7 @@ public class SelectFeatureTool extends AbstractCommandTool {
 		p.setY(y); 
 		transform(p);
 
-		List layers = map.getMapManager().getMsoLayers();
+		List layers = map.getMsoLayers();
 		for (int i = 0; i < layers.size(); i++) {
 			IMsoFeatureLayer layer = (IMsoFeatureLayer)layers.get(i);
 			if (layer.isSelectable()) {

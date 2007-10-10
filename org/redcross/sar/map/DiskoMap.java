@@ -10,11 +10,19 @@ import com.esri.arcgis.geodatabase.IFeature;
 import com.esri.arcgis.geodatabase.QueryFilter;
 import com.esri.arcgis.geometry.Envelope;
 import com.esri.arcgis.geometry.IEnvelope;
+import com.esri.arcgis.geometry.ISpatialReference;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.systemUI.ITool;
 import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.MsoFeatureClass;
+import org.redcross.sar.map.layer.AbstractMsoFeatureLayer;
+import org.redcross.sar.map.layer.FlankLayer;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
+import org.redcross.sar.map.layer.OperationAreaLayer;
+import org.redcross.sar.map.layer.OperationAreaMaskLayer;
+import org.redcross.sar.map.layer.POILayer;
+import org.redcross.sar.map.layer.PlannedAreaLayer;
+import org.redcross.sar.map.layer.SearchAreaLayer;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.IAssignmentIf;
@@ -26,6 +34,7 @@ import org.redcross.sar.mso.event.MsoEvent.Update;
 import javax.swing.*;
 import javax.swing.border.SoftBevelBorder;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -40,6 +49,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	private static final long serialVersionUID = 1L;
 	private static final double pixelSize = 0.000377;//meter
 	private String mxdDoc = null;
+	private IMsoModelIf msoModel = null;
 	private IDiskoMapManager mapManager = null;
 	private MsoLayerSelectionModel msoLayerSelectionModel = null;
 	private WMSLayerSelectionModel wmsLayerSelectionModel = null;
@@ -47,6 +57,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	private IDiskoTool currentTool = null;
 	private boolean supressDrawing = false;
 	protected EnumSet<IMsoManagerIf.MsoClassCode> myInterests = null;
+	private List<AbstractMsoFeatureLayer> msoLayers = null;
 
 	/**
 	 * Default constructor
@@ -55,6 +66,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 			throws IOException, AutomationException {
 		this.mxdDoc = mxdDoc;
 		this.mapManager = mapManager;
+		this.msoModel = msoModel;
 
 		myInterests = EnumSet.of(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
 		myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA);
@@ -97,18 +109,21 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	private void initLayers() throws java.io.IOException, AutomationException {
 		// add custom layers
 		IMap focusMap = getActiveView().getFocusMap();
-		List customLayers = mapManager.getMsoLayers();
-		for (int i = 0; i < customLayers.size(); i++) {
-			IFeatureLayer layer = (IFeatureLayer)customLayers.get(i);
-			layer.setSpatialReferenceByRef(getSpatialReference());
+		ISpatialReference srs = getSpatialReference();
+		msoLayers = new ArrayList<AbstractMsoFeatureLayer>();
+		msoLayers.add(new POILayer(msoModel,srs));
+		msoLayers.add(new PlannedAreaLayer(msoModel,srs));
+		msoLayers.add(new FlankLayer(msoModel,srs));
+		msoLayers.add(new SearchAreaLayer(msoModel,srs));
+		msoLayers.add(new OperationAreaLayer(msoModel,srs));
+		msoLayers.add(new OperationAreaMaskLayer(msoModel,srs));
+		
+		for (int i = 0; i < msoLayers.size(); i++) {
+			IFeatureLayer layer = (IFeatureLayer)msoLayers.get(i);
 			focusMap.addLayer(layer);
 			layer.setCached(true);
 		}
-		// reactivate
-		/*getActiveView().deactivate();
-				getActiveView().activate(getHWnd());
-				getActiveView().refresh();*/
-
+		
 		// set all featurelayers not selectabel
 		for (int i = 0; i < focusMap.getLayerCount(); i++) {
 			ILayer layer = focusMap.getLayer(i);
@@ -126,15 +141,39 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 			return;
 		}
 		IMsoObjectIf msoObj = (IMsoObjectIf)e.getSource();
-		List msoLayers = mapManager.getMsoLayers(msoObj.getMsoClassCode());
-		IMsoFeatureLayer flayer = (IMsoFeatureLayer)msoLayers.get(0);
+		List layers = getMsoLayers(msoObj.getMsoClassCode());
+		IMsoFeatureLayer flayer = (IMsoFeatureLayer)layers.get(0);
 		if (flayer.isDirty()) {
 			refreshLayer(flayer, null);
 		}
 	}
+	
+	public List getMsoLayers() {
+		return msoLayers;
+	}
+	
+	public List getMsoLayers(IMsoManagerIf.MsoClassCode classCode) {
+		ArrayList<IMsoFeatureLayer> result = new ArrayList<IMsoFeatureLayer>();
+		for (int i = 0; i < msoLayers.size(); i++) {
+			IMsoFeatureLayer msoFeatureLayer = (IMsoFeatureLayer)msoLayers.get(i);
+			if (msoFeatureLayer.getClassCode() == classCode) {
+				result.add(msoFeatureLayer);
+			}
+		}
+		return result;
+	}
+	
+	public IMsoFeatureLayer getMsoLayer(IMsoFeatureLayer.LayerCode layerCode) {
+		for (int i = 0; i < msoLayers.size(); i++) {
+			IMsoFeatureLayer msoFeatureLayer = (IMsoFeatureLayer)msoLayers.get(i);
+			if (msoFeatureLayer.getLayerCode() == layerCode) {
+				return msoFeatureLayer;
+			}
+		}
+		return null;
+	}
 
 	public void refreshMsoLayers() {
-		List msoLayers = mapManager.getMsoLayers();
 		for (int i = 0; i < msoLayers.size(); i++) {
 			IMsoFeatureLayer flayer = (IMsoFeatureLayer)msoLayers.get(i);
 			if (flayer.isDirty()) {
@@ -144,9 +183,9 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	}
 
 	public void refreshMsoLayers(IMsoManagerIf.MsoClassCode classCode) {
-		List msoLayers = mapManager.getMsoLayers(classCode);
-		for (int i = 0; i < msoLayers.size(); i++) {
-			IMsoFeatureLayer flayer = (IMsoFeatureLayer)msoLayers.get(i);
+		List layers = getMsoLayers(classCode);
+		for (int i = 0; i < layers.size(); i++) {
+			IMsoFeatureLayer flayer = (IMsoFeatureLayer)layers.get(i);
 			if (flayer.isDirty()) {
 				refreshLayer(flayer, null);
 			}
@@ -303,9 +342,9 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 		}
 		if (msoObject != null) {
 			IEnvelope env = null;
-			List msoLayers = mapManager.getMsoLayers(msoObject.getMsoClassCode());
-			for (int i = 0; i < msoLayers.size(); i++) {
-				IFeatureLayer flayer = (IFeatureLayer)msoLayers.get(i);
+			List layers = getMsoLayers(msoObject.getMsoClassCode());
+			for (int i = 0; i < layers.size(); i++) {
+				IFeatureLayer flayer = (IFeatureLayer)layers.get(i);
 				MsoFeatureClass msoFC = (MsoFeatureClass)flayer.getFeatureClass();
 				IMsoFeature msoFeature = msoFC.getFeature(msoObject.getObjectId());
 				IEnvelope extent = msoFeature.getExtent();
@@ -329,9 +368,9 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 		}
 		if (msoObject != null) {
 			IEnvelope env = null;
-			List msoLayers = mapManager.getMsoLayers(msoObject.getMsoClassCode());
-			for (int i = 0; i < msoLayers.size(); i++) {
-				IFeatureLayer flayer = (IFeatureLayer)msoLayers.get(i);
+			List layers = getMsoLayers(msoObject.getMsoClassCode());
+			for (int i = 0; i < layers.size(); i++) {
+				IFeatureLayer flayer = (IFeatureLayer)layers.get(i);
 				MsoFeatureClass msoFC = (MsoFeatureClass)flayer.getFeatureClass();
 				IMsoFeature msoFeature = msoFC.getFeature(msoObject.getObjectId());
 				IEnvelope extent = msoFeature.getExtent();
@@ -372,10 +411,10 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 		}
 		if (msoObject != null) {
 			IEnvelope env = null;
-			List msoLayers = mapManager.getMsoLayers(msoObject.getMsoClassCode());
+			List layers = getMsoLayers(msoObject.getMsoClassCode());
 			
-			for (int i = 0; i < msoLayers.size(); i++) {
-				IFeatureLayer flayer = (IFeatureLayer)msoLayers.get(i);
+			for (int i = 0; i < layers.size(); i++) {
+				IFeatureLayer flayer = (IFeatureLayer)layers.get(i);
 				MsoFeatureClass msoFC = (MsoFeatureClass)flayer.getFeatureClass();
 				IMsoFeature msoFeature = msoFC.getFeature(msoObject.getObjectId());
 				IEnvelope extent = msoFeature.getExtent();
@@ -416,9 +455,9 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 			msoObject = assignment.getPlannedArea();
 		}
 		if (msoObject != null) {
-			List msoLayers = mapManager.getMsoLayers(msoObject.getMsoClassCode());
-			for (int i = 0; i < msoLayers.size(); i++) {
-				IMsoFeatureLayer flayer = (IMsoFeatureLayer)msoLayers.get(i);
+			List layers = getMsoLayers(msoObject.getMsoClassCode());
+			for (int i = 0; i < layers.size(); i++) {
+				IMsoFeatureLayer flayer = (IMsoFeatureLayer)layers.get(i);
 				MsoFeatureClass msoFC = (MsoFeatureClass)flayer.getFeatureClass();
 				flayer.clearSelected();
 				IMsoFeature msoFeature = msoFC.getFeature(msoObject.getObjectId());

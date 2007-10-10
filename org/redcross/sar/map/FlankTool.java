@@ -51,7 +51,7 @@ public class FlankTool extends AbstractCommandTool {
 		p.setY(y);
 		transform(p);
 
-		IMsoFeatureLayer editLayer = map.getMapManager().getMsoLayer(
+		IMsoFeatureLayer editLayer = map.getMsoLayer(
 				IMsoFeatureLayer.LayerCode.FLANK_LAYER);
 		MsoFeatureClass featureClass = (MsoFeatureClass)editLayer.getFeatureClass();
 		IFeature feature = search(featureClass, p);

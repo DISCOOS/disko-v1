@@ -8,6 +8,7 @@ import org.redcross.sar.map.feature.FlankFeature;
 import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 
 import com.esri.arcgis.display.IDisplay;
@@ -15,6 +16,7 @@ import com.esri.arcgis.display.LineFillSymbol;
 import com.esri.arcgis.display.RgbColor;
 import com.esri.arcgis.display.SimpleLineSymbol;
 import com.esri.arcgis.geometry.IPolygon;
+import com.esri.arcgis.geometry.ISpatialReference;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.system.ITrackCancel;
 
@@ -24,10 +26,12 @@ public class FlankLayer extends AbstractMsoFeatureLayer {
 	private LineFillSymbol blueFill = null;
 	private LineFillSymbol redFill  = null;
 	
-	public FlankLayer(IMsoModelIf msoModel) {
+	public FlankLayer(IMsoModelIf msoModel, ISpatialReference srs) {
 		super(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA,
-				LayerCode.FLANK_LAYER, msoModel);
+				LayerCode.FLANK_LAYER, msoModel, srs);
 		createSymbols();
+		ICmdPostIf cmdPost = msoModel.getMsoManager().getCmdPost();
+		loadObjects(cmdPost.getAreaListItems().toArray());
 	}
 	
 	protected IMsoFeature createMsoFeature(IMsoObjectIf msoObject) 

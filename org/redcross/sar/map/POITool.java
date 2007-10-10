@@ -47,10 +47,12 @@ public class POITool extends AbstractCommandTool {
 		if (obj instanceof IDiskoMap) {
 			map = (DiskoMap)obj;
 			poiDialog = (POIDialog)dialog;
+			IMsoFeatureLayer msoLayer = map.getMsoLayer(IMsoFeatureLayer.LayerCode.POI_LAYER);
+			msoLayer.addDiskoLayerEventListener(poiDialog);
 			poiDialog.setLocationRelativeTo(map, DiskoDialog.POS_WEST, false);
 			
 			//getting operation areas
-			opAreaLayer = (OperationAreaLayer) map.getMapManager().getMsoLayer(
+			opAreaLayer = (OperationAreaLayer) map.getMsoLayer(
 					IMsoFeatureLayer.LayerCode.OPERATION_AREA_LAYER);
 		}
 	}
