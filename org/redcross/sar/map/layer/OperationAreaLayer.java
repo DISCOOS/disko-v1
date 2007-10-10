@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 
 import org.redcross.sar.map.feature.IMsoFeature;
-import org.redcross.sar.map.feature.MsoFeatureClass;
 import org.redcross.sar.map.feature.OperationAreaFeature;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;

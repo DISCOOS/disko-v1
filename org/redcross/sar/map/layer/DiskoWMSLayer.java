@@ -6,8 +6,6 @@ import com.esri.arcgis.carto.IDataLayer;
 import com.esri.arcgis.carto.ILayer;
 import com.esri.arcgis.carto.IWMSGroupLayer;
 import com.esri.arcgis.carto.IWMSLayer;
-import com.esri.arcgis.carto.WMSLayer;
-import com.esri.arcgis.carto.WMSGroupLayer;
 import com.esri.arcgis.carto.WMSMapLayer;
 import com.esri.arcgis.gisclient.IWMSLayerDescription;
 import com.esri.arcgis.gisclient.IWMSServiceDescription;
@@ -18,7 +16,7 @@ import com.esri.arcgis.system.PropertySet;
 
 public class DiskoWMSLayer {
 	
-	public void DiskoWMSLayer(){
+	public DiskoWMSLayer(){
 		
 	}
 	

@@ -12,7 +12,6 @@ import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.MsoFeatureClass;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
@@ -88,7 +87,7 @@ public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoD
 				//System.out.println("ADDED_REFERENCE_EVENT "+classCode);
 				msoFeature = createMsoFeature(msoObj);
 				msoFC.addFeature(msoFeature);
-				isDirty = true;
+				//isDirty = true;
 			}
 			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && 
 					msoFeature != null && msoFeature.geometryIsChanged(msoObj)) {
