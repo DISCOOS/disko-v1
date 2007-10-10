@@ -161,8 +161,8 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
       try
       {
          this.setContentPane(getUIFactory().getContentPanel());
-         //this.pack();
-         getFrame().setExtendedState(Frame.MAXIMIZED_BOTH);
+         this.pack();
+         //getFrame().setExtendedState(Frame.MAXIMIZED_BOTH);
          Log.init("DISKO");
          // show me
          setVisible(true);         
@@ -538,9 +538,6 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
         role.selectDiskoWpModule(0);
         getUIFactory().getMainMenuPanel().showMenu(role.getName());
         getUIFactory().getMenuPanel().setVisible(true);
-        //pack();
-        getFrame().setExtendedState(Frame.MAXIMIZED_BOTH);
-
     }
 
     /* (non-Javadoc)
