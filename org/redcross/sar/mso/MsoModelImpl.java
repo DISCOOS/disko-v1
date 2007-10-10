@@ -131,6 +131,10 @@ public class MsoModelImpl implements IMsoModelIf
         return m_updateModeStack.peek();
     }
 
+    public boolean hasUncommitedChanges()
+    {
+        return m_commitManager.hasUncommitedChanges();
+    }
 
     public void commit()
     {

@@ -107,6 +107,16 @@ public class CommitManager
         m_updates.clear();
     }
 
+    /**
+     * Tell if some uncommited changes exist
+     *
+     * @return true if uncommited changes exist 
+     */
+    public boolean hasUncommitedChanges()
+    {
+        return m_updates.size() > 0;
+    }
+
     private class UpdateHolder
     {
         final IMsoObjectIf m_object;

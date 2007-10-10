@@ -98,4 +98,6 @@ public interface IMsoModelIf
      * Local modifications since previous commit or rollback are ignored.
      */
     public void rollback();
+
+    public boolean hasUncommitedChanges();
 }
