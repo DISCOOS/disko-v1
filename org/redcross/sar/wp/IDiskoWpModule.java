@@ -67,6 +67,11 @@ public interface IDiskoWpModule {
 	 * Called when this IDiskoWpModule is deactivated
 	 */
 	public void deactivated();
+	
+	 /**
+     * @return Returns whether or not WP module can be deactivated. E.g. if uncommitted data is stored.
+     */
+    public boolean confirmDeactivate();
 
 	public void addDiskoWpEventListener(IDiskoWpEventListener listener);
 

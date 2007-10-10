@@ -1366,7 +1366,7 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 
 	public static boolean isMessageDirty()
 	{
-		return m_messageDirty;
+		return m_messageDirty || m_wpMessageLog.getMsoModel().hasUncommitedChanges();
 	}
 
 	/**
@@ -1374,7 +1374,7 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 	 */
 	public static void clearCurrentMessage()
 	{
-		if(m_newMessage)
+		if(m_newMessage && m_currentMessage != null)
 		{
 			m_currentMessage.deleteObject();
 		}

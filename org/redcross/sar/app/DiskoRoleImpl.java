@@ -136,6 +136,17 @@ public class DiskoRoleImpl implements IDiskoRole, IDiskoWpEventListener {
 	public IDiskoWpModule selectDiskoWpModule(IDiskoWpModule module) {
 		if (module != null) {
 			if (currentModule != null) {
+				// Require current WP to confirm switch (E.g. confirm abort for uncommitted changes).
+				// Override AbstractDiskoWpModule#confirmDeactivate() to define WP specific confirm
+				if(!currentModule.confirmDeactivate()) {
+					MainMenuPanel mainMenu = app.getUIFactory().getMainMenuPanel();
+					int index =  modules.indexOf(currentModule);
+					AbstractButton button = mainMenu.getButton(getName(), index);
+					if (button != null) {
+						button.setSelected(true);
+					}
+					return currentModule;
+				}
 				// deactiat previous module
 				try {
 					currentModule.getMap().setCurrentToolByRef(null);

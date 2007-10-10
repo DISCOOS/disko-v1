@@ -252,6 +252,31 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
         SubMenuPanel subMenu = this.getApplication().getUIFactory().getSubMenuPanel();
         subMenu.getFinishButton().setEnabled(true);
         subMenu.getCancelButton().setEnabled(true);
+        
+        TaskDialog taskDialog = getApplication().getUIFactory().getTaskDialog();
+        taskDialog.setVisible(false);
+    }
+    
+    @Override
+    public boolean confirmDeactivate()
+    {
+    	if(getMsoModel().hasUncommitedChanges())
+    	{
+    		Object[] dialogOptions = {getText("Yes.text"), getText("No.text")};
+    		int n = JOptionPane.showOptionDialog(this.getApplication().getFrame(), 
+    				getText("UncommittedChanges.text"), 
+    				getText("UncommittedChanges.header"), 
+    				JOptionPane.YES_NO_OPTION, 
+    				JOptionPane.QUESTION_MESSAGE, 
+    				null, 
+    				dialogOptions, 
+    				dialogOptions[0]);
+    		return (n == JOptionPane.YES_OPTION);
+    	}
+    	else
+    	{
+    		return true;
+    	}
     }
 
     public void cancel()

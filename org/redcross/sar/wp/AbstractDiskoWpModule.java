@@ -410,5 +410,10 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule
             fireTick(m_elapsedTime);
         }
     }
+    
+    public boolean confirmDeactivate()
+    {
+    	return true;
+    }
 
 }
