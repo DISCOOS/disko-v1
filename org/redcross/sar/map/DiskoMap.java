@@ -74,8 +74,6 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 		myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_POI);
         myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_ROUTE);
         myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_TRACK);
-		IMsoEventManagerIf msoEventManager = msoModel.getEventManager();
-		msoEventManager.addClientUpdateListener(this);
 		initialize();
 	}
 	
@@ -117,6 +115,9 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 		msoLayers.add(new SearchAreaLayer(msoModel,srs));
 		msoLayers.add(new OperationAreaLayer(msoModel,srs));
 		msoLayers.add(new OperationAreaMaskLayer(msoModel,srs));
+		
+		IMsoEventManagerIf msoEventManager = msoModel.getEventManager();
+		msoEventManager.addClientUpdateListener(this);
 		
 		for (int i = 0; i < msoLayers.size(); i++) {
 			IFeatureLayer layer = (IFeatureLayer)msoLayers.get(i);
