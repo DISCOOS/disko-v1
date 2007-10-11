@@ -272,6 +272,9 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 					freeHandTool.setArea(null);
 				}
 			}
+			else {
+				reset();
+			}
 		} catch (RuntimeException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
