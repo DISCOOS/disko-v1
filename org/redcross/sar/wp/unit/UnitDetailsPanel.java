@@ -12,7 +12,10 @@ import org.redcross.sar.mso.event.MsoEvent.Update;
 import org.redcross.sar.util.except.IllegalOperationException;
 
 import javax.swing.*;
-import javax.swing.table.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -381,7 +384,7 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf, IT
                     String[] options = {m_resources.getString("Yes.text"), m_resources.getString("No.text")};
                     int n = JOptionPane.showOptionDialog(null,
                             m_resources.getString("ChangeToPersonnelView.text"),
-                            m_resources.getString("ChangeToPersonnelView.title"),
+                            m_resources.getString("ChangeToPersonnelView.header"),
                             JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE,
                             null,

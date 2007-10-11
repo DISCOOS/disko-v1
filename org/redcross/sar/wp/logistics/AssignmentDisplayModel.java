@@ -89,7 +89,13 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
         // set header text
         m_selectableAssignments.getHeaderLabel().setText(AssignmentImpl.getStatusText(m_assigmentSelection));
         //setSelectedStatus(IAssignmentIf.AssignmentStatus.READY);
-        
+
+        handleMsoUpdateEvent(null);
+    }
+
+    void reInitModel(IAssignmentListIf anAssgnmentList)
+    {
+        m_AssignmentList = anAssgnmentList;
         handleMsoUpdateEvent(null);
     }
 

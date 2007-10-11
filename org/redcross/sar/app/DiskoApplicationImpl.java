@@ -17,7 +17,6 @@ import java.io.File;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.ResourceBundle;
-import javax.swing.JComponent;
 
 /**
  * Implements the DiskoApplication interface. This class is responsible for connecting to the
@@ -35,11 +34,11 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
    private static final String CHOOSETEXT = "CHOOSE.OP.TEXT";
    private static final String INIT_ERROR_TEXT = "INIT.ERROR.TEXT";
    private static final String INIT_ERROR_SHUTDOWN_TEXT = "INIT.ERROR.SHUTDOWN.TEXT";
-   private static final String OPERATION_FINISHED_TITLE ="OPERATION.FINISHED.TITLE";
+   private static final String OPERATION_FINISHED_TITLE = "OPERATION.FINISHED.HEADER";
    private static final String OPERATION_FINISHED_TEXT ="OPERATION.FINISHED.TEXT";
     private static final String OPERATION_CREATED_TEXT = "OPERATION.CREATED.TEXT";
-    private static final String OPERATION_CREATED_TITLE = "OPERATION.CREATED.TITLE";
-    
+    private static final String OPERATION_CREATED_TITLE = "OPERATION.CREATED.HEADER";
+
    private static final long serialVersionUID = 1L;
    private IDiskoRole currentRole = null;
    private Hashtable<String, IDiskoRole> roles = null;
@@ -165,7 +164,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
          //getFrame().setExtendedState(Frame.MAXIMIZED_BOTH);
          Log.init("DISKO");
          // show me
-         setVisible(true);         
+         setVisible(true);
          //initiate modeldriver
          getMsoModel().getModelDriver().initiate();
          getMsoModel().getModelDriver().setDiskoApplication(this);
@@ -314,8 +313,18 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
     public void operationFinished()
     {
         java.util.List<String[]> opList = getMsoModel().getModelDriver().getActiveOperations();
-        int ans=JOptionPane.showConfirmDialog(uiFactory.getContentPanel(), bundle.getString(OPERATION_FINISHED_TEXT),
-       bundle.getString(OPERATION_FINISHED_TITLE), JOptionPane.YES_NO_OPTION);
+
+        String[] options = {bundle.getString("QUIT.TEXT"), bundle.getString("NEWACTION.TEXT")};
+        int ans = JOptionPane.showOptionDialog(
+                uiFactory.getContentPanel(),
+                bundle.getString(OPERATION_FINISHED_TEXT),
+                bundle.getString(OPERATION_FINISHED_TITLE),
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]);
+
         if(ans==JOptionPane.YES_OPTION)
         {
             shutdown();
@@ -332,7 +341,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
             {
                @Override
                protected String doInBackground() throws Exception
-               {                  
+               {
                   long maxTime = Long.parseLong(getProperty("max.wait.time", "" + 60 * 1000));
                   long currTime = System.currentTimeMillis();
                   long startTime = System.currentTimeMillis();
@@ -469,7 +478,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
                }
                return "false";
             }
-             
+
             @Override
             protected void done()
             {

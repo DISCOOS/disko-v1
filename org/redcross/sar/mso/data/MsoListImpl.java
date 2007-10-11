@@ -141,6 +141,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         {
             ((AbstractMsoObject) m_owner).registerAddedReference();
         }
+        System.out.println("Added reference from " + m_owner + " to " + anObject);
     }
 
     public void clear()
@@ -228,8 +229,10 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         }
         if (refObj != null)
         {
-//            String s = this.m_owner != null ? this.m_owner.toString() : this.toString();
-//            System.out.println("Delete reference from " + s + " to " + anObject);
+            String s = this.m_owner != null ? this.m_owner.toString() : this.toString();
+            System.out.println("Delete reference from " + s + " to " + anObject);
+            s = "(copy) Delete reference from " + s + " to " + anObject;
+            System.out.println(s);
             ((AbstractMsoObject) refObj).removeDeleteListener(this);
             if (m_owner != null)
             {
@@ -293,7 +296,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         M refObj = getItem();
         while (refObj != null)
         {
-            doDeleteReference(refObj);
+            removeReference(refObj);
             refObj = getItem();
         }
     }

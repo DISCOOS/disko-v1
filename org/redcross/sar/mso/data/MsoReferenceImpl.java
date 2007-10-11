@@ -136,6 +136,15 @@ public class MsoReferenceImpl<T extends IMsoObjectIf> implements IMsoReferenceIf
 
         if (valueChanged)
         {
+            if (oldReference != null)
+            {
+                System.out.println("Removed reference from " + m_owner + " to " + oldReference);
+            }
+            if (aReference != null)
+            {
+                System.out.println("Added reference from " + m_owner + " to " + aReference);
+            }
+
             registerReferenceChange(aReference, oldReference);
         }
     }
@@ -273,7 +282,10 @@ public class MsoReferenceImpl<T extends IMsoObjectIf> implements IMsoReferenceIf
             /*
             Remove reference the "ordinary" way. Will create event for modified reference and state in this object.
              */
-//            System.out.println("Delete reference from " + this.m_owner != null ? this.m_owner : this + " to " + anObject);
+            String s = this.m_owner != null ? this.m_owner.toString() : this.toString();
+            System.out.println("Delete reference from " + s + " to " + anObject);
+            s = "(copy) Delete reference from " + s + " to " + anObject;
+            System.out.println(s);
             setReference(null);
             return true;
         }

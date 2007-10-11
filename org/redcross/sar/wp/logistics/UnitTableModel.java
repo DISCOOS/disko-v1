@@ -201,6 +201,13 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         }
     }
 
+    void reInitModel(IUnitListIf aUnitList)
+    {
+        m_unitList = aUnitList;
+        buildTable();
+        fireTableDataChanged();
+    }
+
     @Override
     public String getColumnName(int column)
     {

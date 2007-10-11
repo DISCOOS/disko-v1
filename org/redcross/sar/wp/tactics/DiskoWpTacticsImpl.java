@@ -1,36 +1,16 @@
 package org.redcross.sar.wp.tactics;
 
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JList;
-import javax.swing.JToggleButton;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
+import com.esri.arcgis.interop.AutomationException;
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.event.DialogEvent;
 import org.redcross.sar.event.IDialogEventListener;
 import org.redcross.sar.event.IMsoLayerEventListener;
 import org.redcross.sar.event.MsoLayerEvent;
-import org.redcross.sar.gui.DiskoDialog;
-import org.redcross.sar.gui.NavBar;
-import org.redcross.sar.gui.POIDialog;
-import org.redcross.sar.gui.SubMenuPanel;
-import org.redcross.sar.gui.UIFactory;
+import org.redcross.sar.gui.*;
 import org.redcross.sar.map.DiskoMap;
 import org.redcross.sar.map.DrawTool;
 import org.redcross.sar.map.FreeHandTool;
-import org.redcross.sar.map.IDiskoMapManager;
 import org.redcross.sar.map.POITool;
 import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
@@ -38,21 +18,22 @@ import org.redcross.sar.map.layer.OperationAreaLayer;
 import org.redcross.sar.map.layer.PlannedAreaLayer;
 import org.redcross.sar.map.layer.SearchAreaLayer;
 import org.redcross.sar.mso.IMsoManagerIf;
-import org.redcross.sar.mso.data.IAreaIf;
-import org.redcross.sar.mso.data.IAssignmentListIf;
-import org.redcross.sar.mso.data.ICmdPostIf;
-import org.redcross.sar.mso.data.IHypothesisIf;
-import org.redcross.sar.mso.data.IMsoObjectIf;
-import org.redcross.sar.mso.data.IOperationAreaIf;
-import org.redcross.sar.mso.data.ISearchAreaIf;
-import org.redcross.sar.mso.data.ISearchIf;
-import org.redcross.sar.mso.data.IUnitIf;
+import org.redcross.sar.mso.data.*;
 import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
 import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
 
-import com.esri.arcgis.interop.AutomationException;
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
 
 /**
  * Implements the DiskoApTaktikk interface
@@ -104,7 +85,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		dialogs = new ArrayList<DiskoDialog>();
 		elementListSelectionListener = new ElementListSelectionListener();
         buttonSize = getApplication().getUIFactory().getLargeButtonSize();
-		
+
 		NavBar navBar = getApplication().getNavBar();
 		drawTool = navBar.getDrawTool();
 		freeHandTool = navBar.getFreeHandTool();
@@ -129,7 +110,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		layoutButton(getDescriptionToggleButton(), true);
 		layoutButton(getUnitToggleButton(), true);
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 *
@@ -138,7 +119,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 	public String getName() {
 		return "Taktikk";
 	}
-	
+
 	public void activated() {
 		super.activated();
 		NavBar navBar = getApplication().getNavBar();
@@ -147,7 +128,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		myTools.add(NavBar.ToolCommandType.POI_TOOL);
 		//myTools.add(NavBar.ToolCommandType.FLANK_TOOL);
 		myTools.add(NavBar.ToolCommandType.ERASE_COMMAND);
-		
+
 		myTools.add(NavBar.ToolCommandType.ZOOM_IN_TOOL);
 		myTools.add(NavBar.ToolCommandType.ZOOM_OUT_TOOL);
 		myTools.add(NavBar.ToolCommandType.PAN_TOOL);
@@ -158,7 +139,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		myTools.add(NavBar.ToolCommandType.MAP_TOGGLE_COMMAND);
 		myTools.add(NavBar.ToolCommandType.TOC_COMMAND);
 		navBar.showButtons(myTools);
-		
+
 		opAreaLayer = (OperationAreaLayer) getMap().getMsoLayer(IMsoFeatureLayer.LayerCode.OPERATION_AREA_LAYER);
 		searchAreaLayer = (SearchAreaLayer) getMap().getMsoLayer(IMsoFeatureLayer.LayerCode.SEARCH_AREA_LAYER);
 		plannedAreaLayer = (PlannedAreaLayer) getMap().getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER);
@@ -184,9 +165,9 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		NavBar navBar = getApplication().getNavBar();
 		navBar.hideDialogs();
 	}
-	
+
 	private void selectElement() {
-		ICmdPostIf cmdPost = getMsoManager().getCmdPost();
+		ICmdPostIf cmdPost = getCmdPost();
 		JList list = getElementDialog().getElementList();
 		list.clearSelection();
 		if (cmdPost.getOperationAreaListItems().size() == 0) {
@@ -204,7 +185,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 			drawButton.doClick();
 		}
 	}
-	
+
 	class ElementListSelectionListener implements ListSelectionListener {
 
 		public void valueChanged(ListSelectionEvent e) {
@@ -218,7 +199,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 				return;
 			}
 			hideDialogs(null);
-			ICmdPostIf cmdPost = getMsoManager().getCmdPost();
+			ICmdPostIf cmdPost = getCmdPost();
 			if (element == IMsoManagerIf.MsoClassCode.CLASSCODE_OPERATIONAREA) {
 				showOperationAreaButtons();
 				POIType[] poiTypes = { POIType.INTELLIGENCE };
@@ -254,7 +235,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 				poiDialog.setTypes(poiTypes);
 				drawTool.setMsoClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
 				freeHandTool.setMsoClassCode(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA);
-				
+
 			}
 			drawTool.setArea(null);
 			freeHandTool.setArea(null);
@@ -339,7 +320,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 				IAreaIf area = (IAreaIf) currentMsoObj;
 				ISearchIf search = (ISearchIf)area.getOwningAssignment();
 				if (search == null) {
-					ICmdPostIf cmdPost = getMsoManager().getCmdPost();
+					ICmdPostIf cmdPost = getCmdPost();
 					IAssignmentListIf assignmentList = cmdPost.getAssignmentList();
 					search = assignmentList.createSearch();
 					try {
@@ -375,7 +356,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		fireTaskFinished();
 		reset();
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.geodata.engine.disko.task.DiskoAp#cancel()
@@ -393,7 +374,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		drawTool.setMsoClassCode(null);
 		drawTool.setArea(null);
 		setLayersSelectable(true);
-		
+
 		callingWp = null;
 		//Possible to go back ?
 		/*if (callingWp != null) {
@@ -406,7 +387,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		//select next element
 		selectElement();
 	}
-	
+
 	private void clearSelected() {
 		try {
 			List msoLayers = getMap().getMsoLayers();
@@ -494,7 +475,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		}
 		return searchRequirementDialog;
 	}
-	
+
 	private EstimateDialog getEstimateDialog() {
 		if (estimateDialog == null) {
 			estimateDialog = new EstimateDialog(this);
@@ -504,7 +485,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		}
 		return estimateDialog;
 	}
-	
+
 	private DescriptionDialog getDescriptionDialog() {
 		if (descriptionDialog == null) {
 			descriptionDialog = new DescriptionDialog(this);
@@ -594,13 +575,13 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 	}
 
 	private void showElementListButton() {
-		ICmdPostIf cmdPost = getMsoManager().getCmdPost();
+		ICmdPostIf cmdPost = getCmdPost();
 		getListToggleButton().setVisible(
 				cmdPost.getOperationAreaListItems().size() > 0
 				&& cmdPost.getSearchAreaListItems().size() > 0);
 
 	}
-	
+
 	private void setLayersSelectable(boolean isSelectable) {
 		try {
 			opAreaLayer.setSelectable(isSelectable);
@@ -862,7 +843,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		}
 		return requirementToggleButton;
 	}
-	
+
 	private JToggleButton getEstimateToggleButton() {
 		if (estimateToggleButton == null) {
 			try {
@@ -881,9 +862,9 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 						hideDialogs(dialog);
 						if (estimateToggleButton.isSelected() && dialog.isVisible()) {
 							dialog.setVisible(false);
-						} 
+						}
 						else {
-							dialog.setLocationRelativeTo((JComponent) getMap(), 
+							dialog.setLocationRelativeTo((JComponent) getMap(),
 									DiskoDialog.POS_SOUTH, true);
 							dialog.setVisible(true);
 						}
@@ -935,7 +916,7 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 	public void reInitWP()
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

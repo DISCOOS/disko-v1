@@ -1,13 +1,11 @@
 package org.redcross.sar.wp.logistics;
 
 import com.esri.arcgis.interop.AutomationException;
-
 import org.redcross.sar.event.IMsoLayerEventListener;
 import org.redcross.sar.event.MsoLayerEvent;
-import org.redcross.sar.gui.renderers.IconRenderer;
 import org.redcross.sar.gui.renderers.DiskoTableHeaderCellRenderer;
+import org.redcross.sar.gui.renderers.IconRenderer;
 import org.redcross.sar.map.IDiskoMap;
-import org.redcross.sar.map.IDiskoMapManager;
 import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.layer.IMsoFeatureLayer;
 import org.redcross.sar.mso.IMsoManagerIf;
@@ -64,6 +62,8 @@ public class LogisticsPanel implements IMsoUpdateListenerIf, IMsoLayerEventListe
 
     private InfoPanelHandler m_infoPanelHandler;
 
+    AssignmentDisplayModel m_asgDisplayModel;
+    UnitTableModel m_unitTableModel;
     private AssignmentLabel.AssignmentLabelActionHandler m_labelActionHandler;
     private AssignmentLabel.AssignmentLabelActionHandler m_listPanelActionHandler;
 
@@ -76,9 +76,9 @@ public class LogisticsPanel implements IMsoUpdateListenerIf, IMsoLayerEventListe
         setupUI();
         m_wpModule = aWp;
         m_map = m_wpModule.getMap();
-        
-        m_unitList = m_wpModule.getMsoManager().getCmdPost().getUnitList();
-        m_assignmentList = m_wpModule.getMsoManager().getCmdPost().getAssignmentList();
+
+        m_unitList = m_wpModule.getCmdPost().getUnitList();
+        m_assignmentList = m_wpModule.getCmdPost().getAssignmentList();
 
         if (!defineTransferHandler())
         {
@@ -95,6 +95,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf, IMsoLayerEventListe
         WorkspacePanel.addComponentListener(new ComponentListener()
         {
             boolean initialized = false;
+
             public void componentResized(ComponentEvent e)
             {
             }
@@ -105,7 +106,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf, IMsoLayerEventListe
 
             public void componentShown(ComponentEvent e)
             {
-                if (! initialized)
+                if (!initialized)
                 {
                     setSplitters();
                     setPanelSizes();
@@ -120,7 +121,16 @@ public class LogisticsPanel implements IMsoUpdateListenerIf, IMsoLayerEventListe
         });
     }
 
-	public void setLayersSelectable() {
+    public void reInitPanel()
+     {
+         m_unitList = m_wpModule.getCmdPost().getUnitList();
+         m_assignmentList = m_wpModule.getCmdPost().getAssignmentList();
+         m_unitTableModel = (UnitTableModel) m_unitTable.getModel();
+         m_unitTableModel.reInitModel(m_unitList);
+         m_asgDisplayModel.reInitModel(m_assignmentList);
+     }
+
+    public void setLayersSelectable() {
         try {
         	// disable
         	m_map.getMsoLayer(IMsoFeatureLayer.LayerCode.OPERATION_AREA_LAYER).setSelectable(false);
@@ -135,7 +145,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf, IMsoLayerEventListe
         	e.printStackTrace();
         }
 	}
-    
+
     private boolean defineTransferHandler()
     {
         try
@@ -251,13 +261,13 @@ public class LogisticsPanel implements IMsoUpdateListenerIf, IMsoLayerEventListe
         hl.setHorizontalAlignment(SwingConstants.CENTER);
         hl.setPreferredSize(new Dimension(40, 40));
 
-        AssignmentDisplayModel adm = new AssignmentDisplayModel(m_selectableAssignmentsPanel, m_priAssignmentsPanel, m_wpModule.getMmsoEventManager(), m_assignmentList);
+        m_asgDisplayModel = new AssignmentDisplayModel(m_selectableAssignmentsPanel, m_priAssignmentsPanel, m_wpModule.getMmsoEventManager(), m_assignmentList);
     }
 
     private void initUnitTable()
     {
-        final UnitTableModel model = new UnitTableModel(m_unitTable, m_wpModule, m_unitList, m_iconActionHandler);
-        m_unitTable.setModel(model);
+        m_unitTableModel = new UnitTableModel(m_unitTable, m_wpModule, m_unitList, m_iconActionHandler);
+        m_unitTable.setModel(m_unitTableModel);
         m_unitTable.setAutoCreateColumnsFromModel(true);
         m_unitTable.setDefaultRenderer(IconRenderer.UnitIcon.class, new LogisticsIconRenderer());
         m_unitTable.setDefaultRenderer(IconRenderer.AssignmentIcon.class, new LogisticsIconRenderer());
@@ -286,7 +296,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf, IMsoLayerEventListe
                     return;
                 }
 
-                model.setSelectedCell(m_unitTable.getSelectionModel().getLeadSelectionIndex(),
+                m_unitTableModel.setSelectedCell(m_unitTable.getSelectionModel().getLeadSelectionIndex(),
                         m_unitTable.getColumnModel().getSelectionModel().
                                 getLeadSelectionIndex());
 
@@ -299,7 +309,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf, IMsoLayerEventListe
         {
             public void focusGained(FocusEvent e)
             {
-                model.setSelectedCell(m_unitTable.getSelectionModel().getLeadSelectionIndex(),
+                m_unitTableModel.setSelectedCell(m_unitTable.getSelectionModel().getLeadSelectionIndex(),
                         m_unitTable.getColumnModel().getSelectionModel().
                                 getLeadSelectionIndex());
             }
@@ -339,7 +349,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf, IMsoLayerEventListe
     {
         // Splitter between map/info panels and assignment/unit panels
         m_splitter1.setContinuousLayout(true);
-        m_splitter1.setDividerLocation(Math.max(375,m_splitter1.getWidth() - 590));
+        m_splitter1.setDividerLocation(Math.max(375, m_splitter1.getWidth() - 590));
         m_splitter1.setResizeWeight(1.0);
 
         // Splitter between assignment and unit panels
@@ -349,7 +359,7 @@ public class LogisticsPanel implements IMsoUpdateListenerIf, IMsoLayerEventListe
 
         // Splitter between map and info panels, make tha map initially a square
         m_splitter3.setContinuousLayout(true);
-        m_splitter3.setDividerLocation(Math.max(375,m_splitter3.getHeight()-280));
+        m_splitter3.setDividerLocation(Math.max(375, m_splitter3.getHeight() - 280));
         m_splitter3.setResizeWeight(1.0);
     }
 

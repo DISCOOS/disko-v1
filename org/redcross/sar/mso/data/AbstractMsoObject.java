@@ -128,13 +128,13 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     public void addDeleteListener(IMsoObjectHolderIf aHolder)
     {
         m_objectHolders.add(aHolder);
-//        System.out.println("Add delete listener from: " + this + ", count = " + m_objectHolders.size());
+        System.out.println("Add delete listener from: " + this + " to: " + aHolder + ", count = " + m_objectHolders.size());
     }
 
     public void removeDeleteListener(IMsoObjectHolderIf aHolder)
     {
         m_objectHolders.remove(aHolder);
-//        System.out.println("Remove delete listener from: " + this + ", count = " + m_objectHolders.size());
+        System.out.println("Remove delete listener from: " + this + " to: " + aHolder + ", count = " + m_objectHolders.size());
     }
 
     public int listenerCount()
@@ -153,18 +153,24 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
 
             for (MsoReferenceImpl reference : m_referenceObjects.values())
             {
-                System.out.println("Delete reference from " + this + " to " + reference.getReference());
-                reference.setReference(null);
+                if (reference.getReference() != null)                {
+                    System.out.println("Delete reference from " + this + " to " + reference.getReference());
+                    reference.setReference(null);
+                }
             }
-
             doDelete();
             return true;
         }
         return false;
     }
 
-    private boolean canDelete()
+    protected boolean canDelete()
     {
+        if (MsoModelImpl.getInstance().getUpdateMode() != IMsoModelIf.UpdateMode.LOCAL_UPDATE_MODE)
+        {
+            return true;
+        }
+
         try
         {
             for (IMsoObjectHolderIf holder : this.m_objectHolders)
@@ -182,7 +188,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
 
     public void doDelete()
     {
-//        System.out.println("Deleting " + this);
+        System.out.println("Deleting " + this);
         while (m_objectHolders.size() > 0)
         {
             Iterator<IMsoObjectHolderIf> iterator = m_objectHolders.iterator();
