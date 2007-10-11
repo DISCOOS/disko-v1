@@ -195,7 +195,7 @@ public class DrawTool extends AbstractCommandTool {
 		for (int i = 0; i < pline.getPointCount(); i++) {
 			polygon.addPoint(pline.getPoint(i), null, null);
 		}
-		//polygon.simplify();
+		polygon.simplify();
 		return polygon;
 	}
 
