@@ -41,6 +41,7 @@ public class EraseCommand implements ICommand {
 				IMsoFeature msoFeature = (IMsoFeature)selected.get(j);
 				if (msoFeature.isSelected())  {
 					msoFeature.getMsoObject().deleteObject();
+					layer.clearSelected();
 					return;
 				}
 			}

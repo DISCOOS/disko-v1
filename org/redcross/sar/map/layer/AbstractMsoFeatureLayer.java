@@ -87,7 +87,9 @@ public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoD
 				//System.out.println("ADDED_REFERENCE_EVENT "+classCode);
 				msoFeature = createMsoFeature(msoObj);
 				msoFC.addFeature(msoFeature);
-				//isDirty = true;
+				if (msoFeature.getShape() != null) {
+					isDirty = true;
+				}
 			}
 			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && 
 					msoFeature != null && msoFeature.geometryIsChanged(msoObj)) {
