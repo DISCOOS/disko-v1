@@ -108,8 +108,8 @@ public class DiskoReport {
 		String jasperFileName = app.getProperty("report.TACTICS_TEMPLATE")+".jasper";
 		//inntil videre kjøres kompilering også
 		
-		String jrxmlFileName = app.getProperty("report.TACTICS_TEMPLATE")+".jrxml";
-		compile(jrxmlFileName, jasperFileName);	
+		//String jrxmlFileName = app.getProperty("report.TACTICS_TEMPLATE")+".jrxml";
+		//compile(jrxmlFileName, jasperFileName);	
 		
 		
 		//lopper igjennom oppdrag som skal printes. Foreløpig bare èn
@@ -154,8 +154,8 @@ public class DiskoReport {
 		String jasperFileName = app.getProperty("report.UNITLOG_TEMPLATE")+".jasper";
 		//inntil videre kjøres kompilering også
 		
-		String jrxmlFileName = app.getProperty("report.UNITLOG_TEMPLATE")+".jrxml";
-		compile(jrxmlFileName, jasperFileName);
+		//String jrxmlFileName = app.getProperty("report.UNITLOG_TEMPLATE")+".jrxml";
+		//compile(jrxmlFileName, jasperFileName);
 		
 		
 		ICmdPostIf cmdPost = app.getMsoModel().getMsoManager().getCmdPost();
@@ -179,7 +179,7 @@ public class DiskoReport {
 		try{			
 			sourceFile = new File(reportTemplate_path + jasperFileName);
 			
-			System.out.println("skal lese jasper fil...");
+			//System.out.println("skal lese jasper fil..." + sourceFile.getPath() + ", " + sourceFile );
 			JasperReport jasperReport = (JasperReport)JRLoader.loadObject(sourceFile);
 			jasperPrint = JasperFillManager.fillReport(jasperReport, map, new JREmptyDataSource());				
 											
