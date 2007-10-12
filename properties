@@ -1,5 +1,5 @@
-Database.path=C:\\DISKO\\Bergen.gdb
-MxdDocument.path=C:\\DISKO\\Bergen.mxd
+Database.path=C:\\DISKO\\Trondheim.gdb
+MxdDocument.path=C:\\DISKO\\Trondheim.mxd
 MxdDocument.secondary.path=C:\\DISKO\\Trondheim_hoyde.mxd
 MxdDocument.catalog.path=C:\\DISKO\\
 BasicLine.featureClass.Name=basislinje
@@ -18,6 +18,8 @@ Logistikk.icon=icons/60x60/logistics.gif
 Sambandslogg.icon=icons/60x60/log.gif
 Oppgaver.icon=icons/60x60/task.gif
 Kart.icon=icons/60x60/map.gif
+Tilstand.icon=icons/60x60/state.gif
+Beslutningsstøtte.icon=icons/60x60/ds.gif
 Enhet.icon=icons/60x60/unit.gif
 
 NAV.icon=icons/60x60/navigation.gif
@@ -28,6 +30,10 @@ cancel.icon=icons/60x60/abort.gif
 CarUnit.icon=icons/60x60/car.gif
 DogUnit.icon=icons/60x60/dog.gif
 ManUnit.icon=icons/60x60/man.gif
+CmdUnit.icon=icons/60x60/command.gif
+AirUnit.icon=icons/60x60/airplane.gif
+BoatUnit.icon=icons/60x60/boat.gif
+
 FinishOperation.icon=icons/closeOperation.gif
 SelectOperation.icon=icons/chooseOperation.gif
 Merge.icon=icons/merge.gif
@@ -53,7 +59,7 @@ NextButton.icon=
 
 ToolCommandType.POI_TOOL.icon=icons/60x60/poi.gif
 ToolCommandType.FLANK_TOOL.icon=icons/60x60/edge.gif
-ToolCommandType.DRAW_TOOL.icon=icons/60x60/drawing.gif
+ToolCommandType.DRAW_TOOL.icon=icons/60x60/drawline.gif
 ToolCommandType.ERASE_TOOL.icon=icons/60x60/eraser.gif
 ToolCommandType.SPLIT_TOOL.icon=icons/60x60/split.gif
 ToolCommandType.TOC_TOOL.icon=icons/60x60/toc.gif
@@ -70,6 +76,7 @@ ToolCommandType.ZOOM_TO_LAST_EXTENT_BACKWARD_COMMAND.icon=icons/60x60/back.gif
 ToolCommandType.MAP_TOGGLE_COMMAND.icon=icons/60x60/map_1.gif
 ToolCommandType.MAP_TOGGLE_COMMAND_2.icon=icons/60x60/map_2.gif
 ToolCommandType.TOC_COMMAND.icon=icons/60x60/toc.gif
+ToolCommandType.FREEHAND_TOOL.icon=icons/60x60/freehand.gif
 
 UnitType.COMMAND_POST.icon=icons/60x60/command.gif
 UnitType.TEAM.icon=icons/60x60/people.gif
@@ -95,7 +102,7 @@ AssignmentStatus.ABORTED.text=Avbrutt
 AssignmentStatus.FINISHED.text=Ferdig
 AssignmentStatus.REPORTED.text=Rapportert
 
-SearchSubType.LINE.text=Linjesøk
+SearchSubType.LINE.text=Søkekjede
 SearchSubType.PATROL.text=Patruljesøk
 SearchSubType.URBAN.text=Bysøk
 SearchSubType.SHORELINE.text=Strandlinjesøk
@@ -107,21 +114,21 @@ AssignmentPriority.HIGH.text=Høy
 AssignmentPriority.MEDIUM.text=Normal
 AssignmentPriority.LOW.text=Lav
   
-AssignmentType.GENERAL.text=Generell
+AssignmentType.GENERAL.text=Generelt
 AssignmentType.ASSISTANCE.text=Assistanse
 AssignmentType.SEARCH.text=Søk
 
 HypothesisStatus.ACTIVE.text=Aktiv
-HypothesisStatus.PLAUSIBLE.text=Trolig
+HypothesisStatus.PLAUSIBLE.text=Sannsynlig
 HypothesisStatus.REJECTED.text=Forkastet
 HypothesisStatus.CHECKED.text=Sjekket
-HypothesisStatus.SUCCESS.text=Success
+HypothesisStatus.SUCCESS.text=Bekreftet
 
 POIType.GENERAL.text=Generell
 POIType.FINDING.text=Funn
-POIType.SILENT_WITNESS.text=Stille vitne
+POIType.SILENT_WITNESS.text=Taust vitne
 POIType.START.text=Start
-POIType.STOP.text=stop
+POIType.STOP.text=Stop
 POIType.VIA.text=Via
 POIType.INTELLIGENCE.text=Etterretning
 POIType.OBSERVATION.text=Observasjon
@@ -132,11 +139,11 @@ MsoClassCode.CLASSCODE_CMDPOST.text=Kommandopost
 MsoClassCode.CLASSCODE_HYPOTHESIS.text=Hypotese
 MsoClassCode.CLASSCODE_BRIEFING.text=Briefing
 MsoClassCode.CLASSCODE_SUBJECT.text=Subjekt
-MsoClassCode.CLASSCODE_INTELLIGENCE.text=Etterrettning
+MsoClassCode.CLASSCODE_INTELLIGENCE.text=Etterretning
 MsoClassCode.CLASSCODE_POI.text=PUI
 MsoClassCode.CLASSCODE_TRACK.text=Spor
 MsoClassCode.CLASSCODE_ROUTE.text=Rute
-MsoClassCode.CLASSCODE_CALLOUT.text=
+MsoClassCode.CLASSCODE_CALLOUT.text=Varsel
 MsoClassCode.CLASSCODE_PERSONNEL.text=Personell
 MsoClassCode.CLASSCODE_UNIT.text=Enhet
 MsoClassCode.CLASSCODE_SKETCH.text=Skisse
@@ -153,11 +160,11 @@ MsoClassCode.CLASSCODE_FORECAST.text=Værmelding
 MsoClassCode.CLASSCODE_ENVIRONMENT.text=Miljø
 MsoClassCode.CLASSCODE_DATASOURCE.text=Datakilde
 
-PRIMARY_SEARCH_AREA.text=Primær søketeig
-SECONDARY_SEARCH_AREA.text=Sekundær søketeig
-PRIORITY3_SEARCH_AREA.text=3. Prioritet
-PRIORITY4_SEARCH_AREA.text=4. Prioritet
-PRIORITY5_SEARCH_AREA.text=4. Prioritet
+PRIMARY_SEARCH_AREA.text=Primært søkeområde
+SECONDARY_SEARCH_AREA.text=Sekundært søkeområde
+PRIORITY3_SEARCH_AREA.text=3. Prioritet 3
+PRIORITY4_SEARCH_AREA.text=4. Prioritet 4
+PRIORITY5_SEARCH_AREA.text=4. Prioritet 5
 
 SHOW_ALL.text=Vis alle
 
@@ -171,6 +178,34 @@ TacticsTaskType.ESTIMATE_TASK.icon=icons/60x60/estimate.gif
 TacticsTaskType.DESCRIPTION_TASK.icon=icons/60x60/description.gif
 TacticsTaskType.UNIT_TASK.icon=icons/60x60/unit.gif
 TacticsTaskType.MAKE_READY_TASK.icon=icons/60x60/ready.gif
+TacticsTaskType.MAKE_DRAFT_TASK.icon=icons/60x60/draft.gif
+TacticsTaskType.PRINT_TASK.icon=icons/60x60/printer.gif
+
+# Task
+Task.text=Oppgave
+TaskType.text=Type
+TaskType.TRANSPORT.text=Transport
+TaskType.RESOURCE.text=Ressurs
+TaskType.INTELLIGENCE.text=Etterretning
+TaskType.GENERAL.text=Generell
+TaskPriority.text=Prioritet
+TaskPriority.HIGH.text=Høy
+TaskPriority.NORMAL.text=Normal
+TaskPriority.LOW.text=Lav
+TaskDue.text=Forfall (min)
+TaskAlert.text=Varsel (min)
+TaskStatus.text=Status
+TaskStatus.STARTED.text=Startet
+TaskStatus.UNTREATED.text=Ubehandlet
+TaskStatus.POSTPONED.text=Utsatt
+TaskStatus.FINISHED.text=Ferdig
+TaskProgress.text=Fremdrift (%)
+TaskDescription.text=Beskrivelse
+TaskSource.text=Kilde
+
+
+
+
 TacticsTaskType.MAKE_DRAFT_TASK.icon=
 TacticsTaskType.PRINT_TASK.icon=icons/60x60/printer.gif
 

@@ -243,12 +243,13 @@ public class IconRenderer implements Icon
         private void initImageMap()
         {
             String[] unitIconNames = new String[]{
-                    "ManUnit.icon", // todo Use correct icon
+                    "CmdUnit.icon", 
                     "ManUnit.icon",
                     "DogUnit.icon",
-                    "CarUnit.icon",  // todo Use correct icon
-                    "CarUnit.icon",  // todo Use correct icon
+                    "AirUnit.icon",  
+                    "BoatUnit.icon", 
                     "CarUnit.icon"
+                    
             };
             IUnitIf.UnitType[] unitTypes = new IUnitIf.UnitType[]{
                     IUnitIf.UnitType.COMMAND_POST,
@@ -258,14 +259,6 @@ public class IconRenderer implements Icon
                     IUnitIf.UnitType.BOAT,
                     IUnitIf.UnitType.VEHICLE
             };
-
-//            UnitType.COMMAND_POST.icon=icons/people.gif
-//            UnitType.TEAM.icon=icons/people.gif
-//            UnitType.DOG.icon=icons/dog.gif
-//            UnitType.AIRCRAFT.icon=icons/people.gif
-//            UnitType.BOAT.icon=icons/people.gif
-//            UnitType.VEHICLE.icon=icons/car.gif
-
 
             EnumSet<IBoatIf.BoatSubType> allBoatSubTypes = EnumSet.allOf(IBoatIf.BoatSubType.class);
 
@@ -373,7 +366,7 @@ public class IconRenderer implements Icon
                     "PathSearch.icon",
                     "ManUnit.icon",
                     "ManUnit.icon", // todo correct icon
-                    "PointSearch.icon",
+                    "ManUnit.icon", // todo correct icon
                     "OnionSearch.icon",  // todo Use correct icon
                     "CarUnit.icon",  // todo Use correct icon
                     "DogUnit.icon"
