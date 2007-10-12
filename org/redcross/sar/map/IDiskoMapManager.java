@@ -9,4 +9,6 @@ public interface IDiskoMapManager {
 	public List getMaps();
 	
 	public String getCurrentMxd();
+	
+	public IDiskoMap getPrintMap();
 }
