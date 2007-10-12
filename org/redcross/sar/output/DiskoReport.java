@@ -43,12 +43,11 @@ public class DiskoReport {
 	
 	private IDiskoApplication app = null;
 	private String reportTemplate_path = null;
-	private String jasperfiles_path = null;
+	private String reportPrint_path = null;
 		
 	private MsoModelImpl m_msoModel = null;
 	private IActiveView activeView = null;
-	
-	private DiskoMap diskoMap = null;
+		
 	private DiskoMap diskoMap_print = new DiskoMap();
 	private IDiskoMapManager mapManager = null;
 	
@@ -73,18 +72,12 @@ public class DiskoReport {
 		
 		m_msoModel = (MsoModelImpl) app.getMsoModel();	
 		this.reportMapScale = Double.parseDouble(app.getProperty("report.mapscale"));
-		
-		diskoMap = (DiskoMap) app.getCurrentMap();
-		try{
-			srs = diskoMap.getSpatialReference();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		
+				
 		mapManager = app.getDiskoMapManager();
+
 		
 		this.reportTemplate_path = app.getProperty("report.template.path");
-		this.jasperfiles_path = app.getProperty("report.jasperfiles.path");	
+		this.reportPrint_path = app.getProperty("report.printfile.path");	
 		
 	}	
 	
@@ -95,7 +88,7 @@ public class DiskoReport {
 	public void compile(String jrxmlFileName, String jasperFileName){
 		System.out.println("DiskoReport: compile()");		
 		try{			
-			JasperCompileManager.compileReportToFile(this.reportTemplate_path + jrxmlFileName, this.jasperfiles_path + jasperFileName);			
+			JasperCompileManager.compileReportToFile(this.reportTemplate_path + jrxmlFileName, this.reportTemplate_path + jasperFileName);			
 		}		
 		catch(JRException jre){
 			jre.printStackTrace();
@@ -114,18 +107,25 @@ public class DiskoReport {
 		
 		String jasperFileName = app.getProperty("report.TACTICS_TEMPLATE")+".jasper";
 		//inntil videre kjøres kompilering også
-		/*
+		
 		String jrxmlFileName = app.getProperty("report.TACTICS_TEMPLATE")+".jrxml";
 		compile(jrxmlFileName, jasperFileName);	
-		*/
+		
 		
 		//lopper igjennom oppdrag som skal printes. Foreløpig bare èn
 		IAssignmentIf assignment = null;
 		IPOIListIf poiList = null;
 		String jasperFile = app.getProperty("report.TACTICS_TEMPLATE")+".jasper";
 		
+		if(srs == null){
+			try{
+				srs = diskoMap_print.getSpatialReference();
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+		
 		for (int i=0;i<assignments.size(); i++){
-			//lager ett nytt tmp DiskoMap object
 			assignment = assignments.get(i);
 			makePrintMap(assignment);
 			try{
@@ -149,21 +149,21 @@ public class DiskoReport {
 		
 	}
 	
-	public void printUnitLog(int unitNr){		
+	public void printUnitLog(IUnitIf unit){		
 				
 		String jasperFileName = app.getProperty("report.UNITLOG_TEMPLATE")+".jasper";
 		//inntil videre kjøres kompilering også
-		/*
+		
 		String jrxmlFileName = app.getProperty("report.UNITLOG_TEMPLATE")+".jrxml";
 		compile(jrxmlFileName, jasperFileName);
-		*/
+		
 		
 		ICmdPostIf cmdPost = app.getMsoModel().getMsoManager().getCmdPost();
 		IUnitListIf unitList = cmdPost.getUnitList();		
 				
-		UnitlogReportParams unitLogParams = new UnitlogReportParams(unitList, unitNr);
+		UnitlogReportParams unitLogParams = new UnitlogReportParams();
 		//ekstrahere unit verdier
-		Map unitsMap = unitLogParams.getUnitlogReportParams();
+		Map unitsMap = unitLogParams.getUnitlogReportParams(unitList, unit);
 				
 		JasperPrint jPrint = fill(jasperFileName, unitsMap);
 		
@@ -177,12 +177,13 @@ public class DiskoReport {
 		File destFile = null;
 		JasperPrint jasperPrint = null;
 		try{			
-			sourceFile = new File(jasperfiles_path + jasperFileName);
-						
+			sourceFile = new File(reportTemplate_path + jasperFileName);
+			
+			System.out.println("skal lese jasper fil...");
 			JasperReport jasperReport = (JasperReport)JRLoader.loadObject(sourceFile);
 			jasperPrint = JasperFillManager.fillReport(jasperReport, map, new JREmptyDataSource());				
 											
-			destFile = new File(sourceFile.getParent(), jasperReport.getName() + ".jrprint");
+			destFile = new File(reportPrint_path, jasperReport.getName() + ".jrprint");
 			JRSaver.saveObject(jasperPrint, destFile);									
 			
 		} catch(JRException jre){
@@ -215,7 +216,7 @@ public class DiskoReport {
 		timeNow = getTimeNow();
 		
 		MissionOrderReportParams missionOrderPrint = new MissionOrderReportParams();
-		map = missionOrderPrint.setPrintParams(assignment, exportMapPath, role_name, jasperfiles_path, srs, reportMapScale, timeNow);
+		map = missionOrderPrint.setPrintParams(assignment, exportMapPath, role_name, reportTemplate_path, srs, reportMapScale, timeNow);
 		
 		return map;
 		
@@ -224,7 +225,9 @@ public class DiskoReport {
 	private void makePrintMap(IAssignmentIf assignment){
 		try{			
 			//lager nytt kart				
-			diskoMap_print = new DiskoMap(diskoMap.getMxdDoc(), diskoMap.getMapManager(), app.getMsoModel());	
+			//diskoMap_print = new DiskoMap(diskoMap.getMxdDoc(), diskoMap.getMapManager(), app.getMsoModel());	
+			
+			diskoMap_print = (DiskoMap) mapManager.getPrintMap();
 			
 			//zoome til MSO object og sett riktig skala
 			diskoMap_print.zoomToPrintMapExtent(assignment, reportMapScale, mapPrintHeigthSize, mapPrintWidthSize);			
