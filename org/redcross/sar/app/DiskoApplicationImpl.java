@@ -10,6 +10,7 @@ import org.redcross.sar.map.IDiskoMap;
 import org.redcross.sar.map.IDiskoMapManager;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.MsoModelImpl;
+import org.redcross.sar.output.DiskoReport;
 
 import javax.swing.*;
 import java.awt.*;
@@ -48,6 +49,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
    private IDiskoMapManager mapManager = null;
    private MsoModelImpl m_msoModel = null;
    private boolean vaitingForNewOp=false;
+   private DiskoReport diskoReport = null;
 
     /**
     * The main method.
@@ -262,6 +264,10 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
          m_msoModel = MsoModelImpl.getInstance();
       }
       return m_msoModel;
+   }
+   
+   public DiskoReport getDiskoReport(){
+ 	   return this.diskoReport;
    }
 
    /* (non-Javadoc)
