@@ -174,9 +174,9 @@ TacticsTaskType.MAKE_READY_TASK.icon=icons/60x60/ready.gif
 TacticsTaskType.MAKE_DRAFT_TASK.icon=
 TacticsTaskType.PRINT_TASK.icon=icons/60x60/printer.gif
 
-report.template.path=org/redcross/sar/output/jasperTemplates/
-report.jasperfiles.path=org/redcross/sar/output/jasper/
-report.output.path=C:\\DISKO\\output\\
+report.template.path=reports/template/
+report.printfile.path=reports/
+report.output.path=output/
 report.output.printname=diskoprint_
 report.TACTICS_TEMPLATE=MissionOrder
 report.UNITLOG_TEMPLATE=UnitLog
