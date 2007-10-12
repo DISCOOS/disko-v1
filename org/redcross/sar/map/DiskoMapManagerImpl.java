@@ -30,6 +30,7 @@ public class DiskoMapManagerImpl implements IDiskoMapManager {
 
 	private IDiskoApplication app = null;
 	private ArrayList<DiskoMap> maps = null;
+	private IDiskoMap printMap = null;
 	private String primarMxdDoc = null;
 	private String secondaryMxdDoc = null;
 	private boolean primarActive = true;
@@ -52,6 +53,9 @@ public class DiskoMapManagerImpl implements IDiskoMapManager {
 			String mxdDoc = app.getProperty("MxdDocument.path");
 			map = new DiskoMap(mxdDoc, this, app.getMsoModel());
 			maps.add(map);
+			if (printMap == null){
+				printMap = new DiskoMap(mxdDoc, this, app.getMsoModel());
+			}
 		} catch (AutomationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -60,6 +64,11 @@ public class DiskoMapManagerImpl implements IDiskoMapManager {
 			e.printStackTrace();
 		}
 		return map;
+	}
+	
+	public IDiskoMap getPrintMap(){
+		printMap = (DiskoMap) app.getCurrentMap();
+		return printMap;
 	}
 	
 	/**
