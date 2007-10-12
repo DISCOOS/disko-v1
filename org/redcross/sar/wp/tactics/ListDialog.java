@@ -91,7 +91,7 @@ public class ListDialog extends DiskoDialog {
 	}
 	
 	private void sendToPrint() {
-		System.out.println("sendToPrint");
+		//System.out.println("sendToPrint");
 		List<IAssignmentIf> assignments = new ArrayList<IAssignmentIf>();
 		JTable table = getAssignmentTable();
 		wp.getMap();
@@ -207,10 +207,8 @@ public class ListDialog extends DiskoDialog {
 				printButton.setEnabled(false);
 				report = new DiskoReport(app);
 				printButton.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent e) {
-						System.out.println("actionPerformed(): dummy print" ); // TODO Auto-generated Event stub actionPerformed()
+					public void actionPerformed(java.awt.event.ActionEvent e) {						
 						sendToPrint();
-						//report.printPreview();
 					}
 				});
 			} catch (java.lang.Throwable e) {
