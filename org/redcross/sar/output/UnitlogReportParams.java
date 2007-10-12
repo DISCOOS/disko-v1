@@ -4,14 +4,15 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IPersonnelIf;
 import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IUnitListIf;
 
-
 public class UnitlogReportParams {
+	
 	public final static String UNIT_TYPE_NUMBER	= "UnitTypeAndNumber";
 	
 	public final static String LEADER_NAME	= "LeaderName";
@@ -43,26 +44,32 @@ public class UnitlogReportParams {
 	//Utstyr??
 	
 	private Map<String, Object> unitParams = new HashMap<String, Object>() ;
-	private String[][] personell = null;
-	private String[][] callSigns = null;
-	private String[][] assignments = null;
-	private String[] released = null;
+	private String[][] personell = new String[maxPersonsInPrint][2];
+	private String[][] callSigns = new String[maxCallSignsInPrint][2];
+	private String[][] assignments = new String[maxAssignmentsInPrint][2];
+	private String[] released = new String[maxReleasedInPrint];
 		
-	public UnitlogReportParams(IUnitListIf unitList, int unitNr){		
-		extractParams(unitList, unitNr);
+	public UnitlogReportParams(){
 	}
 
-	private void extractParams(IUnitListIf unitList, int unitNr){
+	private void extractParams(IUnitListIf unitList, IUnitIf unit){
 		
-		if(unitList != null){		
-			IUnitIf unit = unitList.getUnit(unitNr);
+		if(unitList != null){
 			if(unit != null){
 				unitParams.put(UNIT_TYPE_NUMBER, unit.getTypeAndNumber());
 				IPersonnelIf leader = unit.getUnitLeader();
-				unitParams.put(LEADER_NAME, leader.getFirstname() + " " + leader.getLastname());
-				unitParams.put(LEADER_TELEPHONE, leader.getTelephone1());
+				if(leader != null){
+					unitParams.put(LEADER_NAME, leader.getFirstname() + " " + leader.getLastname());
+					unitParams.put(LEADER_TELEPHONE, leader.getTelephone1());
+				}
+				else{
+					unitParams.put(LEADER_NAME, "Ikke kjent");
+					unitParams.put(LEADER_TELEPHONE, "");
+				}
 				//co-leader mangler
 				//todo
+				unitParams.put(CO_LEADER_NAME, "Ikke kjent");
+				unitParams.put(CO_LEADER_TELEPHONE, "");
 				
 				makePersonelList(unit);
 				
@@ -70,11 +77,14 @@ public class UnitlogReportParams {
 				
 				makeAssignmentList(unit);		
 				
-				//remarks
-				unitParams.put(REMARKS, unit.getRemarks());
+				//remarks				
+				unitParams.put(REMARKS, unit.getRemarks());				
 				
 				//equipment
 				//todo		
+				
+				//fjerner alle null verdier
+				//putNotNullValue(unitParams);
 			}		
 			else 
 				System.out.println("Unit er tom");
@@ -83,7 +93,8 @@ public class UnitlogReportParams {
 			System.out.println("Unitliste er tom.");
 	}
 	
-	public Map getUnitlogReportParams(){
+	public Map getUnitlogReportParams(IUnitListIf unitList, IUnitIf unit){		
+		extractParams(unitList, unit);
 		return unitParams;
 	}
 
@@ -94,6 +105,7 @@ public class UnitlogReportParams {
 		String personInfo = new String();		
 		Iterator personIter = personelList.iterator();
 		int personCount = 0;
+		int releasedCount = 0;
 		String keyPersonName = new String();
 		String keyPersonTele = new String();
 		String keyReleased = new String();
@@ -111,21 +123,24 @@ public class UnitlogReportParams {
 					released[0] = person.getFirstname()+" "+person.getLastname();
 					keyReleased = KEY_RELEASED_PREFIX + Integer.toString(released.length+1);
 					unitParams.put(keyReleased, released[0]);
+					releasedCount++;
 				}
 				else{
 					released[released.length] = person.getFirstname()+" "+person.getLastname();					
 					keyReleased = KEY_RELEASED_PREFIX + Integer.toString(released.length+1);
 					unitParams.put(keyReleased , released[released.length]);
+					releasedCount++;
 				}
-			}			
+			}		
+			personCount++;
 		}
 		for (int j = 0; j < (maxPersonsInPrint-personsCount); j++){
 			keyPersonName = KEY_PERSON_NAME_PREFIX + Integer.toString((personsCount+1+j));
 			keyPersonTele = KEY_PERSON_TELE_PREFIX + Integer.toString((personsCount+1+j));
 			unitParams.put(keyPersonName, "");
 			unitParams.put(keyPersonTele, "");
-		}
-		int releasedCount = released.length;
+		}	
+		
 		for (int j = 0; j < (maxReleasedInPrint-releasedCount); j++){
 			keyReleased = KEY_RELEASED_PREFIX + Integer.toString((releasedCount+1+j));
 			unitParams.put(keyReleased, "");
@@ -156,13 +171,13 @@ public class UnitlogReportParams {
 				unitParams.put(keyUnit, unit.getUnitNumber());
 			}
 			iter2++;
-		}
+		}		
 		for (int j = 0; j < (maxCallSignsInPrint-unitCount); j++){
-			keyCallSign = KEY_PERSON_NAME_PREFIX + Integer.toString((unitCount+1+j));
-			keyUnit = KEY_PERSON_TELE_PREFIX + Integer.toString((unitCount+1+j));
+			keyCallSign = KEY_CALLSIGN_PREFIX + Integer.toString((unitCount+1+j));
+			keyUnit = KEY_UNIT_PREFIX + Integer.toString((unitCount+1+j));
 			unitParams.put(keyCallSign, "");
 			unitParams.put(keyUnit, "");
-		}
+		}		
 	}
 	
 	private void makeAssignmentList(IUnitIf unit){
@@ -183,14 +198,31 @@ public class UnitlogReportParams {
 			unitParams.put(keyAssignmentNr, assignment.getTypeAndNumber());
 			unitParams.put(keyAssignmentStatus, assignment.getStatusText());
 			iter3++;
-		}
+		}		
 		for (int j = 0; j < (maxAssignmentsInPrint-assignmentCount); j++){
-			keyAssignmentNr = KEY_PERSON_NAME_PREFIX + Integer.toString((assignmentCount+1+j));
-			keyAssignmentStatus = KEY_PERSON_TELE_PREFIX + Integer.toString((assignmentCount+1+j));
+			keyAssignmentNr = KEY_ASSIGNMENT_PREFIX + Integer.toString((assignmentCount+1+j));
+			keyAssignmentStatus = KEY_ASSIGNMENT_STATUS_PREFIX + Integer.toString((assignmentCount+1+j));
 			unitParams.put(keyAssignmentNr, "");
 			unitParams.put(keyAssignmentStatus, "");
 		}
 	}
+	
+	/*
+	private void putNotNullValue(Map<String, Object> printParams){		
+		Set set = printParams.keySet();
+		Iterator iterator = set.iterator();
+		while(iterator.hasNext()){
+			String key = (String) iterator.next();
+			String value = (String) printParams.get(key);			
+			if (value == null){
+				//printParams.put(key, "");//
+				printParams.put(key, "");//testkommentar
+			}
+			else
+				printParams.put(key, value);
+		}
+	}
+	*/
 	
 	
 }
