@@ -2,14 +2,15 @@ package org.redcross.sar.app;
 
 import java.util.Properties;
 
+import javax.swing.JFrame;
+
 import org.redcross.sar.gui.NavBar;
 import org.redcross.sar.gui.SysBar;
 import org.redcross.sar.gui.UIFactory;
 import org.redcross.sar.map.IDiskoMap;
 import org.redcross.sar.map.IDiskoMapManager;
 import org.redcross.sar.mso.IMsoModelIf;
-
-import javax.swing.*;
+import org.redcross.sar.output.DiskoReport;
 
 
 /**
@@ -83,6 +84,12 @@ public interface IDiskoApplication {
 	 * @return A reference to the DiskoModuleLoader
 	 */
 	public DiskoModuleLoader getDiskoModuleLoader();
+	
+	/**
+	 * Get a reference to the DiskoReport.
+	 * @return
+	 */
+	public DiskoReport getDiskoReport();
 	
 	/**
 	 * Open the login dialog
