@@ -174,6 +174,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
          LoginDialog loginDialog = getUIFactory().getLoginDialog();
          loginDialog.setLocationRelativeTo((JComponent)getFrame().getContentPane(),LoginDialog.POS_CENTER,false);
          loginDialog.setVisible(true);
+         diskoReport = new DiskoReport(this);
       }
       catch (Exception e)
       {
