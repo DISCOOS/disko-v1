@@ -67,7 +67,18 @@ public class DiskoMapManagerImpl implements IDiskoMapManager {
 	}
 	
 	public IDiskoMap getPrintMap(){
-		printMap = (DiskoMap) app.getCurrentMap();
+		try {
+			if (printMap == null){
+				String mxdDoc = app.getProperty("MxdDocument.path");
+				printMap = new DiskoMap(mxdDoc, this, app.getMsoModel());
+			}
+		} catch (AutomationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return printMap;
 	}
 	
@@ -134,7 +145,7 @@ public class DiskoMapManagerImpl implements IDiskoMapManager {
 		DiskoMap map = (DiskoMap) app.getCurrentMap();
 		String mapname = map.getDocumentFilename();
 		
-		Envelope extent = (Envelope)map.getExtent();
+		//Envelope extent = (Envelope)map.getExtent();
 		
 		// set invisible
 		map.setVisible(false);
@@ -145,10 +156,10 @@ public class DiskoMapManagerImpl implements IDiskoMapManager {
 		else {
 			map.loadMxFile(this.secondaryMxdDoc, null, null);//sets 2.map active
 		}
-		// set previous extent?
+		/*/ set previous extent?
 		if (!mapname.equalsIgnoreCase(map.getDocumentFilename())) {
 			map.setExtent(extent);
-		}
+		}*/
 		
 		// set visible
 		map.setVisible(true);
