@@ -176,6 +176,7 @@ public class DrawTool extends AbstractCommandTool {
 			msoObj = searchArea;
 		}
 		else if (msoClassCode == IMsoManagerIf.MsoClassCode.CLASSCODE_AREA) {
+			map.setSupressDrawing(true);
 			if (area == null) {
 				IAreaListIf areaList = cmdPost.getAreaList();
 				area = areaList.createArea();
@@ -183,6 +184,8 @@ public class DrawTool extends AbstractCommandTool {
             IRouteIf route = cmdPost.getRouteList().createRoute(MapUtil.getMsoRoute(polyline));
             area.addAreaGeodata(route);
 			msoObj = area;
+			map.setSupressDrawing(false);
+			map.refreshLayer(map.getMsoLayer(IMsoFeatureLayer.LayerCode.AREA_LAYER), null);
 		}
 		map.setSelected(msoObj, true);
 		reset();
