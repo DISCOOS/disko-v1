@@ -66,7 +66,7 @@ public class OperationAreaMaskLayer extends AbstractMsoFeatureLayer {
 	private void createSymbols() {
 		try {
 			filter = new TransparencyDisplayFilter();
-			filter.setTransparency((short)50);
+			filter.setTransparency((short)75);
 
 			fill = new SimpleFillSymbol();
 			RgbColor blueColor = new RgbColor();
