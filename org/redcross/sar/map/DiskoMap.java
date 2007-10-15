@@ -137,7 +137,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	}
 
 	public void handleMsoUpdateEvent(Update e) {
-		if (!isVisible()) {
+		if (!super.isShowing()) {
 			return;
 		}
 		if (supressDrawing) {
@@ -147,6 +147,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 		List layers = getMsoLayers(msoObj.getMsoClassCode());
 		IMsoFeatureLayer flayer = (IMsoFeatureLayer)layers.get(0);
 		if (flayer.isDirty()) {
+			System.out.println("refresh...");
 			refreshLayer(flayer, null);
 		}
 	}
