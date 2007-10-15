@@ -15,6 +15,7 @@ import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
+import org.redcross.sar.mso.event.MsoEvent;
 import org.redcross.sar.mso.event.MsoEvent.EventType;
 import org.redcross.sar.mso.event.MsoEvent.Update;
 
@@ -78,12 +79,15 @@ public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoD
 	public void handleMsoUpdateEvent(Update e) {
 		try {
  			MsoFeatureClass msoFC = (MsoFeatureClass)featureClass;
-			int type = e.getEventTypeMask();
+			int mask = e.getEventTypeMask();
 			IMsoObjectIf msoObj = (IMsoObjectIf)e.getSource();
 			IMsoFeature msoFeature = msoFC.getFeature(msoObj.getObjectId());
 			
-			if (type == EventType.ADDED_REFERENCE_EVENT.maskValue() && 
-					msoFeature == null) {
+			boolean addedReference = (mask & MsoEvent.EventType.ADDED_REFERENCE_EVENT.maskValue()) != 0;
+	        boolean deletedObject  = (mask & MsoEvent.EventType.DELETED_OBJECT_EVENT.maskValue()) != 0;
+	        boolean modifiedObject = (mask & MsoEvent.EventType.MODIFIED_DATA_EVENT.maskValue()) != 0;
+			
+			if (addedReference && msoFeature == null) {
 				//System.out.println("ADDED_REFERENCE_EVENT "+classCode);
 				msoFeature = createMsoFeature(msoObj);
 				msoFC.addFeature(msoFeature);
@@ -91,14 +95,13 @@ public abstract class AbstractMsoFeatureLayer implements IMsoFeatureLayer, IGeoD
 					isDirty = true;
 				}
 			}
-			else if (type == EventType.MODIFIED_DATA_EVENT.maskValue() && 
-					msoFeature != null && msoFeature.geometryIsChanged(msoObj)) {
+			else if (modifiedObject && msoFeature != null && 
+					msoFeature.geometryIsChanged(msoObj)) {
 				//System.out.println("MODIFIED_DATA_EVENT "+classCode);
 				msoFeature.msoGeometryChanged();
 				isDirty = true;
 			}
-			else if (type == EventType.DELETED_OBJECT_EVENT.maskValue() && 
-					msoFeature != null) {
+			else if (deletedObject && msoFeature != null) {
 				//System.out.println("DELETED_OBJECT_EVENT "+classCode);
 				msoFC.removeFeature(msoFeature);
 				isDirty = true;
