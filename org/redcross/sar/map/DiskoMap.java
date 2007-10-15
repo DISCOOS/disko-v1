@@ -137,10 +137,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	}
 
 	public void handleMsoUpdateEvent(Update e) {
-		if (!super.isShowing()) {
-			return;
-		}
-		if (supressDrawing) {
+		if (!super.isShowing() || supressDrawing) {
 			return;
 		}
 		IMsoObjectIf msoObj = (IMsoObjectIf)e.getSource();
