@@ -15,6 +15,8 @@ import org.redcross.sar.output.DiskoReport;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -28,13 +30,17 @@ import java.util.ResourceBundle;
 /**
  * @author geira
  */
-public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
+public class DiskoApplicationImpl extends JFrame implements IDiskoApplication, WindowListener 
 {
    private static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.app.properties.DiskoApplication");
+   private static final String CONFIRMATION_TEXT = "CONFIRMATION.TEXT";
+   private static final String CONFIRMATION_TITLE = "CONFIRMATION.HEADER";
    private static final String CHOOSEOPDESC = "CHOOSE.OP.DESC";
    private static final String CHOOSETEXT = "CHOOSE.OP.TEXT";
    private static final String INIT_ERROR_TEXT = "INIT.ERROR.TEXT";
    private static final String INIT_ERROR_SHUTDOWN_TEXT = "INIT.ERROR.SHUTDOWN.TEXT";
+   private static final String FINISH_TITLE = "FINISH.HEADER";
+   private static final String FINISH_TEXT ="FINISH.TEXT";
    private static final String OPERATION_FINISHED_TITLE = "OPERATION.FINISHED.HEADER";
    private static final String OPERATION_FINISHED_TEXT ="OPERATION.FINISHED.TEXT";
     private static final String OPERATION_CREATED_TEXT = "OPERATION.CREATED.TEXT";
@@ -48,7 +54,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
    private UIFactory uiFactory = null;
    private IDiskoMapManager mapManager = null;
    private MsoModelImpl m_msoModel = null;
-   private boolean vaitingForNewOp=false;
+   private boolean waitingForNewOp=false;
    private DiskoReport diskoReport = null;
 
     /**
@@ -67,7 +73,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
          public void run()
          {
             DiskoApplicationImpl thisClass = new DiskoApplicationImpl();
-            thisClass.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            thisClass.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); //EXIT_ON_CLOSE);
          }
       });
    }
@@ -162,9 +168,13 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
       try
       {
          this.setContentPane(getUIFactory().getContentPanel());
+         //this.pack();
+         getFrame().setPreferredSize(new Dimension(1024,768));
          this.pack();
-         //getFrame().setExtendedState(Frame.MAXIMIZED_BOTH);
+         getFrame().setExtendedState(Frame.MAXIMIZED_BOTH);
          Log.init("DISKO");
+         // add this as window listener
+         addWindowListener(this);
          // show me
          setVisible(true);
          //initiate modeldriver
@@ -271,6 +281,46 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
  	   return this.diskoReport;
    }
 
+   public void windowClosing(WindowEvent e) {
+	   finishOperation();
+   }
+
+   public void windowClosed(WindowEvent e) {
+       // NOP
+   }
+
+   public void windowOpened(WindowEvent e) {
+       // NOP
+   }
+
+   public void windowIconified(WindowEvent e) {
+       // NOP
+   }
+
+   public void windowDeiconified(WindowEvent e) {
+       // NOP
+   }
+
+   public void windowActivated(WindowEvent e) {
+       // NOP
+   }
+
+   public void windowDeactivated(WindowEvent e) {
+       // NOP
+   }
+
+   public void windowGainedFocus(WindowEvent e) {
+       // NOP
+   }
+
+   public void windowLostFocus(WindowEvent e) {
+       // NOP
+   }
+
+   public void windowStateChanged(WindowEvent e) {
+       // NOP
+   }
+   
    /* (non-Javadoc)
    * @see org.redcross.sar.app.IDiskoApplication#chooseActiveOperation()
    */
@@ -312,16 +362,45 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
     /* (non-Javadoc)
     * @see org.redcross.sar.app.IDiskoApplication#finishOperation()
     */
-   public void finishOperation()
-   {
-      getMsoModel().getModelDriver().finishActiveOperation();
-   }
+    public void finishOperation()
+    {
+    	String[] options = {bundle.getString("QUIT.APPLICATION.TEXT"), bundle.getString("QUIT.OPERATION.TEXT"), bundle.getString("QUIT.CANCEL.TEXT")};
+        int ans = JOptionPane.showOptionDialog(
+                uiFactory.getContentPanel(),
+                bundle.getString(FINISH_TEXT),
+                bundle.getString(FINISH_TITLE),
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]);
+
+        if(ans==JOptionPane.YES_OPTION) {
+            shutdown();        	
+        }
+        else {
+        	if(ans==JOptionPane.NO_OPTION) {
+	            ans = JOptionPane.showOptionDialog(
+	                    uiFactory.getContentPanel(),
+	                    bundle.getString(CONFIRMATION_TEXT),
+	                    bundle.getString(CONFIRMATION_TITLE),
+	                    JOptionPane.YES_NO_OPTION,
+	                    JOptionPane.QUESTION_MESSAGE,
+	                    null,
+	                    null,
+	                    null);
+	            if(ans==JOptionPane.YES_OPTION) {
+	                getMsoModel().getModelDriver().finishActiveOperation();
+	            }
+        	}
+        }
+    }
 
     public void operationFinished()
     {
         java.util.List<String[]> opList = getMsoModel().getModelDriver().getActiveOperations();
 
-        String[] options = {bundle.getString("QUIT.TEXT"), bundle.getString("NEWACTION.TEXT")};
+        String[] options = {bundle.getString("QUIT.APPLICATION.TEXT"), bundle.getString("NEWACTION.TEXT")};
         int ans = JOptionPane.showOptionDialog(
                 uiFactory.getContentPanel(),
                 bundle.getString(OPERATION_FINISHED_TEXT),
@@ -423,15 +502,15 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
 
     public void newOperation()
     {
-        vaitingForNewOp=true;
+        waitingForNewOp=true;
          getMsoModel().getModelDriver().createNewOperation();
     }
 
     public void operationAdded(String id)
     {
-        if(vaitingForNewOp)
+        if(waitingForNewOp)
         {
-            vaitingForNewOp=false;
+            waitingForNewOp=false;
             JOptionPane.showMessageDialog(uiFactory.getContentPanel(), bundle.getString(OPERATION_CREATED_TEXT),
                    bundle.getString(OPERATION_CREATED_TITLE), JOptionPane.INFORMATION_MESSAGE);
 
@@ -525,6 +604,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication
     public void shutdown()
     {
         getMsoModel().getModelDriver().shutDown(); //Set last
+        dispose();
         System.exit(0);
 
     }
