@@ -141,7 +141,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         {
             ((AbstractMsoObject) m_owner).registerAddedReference();
         }
-        System.out.println("Added reference from " + m_owner + " to " + anObject);
+        //System.out.println("Added reference from " + m_owner + " to " + anObject);
     }
 
     public void clear()

@@ -138,11 +138,11 @@ public class MsoReferenceImpl<T extends IMsoObjectIf> implements IMsoReferenceIf
         {
             if (oldReference != null)
             {
-                System.out.println("Removed reference from " + m_owner + " to " + oldReference);
+                //System.out.println("Removed reference from " + m_owner + " to " + oldReference);
             }
             if (aReference != null)
             {
-                System.out.println("Added reference from " + m_owner + " to " + aReference);
+                //System.out.println("Added reference from " + m_owner + " to " + aReference);
             }
 
             registerReferenceChange(aReference, oldReference);
