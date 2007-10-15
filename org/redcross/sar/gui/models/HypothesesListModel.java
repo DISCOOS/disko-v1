@@ -10,6 +10,7 @@ import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
+import org.redcross.sar.mso.event.MsoEvent;
 import org.redcross.sar.mso.event.MsoEvent.EventType;
 import org.redcross.sar.mso.event.MsoEvent.Update;
 
@@ -31,10 +32,12 @@ public class HypothesesListModel extends AbstractListModel implements
 	}
 
 	public void handleMsoUpdateEvent(Update e) {
-		int type = e.getEventTypeMask();
-		if (type == EventType.ADDED_REFERENCE_EVENT.maskValue() ||
-				type == EventType.REMOVED_REFERENCE_EVENT.maskValue() ||
-				type == EventType.MODIFIED_DATA_EVENT.maskValue()) {
+		int mask = e.getEventTypeMask();
+		boolean addedReference = (mask & MsoEvent.EventType.ADDED_REFERENCE_EVENT.maskValue()) != 0;
+        boolean deletedObject  = (mask & MsoEvent.EventType.DELETED_OBJECT_EVENT.maskValue()) != 0;
+        boolean modifiedObject = (mask & MsoEvent.EventType.MODIFIED_DATA_EVENT.maskValue()) != 0;
+        
+		if (addedReference || deletedObject || modifiedObject) {
 			data = cmdPost.getHypothesisListItems().toArray();
 			super.fireContentsChanged(this, 0, data.length-1);
 		}
