@@ -81,7 +81,6 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	 * Default empty constructor
 	 */
 	public DiskoMap(){
-		
 	}
 
 	private void initialize() throws IOException, AutomationException {
@@ -138,6 +137,9 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	}
 
 	public void handleMsoUpdateEvent(Update e) {
+		if (!isVisible()) {
+			return;
+		}
 		if (supressDrawing) {
 			return;
 		}
