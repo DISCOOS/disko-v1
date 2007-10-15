@@ -19,11 +19,13 @@ public class TeamImpl extends AbstractUnit implements ITeamIf
     @Override
     protected void defineLists()
     {
+        super.defineLists();
     }
 
     @Override
     protected void defineReferences()
     {
+        super.defineReferences();
     }
 
     @Override
