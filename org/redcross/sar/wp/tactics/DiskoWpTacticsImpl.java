@@ -157,6 +157,10 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		if (!isEditing) {
 			selectElement();
 		}
+		
+		// set layers selectable
+		setLayersSelectable(true);
+		
 	}
 
 	public void deactivated() {
@@ -183,6 +187,10 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 		JToggleButton drawButton = navBar.getDrawLineToggleButton();
 		if (!isInitializing && !drawButton.isSelected()) {
 			drawButton.doClick();
+		}
+		JToggleButton freehandButton = navBar.getFreeHandToggleButton();
+		if (!isInitializing && !freehandButton.isSelected()) {
+			freehandButton.doClick();
 		}
 	}
 
@@ -355,9 +363,9 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 				}
 			}
 		}
+		reset();
 		getMsoModel().commit();
 		fireTaskFinished();
-		reset();
 	}
 
 	/*
@@ -365,9 +373,9 @@ public class DiskoWpTacticsImpl extends AbstractDiskoWpModule
 	 * @see com.geodata.engine.disko.task.DiskoAp#cancel()
 	 */
 	public void cancel() {
+		reset();
 		fireTaskCanceled();
 		getMsoModel().rollback();
-		reset();
 	}
 
 	private void reset() {

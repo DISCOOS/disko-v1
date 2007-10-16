@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.HashMap;
 
 /**
  * This calls extends AbstractDiskoApUi to provide userinterface for all map
@@ -58,6 +59,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	private boolean supressDrawing = false;
 	protected EnumSet<IMsoManagerIf.MsoClassCode> myInterests = null;
 	private List<AbstractMsoFeatureLayer> msoLayers = null;
+	private HashMap<String,Runnable> refreshStack = null;
 
 	/**
 	 * Default constructor
@@ -101,6 +103,9 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 				initLayers();
 			}
 		});
+		
+		// create refresh stack
+		refreshStack = new HashMap<String,Runnable>();
 	}
 
 	private void initLayers() throws java.io.IOException, AutomationException {
@@ -531,21 +536,42 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	 * @see org.redcross.sar.map.IDiskoMap#refreshLayer(com.esri.arcgis.geometry.IEnvelope)
 	 */
 	public void refreshLayer(final Object obj, final IEnvelope env) {
-		Runnable r = new Runnable() {
-			public void run() {
-				try {
-					getActiveView().partialRefresh(
-							esriViewDrawPhase.esriViewGeography, obj, env);
-				} catch (AutomationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+		try {
+			// get key
+			String key = String.valueOf(getActiveView()) + "#" + String.valueOf(obj);
+			// not in stack?
+			if (!refreshStack.containsKey(key)) {
+				// create object
+				Runnable r = new Runnable() {
+					public void run() {
+						try {
+							//System.out.println("refreshLayer:=" + getActiveView() + " on " + obj);
+							// get key
+							String key = String.valueOf(getActiveView()) + "#" + String.valueOf(obj);
+							// refresh view
+							getActiveView().partialRefresh(
+									esriViewDrawPhase.esriViewGeography, obj, env);
+							// remove from stack
+							refreshStack.remove(key);
+						} catch (AutomationException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				};
+				SwingUtilities.invokeLater(r);
+				refreshStack.put(key, r);
 			}
-		};
-		SwingUtilities.invokeLater(r);
+		} catch (AutomationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public String getMxdDoc() {
@@ -556,20 +582,41 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	 * @see org.redcross.sar.map.IDiskoMap#refreshSelection(com.esri.arcgis.geometry.IEnvelope)
 	 */
 	public void refreshSelection(final Object obj, final IEnvelope env) {
-		Runnable r = new Runnable() {
-			public void run() {
-				try {
-					getActiveView().partialRefresh(
-							esriViewDrawPhase.esriViewGraphics, obj, env);
-				} catch (AutomationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+		try {
+			// get key
+			String key = String.valueOf(getActiveView()) + "#" + String.valueOf(obj);
+			// not in stack?
+			if (!refreshStack.containsKey(key)) {
+				// create object
+				Runnable r = new Runnable() {
+					public void run() {
+						try {
+							//System.out.println("refreshSelection:=" + getActiveView() + " on " + obj);
+							// get key
+							String key = String.valueOf(getActiveView()) + "#" + String.valueOf(obj);
+							// refresh view
+							getActiveView().partialRefresh(
+									esriViewDrawPhase.esriViewGraphics, obj, env);
+							// remove from stack
+							refreshStack.remove(key);
+						} catch (AutomationException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				};
+				SwingUtilities.invokeLater(r);
+				refreshStack.put(key, r);
 			}
-		};
-		SwingUtilities.invokeLater(r);
+		} catch (AutomationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

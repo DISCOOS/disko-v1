@@ -35,6 +35,10 @@ public class PlannedAreaFeature extends AbstractMsoFeature {
 		if (srs == null) return;
 		IAreaIf area = (IAreaIf)msoObject;
         geoList = area.getAreaGeodata().getClone();
+        if(geoList == null)
+        	System.out.println("msoGeometryChanged:geoList:=null");
+        else
+        	System.out.println("msoGeometryChanged:geoList:count:=" + geoList.size());
         if (geoList != null && geoList.size() > 0) {
 			GeometryBag geomBag = new GeometryBag();
             Iterator<IGeodataIf> iter = area.getAreaGeodataIterator();
