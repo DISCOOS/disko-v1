@@ -33,7 +33,6 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	protected UnitType m_unitTypeFilter = null;
 	protected AbstractDerivedList<ICommunicatorIf> m_communicatorList;
 	protected boolean m_dirtyList;
-	protected List<ActionListener> m_actionListeners;
 	protected ButtonGroup m_buttonGroup = null;
 	protected boolean m_senderList = true;
 	protected HashMap<JToggleButton, ICommunicatorIf> m_buttonCommunicatorMap = null;
@@ -55,8 +54,6 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 		m_communicatorList = wp.getMsoManager().getCmdPost().getCommunicatorList();
 
 		m_senderList = senderList;
-
-		m_actionListeners = new LinkedList<ActionListener>();
 
 		m_buttonCommunicatorMap = new HashMap<JToggleButton, ICommunicatorIf>();
 		m_communicatorButtonMap = new HashMap<ICommunicatorIf, JToggleButton>();
@@ -352,6 +349,9 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 				fireDialogFinished();
 			}
 		});
+		
+		button.setActionCommand(communicator.getCommunicatorNumberPrefix() 
+				+ " " + communicator.getCommunicatorNumber());
 
 		buttonPanel.add(button);
 		m_buttonGroup.add(button);
@@ -386,7 +386,6 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	 */
 	public void addActionListener(UnitFieldSelectionDialog fromDialog)
 	{
-		m_actionListeners.add(fromDialog);
 		Enumeration<AbstractButton> buttons = m_buttonGroup.getElements();
 		AbstractButton button = null;
 		while(buttons.hasMoreElements())
