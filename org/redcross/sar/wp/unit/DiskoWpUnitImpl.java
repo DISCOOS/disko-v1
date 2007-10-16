@@ -343,6 +343,28 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 	{
 		super.deactivated();
 	}
+	
+	@Override
+	public boolean confirmDeactivate()
+	{
+		if(getMsoModel().hasUncommitedChanges())
+		{
+			Object[] dialogOptions = {getText("Yes.text"), getText("No.text")};
+    		int n = JOptionPane.showOptionDialog(this.getApplication().getFrame(), 
+    				getText("UncommittedChanges.text"), 
+    				getText("UncommittedChanges.header"), 
+    				JOptionPane.YES_NO_OPTION, 
+    				JOptionPane.QUESTION_MESSAGE, 
+    				null, 
+    				dialogOptions, 
+    				dialogOptions[0]);
+    		return (n == JOptionPane.YES_OPTION);
+		}
+		else
+		{
+			return true;
+		}
+	}
 
 	/**
 	 * Cancel any creation process

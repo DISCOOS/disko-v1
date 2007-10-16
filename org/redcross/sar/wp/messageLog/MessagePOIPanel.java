@@ -474,7 +474,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 				try
 				{
 					m_wpMessageLog.getMap().setSelected(poi, select);
-					m_wpMessageLog.getMap().zoomToMsoObject(poi);
+					m_wpMessageLog.getMap().refreshSelection(poi, null);
 				} 
 				catch (AutomationException e1)
 				{

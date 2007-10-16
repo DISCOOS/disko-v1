@@ -325,6 +325,11 @@ public class CalloutDetailsPanel extends JPanel
 
 		public IPersonnelIf getPersonnel(int index)
 		{
+			if(index < 0)
+			{
+				return null;
+			}
+			
 			return m_personnel.get(index);
 		}
 	}
