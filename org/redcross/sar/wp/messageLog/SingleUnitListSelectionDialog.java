@@ -231,10 +231,19 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	 */
 	public void handleMsoUpdateEvent(Update e)
 	{
-		m_dirtyList = m_communicatorList.size() != m_wpMessageLog.getMsoManager().getCmdPost().getCommunicatorList().size();
-		if(this.isVisible())
-		{
-			buildList();
+		IMsoManagerIf mng = m_wpMessageLog.getMsoManager(); 
+		if(mng!=null) {
+			ICmdPostIf cmd = mng.getCmdPost();
+			if(cmd!=null) {
+				AbstractDerivedList<ICommunicatorIf> lst = cmd.getCommunicatorList();
+				if (lst!=null) {
+					m_dirtyList = m_communicatorList.size() != m_wpMessageLog.getMsoManager().getCmdPost().getCommunicatorList().size();
+					if(this.isVisible())
+					{
+						buildList();
+					}
+				}
+			}
 		}
 	}
 
