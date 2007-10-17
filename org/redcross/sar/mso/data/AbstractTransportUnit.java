@@ -37,8 +37,9 @@ public abstract class AbstractTransportUnit extends AbstractUnit implements ITra
         super.defineReferences();
     }
 
-    public String toString()
-    {
-        return super.toString() + " " + m_identifier.getString();
-    }
+//    public String toString()
+//    {
+//        String id = m_identifier == null ? "" : m_identifier.getString();
+//        return super.toString() + " " + id;
+//    }
 }

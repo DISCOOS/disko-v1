@@ -1,12 +1,11 @@
 package org.redcross.sar.mso.data;
 
-import java.util.ResourceBundle;
-
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.mso.Polygon;
+
+import java.util.ResourceBundle;
 
 public class SearchAreaImpl extends AbstractMsoObject implements ISearchAreaIf
 {
@@ -85,10 +84,10 @@ public class SearchAreaImpl extends AbstractMsoObject implements ISearchAreaIf
     {
         return m_status.getValue();
     }
-    
+
     public String getStatusText()
     {
-    	return Internationalization.getEnumText(bundle, m_status.getValue());
+        return m_status.getInternationalName();
     }
 
     public IMsoModelIf.ModificationState getStatusState()

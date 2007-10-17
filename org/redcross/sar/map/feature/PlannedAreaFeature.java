@@ -8,6 +8,7 @@ import com.esri.arcgis.interop.AutomationException;
 import org.redcross.sar.map.MapUtil;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.*;
+import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
 import org.redcross.sar.util.mso.IGeodataIf;
 import org.redcross.sar.util.mso.Route;
@@ -19,6 +20,7 @@ public class PlannedAreaFeature extends AbstractMsoFeature {
 
 	private static final long serialVersionUID = 1L;
     private IMsoListIf<IMsoObjectIf>  geoList = null;
+    private AssignmentStatus asgStatus = AssignmentStatus.DRAFT;
     private IMsoModelIf msoModel = null;
 
 	public PlannedAreaFeature(IMsoModelIf msoModel) {
@@ -27,14 +29,23 @@ public class PlannedAreaFeature extends AbstractMsoFeature {
 
 	public boolean geometryIsChanged(IMsoObjectIf msoObj) {
 		IAreaIf area = (IAreaIf)msoObject;
-        return area.getAreaGeodata() != null && !area.getAreaGeodata().equals(getGeodata());
+        return (area.getAreaGeodata() != null && !area.getAreaGeodata().equals(getGeodata())) ||
+                getAsgStatus(area) != asgStatus ;
 	}
 
-	@Override
+    AssignmentStatus getAsgStatus(IAreaIf anArea)
+    {
+        IAssignmentIf asg = anArea.getOwningAssignment();
+        if (asg == null) return AssignmentStatus.DRAFT;
+        return asg.getStatus();
+    }
+
+    @Override
     public void msoGeometryChanged() throws IOException, AutomationException {       // todo sjekk etter endring av GeoCollection
 		if (srs == null) return;
 		IAreaIf area = (IAreaIf)msoObject;
         geoList = area.getAreaGeodata().getClone();
+        asgStatus = getAsgStatus(area);
         if(geoList == null)
         	System.out.println("msoGeometryChanged:geoList:=null");
         else

@@ -12,13 +12,13 @@ package org.redcross.sar.mso;
 import no.cmr.tools.Log;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.modelDriver.IModelDriverIf;
-import org.redcross.sar.modelDriver.LoopbackCommitHandler;
 import org.redcross.sar.modelDriver.ModelDriver;
 import org.redcross.sar.modelDriver.SarModelDriver;
-import org.redcross.sar.mso.event.IMsoCommitListenerIf;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.MsoEventManagerImpl;
+import org.redcross.sar.util.except.CommitException;
 
+import javax.swing.*;
 import java.util.Stack;
 
 
@@ -31,10 +31,12 @@ public class MsoModelImpl implements IMsoModelIf
     private final MsoManagerImpl m_IMsoManager;
     private final MsoEventManagerImpl m_msoEventManager;
     private final CommitManager m_commitManager;
-    private final IMsoCommitListenerIf m_commitListener;
 
     private final Stack<UpdateMode> m_updateModeStack = new Stack<UpdateMode>();
     private final IModelDriverIf m_modelDriver;
+
+    private boolean m_suspendClientUpdate = false;
+
 
     /**
      * Get the singleton instance object of this class.
@@ -56,7 +58,6 @@ public class MsoModelImpl implements IMsoModelIf
         m_msoEventManager = new MsoEventManagerImpl();
         m_IMsoManager = new MsoManagerImpl(m_msoEventManager);
         m_commitManager = new CommitManager(this);
-        m_commitListener = new LoopbackCommitHandler(this);
         m_updateModeStack.push(UpdateMode.LOCAL_UPDATE_MODE);
         m_modelDriver = System.getProperty("integrate.sara", "false").equalsIgnoreCase("true") ||
                 Utils.getProperties().getProperty("integrate.sara", "false").equalsIgnoreCase("true") ?
@@ -136,20 +137,49 @@ public class MsoModelImpl implements IMsoModelIf
         return m_commitManager.hasUncommitedChanges();
     }
 
+    public void suspendClientUpdate()
+    {
+        m_suspendClientUpdate = true;
+    }
+
+    public void resumeClientUpdate()
+    {
+        m_suspendClientUpdate = false;
+        m_IMsoManager.resumeClientUpdate();
+    }
+
+    public boolean updateSuspended()
+    {
+        return m_suspendClientUpdate;
+    }
+
     public void commit()
     {
-        m_commitManager.commit();
+        try
+        {
+            m_commitManager.commit();
+        }
+        catch (CommitException e)
+        {
+            JOptionPane.showMessageDialog(null,e.getMessage(),null,JOptionPane.ERROR_MESSAGE);
+            rollback();
+            return;
+        }
+        suspendClientUpdate();
         setLoopbackUpdateMode();
         m_IMsoManager.postProcessCommit();
         restoreUpdateMode();
+        resumeClientUpdate();
     }
 
 
     public void rollback()
     {
+        suspendClientUpdate();
         setRemoteUpdateMode();
         m_commitManager.rollback();
         m_IMsoManager.rollback();
         restoreUpdateMode();
+        resumeClientUpdate();
     }
 }

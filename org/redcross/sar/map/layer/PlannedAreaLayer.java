@@ -1,33 +1,22 @@
 package org.redcross.sar.map.layer;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.util.Hashtable;
-
-import org.redcross.sar.app.Utils;
-import org.redcross.sar.map.feature.IMsoFeature;
-import org.redcross.sar.map.feature.PlannedAreaFeature;
-import org.redcross.sar.mso.IMsoManagerIf;
-import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.mso.data.IAreaIf;
-import org.redcross.sar.mso.data.ICmdPostIf;
-import org.redcross.sar.mso.data.IMsoObjectIf;
-import org.redcross.sar.mso.data.ISearchIf;
-import org.redcross.sar.mso.data.ISearchIf.SearchSubType;
-import org.redcross.sar.mso.data.IAssignmentIf;
-
-import com.esri.arcgis.display.IColor;
-import com.esri.arcgis.display.IDisplay;
-import com.esri.arcgis.display.RgbColor;
-import com.esri.arcgis.display.SimpleLineSymbol;
-import com.esri.arcgis.display.TextSymbol;
-import com.esri.arcgis.display.esriSimpleLineStyle;
+import com.esri.arcgis.display.*;
 import com.esri.arcgis.geometry.GeometryBag;
 import com.esri.arcgis.geometry.IGeometry;
 import com.esri.arcgis.geometry.IPolyline;
 import com.esri.arcgis.geometry.ISpatialReference;
 import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.system.ITrackCancel;
+import org.redcross.sar.map.feature.IMsoFeature;
+import org.redcross.sar.map.feature.PlannedAreaFeature;
+import org.redcross.sar.mso.IMsoManagerIf;
+import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.mso.data.*;
+import org.redcross.sar.mso.data.ISearchIf.SearchSubType;
+
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.Hashtable;
 
 public class PlannedAreaLayer extends AbstractMsoFeatureLayer {
 
@@ -36,7 +25,7 @@ public class PlannedAreaLayer extends AbstractMsoFeatureLayer {
 	private Hashtable<SearchSubType, SimpleLineSymbol> symbols = null;
 	private SimpleLineSymbol defaultLineSymbol = null;
 	private TextSymbol textSymbol = null;
- 	
+
  	public PlannedAreaLayer(IMsoModelIf msoModel, ISpatialReference srs) {
  		super(IMsoManagerIf.MsoClassCode.CLASSCODE_AREA,
  				LayerCode.AREA_LAYER, msoModel, srs);
@@ -45,8 +34,8 @@ public class PlannedAreaLayer extends AbstractMsoFeatureLayer {
  		ICmdPostIf cmdPost = msoModel.getMsoManager().getCmdPost();
 		loadObjects(cmdPost.getAreaListItems().toArray());
 	}
- 	
- 	protected IMsoFeature createMsoFeature(IMsoObjectIf msoObject) 
+
+ 	protected IMsoFeature createMsoFeature(IMsoObjectIf msoObject)
  			throws IOException, AutomationException {
  		IMsoFeature msoFeature = new PlannedAreaFeature(msoModel);
  		msoFeature.setSpatialReference(srs);
@@ -70,8 +59,8 @@ public class PlannedAreaLayer extends AbstractMsoFeatureLayer {
 					SimpleLineSymbol lineSymbol = null;
 					if (search != null) {
 						lineSymbol = (SimpleLineSymbol)symbols.get(search.getSubType());
-						text = Utils.translate(search.getSubType()) + " " + ((IAssignmentIf)search).getNumber() + " - "+
-							Utils.translate(search.getStatus());
+						text = search.getSubTypeText() + " " + ((IAssignmentIf)search).getNumber() + " - "+
+							search.getStatusText();
 					} else {
 						lineSymbol = defaultLineSymbol;
 					}

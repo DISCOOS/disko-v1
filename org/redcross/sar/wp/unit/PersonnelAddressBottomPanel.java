@@ -1,41 +1,35 @@
 package org.redcross.sar.wp.unit;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.util.ResourceBundle;
-
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
 import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.mso.data.IPersonnelIf;
 
+import javax.swing.*;
+import java.awt.*;
+import java.util.ResourceBundle;
+
 /**
  * Bottom panel displaying summary info about personnel
- * 
+ *
  * @author thomasl
  */
 public class PersonnelAddressBottomPanel extends JPanel
 {
 	private static final long serialVersionUID = 1L;
-	
+
 	private final static ResourceBundle m_resources = ResourceBundle.getBundle("org.redcross.sar.wp.unit.unit");
-	
+
 	private IPersonnelIf m_currentPersonnel;
-	
+
 	private JTextField m_addressTextField;
 	private JTextField m_postAreaTextField;
 	private JTextField m_postNumberTextField;
 	private JButton m_showInMapButton;
-	
+
 	public PersonnelAddressBottomPanel()
 	{
 		initialize();
 	}
-	
+
 	private void initialize()
 	{
 		this.setLayout(new GridBagLayout());
@@ -43,13 +37,13 @@ public class PersonnelAddressBottomPanel extends JPanel
 		topLevelConstraints.fill = GridBagConstraints.BOTH;
 		topLevelConstraints.gridheight = 1;
 		topLevelConstraints.weightx = 1.0;
-		
+
 		// Top left
 		JPanel topLeftPanel = new JPanel(new GridBagLayout());
 		GridBagConstraints topLeftConstraints = new GridBagConstraints();
 		topLeftConstraints.insets = new Insets(4, 4, 4, 4);
 		topLeftConstraints.fill = GridBagConstraints.HORIZONTAL;
-	
+
 		topLeftConstraints.weightx = 0.0;
 		topLeftPanel.add(new JLabel(m_resources.getString("Address.text")), topLeftConstraints);
 		topLeftConstraints.gridwidth = 3;
@@ -57,7 +51,7 @@ public class PersonnelAddressBottomPanel extends JPanel
 		topLeftConstraints.weightx = 1.0;
 		m_addressTextField = new JTextField();
 		topLeftPanel.add(m_addressTextField, topLeftConstraints);
-		
+
 		topLeftConstraints.gridy = 1;
 		topLeftConstraints.gridx = 0;
 		topLeftConstraints.gridwidth = 1;
@@ -67,7 +61,7 @@ public class PersonnelAddressBottomPanel extends JPanel
 		topLeftConstraints.weightx = 1.0;
 		m_postAreaTextField = new JTextField();
 		topLeftPanel.add(m_postAreaTextField, topLeftConstraints);
-		
+
 		topLeftConstraints.gridx = 2;
 		topLeftConstraints.weightx = 0.0;
 		topLeftPanel.add(new JLabel(m_resources.getString("PostNumber.text")), topLeftConstraints);
@@ -75,27 +69,27 @@ public class PersonnelAddressBottomPanel extends JPanel
 		topLeftConstraints.weightx = 1.0;
 		m_postNumberTextField = new JTextField();
 		topLeftPanel.add(m_postNumberTextField, topLeftConstraints);
-		
+
 		topLeftConstraints.gridx = 4;
 		topLeftConstraints.gridy = 0;
 		topLeftConstraints.gridheight = 2;
 		topLeftConstraints.weightx = 0.0;
 		m_showInMapButton = DiskoButtonFactory.createSmallButton("", m_resources.getString("ShowInMapButton.icon"));
 		topLeftPanel.add(m_showInMapButton, topLeftConstraints);
-		
+
 		topLevelConstraints.gridwidth = 2;
 		topLevelConstraints.weighty = 0.5;
 		this.add(topLeftPanel, topLevelConstraints);
-		
+
 		// Bottom left
 		JPanel bottomLeftPanel = new JPanel();
 		topLevelConstraints.gridy = 1;
 		topLevelConstraints.weighty = 1.0;
 		this.add(bottomLeftPanel, topLevelConstraints);
-		
+
 		// Right
 		JPanel rightPanel = new JPanel();
-	
+
 		topLevelConstraints.gridx = 2;
 		topLevelConstraints.gridy = 0;
 		topLevelConstraints.gridwidth = 1;
@@ -111,7 +105,7 @@ public class PersonnelAddressBottomPanel extends JPanel
 	{
 		m_currentPersonnel = personnel;
 	}
-	
+
 	/**
 	 * Update field contents with current personnel values
 	 */
@@ -127,7 +121,7 @@ public class PersonnelAddressBottomPanel extends JPanel
 		else
 		{
 			String[] address = m_currentPersonnel.getAddress().split(";");
-			
+
 			if(address.length == 3)
 			{
 				m_addressTextField.setText(address[0]);
@@ -140,7 +134,7 @@ public class PersonnelAddressBottomPanel extends JPanel
 				m_postAreaTextField.setText("");
 				m_postNumberTextField.setText("");
 			}
-			
+
 			m_showInMapButton.setEnabled(true);
 		}
 	}
@@ -152,15 +146,15 @@ public class PersonnelAddressBottomPanel extends JPanel
 	{
 		if(m_currentPersonnel != null)
 		{
-			m_currentPersonnel.suspendNotify();
-			
+			m_currentPersonnel.suspendClientUpdate();
+
 			// Store address fields in single string, separated by ;
-			String address = m_addressTextField.getText() + ";" + 
+			String address = m_addressTextField.getText() + ";" +
 				m_postAreaTextField.getText() + ";" + m_postNumberTextField.getText();
-			
+
 			m_currentPersonnel.setAddress(address);
-			
-			m_currentPersonnel.resumeNotify();
+
+			m_currentPersonnel.resumeClientUpdate();
 		}
 	}
 }

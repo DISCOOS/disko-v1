@@ -15,6 +15,7 @@ import org.redcross.sar.mso.committer.ICommittableIf;
 import org.redcross.sar.mso.data.*;
 import org.redcross.sar.mso.event.IMsoCommitListenerIf;
 import org.redcross.sar.mso.event.MsoEvent;
+import org.redcross.sar.util.except.CommitException;
 import org.redcross.sar.util.except.DuplicateIdException;
 import org.redcross.sar.util.except.MsoNullPointerException;
 import org.rescuenorway.saraccess.api.*;
@@ -257,7 +258,7 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
 
     private HashMap<String, SarObject> tmpObjects = new HashMap();
 
-    public void handleMsoCommitEvent(MsoEvent.Commit e)
+    public void handleMsoCommitEvent(MsoEvent.Commit e)  throws CommitException
     {
         tmpObjects.clear();
         //Check that operation is added

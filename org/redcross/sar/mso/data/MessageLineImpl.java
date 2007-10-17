@@ -37,10 +37,9 @@ public class MessageLineImpl extends AbstractMsoObject implements IMessageLineIf
         return Internationalization.getFullBundleText(bundle, aKey);
     }
 
-
     public String getLineTypeText()
     {
-        return Internationalization.getEnumText(bundle, getLineType());
+        return m_lineType.getInternationalName();
     }
 
     public MessageLineImpl(IObjectIdIf anObjectId)
@@ -234,20 +233,23 @@ public class MessageLineImpl extends AbstractMsoObject implements IMessageLineIf
     @Override
     public String toString()
     {
+        if (m_lineType == null)
+        {
+            return "";
+        }
         switch (getLineType())
         {
             case ASSIGNED:
             case STARTED:
             case COMPLETE:
-            	if(getLineAssignment() != null)
-            	{
-            		return MessageFormat.format("{0} {1} {2} {3} {4}",
+                if (getLineAssignment() != null)
+                {
+                    return MessageFormat.format("{0} {1} {2} {3} {4}",
                             getLineNumber(), getLineAssignment().getTypeText(), getLineAssignment().getNumber(), getLineTypeText(), DTG.CalToDTG(getOperationTime()));
-            	}
-            	else
-            	{
-            		return "";
-            	}
+                } else
+                {
+                    return "";
+                }
 
             case POI:
             case FINDING:
@@ -276,8 +278,6 @@ public class MessageLineImpl extends AbstractMsoObject implements IMessageLineIf
     {
         return MsoModelImpl.getInstance().getMsoManager().getCmdPost().getMessageLog().selectSingleItem(owningMessageSelector);
     }
-
-
 
 
 }

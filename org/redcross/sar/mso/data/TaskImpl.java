@@ -213,8 +213,8 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
 
     public String getTypeText()
     {
-        return Internationalization.getEnumText(bundle, m_type.getValue());
-    }
+        return m_type.getInternationalName();
+   }
 
     public void setProgress(int aProgress)
     {
@@ -343,7 +343,7 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
 
     public String getPriorityText()
     {
-        return Internationalization.getEnumText(bundle, m_priority.getValue());
+        return m_priority.getInternationalName();
     }
 
     public int comparePriorityTo(IEnumPriorityHolder<TaskPriority> anObject)
@@ -368,7 +368,7 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
 
     public String getStatusText()
     {
-        return Internationalization.getEnumText(bundle, m_status.getValue());
+        return m_status.getInternationalName();
     }
 
     public IMsoModelIf.ModificationState getStatusState()

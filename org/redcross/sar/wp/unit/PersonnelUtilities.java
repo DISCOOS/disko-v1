@@ -44,7 +44,7 @@ public class PersonnelUtilities
 		{
 			// Reinstate resource
 			IPersonnelIf newPersonnel = m_msoManager.createPersonnel();
-			newPersonnel.suspendNotify();
+			newPersonnel.suspendClientUpdate();
 
 			// Copy fields
 			newPersonnel.setBirthdate(personnel.getBirthdate());
@@ -79,7 +79,7 @@ public class PersonnelUtilities
 				newPersonnel.setArrived(Calendar.getInstance());
 			}
 
-			newPersonnel.resumeNotify();
+			newPersonnel.resumeClientUpdate();
 
 			return newPersonnel;
 		}

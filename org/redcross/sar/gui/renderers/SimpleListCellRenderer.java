@@ -36,10 +36,7 @@ public class SimpleListCellRenderer extends JLabel implements ListCellRenderer
     {
 
         String displayText = null;
-        if (bundle != null)
-        {
-            displayText = Internationalization.translate(bundle, value);
-        }
+        displayText = Internationalization.translate(bundle, value);
         if (displayText == null)
         {
             displayText = Utils.translate(value);

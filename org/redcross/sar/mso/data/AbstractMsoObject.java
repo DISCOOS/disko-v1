@@ -6,6 +6,7 @@ import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.mso.committer.ICommittableIf;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.MsoEvent;
+import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.IllegalDeleteException;
 import org.redcross.sar.util.except.MsoNullPointerException;
 import org.redcross.sar.util.except.UnknownAttributeException;
@@ -50,14 +51,12 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     private final Map<String, MsoReferenceImpl> m_referenceObjects = new LinkedHashMap<String, MsoReferenceImpl>();
 
     /**
-     * Mask for update events for client
+     * Mask for suspended update events for client
      */
     private int m_clientUpdateMask = 0;
 
-    /**
-     * Mask for update events for server
-     */
-    private int m_serverUpdateMask = 0;
+
+    private int m_derivedUpdateMask = 0;
 
     /**
      * Inticator that tells if {@link #m_attributeList} is sorted
@@ -67,7 +66,9 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     /**
      * Suspend event flag
      */
-    private boolean m_suspendNotify = false;
+    private boolean m_suspendClientUpdate = false;
+
+    private boolean m_suspendDerivedUpdate = false;
 
     /**
      * Set of object holders, used when deleting object
@@ -93,7 +94,8 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         m_MsoObjectId = anObjectId;
         m_eventManager = MsoModelImpl.getInstance().getEventManager();
         System.out.println("Created " + this);
-        suspendNotify();
+        suspendClientUpdate();
+        suspendDerivedUpdate();
         registerCreatedObject();
     }
 
@@ -107,7 +109,8 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         defineAttributes();
         defineLists();
         defineReferences();
-        resumeNotify();
+        resumeDerivedUpdate();
+        resumeClientUpdate();
     }
 
     protected abstract void defineAttributes();
@@ -124,6 +127,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     public String shortDescriptor()
     {
         return toString();
+    }
+
+    public String toString()
+    {
+        return Internationalization.translate(getMsoClassCode()) + " " + m_MsoObjectId.getId();
     }
 
     public void addDeleteListener(IMsoObjectHolderIf aHolder)
@@ -154,7 +162,8 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
 
             for (MsoReferenceImpl reference : m_referenceObjects.values())
             {
-                if (reference.getReference() != null)                {
+                if (reference.getReference() != null)
+                {
                     System.out.println("Delete reference from " + this + " to " + reference.getReference());
                     reference.setReference(null);
                 }
@@ -245,7 +254,6 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         if (aReference != null)
         {
             m_referenceObjects.put(aReference.getName().toLowerCase(), aReference);
-            System.out.println("Add reference from " + this + " to " + aReference.getReference());
         } else
         {
             Log.error("Error in setup: " + this + ": Try to add null reference");
@@ -676,14 +684,21 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         int clientEventTypeMask = anEventType.maskValue();
         int serverEventTypeMask = (updateServer && anUpdateMode == IMsoModelIf.UpdateMode.LOCAL_UPDATE_MODE) ? clientEventTypeMask : 0;
 
-        if (!m_suspendNotify)
+
+        m_derivedUpdateMask |= clientEventTypeMask;
+        if (!m_suspendDerivedUpdate)
         {
-            notifyUpdate(clientEventTypeMask, serverEventTypeMask);
-        } else
-        {
-            m_clientUpdateMask = m_clientUpdateMask | clientEventTypeMask;
-            m_serverUpdateMask = m_serverUpdateMask | serverEventTypeMask;
+            notifyDerivedUpdate();
         }
+
+        m_clientUpdateMask |= clientEventTypeMask;
+        if ((m_clientUpdateMask & MsoEvent.EventType.DELETED_OBJECT_EVENT.maskValue()) != 0  || // Always update when object is deleted
+        !(m_suspendClientUpdate || MsoModelImpl.getInstance().updateSuspended()))
+        {
+            notifyClientUpdate();
+        }
+
+        notifyServerUpdate(serverEventTypeMask);
     }
 
     public void registerAddedReference()
@@ -740,7 +755,6 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
      */
     public void rollback()
     {
-        suspendNotify();
         boolean dataModified = false;
         for (AttributeImpl attr : m_attributeList)
         {
@@ -760,7 +774,6 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         {
             reference.rollback();
         }
-        resumeNotify();
     }
 
     /**
@@ -769,7 +782,6 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
      */
     public void postProcessCommit()
     {
-        suspendNotify();
         boolean dataModified = false;
         for (AttributeImpl attr : m_attributeList)
         {
@@ -789,40 +801,55 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         {
             reference.postProcessCommit();
         }
-        resumeNotify();
     }
 
 
     /**
-     * Notify listeners (both server and clients);
+     * Notify server listeners
      *
-     * @param aClientEventTypeMask Mask for Type of event for client
-     * @param aServerEventTypeMask Mask for Type of event for server
+     * @param anEventTypeMask Mask for Type of event for server
      */
-    protected void notifyUpdate(int aClientEventTypeMask, int aServerEventTypeMask)
+    protected void notifyServerUpdate(int anEventTypeMask)
     {
-        if (aClientEventTypeMask != 0)
+        if (anEventTypeMask != 0)
         {
-            m_eventManager.notifyDerivedUpdate(this, aClientEventTypeMask);
-            m_eventManager.notifyClientUpdate(this, aClientEventTypeMask);
-        }
-
-        if (aServerEventTypeMask != 0)
-        {
-            m_eventManager.notifyServerUpdate(this, aServerEventTypeMask);
+            m_eventManager.notifyServerUpdate(this, anEventTypeMask);
         }
     }
 
     /**
-     * Suspend notification of listeners.
-     * <p/>
-     * Sets suspend mode, all notificatioan are suspended until #resumeNotify is called.
+     * Notify derived listeners
      */
-    public void suspendNotify()
+    protected void notifyDerivedUpdate()
     {
-        m_suspendNotify = true;
-        m_clientUpdateMask = 0;
-        m_serverUpdateMask = 0;
+        if (m_derivedUpdateMask != 0)
+        {
+            m_eventManager.notifyDerivedUpdate(this, m_derivedUpdateMask);
+            m_derivedUpdateMask = 0;
+        }
+    }
+
+    /**
+     * Notify client listeners
+     */
+    protected void notifyClientUpdate()
+    {
+        if ( m_clientUpdateMask != 0)
+        {
+            m_eventManager.notifyClientUpdate(this, m_clientUpdateMask);
+            m_clientUpdateMask = 0;
+        }
+    }
+
+
+    /**
+     * Suspend update of client listeners.
+     * <p/>
+     * Sets suspend mode, all updates are suspended until #resumeClientUpdate is called, or the object is deleted.
+     */
+    public void suspendClientUpdate()
+    {
+            m_suspendClientUpdate = true;
     }
 
     /**
@@ -830,24 +857,39 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
      * <p/>
      * Sends notifications to listeners and clears suspend mode
      */
-    public void resumeNotify()
+    public void resumeClientUpdate()
     {
-        m_suspendNotify = false;
-        notifyUpdate(m_clientUpdateMask, m_serverUpdateMask);
+        if (MsoModelImpl.getInstance().updateSuspended())
+        {
+            return;
+        }
+        m_suspendClientUpdate = false;
+        notifyClientUpdate();
         m_clientUpdateMask = 0;
-        m_serverUpdateMask = 0;
+    }
+
+    protected void suspendDerivedUpdate()
+    {
+            m_suspendDerivedUpdate = true;
+    }
+
+    public void resumeDerivedUpdate()
+    {
+        m_suspendDerivedUpdate = false;
+        notifyDerivedUpdate();
     }
 
     /**
      * Resume notification of listeners in all lists.
      * <p/>
-     * Calls {@link MsoListImpl#resumeNotifications} for all defined lists.
+     * Calls {@link MsoListImpl#resumeClientUpdates} for all defined lists.
      */
-    public void resumeNotifications()
+    public void resumeClientUpdates()
     {
+        resumeClientUpdate();
         for (MsoListImpl list : m_referenceLists.values())
         {
-            list.resumeNotifications();
+            list.resumeClientUpdates();
         }
     }
 

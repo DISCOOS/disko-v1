@@ -4,6 +4,7 @@ import no.cmr.tools.Log;
 import org.redcross.sar.mso.committer.ICommitWrapperIf;
 import org.redcross.sar.mso.data.IAttributeIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
+import org.redcross.sar.util.except.CommitException;
 
 import java.util.Collection;
 import java.util.Vector;
@@ -73,7 +74,7 @@ public class MsoEventManagerImpl implements IMsoEventManagerIf
         m_commitListeners.remove(aListener);
     }
 
-    public void notifyCommit(ICommitWrapperIf aSource)
+    public void notifyCommit(ICommitWrapperIf aSource)  throws CommitException
     {
         fireCommit(m_commitListeners, aSource, MsoEvent.EventType.COMMIT_EVENT.maskValue());
     }
@@ -101,7 +102,7 @@ public class MsoEventManagerImpl implements IMsoEventManagerIf
         }
     }
 
-    private void fireCommit(Collection<IMsoCommitListenerIf> theListeners, ICommitWrapperIf aSource, int anEventTypeMask)
+    private void fireCommit(Collection<IMsoCommitListenerIf> theListeners, ICommitWrapperIf aSource, int anEventTypeMask) throws CommitException
     {
         if (theListeners.size() == 0 || anEventTypeMask == 0)
         {
@@ -117,6 +118,10 @@ public class MsoEventManagerImpl implements IMsoEventManagerIf
             catch (Exception e)
             {
                 Log.printStackTrace("Exception in fireCommit, listener: " + listener.toString(),e);
+                if (e instanceof  CommitException)
+                {
+                    throw (CommitException)e;
+                }
             }
         }
     }

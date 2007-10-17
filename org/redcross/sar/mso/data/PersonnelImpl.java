@@ -2,7 +2,6 @@ package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.MsoCastException;
 
 import java.util.Calendar;
@@ -296,7 +295,7 @@ public class PersonnelImpl extends AbstractPerson implements IPersonnelIf
 
     public String getStatusText()
     {
-        return Internationalization.getEnumText(bundle, m_status.getValue());
+        return m_status.getInternationalName();
     }
 
     public void setType(PersonnelType aType)
@@ -326,10 +325,10 @@ public class PersonnelImpl extends AbstractPerson implements IPersonnelIf
 
     public String getTypeText()
     {
-        return Internationalization.getEnumText(bundle, m_type.getValue());
+        return m_type.getInternationalName();
     }
-    
-    
+
+
     public void setImportStatus(PersonnelImportStatus status)
     {
     	m_importStatus.setValue(status);
@@ -347,7 +346,7 @@ public class PersonnelImpl extends AbstractPerson implements IPersonnelIf
 
     public String getImportStatusText()
     {
-    	return Internationalization.getEnumText(bundle, m_importStatus.getValue());
+        return m_importStatus.getInternationalName();
     }
 
     public IMsoModelIf.ModificationState getImportStatusState()
@@ -359,7 +358,7 @@ public class PersonnelImpl extends AbstractPerson implements IPersonnelIf
     {
     	return m_importStatus;
     }
-    
+
 
     public void setNextOccurence(IPersonnelIf aPersonnel)
     {

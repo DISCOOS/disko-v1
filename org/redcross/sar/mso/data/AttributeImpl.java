@@ -2,6 +2,7 @@ package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.MsoModelImpl;
+import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.mso.*;
 
@@ -753,6 +754,11 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
         public String getValueName()
         {
             return getAttrValue().name();
+        }
+
+        public String getInternationalName()
+        {
+            return Internationalization.translate(getAttrValue());
         }
 
         public E enumValue(String aName)

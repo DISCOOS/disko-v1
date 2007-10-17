@@ -24,7 +24,7 @@ public class MsoManagerImpl implements IMsoManagerIf
 
     public static String getClasscodeText(MsoClassCode aClassCode)
     {
-        return Internationalization.getEnumText(bundle, aClassCode);
+        return Internationalization.translate(aClassCode);
     }
 
     private void eventLogg(String aText, MsoEvent.Update e)
@@ -85,6 +85,7 @@ public class MsoManagerImpl implements IMsoManagerIf
             throw new DuplicateIdException("An operation already exists");
         }
         m_operation = new OperationImpl(operationId, aNumberPrefix, aNumber);
+        m_operation.setupReferences();
         return m_operation;
     }
 
@@ -96,7 +97,7 @@ public class MsoManagerImpl implements IMsoManagerIf
 
     public ICmdPostIf getCmdPost()
     {
-        return m_operation != null ? m_operation.getCmdPostList().getItem()  : null;
+        return m_operation != null ? m_operation.getCmdPostList().getItem() : null;
     }
 
     private ICmdPostIf getExistingCmdPost()
@@ -147,28 +148,22 @@ public class MsoManagerImpl implements IMsoManagerIf
         }
     }
 
-    public OperationImpl getOperation(String anId)
+    public void resumeClientUpdate()
     {
-        return m_operation;
+        if (m_operation != null)
+            m_operation.resumeClientUpdates();
     }
-
-//    public CmdPostImpl getCmdPost(String anId)
-//    {
-//        return null;
-//    }
-//
-//    public void commit()
-//    {
-//    }
 
     public void postProcessCommit()
     {
-        getCmdPostImpl().postProcessCommit();
+        if (m_operation != null)
+            m_operation.postProcessCommit();
     }
 
     public void rollback()
     {
-        ((AbstractMsoObject) getCmdPost()).rollback();
+        if (m_operation != null)
+            m_operation.rollback();
     }
 
     public IAreaIf createArea()
@@ -474,9 +469,9 @@ public class MsoManagerImpl implements IMsoManagerIf
 
     public IDogIf createDog(String anIdentifier)
     {
-    	return getExistingCmdPost().getUnitList().createDog(anIdentifier);
+        return getExistingCmdPost().getUnitList().createDog(anIdentifier);
     }
-    
+
     public IDogIf createDog(IMsoObjectIf.IObjectIdIf objectId)
     {
         return getExistingCmdPost().getUnitList().createDog(objectId);
@@ -484,8 +479,9 @@ public class MsoManagerImpl implements IMsoManagerIf
 
     public IAircraftIf createAircraft(String anIdentifier)
     {
-    	return getExistingCmdPost().getUnitList().createAircraft(anIdentifier);
+        return getExistingCmdPost().getUnitList().createAircraft(anIdentifier);
     }
+
     public IAircraftIf createAircraft(IMsoObjectIf.IObjectIdIf objectId)
     {
         return getExistingCmdPost().getUnitList().createAircraft(objectId);
@@ -493,9 +489,9 @@ public class MsoManagerImpl implements IMsoManagerIf
 
     public ITeamIf createTeam(String anIdentifier)
     {
-    	return getExistingCmdPost().getUnitList().createTeam(anIdentifier);
+        return getExistingCmdPost().getUnitList().createTeam(anIdentifier);
     }
-    
+
     public ITeamIf createTeam(IMsoObjectIf.IObjectIdIf objectId)
     {
         return getExistingCmdPost().getUnitList().createTeam(objectId);

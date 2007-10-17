@@ -1,7 +1,6 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.util.Internationalization;
 
 /**
  * Aircraft unit
@@ -24,7 +23,7 @@ public class AircraftImpl extends AbstractTransportUnit implements IAircraftIf
     {
         super(anObjectId, aNumber, anIdentifier);
     }
-    
+
     public AircraftImpl(IMsoObjectIf.IObjectIdIf objectId, int number)
     {
     	super(objectId, number);
@@ -108,7 +107,7 @@ public class AircraftImpl extends AbstractTransportUnit implements IAircraftIf
 
     public String getSubTypeName()
     {
-        return Internationalization.getEnumText(bundle, m_subType.getValue());
+        return m_subType.getInternationalName();
     }
 
     /*-------------------------------------------------------------------------------------------

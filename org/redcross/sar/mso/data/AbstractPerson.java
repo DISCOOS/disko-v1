@@ -1,7 +1,6 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.mso.Position;
 
 import java.util.Calendar;
@@ -21,7 +20,7 @@ public abstract class AbstractPerson extends AbstractMsoObject implements IPerso
     private final AttributeImpl.MsoString m_telephone3 = new AttributeImpl.MsoString(this, "Telephone3");
 
     private final AttributeImpl.MsoEnum<PersonGender> m_gender = new AttributeImpl.MsoEnum<PersonGender>(this, "Gender", PersonGender.UNKNOWN);
-    
+
     private final static ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Person");
 
     public AbstractPerson(IMsoObjectIf.IObjectIdIf anObjectId)
@@ -179,22 +178,22 @@ public abstract class AbstractPerson extends AbstractMsoObject implements IPerso
     {
         return m_residence;
     }
-    
+
     public void setAddress(String address)
     {
     	m_address.setValue(address);
     }
-    
+
     public String getAddress()
     {
     	return m_address.getString();
     }
-    
+
     public IMsoModelIf.ModificationState getAddressState()
     {
     	return m_address.getState();
     }
-    
+
     public IAttributeIf.IMsoStringIf getAddressAttribute()
     {
     	return m_address;
@@ -274,10 +273,10 @@ public abstract class AbstractPerson extends AbstractMsoObject implements IPerso
     {
         return m_gender.getValue();
     }
-    
+
     public String getGenderText()
     {
-    	return Internationalization.getEnumText(bundle, m_gender.getValue());
+    	return m_gender.getInternationalName();
     }
 
     public IMsoModelIf.ModificationState getGenderState()
@@ -301,8 +300,14 @@ public abstract class AbstractPerson extends AbstractMsoObject implements IPerso
         return -1;
     }
 
-    public String toString()
-    {
-        return getFirstname() + " " + getLastname();
-    }
+//    public String toString()
+//    {
+//        if (m_firstname != null && m_lastname!= null)
+//        {
+//            return getFirstname() + " " + getLastname();
+//        } else
+//        {
+//            return getMsoClassCode().name();
+//        }
+//    }
 }

@@ -3,7 +3,6 @@ package org.redcross.sar.mso.data;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.IUnitIf.UnitStatus;
-import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.mso.Selector;
 
@@ -203,7 +202,7 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
 
     public String getStatusText()
     {
-    	return Internationalization.getEnumText(bundle, m_status.getValue());
+    	return m_status.getInternationalName();
     }
 
     public IMsoModelIf.ModificationState getStatusState()
@@ -259,22 +258,22 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     {
         return m_callSign;
     }
-    
+
     public void setToneID(String toneId)
     {
     	m_toneId.setValue(toneId);
     }
-    
+
     public String getToneID()
     {
     	return m_toneId.getString();
     }
-    
+
     public IMsoModelIf.ModificationState getToneIDState()
     {
     	return m_toneId.getState();
     }
-    
+
     public IAttributeIf.IMsoStringIf getToneIDAttribute()
     {
     	return m_toneId;

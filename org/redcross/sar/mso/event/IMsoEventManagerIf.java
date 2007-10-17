@@ -4,6 +4,7 @@ import org.redcross.sar.mso.committer.CommitWrapper;
 import org.redcross.sar.mso.committer.ICommitWrapperIf;
 import org.redcross.sar.mso.data.IAttributeIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
+import org.redcross.sar.util.except.CommitException;
 
 /**
  * Interface for Update manager
@@ -74,8 +75,9 @@ public interface IMsoEventManagerIf
      * Notify a commit.
      *
      * @param aSource The {@link CommitWrapper} that contains the committable objects and relations
+     * @throws org.redcross.sar.util.except.CommitException when the commit fails.
      */
-    public void notifyCommit(ICommitWrapperIf aSource);
+    public void notifyCommit(ICommitWrapperIf aSource) throws CommitException;
 
     /**
      * Add a listener in the Gis Update Listeners queue.

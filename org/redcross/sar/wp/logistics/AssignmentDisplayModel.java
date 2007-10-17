@@ -9,6 +9,7 @@ import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent;
+import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.mso.Selector;
 
 import javax.swing.*;
@@ -87,7 +88,7 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
         panel2.getParent().addComponentListener(this);
 
         // set header text
-        m_selectableAssignments.getHeaderLabel().setText(AssignmentImpl.getStatusText(m_assigmentSelection));
+        m_selectableAssignments.getHeaderLabel().setText(Internationalization.translate(m_assigmentSelection));
         //setSelectedStatus(IAssignmentIf.AssignmentStatus.READY);
 
         handleMsoUpdateEvent(null);
@@ -190,7 +191,7 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
         if (m_assigmentSelection != aSelection)
         {
             m_assigmentSelection = aSelection;
-            m_selectableAssignments.getHeaderLabel().setText(AssignmentImpl.getStatusText(m_assigmentSelection));
+            m_selectableAssignments.getHeaderLabel().setText(Internationalization.translate(m_assigmentSelection));
             selectionChanged();
         }
     }
@@ -324,7 +325,7 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
          */
         private SelectButton buttonWithAction(final IAssignmentIf.AssignmentStatus aSelection)
         {
-            String buttonText = AssignmentImpl.getStatusText(aSelection);
+            String buttonText = Internationalization.translate(aSelection);
             AbstractAction action = new AbstractAction(buttonText)
             {
                 public void actionPerformed(ActionEvent e)

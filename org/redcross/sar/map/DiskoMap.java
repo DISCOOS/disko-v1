@@ -15,14 +15,7 @@ import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.systemUI.ITool;
 import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.MsoFeatureClass;
-import org.redcross.sar.map.layer.AbstractMsoFeatureLayer;
-import org.redcross.sar.map.layer.FlankLayer;
-import org.redcross.sar.map.layer.IMsoFeatureLayer;
-import org.redcross.sar.map.layer.OperationAreaLayer;
-import org.redcross.sar.map.layer.OperationAreaMaskLayer;
-import org.redcross.sar.map.layer.POILayer;
-import org.redcross.sar.map.layer.PlannedAreaLayer;
-import org.redcross.sar.map.layer.SearchAreaLayer;
+import org.redcross.sar.map.layer.*;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.IAssignmentIf;
@@ -36,8 +29,8 @@ import javax.swing.border.SoftBevelBorder;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * This calls extends AbstractDiskoApUi to provide userinterface for all map
@@ -78,7 +71,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
         myInterests.add(IMsoManagerIf.MsoClassCode.CLASSCODE_TRACK);
 		initialize();
 	}
-	
+
 	/**
 	 * Default empty constructor
 	 */
@@ -103,7 +96,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 				initLayers();
 			}
 		});
-		
+
 		// create refresh stack
 		refreshStack = new HashMap<String,Runnable>();
 	}
@@ -119,16 +112,16 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 		msoLayers.add(new SearchAreaLayer(msoModel,srs));
 		msoLayers.add(new OperationAreaLayer(msoModel,srs));
 		msoLayers.add(new OperationAreaMaskLayer(msoModel,srs));
-		
+
 		IMsoEventManagerIf msoEventManager = msoModel.getEventManager();
 		msoEventManager.addClientUpdateListener(this);
-		
+
 		for (int i = 0; i < msoLayers.size(); i++) {
 			IFeatureLayer layer = (IFeatureLayer)msoLayers.get(i);
 			focusMap.addLayer(layer);
 			layer.setCached(true);
 		}
-		
+
 		// set all featurelayers not selectabel
 		for (int i = 0; i < focusMap.getLayerCount(); i++) {
 			ILayer layer = focusMap.getLayer(i);
@@ -147,16 +140,19 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 		}
 		IMsoObjectIf msoObj = (IMsoObjectIf)e.getSource();
 		List layers = getMsoLayers(msoObj.getMsoClassCode());
-		IMsoFeatureLayer flayer = (IMsoFeatureLayer)layers.get(0);
-		if (flayer.isDirty()) {
-			refreshLayer(flayer, null);
-		}
-	}
-	
+        if (layers.size() > 0)
+        {
+            IMsoFeatureLayer flayer = (IMsoFeatureLayer)layers.get(0);
+            if (flayer.isDirty()) {
+                refreshLayer(flayer, null);
+            }
+        }
+    }
+
 	public List getMsoLayers() {
 		return msoLayers;
 	}
-	
+
 	public List getMsoLayers(IMsoManagerIf.MsoClassCode classCode) {
 		ArrayList<IMsoFeatureLayer> result = new ArrayList<IMsoFeatureLayer>();
 		for (int i = 0; i < msoLayers.size(); i++) {
@@ -167,7 +163,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 		}
 		return result;
 	}
-	
+
 	public IMsoFeatureLayer getMsoLayer(IMsoFeatureLayer.LayerCode layerCode) {
 		for (int i = 0; i < msoLayers.size(); i++) {
 			IMsoFeatureLayer msoFeatureLayer = (IMsoFeatureLayer)msoLayers.get(i);
@@ -365,11 +361,11 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 			}
 		}
 	}
-	
+
 	public void zoomToPrintMapExtent(IMsoObjectIf msoObject, double scale, int pixHeigth, int pixWidth) throws IOException, AutomationException {
 		if (msoObject instanceof IAssignmentIf) {
 			IAssignmentIf assignment = (IAssignmentIf)msoObject;
-			msoObject = assignment.getPlannedArea();			
+			msoObject = assignment.getPlannedArea();
 		}
 		if (msoObject != null) {
 			IEnvelope env = null;
@@ -389,15 +385,15 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 				double deltaY = (pixWidth*pixelSize)*scale;
 				double centerX = xMin + (xMax-xMin)/2;
 				double centerY = yMin + (yMax-yMin)/2;
-				System.out.println("deltaX: "+deltaX + ", deltaY: "+deltaY);		
+				System.out.println("deltaX: "+deltaX + ", deltaY: "+deltaY);
 				extent.setXMax(centerX+deltaX/2);
 				extent.setXMin(centerX-deltaX/2);
 				extent.setYMax(centerY+deltaY/2);
 				extent.setYMin(centerY-deltaY/2);
 				System.out.println("extent.getXMax(): "+extent.getXMax() + ", extent.getYMax(): "+extent.getYMax() + ", extent.getXMin(): "+extent.getXMin() + "extent.getYMin(): "+extent.getYMin());
-				
+
 				if (extent != null) {
-					
+
 					if (env == null)
 						env = extent.getEnvelope();
 					else env.union(extent);
@@ -408,7 +404,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 			}
 		}
 	}
-		
+
 	public void zoomToPrintMapExtent(IMsoObjectIf msoObject, double scale, double mapPrintHeigthSize, double mapPrintWidthSize) throws IOException, AutomationException {
 		if (msoObject instanceof IAssignmentIf) {
 			IAssignmentIf assignment = (IAssignmentIf)msoObject;
@@ -417,31 +413,31 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 		if (msoObject != null) {
 			IEnvelope env = null;
 			List layers = getMsoLayers(msoObject.getMsoClassCode());
-			
+
 			for (int i = 0; i < layers.size(); i++) {
 				IFeatureLayer flayer = (IFeatureLayer)layers.get(i);
 				MsoFeatureClass msoFC = (MsoFeatureClass)flayer.getFeatureClass();
 				IMsoFeature msoFeature = msoFC.getFeature(msoObject.getObjectId());
 				IEnvelope extent = msoFeature.getExtent();
-				
-				//må kalkulere et extent som gir gitt skala				
-				System.out.println("looper "+i+", extent.getXMax(): "+extent.getXMax() + ", extent.getYMax(): "+extent.getYMax() + ", extent.getXMin(): "+extent.getXMin() + "extent.getYMin(): "+extent.getYMin());				
+
+				//må kalkulere et extent som gir gitt skala
+				System.out.println("looper "+i+", extent.getXMax(): "+extent.getXMax() + ", extent.getYMax(): "+extent.getYMax() + ", extent.getXMin(): "+extent.getXMin() + "extent.getYMin(): "+extent.getYMin());
 				double centerX = extent.getXMin() + (extent.getXMax()-extent.getXMin())/2;
 				double centerY = extent.getYMin() + (extent.getYMax()-extent.getYMin())/2;
-				
-				
+
+
 				double deltaX = mapPrintWidthSize * scale;
 				double deltaY = mapPrintHeigthSize * scale;
-				
-				System.out.println("deltaX: "+deltaX + ", deltaY: "+deltaY);		
+
+				System.out.println("deltaX: "+deltaX + ", deltaY: "+deltaY);
 				extent.setXMax(centerX+deltaX/2);
 				extent.setXMin(centerX-deltaX/2);
 				extent.setYMax(centerY+deltaY/2);
 				extent.setYMin(centerY-deltaY/2);
 				System.out.println("extent.getXMax(): "+extent.getXMax() + ", extent.getYMax(): "+extent.getYMax() + ", extent.getXMin(): "+extent.getXMin() + "extent.getYMin(): "+extent.getYMin());
-				
+
 				if (extent != null) {
-					
+
 					if (env == null)
 						env = extent.getEnvelope();
 					else env.union(extent);
@@ -577,7 +573,7 @@ public final class DiskoMap extends MapBean implements IDiskoMap, IMsoUpdateList
 	public String getMxdDoc() {
 		return mxdDoc;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.redcross.sar.map.IDiskoMap#refreshSelection(com.esri.arcgis.geometry.IEnvelope)
 	 */

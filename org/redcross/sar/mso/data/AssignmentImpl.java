@@ -29,7 +29,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
     private final AttributeImpl.MsoEnum<AssignmentStatus> m_status = new AttributeImpl.MsoEnum<AssignmentStatus>(this, "Status", AssignmentStatus.EMPTY);
     private final AttributeImpl.MsoEnum<AssignmentType> m_type = new AttributeImpl.MsoEnum<AssignmentType>(this, "Type", AssignmentType.GENERAL);
 
-    private final AttributeImpl.MsoInteger m_number = new AttributeImpl.MsoInteger(this, "Number",true);
+    private final AttributeImpl.MsoInteger m_number = new AttributeImpl.MsoInteger(this, "Number", true);
 
     private final EquipmentListImpl m_assignmentEquipment = new EquipmentListImpl(this, "AssignmentEquipment", false);
     private final POIListImpl m_assignmentFindings = new POIListImpl(this, "AssignmentFindings", false);
@@ -43,11 +43,6 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
     public static String getText(String aKey)
     {
         return Internationalization.getFullBundleText(bundle, aKey);
-    }
-
-    public static String getStatusText(AssignmentStatus anEnum)
-    {
-        return Internationalization.getEnumText(bundle, anEnum);
     }
 
     public AssignmentImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
@@ -123,7 +118,15 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         {
             setType(getTypeBySubclass());
         }
-        if(MsoModelImpl.getInstance().getUpdateMode() == IMsoModelIf.UpdateMode.REMOTE_UPDATE_MODE)
+        if (getPlannedArea() != null)
+        {
+            ((AreaImpl) getPlannedArea()).registerModifiedData();
+        }
+        if (getReportedArea() != null)
+        {
+            ((AreaImpl) getReportedArea()).registerModifiedData();
+        }
+        if (MsoModelImpl.getInstance().getUpdateMode() == IMsoModelIf.UpdateMode.REMOTE_UPDATE_MODE)
         {
             renumberDuplicateNumbers();
         }
@@ -241,7 +244,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
 
     public String getStatusText()
     {
-        return Internationalization.getEnumText(bundle, m_status.getValue());
+        return m_status.getInternationalName();
     }
 
     public void setPriority(AssignmentPriority aPriority)
@@ -276,7 +279,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
 
     public String getPriorityText()
     {
-        return Internationalization.getEnumText(bundle, m_priority.getValue());
+        return m_priority.getInternationalName();
     }
 
 
@@ -302,7 +305,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
 
     public String getTypeText()
     {
-        return Internationalization.getEnumText(bundle, m_type.getValue());
+        return m_type.getInternationalName();
     }
 
     public String getTypeAndNumber()
@@ -639,6 +642,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
     {
         return 0;
     }
+
 
     private final TypeMessageLineSelector messageLineSelector = new TypeMessageLineSelector(this);
 

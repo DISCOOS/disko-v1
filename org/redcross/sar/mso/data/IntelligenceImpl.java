@@ -2,7 +2,6 @@ package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.MsoCastException;
 
 import java.util.Calendar;
@@ -23,7 +22,7 @@ public class IntelligenceImpl extends AbstractMsoObject implements IIntelligence
     private final MsoReferenceImpl<ITrackIf> m_intelligenceTrack = new MsoReferenceImpl<ITrackIf>(this, "IntelligenceTrack", true);
 
     private final static ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Intelligence");
-    
+
     public IntelligenceImpl(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         super(anObjectId);
@@ -102,10 +101,11 @@ public class IntelligenceImpl extends AbstractMsoObject implements IIntelligence
     {
         return m_status.getValue();
     }
-    
+
     public String getStatusText()
     {
-    	return Internationalization.getEnumText(bundle, m_status.getValue());
+        return m_status.getInternationalName();
+
     }
 
     public IMsoModelIf.ModificationState getStatusState()

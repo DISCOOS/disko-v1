@@ -84,6 +84,7 @@ public class AssignmentTransferHandler extends TransferHandler
             // Ask for confirmation and perform transfer
             if (m_wpModule.confirmTransfer(transferredAssignment, targetStatus, targetUnit))
             {
+                m_wpModule.getMsoModel().suspendClientUpdate();
                 IAssignmentIf.AssignmentStatus oldAssignemtStatus = transferredAssignment.getStatus();
                 boolean transferOk = false;
                 if (m_targetAssignment != null && targetStatus == IAssignmentIf.AssignmentStatus.ALLOCATED)
@@ -111,6 +112,7 @@ public class AssignmentTransferHandler extends TransferHandler
                     return true;
                 } else
                 {
+                    m_wpModule.getMsoModel().rollback();
                     m_wpModule.showTransferWarning();
                 }
             }

@@ -43,18 +43,21 @@ public interface IMsoModelIf
 
     /**
      * Get the {@link IMsoManagerIf MSO manager}
+     *
      * @return The MSO manager
      */
     public IMsoManagerIf getMsoManager();
 
     /**
      * Get the {@link org.redcross.sar.mso.event.IMsoEventManagerIf event manager}
+     *
      * @return The event manager.
      */
     public IMsoEventManagerIf getEventManager();
 
     /**
      * Get the {@link org.redcross.sar.modelDriver.IModelDriverIf Model driver}
+     *
      * @return The Model driver.
      */
     public IModelDriverIf getModelDriver();
@@ -81,23 +84,28 @@ public interface IMsoModelIf
 
     /**
      * Get current update mode.
+     *
      * @return The update mode
      */
     public UpdateMode getUpdateMode();
 
     /**
      * Perform commit.
-     *
+     * <p/>
      * Local modifications since previous commit or rollback are sent to server.
      */
     public void commit();
 
     /**
      * Perform rollback.
-     *
+     * <p/>
      * Local modifications since previous commit or rollback are ignored.
      */
     public void rollback();
 
     public boolean hasUncommitedChanges();
+
+    public void suspendClientUpdate();
+
+    public void resumeClientUpdate();
 }

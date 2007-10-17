@@ -6,6 +6,7 @@ import org.redcross.sar.mso.data.AbstractMsoObject;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent;
+import org.redcross.sar.util.except.CommitException;
 
 import java.util.Vector;
 
@@ -91,8 +92,9 @@ public class CommitManager
      * Perform commit.
      * <p/>
      * Generates a {@link org.redcross.sar.mso.event.MsoEvent.Commit} event.
+     * @throws org.redcross.sar.util.except.CommitException when the commit fails
      */
-    public void commit()
+    public void commit() throws CommitException
     {
         m_ownerModel.getEventManager().notifyCommit(createCommitWrapper());
     }
@@ -110,7 +112,7 @@ public class CommitManager
     /**
      * Tell if some uncommited changes exist
      *
-     * @return true if uncommited changes exist 
+     * @return true if uncommited changes exist
      */
     public boolean hasUncommitedChanges()
     {

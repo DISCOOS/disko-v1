@@ -32,7 +32,7 @@ public class POIImpl extends AbstractMsoObject implements IPOIIf
 
     public String getTypeText()
     {
-        return Internationalization.getEnumText(bundle,getType());
+        return m_type.getInternationalName();
     }
 
     public POIImpl(IMsoObjectIf.IObjectIdIf anObjectId)

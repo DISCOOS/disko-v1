@@ -56,10 +56,10 @@ public class SubjectImpl extends AbstractPerson implements ISubjectIf
         }
     }
 
-    public String toString()
-    {
-        return super.toString() + " " + m_description.getAttrValue();
-    }
+//    public String toString()
+//    {
+//        return super.toString() + " " + m_description.getAttrValue();
+//    }
 
     public IMsoManagerIf.MsoClassCode getMsoClassCode()
     {

@@ -1,27 +1,24 @@
 package org.redcross.sar.wp.messageLog;
 
 import com.esri.arcgis.interop.AutomationException;
-
 import org.redcross.sar.gui.DiskoButtonFactory;
+import org.redcross.sar.gui.DiskoButtonFactory.ButtonType;
 import org.redcross.sar.gui.MGRSField;
 import org.redcross.sar.gui.NumPadDialog;
-import org.redcross.sar.gui.DiskoButtonFactory.ButtonType;
 import org.redcross.sar.gui.renderers.SimpleListCellRenderer;
 import org.redcross.sar.map.IDiskoMap;
 import org.redcross.sar.map.MapUtil;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
-import org.redcross.sar.mso.data.ITaskIf;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
 import org.redcross.sar.mso.data.IPOIIf;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
+import org.redcross.sar.mso.data.ITaskIf;
 import org.redcross.sar.mso.data.ITaskIf.TaskType;
 import org.redcross.sar.util.mso.Position;
 
 import javax.swing.*;
-
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -29,13 +26,13 @@ import java.io.IOException;
 /**
  * Dialog used in position and finding when editing the message log. A separate POI dialog class was created for
  * the message log, could be merged with POIDialog / extract a common super class, if this should prove beneficial
- * 
+ *
  * @author thomasl
  */
 public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 {
 	private static final long serialVersionUID = 1L;
-	
+
 	protected JButton m_okButton = null;
 	protected JButton m_cancelButton = null;
 	protected MGRSField m_mgrsField;
@@ -83,7 +80,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 	{
 		IMessageIf message = MessageLogBottomPanel.getCurrentMessage(true);
 		Position newPosition = null;
-		
+
 		// Get message line
 		IMessageLineIf messageLine = null;
 		if(m_poiTypes == null)
@@ -101,25 +98,25 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 		{
 			poi = m_wpMessageLog.getMsoManager().createPOI();
 			messageLine.setLinePOI(poi);
-		}		
-		
+		}
+
 		// Update POI
-		poi.suspendNotify();
-		
+		poi.suspendClientUpdate();
+
 		try
 		{
 			newPosition = MapUtil.getPositionFromMGRS(m_mgrsField.getText());
 			poi.setPosition(newPosition);
-		} 
+		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
-		
+
 		poi.setType(getSelectedPOIType());
-		poi.resumeNotify();
+		poi.resumeClientUpdate();
 	}
-	
+
 	/**
 	 * Reverts contents of text fields to what is stored in MSO
 	 */
@@ -137,7 +134,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 			{
 				line = message.findMessageLine(MessageLineType.FINDING, false);
 			}
-			
+
 			if(line != null)
 			{
 				IPOIIf poi = line.getLinePOI();
@@ -159,7 +156,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 				NumPadDialog numPad = m_wpMessageLog.getApplication().getUIFactory().getNumPadDialog();
 				numPad.setVisible(false);
 				updatePOI();
-				
+
 				MessageLogBottomPanel.showListPanel();
 			}
 		});
@@ -200,7 +197,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 	}
 
 	private void initContents()
-	{	
+	{
 		this.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
@@ -208,12 +205,12 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 1.0;
 		gbc.weighty = 1.0;
-		
+
 		// MGRS
 		m_mgrsField = new MGRSField(m_wpMessageLog.getApplication());
 		this.add(m_mgrsField, gbc);
 		gbc.gridy++;
-		
+
 		// Combo-box
 		gbc.gridy++;
 		JPanel typePanel = new JPanel();
@@ -242,10 +239,10 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 							poi = m_wpMessageLog.getMsoManager().createPOI();
 							messageLine.setLinePOI(poi);
 						}
-						
+
 						// Update type
 						poi.setType(type);
-						
+
 						// Update related intelligence task
 						String taskText = m_wpMessageLog.getText("FindingFinding.text").split(":")[0];
 						for(ITaskIf messageTask : message.getMessageTasksItems())
@@ -276,7 +273,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 		typePanel.add(m_poiTypesComboBox);
 		this.add(typePanel, gbc);
 		updatePOITypes();
-		
+
 		// Action buttons
 		gbc.weightx = 0.0;
 		gbc.weighty = 0.0;
@@ -340,18 +337,18 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 		}
 		catch(Exception e){}
 	}
-	
+
 	private void updateMGRSField(IPOIIf poi)
 	{
 		String mgrs = null;
 		try
 		{
 			mgrs = MapUtil.getMGRSfromPosition(poi.getPosition());
-		} 
+		}
 		catch (AutomationException e)
 		{
 			e.printStackTrace();
-		} 
+		}
 		catch (IOException e)
 		{
 			e.printStackTrace();
@@ -393,7 +390,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 	{
 		MessageLogPanel.showMap();
 		showPOI(true);
-		
+
 		this.setVisible(true);
 	}
 
@@ -419,7 +416,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 			return  (POIType)m_poiTypesComboBox.getSelectedItem();
 		}
 	}
-	
+
 	/**
 	 * Set the tool for the current work process map
 	 */
@@ -429,18 +426,18 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 		try
 		{
 			map.setCurrentToolByRef(m_tool);
-		} 
+		}
 		catch (AutomationException e)
 		{
 			e.printStackTrace();
-		} 
+		}
 		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
 	}
-	
-	
+
+
 	/**
 	 * Set selection for POI in map
 	 */
@@ -467,7 +464,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 					poi = findingLine.getLinePOI();
 				}
 			}
-			
+
 			// Select POI object in map
 			if(poi != null)
 			{
@@ -475,16 +472,16 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 				{
 					m_wpMessageLog.getMap().setSelected(poi, select);
 					m_wpMessageLog.getMap().refreshSelection(poi, null);
-				} 
+				}
 				catch (AutomationException e1)
 				{
 					e1.printStackTrace();
-				} 
+				}
 				catch (IOException e1)
 				{
 					e1.printStackTrace();
 				}
-			}	
+			}
 		}
 	}
 }

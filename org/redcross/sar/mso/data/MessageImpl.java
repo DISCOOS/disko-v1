@@ -39,7 +39,7 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
 
     public String getStatusText()
     {
-        return Internationalization.getEnumText(bundle, getStatus());
+        return m_status.getInternationalName();
     }
 
     public MessageImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
@@ -395,10 +395,10 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
     * Other methods
     *-------------------------------------------------------------------------------------------*/
 
-    public String toString()
-    {
-        return "Message " + getNumber() + " " + super.toString();
-    }
+//    public String toString()
+//    {
+//        return "Message " + getNumber() + " " + super.toString();
+//    }
 
     public boolean addBroadcastNotAccepted(ICommunicatorIf aReceiver)
     {
@@ -447,7 +447,7 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
 
     public void setSingleReceiver(ICommunicatorIf communicator)
     {
-        m_broadcast.set(false);
+        setBroadcast(false);
         m_unconfirmedReceivers.deleteAll();
         m_confirmedReceivers.deleteAll();
         m_confirmedReceivers.add(communicator);

@@ -1,10 +1,10 @@
 package org.redcross.sar.map.layer;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.util.Hashtable;
-
-import org.redcross.sar.app.Utils;
+import com.esri.arcgis.display.*;
+import com.esri.arcgis.geometry.ISpatialReference;
+import com.esri.arcgis.geometry.Point;
+import com.esri.arcgis.interop.AutomationException;
+import com.esri.arcgis.system.ITrackCancel;
 import org.redcross.sar.map.feature.IMsoFeature;
 import org.redcross.sar.map.feature.POIFeature;
 import org.redcross.sar.mso.IMsoManagerIf;
@@ -14,20 +14,9 @@ import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.IPOIIf;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
 
-import com.esri.arcgis.display.IColor;
-import com.esri.arcgis.display.IDisplay;
-import com.esri.arcgis.display.IDisplayName;
-import com.esri.arcgis.display.IMarkerSymbol;
-import com.esri.arcgis.display.ISymbol;
-import com.esri.arcgis.display.RgbColor;
-import com.esri.arcgis.display.SimpleMarkerSymbol;
-import com.esri.arcgis.display.TextSymbol;
-import com.esri.arcgis.display.esriSimpleMarkerStyle;
-import com.esri.arcgis.display.esriTextHorizontalAlignment;
-import com.esri.arcgis.geometry.ISpatialReference;
-import com.esri.arcgis.geometry.Point;
-import com.esri.arcgis.interop.AutomationException;
-import com.esri.arcgis.system.ITrackCancel;
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.Hashtable;
 
 public class POILayer extends AbstractMsoFeatureLayer {
 
@@ -35,7 +24,7 @@ public class POILayer extends AbstractMsoFeatureLayer {
 	private RgbColor selectionColor = null;
 	private TextSymbol textSymbol = null;
 	private Hashtable<POIType, IDisplayName> symbols = null;
- 	
+
  	public POILayer(IMsoModelIf msoModel, ISpatialReference srs) {
  		super(IMsoManagerIf.MsoClassCode.CLASSCODE_POI,
  				LayerCode.POI_LAYER, msoModel, srs);
@@ -44,15 +33,15 @@ public class POILayer extends AbstractMsoFeatureLayer {
  		ICmdPostIf cmdPost = msoModel.getMsoManager().getCmdPost();
 		loadObjects(cmdPost.getPOIListItems().toArray());
 	}
- 	
- 	protected IMsoFeature createMsoFeature(IMsoObjectIf msoObject) 
+
+ 	protected IMsoFeature createMsoFeature(IMsoObjectIf msoObject)
  			throws IOException, AutomationException {
  		IMsoFeature msoFeature = new POIFeature();
  		msoFeature.setSpatialReference(srs);
  		msoFeature.setMsoObject(msoObject);
  		return msoFeature;
  	}
-	
+
 	public void draw(int drawPhase, IDisplay display, ITrackCancel trackCancel)
 			throws IOException, AutomationException {
 		try {
@@ -72,10 +61,10 @@ public class POILayer extends AbstractMsoFeatureLayer {
 					display.setSymbol((ISymbol)markerSymbol);
 					display.drawPoint(point);
 					markerSymbol.setColor(saveColor);
-					
+
 					//labels
 					display.setSymbol(textSymbol);
-					String text = Utils.translate(poi.getType());
+					String text = poi.getTypeText();
 					String remark = poi.getRemarks();
 					// replace with comment?
 					if (remark != null) {

@@ -54,7 +54,7 @@ public interface IMsoObjectIf
      * <p/>
      * Is used when several updates of an object shall be sent to listeners as one event.
      */
-    public void suspendNotify();
+    public void suspendClientUpdate();
 
     /**
      * Add a "listener" to MsoObject deleteObject.
@@ -119,11 +119,16 @@ public interface IMsoObjectIf
     /**
      * Resume notification of listeners.
      * <p/>
-     * Is used if notification has been suspended by {@link #suspendNotify()}.
+     * Is used if notification has been suspended by {@link #suspendClientUpdate()}.
      */
-    public void resumeNotify();
+    public void resumeClientUpdate();
 
-//    public void resumeNotifications();
+    /**
+     * Resume notification of listeners in all lists.
+     * <p/>
+     * Calls {@link MsoListImpl#resumeClientUpdates} for all defined lists.
+     */
+    public void resumeClientUpdates();
 
 //    public void registerAddedReference();
 

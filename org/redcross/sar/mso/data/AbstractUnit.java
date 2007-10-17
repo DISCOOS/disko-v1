@@ -42,11 +42,6 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
         return Internationalization.getFullBundleText(bundle, aKey);
     }
 
-    public static String getEnumText(Enum anEnum)
-    {
-        return Internationalization.getEnumText(bundle,anEnum);
-    }
-
     public static char getEnumLetter(Enum anEnum)
     {
         String letter = getText(anEnum.getClass().getSimpleName() + "." + anEnum.name() + ".letter");
@@ -197,12 +192,12 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
 
     public String getTypeName()
     {
-        return getType().name();
+        return m_type.getValueName();
     }
 
     public String getTypeText()
     {
-        return Internationalization.getEnumText(bundle,getType());
+        return m_type.getInternationalName();
     }
 
     public abstract String getSubTypeName();
@@ -234,7 +229,7 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
 
     public String getStatusText()
     {
-        return Internationalization.getEnumText(bundle,getStatus());
+        return m_status.getInternationalName();
     }
 
     /*-------------------------------------------------------------------------------------------
@@ -300,22 +295,22 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
     {
         return m_callSign;
     }
-    
+
     public void setToneID(String toneId)
     {
     	m_toneId.setValue(toneId);
     }
-    
+
     public String getToneID()
     {
     	return m_toneId.getString();
     }
-    
+
     public IMsoModelIf.ModificationState getToneIDState()
     {
     	return m_toneId.getState();
     }
-    
+
     public IAttributeIf.IMsoStringIf getToneIDAttribute()
     {
     	return m_toneId;

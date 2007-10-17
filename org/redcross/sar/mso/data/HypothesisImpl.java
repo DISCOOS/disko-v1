@@ -2,7 +2,6 @@ package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.MsoCastException;
 
 import java.util.ResourceBundle;
@@ -94,7 +93,7 @@ public class HypothesisImpl extends AbstractMsoObject implements IHypothesisIf
 
     public String getStatusText()
     {
-    	return Internationalization.getEnumText(bundle, m_status.getValue());
+        return m_status.getInternationalName();
     }
 
     public IMsoModelIf.ModificationState getStatusState()

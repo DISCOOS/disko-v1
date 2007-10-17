@@ -117,7 +117,7 @@ public class BoatImpl extends AbstractTransportUnit implements IBoatIf
 
     public String getSubTypeName()
     {
-        return Internationalization.getEnumText(bundle, m_subType.getValue());
+        return Internationalization.translate( m_subType.getValue());
     }
 
     /*-------------------------------------------------------------------------------------------

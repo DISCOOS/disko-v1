@@ -1,11 +1,23 @@
 package org.redcross.sar.wp.unit;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Point;
+import org.redcross.sar.event.ITickEventListenerIf;
+import org.redcross.sar.event.TickEvent;
+import org.redcross.sar.gui.DiskoButtonFactory;
+import org.redcross.sar.gui.ErrorDialog;
+import org.redcross.sar.mso.IMsoManagerIf;
+import org.redcross.sar.mso.data.*;
+import org.redcross.sar.mso.data.IUnitIf.UnitStatus;
+import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
+import org.redcross.sar.mso.event.MsoEvent.Update;
+import org.redcross.sar.output.DiskoReport;
+import org.redcross.sar.util.except.IllegalOperationException;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -13,39 +25,6 @@ import java.awt.event.MouseListener;
 import java.util.Calendar;
 import java.util.EnumSet;
 import java.util.ResourceBundle;
-
-import javax.swing.AbstractCellEditor;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.JToggleButton;
-import javax.swing.ListSelectionModel;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-
-import org.redcross.sar.event.ITickEventListenerIf;
-import org.redcross.sar.event.TickEvent;
-import org.redcross.sar.gui.DiskoButtonFactory;
-import org.redcross.sar.gui.ErrorDialog;
-import org.redcross.sar.mso.IMsoManagerIf;
-import org.redcross.sar.mso.data.IAssignmentIf;
-import org.redcross.sar.mso.data.ICmdPostIf;
-import org.redcross.sar.mso.data.IMsoObjectIf;
-import org.redcross.sar.mso.data.IPersonnelIf;
-import org.redcross.sar.mso.data.IPersonnelListIf;
-import org.redcross.sar.mso.data.IUnitIf;
-import org.redcross.sar.mso.data.IUnitIf.UnitStatus;
-import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
-import org.redcross.sar.mso.event.MsoEvent.Update;
-import org.redcross.sar.output.DiskoReport;
-import org.redcross.sar.util.except.IllegalOperationException;
 
 /**
  * JPanel displaying unit details
@@ -163,7 +142,7 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf, IT
              	DiskoReport diskoReport = m_wpUnit.getApplication().getDiskoReport();
              	diskoReport.printUnitLog(unit);
              }
-         });        
+         });
         topButtonsPanel.add(m_showReportButton);
         topPanel.add(topButtonsPanel, BorderLayout.EAST);
         gbc.gridwidth = 4;
@@ -623,7 +602,7 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf, IT
     {
         if (m_currentUnit != null)
         {
-            m_currentUnit.suspendNotify();
+            m_currentUnit.suspendClientUpdate();
 
             String toneId = m_toneIDTextField.getText();
             m_currentUnit.setToneID(toneId);
@@ -631,7 +610,7 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf, IT
             String callSign = m_callsignTextField.getText();
             m_currentUnit.setCallSign(callSign);
 
-            m_currentUnit.resumeNotify();
+            m_currentUnit.resumeClientUpdate();
         }
     }
 

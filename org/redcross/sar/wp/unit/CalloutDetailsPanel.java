@@ -1,35 +1,5 @@
 package org.redcross.sar.wp.unit;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ResourceBundle;
-
-import javax.swing.AbstractCellEditor;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-
 import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.ICalloutIf;
@@ -42,9 +12,22 @@ import org.redcross.sar.util.mso.DTG;
 import org.redcross.sar.util.mso.Selector;
 import org.redcross.sar.wp.IDiskoWpModule;
 
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.*;
+import java.util.List;
+
 /**
  * JPanel displaying alert details
- * 
+ *
  * @author thomasl
  */
 public class CalloutDetailsPanel extends JPanel
@@ -53,25 +36,25 @@ public class CalloutDetailsPanel extends JPanel
 
 	private JLabel m_topLabel;
 	private JButton m_printButton;
-	
+
 	private JTextField m_titleTextField;
 	private JTextField m_createdTextField;
 	private JTextField m_organizationTextField;
 	private JTextField m_departmentTextField;
 	private JTable m_personnelTable;
-	
+
 	private ICalloutIf m_callout;
-	
+
 	private IDiskoWpUnit m_wpUnit;
-	
+
 	private final static ResourceBundle m_resources = ResourceBundle.getBundle("org.redcross.sar.wp.unit.unit");
-	
+
 	public CalloutDetailsPanel(IDiskoWpUnit wp)
 	{
 		m_wpUnit = wp;
 		initialize();
 	}
-	
+
 	private void initialize()
 	{
 		this.setLayout(new GridBagLayout());
@@ -80,7 +63,7 @@ public class CalloutDetailsPanel extends JPanel
 		gbc.gridy = 0;
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.insets = new Insets(4, 4, 4, 4);
-		
+
 		// Top panel
 		JPanel topPanel = new JPanel(new BorderLayout());
 		m_topLabel = new JLabel();
@@ -91,24 +74,24 @@ public class CalloutDetailsPanel extends JPanel
 		this.add(topPanel, gbc);
 		gbc.gridy++;
 		gbc.gridwidth = 1;
-		
+
 		// Title
 		m_titleTextField = new JTextField();
 		layoutComponent(m_resources.getString("Title.text"), m_titleTextField, gbc);
-		
+
 		// Created
 		m_createdTextField = new JTextField();
 		m_createdTextField.setEditable(false);
 		layoutComponent(m_resources.getString("Created.text"), m_createdTextField, gbc);
-		
+
 		// Organization
 		m_organizationTextField = new JTextField();
 		layoutComponent(m_resources.getString("Organization.text"), m_organizationTextField, gbc);
-		
+
 		// Department
 		m_departmentTextField = new JTextField();
 		layoutComponent(m_resources.getString("Department.text"), m_departmentTextField, gbc);
-		
+
 		// Personnel table
 		m_personnelTable = new JTable(new CallOutPersonnelTableModel(null, m_wpUnit));
 		m_personnelTable.setFillsViewportHeight(true);
@@ -117,37 +100,37 @@ public class CalloutDetailsPanel extends JPanel
 		CallOutPersonnelStatusEditor editor = new CallOutPersonnelStatusEditor();
 		m_personnelTable.setColumnSelectionAllowed(false);
 		m_personnelTable.setRowHeight(DiskoButtonFactory.TABLE_BUTTON_SIZE.height + 10);
-		
+
 		TableColumn column = m_personnelTable.getColumnModel().getColumn(2);
 		column.setCellEditor(editor);
 		column.setCellRenderer(editor);
 		column.setPreferredWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width * 2 + 15);
 		column.setMaxWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width * 2 + 15);
-		
+
 //		JTableHeader header = m_personnelTable.getTableHeader();
 //		header.setReorderingAllowed(false);
 //		header.setResizingAllowed(false);
 		m_personnelTable.setTableHeader(null);
-		
+
 		JScrollPane personnelTableScrollPane = new JScrollPane(m_personnelTable);
 		gbc.weighty = 1.0;
 		gbc.gridwidth = 2;
 		this.add(personnelTableScrollPane, gbc);
 	}
-	
+
 	private void layoutComponent(String label, JComponent component, GridBagConstraints gbc)
 	{
 		gbc.weightx = 1.0;
 		gbc.gridx = 1;
 		this.add(component, gbc);
-		
+
 		gbc.weightx = 0.0;
 		gbc.gridx = 0;
 		this.add(new JLabel(label), gbc);
-		
+
 		gbc.gridy++;
 	}
-	
+
 	/**
 	 * Update field contents based on current call-out
 	 */
@@ -165,21 +148,21 @@ public class CalloutDetailsPanel extends JPanel
 		{
 			String topText = m_resources.getString("CallOut.text") + " " + DTG.CalToDTG(m_callout.getCreated());
 			m_topLabel.setText(topText);
-			
+
 			m_titleTextField.setText(m_callout.getTitle());
-			
+
 			String created = DTG.CalToDTG(m_callout.getCreated());
 			m_createdTextField.setText(created);
-			
+
 			m_organizationTextField.setText(m_callout.getOrganization());
-			
+
 			m_departmentTextField.setText(m_callout.getDepartment());
-			
+
 			CallOutPersonnelTableModel model = (CallOutPersonnelTableModel)m_personnelTable.getModel();
 			model.setCallOut(m_callout);
 		}
 	}
-	
+
 	/*
 	 * Setters and getters
 	 */
@@ -187,40 +170,40 @@ public class CalloutDetailsPanel extends JPanel
 	{
 		return m_callout;
 	}
-	
+
 	public void setCallOut(ICalloutIf callout)
 	{
 		m_callout = callout;
 	}
-	
+
 	/**
-	 * Updates attributes	 
-	 */  
+	 * Updates attributes
+	 */
 	public void saveCallOut()
 	{
 		if(m_callout != null)
 		{
-			m_callout.suspendNotify();
-			
+			m_callout.suspendClientUpdate();
+
 			m_callout.setTitle(m_titleTextField.getText());
 			m_callout.setOrganization(m_organizationTextField.getText());
 			m_callout.setDepartment(m_departmentTextField.getText());
-			
-			m_callout.resumeNotify();
+
+			m_callout.resumeClientUpdate();
 		}
 	}
-	
+
 	/**
 	 * Personnel data for current call-out in details panel
-	 * 
+	 *
 	 * @author thomasl
 	 */
 	private class CallOutPersonnelTableModel extends AbstractTableModel implements IMsoUpdateListenerIf
 	{
 		private static final long serialVersionUID = 1L;
-		
+
 		List<IPersonnelIf> m_personnel;
-		
+
 		private final Selector<IPersonnelIf> PERSONNEL_SELECTOR = new Selector<IPersonnelIf>()
 		{
 			public boolean select(IPersonnelIf personnel)
@@ -228,7 +211,7 @@ public class CalloutDetailsPanel extends JPanel
 				return true;
 			}
 		};
-		
+
 		/**
 		 * Sort personnel on name
 		 */
@@ -240,7 +223,7 @@ public class CalloutDetailsPanel extends JPanel
 				return res == 0 ? arg0.getLastname().compareTo(arg1.getLastname()) : res;
 			}
 		};
-		
+
 		public CallOutPersonnelTableModel(ICalloutIf callout, IDiskoWpModule wp)
 		{
 			m_callout = callout;
@@ -273,19 +256,19 @@ public class CalloutDetailsPanel extends JPanel
 			}
 			return null;
 		}
-		
+
 		@Override
 		public String getColumnName(int column)
 		{
 			return null;
 		}
-		
+
 		@Override
 		public boolean isCellEditable(int row, int column)
 		{
 			return column == 2;
 		}
-		
+
 		private void buildTable()
 		{
 			if(m_callout != null)
@@ -300,7 +283,7 @@ public class CalloutDetailsPanel extends JPanel
 			buildTable();
 			fireTableDataChanged();
 		}
-		
+
 		EnumSet<IMsoManagerIf.MsoClassCode> interestedIn = EnumSet.of
 		(
 				IMsoManagerIf.MsoClassCode.CLASSCODE_PERSONNEL,
@@ -310,14 +293,14 @@ public class CalloutDetailsPanel extends JPanel
 		{
 			return interestedIn.contains(msoObject.getMsoClassCode());
 		}
-		
+
 		public void setCallOut(ICalloutIf callout)
 		{
 			m_callout = callout;
 			buildTable();
 			fireTableDataChanged();
 		}
-		
+
 		public ICalloutIf getCallOut()
 		{
 			return m_callout;
@@ -329,32 +312,32 @@ public class CalloutDetailsPanel extends JPanel
 			{
 				return null;
 			}
-			
+
 			return m_personnel.get(index);
 		}
 	}
-	
+
 	/**
 	 * Column editor for call-out personnel status changes
-	 * 
+	 *
 	 * @author thomasl
 	 */
-	private class CallOutPersonnelStatusEditor extends AbstractCellEditor 
+	private class CallOutPersonnelStatusEditor extends AbstractCellEditor
 		implements TableCellEditor, TableCellRenderer
 	{
 		private static final long serialVersionUID = 1L;
-		
+
 		private JPanel m_panel;
 		private JButton m_arrivedButton;
 		private JButton m_releaseButton;
-		
+
 		private int m_editingRow;
-		
+
 		public CallOutPersonnelStatusEditor()
 		{
 			m_panel = new JPanel();
 			m_panel.setBackground(m_personnelTable.getBackground());
-			
+
 			m_arrivedButton = DiskoButtonFactory.createTableButton(m_resources.getString("ArrivedButton.letter"));
 			m_arrivedButton.addActionListener(new ActionListener()
 			{
@@ -385,7 +368,7 @@ public class CalloutDetailsPanel extends JPanel
 				}
 			});
 			m_panel.add(m_arrivedButton);
-			
+
 			m_releaseButton = DiskoButtonFactory.createTableButton(m_resources.getString("ReleaseButton.letter"));
 			m_releaseButton.addActionListener(new ActionListener()
 			{
@@ -428,18 +411,18 @@ public class CalloutDetailsPanel extends JPanel
 		{
 			return null;
 		}
-		
+
 		private void updateCell(int row)
 		{
 			CallOutPersonnelTableModel model = (CallOutPersonnelTableModel)m_personnelTable.getModel();
 			int index = m_personnelTable.convertRowIndexToModel(row);
 			IPersonnelIf personnel = (IPersonnelIf)model.getValueAt(index, 2);
-			
+
 			m_arrivedButton.setSelected(personnel.getStatus() == PersonnelStatus.ARRIVED);
 			m_releaseButton.setSelected(personnel.getStatus() == PersonnelStatus.RELEASED);
 		}
 	}
-	
+
 	private class CallOutPersonnelMouseListener implements MouseListener
 	{
 		public void mouseClicked(MouseEvent me)
@@ -449,9 +432,9 @@ public class CalloutDetailsPanel extends JPanel
 			int index = m_personnelTable.convertRowIndexToModel(row);
 			CallOutPersonnelTableModel model = (CallOutPersonnelTableModel)m_personnelTable.getModel();
 			IPersonnelIf personnel = model.getPersonnel(index);
-			
+
 			int clickCount = me.getClickCount();
-			
+
 			if(clickCount == 1)
 			{
 				// Display personnel info in bottom panel
@@ -466,7 +449,7 @@ public class CalloutDetailsPanel extends JPanel
 					// Abort view change
 					return;
 				}
-				
+
 				// Change to personnel display
 				m_wpUnit.setPersonnelLeft(personnel);
 				m_wpUnit.setLeftView(IDiskoWpUnit.PERSONNEL_DETAILS_VIEW_ID);

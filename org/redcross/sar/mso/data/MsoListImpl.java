@@ -153,9 +153,17 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
 
     private void clearList(HashMap<String, M> aList, boolean updateServer)      // todo Denne er feil, slettete elementer blir ikke dereferert.
     {
-        for (M refObj : aList.values())
+        // Copy the list and clear the original before any events are sent around, since the events are checking the original list
+        if (aList.size() == 0)
         {
-            AbstractMsoObject abstrObj = (AbstractMsoObject) refObj;
+            return;
+        }
+
+        Collection<String> tmpList = aList.keySet();
+        while (tmpList.size() > 0)
+        {
+            String key = tmpList.iterator().next();
+            AbstractMsoObject abstrObj = (AbstractMsoObject)aList.remove(key);
             if (abstrObj != null)
             {
                 abstrObj.removeDeleteListener(this);
@@ -168,7 +176,6 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
                 }
             }
         }
-        aList.clear();
     }
 
     private void clearDeleted(HashMap<String, M> aList)
@@ -354,13 +361,13 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
     }
 
 
-    public void resumeNotifications()
+    public void resumeClientUpdates()
     {
         if (m_isMain)
         {
-            for (M object : m_items.values())
+            for (M object : getItems())
             {
-                ((AbstractMsoObject) object).resumeNotify();
+                object.resumeClientUpdates();
             }
         }
     }
@@ -519,7 +526,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         {
             return false;
         }
-        if (m_added!= null ? !m_added.equals(list.m_added) : list.m_added != null)
+        if (m_added != null ? !m_added.equals(list.m_added) : list.m_added != null)
         {
             return false;
         }
@@ -533,18 +540,18 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
 
     public IMsoListIf<M> getClone()
     {
-        MsoListImpl<M> retVal = new MsoListImpl<M>(getOwner(),getName(),isMain(),size());
-        for(M item : m_items.values())
+        MsoListImpl<M> retVal = new MsoListImpl<M>(getOwner(), getName(), isMain(), size());
+        for (M item : m_items.values())
         {
-            retVal.m_items.put(item.getObjectId(),item);
+            retVal.m_items.put(item.getObjectId(), item);
         }
-        for(M item : m_added.values())
+        for (M item : m_added.values())
         {
-            retVal.m_added.put(item.getObjectId(),item);
+            retVal.m_added.put(item.getObjectId(), item);
         }
-        for(M item : m_deleted.values())
+        for (M item : m_deleted.values())
         {
-            retVal.m_deleted.put(item.getObjectId(),item);
+            retVal.m_deleted.put(item.getObjectId(), item);
         }
         return retVal;
     }

@@ -1,7 +1,6 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.IllegalOperationException;
 
 import java.util.Calendar;
@@ -26,7 +25,7 @@ public class SearchImpl extends AssignmentImpl implements ISearchIf
     private final AttributeImpl.MsoCalendar m_stop = new AttributeImpl.MsoCalendar(this, "Stop");
 
     private final AttributeImpl.MsoEnum<SearchSubType> m_subType = new AttributeImpl.MsoEnum<SearchSubType>(this,"SubType", SearchSubType.LINE);
-    
+
     private final static ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Search");
 
     public static String getSubTypeText(ISearchIf.SearchSubType aType)
@@ -109,7 +108,8 @@ public class SearchImpl extends AssignmentImpl implements ISearchIf
 
     public String getSubTypeText()
     {
-    	return Internationalization.getEnumText(bundle, m_subType.getValue());
+        return m_subType.getInternationalName();
+
     }
     public IMsoModelIf.ModificationState getSubTypeState()
     {

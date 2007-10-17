@@ -2,9 +2,9 @@ package org.redcross.sar.wp.logistics;
 
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.gui.NavBar;
-import org.redcross.sar.mso.data.AssignmentImpl;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IUnitIf;
+import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
 
 import javax.swing.*;
@@ -60,7 +60,7 @@ public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDisk
         myTools.add(NavBar.ToolCommandType.SELECT_FEATURE_TOOL);
 
         navBar.showButtons(myTools);
-        
+
         // ensure that WP spesific layers are selectable
         m_logisticsPanel.setLayersSelectable();
     }
@@ -123,7 +123,7 @@ public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDisk
         question = getText(question);
 
         int n = JOptionPane.showOptionDialog(m_logisticsPanel.getPanel(),
-                MessageFormat.format(question, anAssignment.getNumber(), AssignmentImpl.getStatusText(aTargetStatus), unitNumber),
+                MessageFormat.format(question, anAssignment.getNumber(), Internationalization.translate(aTargetStatus), unitNumber),
                 getText("confirm_assignmentTransfer.header"),
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
