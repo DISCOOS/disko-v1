@@ -199,6 +199,10 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
 
     public void setBroadcast(boolean aBroadcast)
     {
+    	// Clear receiver lists when changing broadcast state
+    	m_unconfirmedReceivers.deleteAll();
+    	m_confirmedReceivers.deleteAll();
+    	
         m_broadcast.setValue(aBroadcast);
     }
 
@@ -444,8 +448,8 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
     public void setSingleReceiver(ICommunicatorIf communicator)
     {
         m_broadcast.set(false);
-        m_unconfirmedReceivers.clear();
-        m_confirmedReceivers.clear();
+        m_unconfirmedReceivers.deleteAll();
+        m_confirmedReceivers.deleteAll();
         m_confirmedReceivers.add(communicator);
     }
 

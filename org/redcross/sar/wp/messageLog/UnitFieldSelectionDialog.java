@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @author thomasl
  */
-public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessageComponentIf, KeyListener, ActionListener
+public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessageComponentIf, KeyListener
 {
 	private static final long serialVersionUID = 1L;
 
@@ -526,16 +526,6 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		{
 			button.addActionListener(fromDialog);
 		}
-	}
-
-	/**
-	 * Handle selections in unit list dialog
-	 */
-	public void actionPerformed(ActionEvent arg0)
-	{
-		String[] command = arg0.getActionCommand().split(" ");
-		m_unitTypeField.setText(command[0]);
-		m_unitNumberField.setText(command[1]);
 	}
 
 	/**

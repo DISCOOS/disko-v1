@@ -16,7 +16,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
-import java.util.List;
 
 /**
  * Dialog containing a list of all units  in command post communicator list
@@ -378,21 +377,6 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	public Enumeration<AbstractButton> getButtons()
 	{
 		return m_buttonGroup.getElements();
-	}
-
-	/**
-	 * Registers a unit field dialog so it can listen to selection changes and update itself accordingly
-	 * @param fromDialog
-	 */
-	public void addActionListener(UnitFieldSelectionDialog fromDialog)
-	{
-		Enumeration<AbstractButton> buttons = m_buttonGroup.getElements();
-		AbstractButton button = null;
-		while(buttons.hasMoreElements())
-		{
-			button = buttons.nextElement();
-			button.addActionListener(fromDialog);
-		}
 	}
 
 	/**

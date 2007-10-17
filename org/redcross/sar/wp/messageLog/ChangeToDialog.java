@@ -89,7 +89,6 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 		m_nbListDialog.addDialogListener(this);
 		m_broadcastDialog.addDialogListener(this);
 		
-		m_nbListDialog.addActionListener(m_nbFieldDialog);
 		m_nbFieldDialog.addActionListener(m_nbListDialog);
 	}
 
