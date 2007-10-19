@@ -74,6 +74,21 @@ public class MsoEvent extends java.util.EventObject
     {
         return m_eventTypeMask;
     }
+    
+    public boolean isDeleteObjectEvent()
+    {
+    	return (m_eventTypeMask & EventType.DELETED_OBJECT_EVENT.maskValue()) != 0;
+    }
+    
+    public boolean isCreateObjectEvent()
+    {
+    	return (m_eventTypeMask & EventType.CREATED_OBJECT_EVENT.maskValue()) != 0;
+    }
+    
+    public boolean isModifyObjectEvent()
+    {
+    	return (m_eventTypeMask & EventType.MODIFIED_DATA_EVENT.maskValue()) != 0;
+    }
 
     /**
      * Event that triggers an update of the user interface and/or the server handler.

@@ -349,6 +349,10 @@ public class UnitDetailsPanel extends JPanel implements IMsoUpdateListenerIf, IT
         IUnitIf unit = (IUnitIf) e.getSource();
         if (unit == m_currentUnit)
         {
+        	if(e.isDeleteObjectEvent())
+        	{
+        		m_currentUnit = null;
+        	}
             updateFieldContents();
         }
     }
