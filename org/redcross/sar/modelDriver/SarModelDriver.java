@@ -172,8 +172,17 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
                 Map.Entry<String, List<SarBaseObject>> entry = rels.next();
                 for (int i = 0; i < entry.getValue().size(); i++)
                 {
+                    try
+                    {
                     SarObjectImpl sarBaseObject = (SarObjectImpl) entry.getValue().get(i);
+                    //    SarBaseObject sarBaseObject =  entry.getValue().get(i);
+
                     updateMsoReference(so, sarBaseObject, entry.getKey(), SarBaseObjectImpl.ADD_REL_FIELD);
+                    }
+                    catch(Exception e)
+                    {
+                        Log.printStackTrace(e);
+                    }
                 }
 
             }
@@ -282,11 +291,12 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
             {
                 //if modified, modify Saraobject.
                 updateSaraObject(ico);
-            } else if (ico.getType().equals(CommitManager.CommitType.COMMIT_DELETED))
-            {
-                //if deleted remove Sara object
-                deleteSaraObject(ico);
             }
+//            else if (ico.getType().equals(CommitManager.CommitType.COMMIT_DELETED))
+//            {
+//                //if deleted remove Sara object
+//                deleteSaraObject(ico);
+//            }
         }
 
         List<ICommittableIf.ICommitReferenceIf> attrList = wrapper.getListReferences();
@@ -299,6 +309,15 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
         for (ICommittableIf.ICommitReferenceIf ico : listList)
         {
             msoReferenceChanged(ico, true);
+        }
+        //Handle delete object last
+        for (ICommittableIf.ICommitObjectIf ico : objectList)
+        {
+            if(ico.getType().equals(CommitManager.CommitType.COMMIT_DELETED))
+            {
+                //if deleted remove Sara object
+                deleteSaraObject(ico);
+            }
         }
         sarSvc.getSession().commit(sarOperation.getID());
 
