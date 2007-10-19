@@ -440,7 +440,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         }
         for (M item : m_deleted.values())
         {
-            if (!item.isToBeDeleted())
+            if (!item.hasBeenDeleted())
             {
                 retVal.add(new CommittableImpl.CommitReference(m_name, m_owner, item, CommitManager.CommitType.COMMIT_DELETED));
             }

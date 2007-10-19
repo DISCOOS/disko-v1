@@ -80,7 +80,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     private boolean m_isSetup = false;
 
 
-    private boolean m_isBeingDeleted;
+    private boolean m_hasBeenDeleted;
 
 
     /**
@@ -199,9 +199,9 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         return true;
     }
 
-    public boolean isToBeDeleted()
+    public boolean hasBeenDeleted()
     {
-        return m_isBeingDeleted;
+        return m_hasBeenDeleted;
     }
 
     public void doDelete()
@@ -214,7 +214,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
             myHolder.doDeleteReference(this);
         }
 
-        m_isBeingDeleted = true;
+        m_hasBeenDeleted = true;
         registerDeletedObject();
     }
 
@@ -765,7 +765,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
      */
     public void rollback()
     {
-        m_isBeingDeleted = false;
+        m_hasBeenDeleted = false;
         boolean dataModified = false;
         for (AttributeImpl attr : m_attributeList)
         {

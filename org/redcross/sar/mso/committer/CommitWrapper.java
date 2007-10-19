@@ -60,8 +60,6 @@ public class CommitWrapper implements ICommitWrapperIf
         if (deletedObject)
         {
             m_commitObjects.add(new CommittableImpl.CommitObject(anObject, CommitManager.CommitType.COMMIT_DELETED));
-//            m_commitAttributeReferences.addAll(anObject.getCommittableAttributeRelations());
-//            m_commitListReferences.addAll(anObject.getCommittableListRelations());
             return;
         }
         if (modifiedObject)

@@ -296,7 +296,7 @@ public class MsoReferenceImpl<T extends IMsoObjectIf> implements IMsoReferenceIf
         Vector<CommittableImpl.CommitReference> retVal = new Vector<CommittableImpl.CommitReference>();
         if (m_state == IMsoModelIf.ModificationState.STATE_LOCAL)
         {
-            if (m_serverValue != null && !m_serverValue.isToBeDeleted())
+            if (m_serverValue != null && !m_serverValue.hasBeenDeleted())
             {
                 retVal.add(new CommittableImpl.CommitReference(m_name, m_owner, m_serverValue, CommitManager.CommitType.COMMIT_DELETED));
             }

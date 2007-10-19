@@ -130,7 +130,14 @@ public interface IMsoObjectIf
      */
     public void resumeClientUpdates();
 
-    public boolean isToBeDeleted();
+    /**
+     * Tell if the object is to be deleted from the model.
+     *
+     * Is used when committing changes to tell that the object will be deleted.
+     *
+     * @return  <code>true<code> if the object has been deleted.
+     */
+    public boolean hasBeenDeleted();
 
 //    public void registerAddedReference();
 
