@@ -52,12 +52,13 @@ public abstract class AbstractDerivedList<M extends IMsoObjectIf> implements IMs
         return retVal;
     }
 
-    public void handleMsoDerivedUpdateEvent(MsoEvent.DerivedUpdate e)
-    {
-        int mask = MsoEvent.EventType.CREATED_OBJECT_EVENT.maskValue()
+    final static int mask = MsoEvent.EventType.CREATED_OBJECT_EVENT.maskValue()
                 | MsoEvent.EventType.DELETED_OBJECT_EVENT.maskValue()
                 | MsoEvent.EventType.MODIFIED_DATA_EVENT.maskValue();
 
+
+    public void handleMsoDerivedUpdateEvent(MsoEvent.DerivedUpdate e)
+    {
         if (!hasInterestIn(e.getSource()))
         {
             return;
@@ -65,13 +66,13 @@ public abstract class AbstractDerivedList<M extends IMsoObjectIf> implements IMs
 
         if ((e.getEventTypeMask() & mask) != 0)
         {
-            if ((e.getEventTypeMask() & MsoEvent.EventType.CREATED_OBJECT_EVENT.maskValue()) != 0)
+            if (e.isCreateObjectEvent())
             {
                 handleItemCreate(e.getSource());
-            } else if ((e.getEventTypeMask() & MsoEvent.EventType.DELETED_OBJECT_EVENT.maskValue()) != 0)
+            } else if (e.isDeleteObjectEvent())
             {
                 handleItemDelete(e.getSource());
-            } else if ((e.getEventTypeMask() & MsoEvent.EventType.MODIFIED_DATA_EVENT.maskValue()) != 0)
+            } else if (e.isModifyObjectEvent())
             {
                 handleItemModify(e.getSource());
             }
