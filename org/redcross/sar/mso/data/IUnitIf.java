@@ -198,4 +198,10 @@ public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf, ISerialNu
      * @return <code>false</code> if an error ({@link org.redcross.sar.util.except.IllegalOperationException}) occured, <code>true</code> otherwise.
      */
     public boolean addAllocatedAssignment(IAssignmentIf newAssignment, IAssignmentIf beforeAssignment);
+
+    public long getPauseTimeInMillis();
+
+    public long getWorkTimeInMillis();
+
+    public long getIdleTimeInMillis();
 }

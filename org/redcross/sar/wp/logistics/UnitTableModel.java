@@ -481,6 +481,30 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         }
     };
 
+    public final static Comparator<IconRenderer.UnitIcon> UnitPauseTimeComparator = new Comparator<IconRenderer.UnitIcon>()
+    {
+        public int compare(IconRenderer.UnitIcon o1, IconRenderer.UnitIcon o2)
+        {
+            return Long.valueOf(o1.getUnit().getPauseTimeInMillis()).compareTo(o2.getUnit().getPauseTimeInMillis());
+        }
+    };
+
+    public final static Comparator<IconRenderer.UnitIcon> UnitWorkTimeComparator = new Comparator<IconRenderer.UnitIcon>()
+    {
+        public int compare(IconRenderer.UnitIcon o1, IconRenderer.UnitIcon o2)
+        {
+            return Long.valueOf(o1.getUnit().getWorkTimeInMillis()).compareTo(o2.getUnit().getWorkTimeInMillis());
+        }
+    };
+
+    public final static Comparator<IconRenderer.UnitIcon> UnitIdleTimeComparator = new Comparator<IconRenderer.UnitIcon>()
+    {
+        public int compare(IconRenderer.UnitIcon o1, IconRenderer.UnitIcon o2)
+        {
+            return Long.valueOf(o1.getUnit().getIdleTimeInMillis()).compareTo(o2.getUnit().getIdleTimeInMillis());
+        }
+    };
+
     public static class UnitTableRowSorter extends TableRowSorter<UnitTableModel>
     {
         int[] m_sortKeys = new int[]{0, 1, 2, 2, 2, 0}; // default initial values
@@ -499,6 +523,12 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
                     {
                         case 2:
                             return UnitSpeedComparator;
+                        case 3:
+                            return UnitPauseTimeComparator;
+                        case 4:
+                            return UnitWorkTimeComparator;
+                        case 5:
+                            return UnitIdleTimeComparator;
                         default:
                             return UnitTypeAndNumberComparator;
                     }

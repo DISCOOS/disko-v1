@@ -712,6 +712,20 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
         return true;
     }
 
+    public long getPauseTimeInMillis()
+    {
+        return 0; // todo find something better
+    }
+
+    public long getWorkTimeInMillis()
+    {
+        return 0; // todo find something better
+    }
+
+    public long getIdleTimeInMillis()
+    {
+        return 0; // todo find something better
+    }
 }
 
 

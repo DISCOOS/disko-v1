@@ -163,7 +163,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         while (tmpList.size() > 0)
         {
             String key = tmpList.iterator().next();
-            AbstractMsoObject abstrObj = (AbstractMsoObject)aList.remove(key);
+            AbstractMsoObject abstrObj = (AbstractMsoObject) aList.remove(key);
             if (abstrObj != null)
             {
                 abstrObj.removeDeleteListener(this);
@@ -238,8 +238,6 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         {
             String s = this.m_owner != null ? this.m_owner.toString() : this.toString();
             System.out.println("Delete reference from " + s + " to " + anObject);
-            s = "(copy) Delete reference from " + s + " to " + anObject;
-            System.out.println(s);
             ((AbstractMsoObject) refObj).removeDeleteListener(this);
             if (m_owner != null)
             {
@@ -442,7 +440,10 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         }
         for (M item : m_deleted.values())
         {
-            retVal.add(new CommittableImpl.CommitReference(m_name, m_owner, item, CommitManager.CommitType.COMMIT_DELETED));
+            if (!item.isToBeDeleted())
+            {
+                retVal.add(new CommittableImpl.CommitReference(m_name, m_owner, item, CommitManager.CommitType.COMMIT_DELETED));
+            }
         }
         return retVal;
     }
@@ -555,6 +556,4 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         }
         return retVal;
     }
-
-
 }

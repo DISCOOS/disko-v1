@@ -80,6 +80,9 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     private boolean m_isSetup = false;
 
 
+    private boolean m_isBeingDeleted;
+
+
     /**
      * Constructor
      *
@@ -196,6 +199,11 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         return true;
     }
 
+    public boolean isToBeDeleted()
+    {
+        return m_isBeingDeleted;
+    }
+
     public void doDelete()
     {
         System.out.println("Deleting " + this);
@@ -205,6 +213,8 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
             IMsoObjectHolderIf myHolder = iterator.next();
             myHolder.doDeleteReference(this);
         }
+
+        m_isBeingDeleted = true;
         registerDeletedObject();
     }
 
@@ -692,8 +702,8 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         }
 
         m_clientUpdateMask |= clientEventTypeMask;
-        if ((m_clientUpdateMask & MsoEvent.EventType.DELETED_OBJECT_EVENT.maskValue()) != 0  || // Always update when object is deleted
-        !(m_suspendClientUpdate || MsoModelImpl.getInstance().updateSuspended()))
+        if ((m_clientUpdateMask & MsoEvent.EventType.DELETED_OBJECT_EVENT.maskValue()) != 0 || // Always update when object is deleted
+                !(m_suspendClientUpdate || MsoModelImpl.getInstance().updateSuspended()))
         {
             notifyClientUpdate();
         }
@@ -755,6 +765,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
      */
     public void rollback()
     {
+        m_isBeingDeleted = false;
         boolean dataModified = false;
         for (AttributeImpl attr : m_attributeList)
         {
@@ -834,7 +845,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
      */
     protected void notifyClientUpdate()
     {
-        if ( m_clientUpdateMask != 0)
+        if (m_clientUpdateMask != 0)
         {
             m_eventManager.notifyClientUpdate(this, m_clientUpdateMask);
             m_clientUpdateMask = 0;
@@ -849,7 +860,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
      */
     public void suspendClientUpdate()
     {
-            m_suspendClientUpdate = true;
+        m_suspendClientUpdate = true;
     }
 
     /**
@@ -870,7 +881,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
 
     protected void suspendDerivedUpdate()
     {
-            m_suspendDerivedUpdate = true;
+        m_suspendDerivedUpdate = true;
     }
 
     public void resumeDerivedUpdate()
@@ -908,7 +919,10 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         Vector<ICommittableIf.ICommitReferenceIf> retVal = new Vector<ICommittableIf.ICommitReferenceIf>();
         for (MsoListImpl list : m_referenceLists.values())
         {
-            retVal.addAll(list.getCommittableRelations());
+            if (!list.isMain())
+            {
+                retVal.addAll(list.getCommittableRelations());
+            }
         }
         return retVal;
     }

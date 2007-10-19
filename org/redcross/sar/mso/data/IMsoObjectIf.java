@@ -130,6 +130,8 @@ public interface IMsoObjectIf
      */
     public void resumeClientUpdates();
 
+    public boolean isToBeDeleted();
+
 //    public void registerAddedReference();
 
 //    public void registerRemovedReference();

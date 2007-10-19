@@ -37,6 +37,14 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener, I
     private static final String UNIT_PRINT = "UnitPrint";
     private static final String UNIT_CHANGE = "UnitChange";
 
+    private final static int ASSIGNMENT_INFO_PANEL_TOP_ELEMENTS = 5;
+    private final static int ASSIGNMENT_INFO_PANEL_CENTER_ELEMENTS = 1;
+    private final static int ASSIGNMENT_INFO_PANEL_BUTTONS = 4;
+
+    private final static int UNIT_INFO_PANEL_TOP_ELEMENTS = 4;
+    private final static int UNIT_INFO_PANEL_CENTER_ELEMENTS = 2;
+    private final static int UNIT_INFO_PANEL_BUTTONS = 2;
+
     private IDiskoWpLogistics m_wpModule;
     private JPanel m_infoPanel;
     private LogisticsInfoPanel m_unitInfoPanel;
@@ -87,13 +95,27 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener, I
     {
         if (ASSIGNMENT_PANEL_NAME.equals(m_displayedPanelName))
         {
-            renderAssignment();
+            if (e.getSource() == m_displayedAsssignment)
+            {
+                if (e.isDeleteObjectEvent())
+                {
+                    m_displayedAsssignment = null;
+                }
+                renderAssignment();
+            }
         } else if (ASSIGNMENT_LIST_PANEL_NAME.equals(m_displayedPanelName))
         {
             renderAssignmentList();
         } else if (UNIT_PANEL_NAME.equals(m_displayedPanelName))
         {
-            renderUnit();
+            if (e.getSource() == m_displayedUnit)
+            {
+                if (e.isDeleteObjectEvent())
+                {
+                    m_displayedUnit = null;
+                }
+                renderUnit();
+            }
         }
     }
 
@@ -139,7 +161,7 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener, I
 
     private void initUnitInfoPanel()
     {
-        m_unitInfoPanel = new LogisticsInfoPanel(4, 2, 2);
+        m_unitInfoPanel = new LogisticsInfoPanel(UNIT_INFO_PANEL_TOP_ELEMENTS, UNIT_INFO_PANEL_CENTER_ELEMENTS, UNIT_INFO_PANEL_BUTTONS);
         m_infoPanel.add(m_unitInfoPanel, UNIT_PANEL_NAME);
         m_unitInfoPanel.setHeaders(new String[]{m_wpModule.getText("UnitInfoPanel_hdr_0.text"),
                 m_wpModule.getText("UnitInfoPanel_hdr_1.text"),
@@ -154,7 +176,7 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener, I
 
     private void initAssignmentInfoPanel()
     {
-        m_assignmentInfoPanel = new LogisticsInfoPanel(5, 1, 4);
+        m_assignmentInfoPanel = new LogisticsInfoPanel(ASSIGNMENT_INFO_PANEL_TOP_ELEMENTS, ASSIGNMENT_INFO_PANEL_CENTER_ELEMENTS, ASSIGNMENT_INFO_PANEL_BUTTONS);
         m_infoPanel.add(m_assignmentInfoPanel, ASSIGNMENT_PANEL_NAME);
         m_assignmentInfoPanel.setHeaders(new String[]{m_wpModule.getText("AsgInfoPanel_hdr_0.text"),
                 m_wpModule.getText("AsgInfoPanel_hdr_1.text"),
@@ -190,26 +212,31 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener, I
 
     private void renderAssignment()
     {
-        if (m_displayedAsssignment == null)
-        { // added by Geodata
-            return;
-        }
-        m_assignmentInfoPanel.setTopText(0, m_displayedAsssignment.getNumber() + " (" + m_displayedAsssignment.getStatusText() + ")");
-        m_assignmentInfoPanel.setTopText(1, m_displayedAsssignment.getTypeText());
-        IUnitIf unit = m_displayedAsssignment.getOwningUnit();
-        if (unit != null)
+        if (m_displayedAsssignment != null)
         {
-            m_assignmentInfoPanel.setTopText(2, unit.getUnitNumber());
+            m_assignmentInfoPanel.setTopText(0, m_displayedAsssignment.getNumber() + " (" + m_displayedAsssignment.getStatusText() + ")");
+            m_assignmentInfoPanel.setTopText(1, m_displayedAsssignment.getTypeText());
+            IUnitIf unit = m_displayedAsssignment.getOwningUnit();
+            if (unit != null)
+            {
+                m_assignmentInfoPanel.setTopText(2, unit.getUnitNumber());
+            } else
+            {
+                m_assignmentInfoPanel.setTopText(2, "");
+            }
+            m_assignmentInfoPanel.setTopText(3, m_displayedAsssignment.getPriorityText());
+            m_assignmentInfoPanel.setTopText(4, hoursSince(m_displayedAsssignment.getTimeAssigned()));
+
         } else
         {
-            m_assignmentInfoPanel.setTopText(2, "");
+            m_assignmentInfoPanel.clearTopTexts();
+            m_assignmentInfoPanel.clearCenterTexts();
         }
-        m_assignmentInfoPanel.setTopText(3, m_displayedAsssignment.getPriorityText());
-        m_assignmentInfoPanel.setTopText(4, hoursSince(m_displayedAsssignment.getTimeAssigned()));
-        m_assignmentInfoPanel.setTopText(5, "");
-
-        m_assignmentInfoPanel.setButtonEnabled(2, m_displayedAsssignment.hasBeenFinished());
+        m_assignmentInfoPanel.setButtonEnabled(0, m_displayedAsssignment != null);
+        m_assignmentInfoPanel.setButtonEnabled(1, m_displayedAsssignment != null);
+        m_assignmentInfoPanel.setButtonEnabled(2, m_displayedAsssignment != null && m_displayedAsssignment.hasBeenFinished());
         m_assignmentInfoPanel.setButtonVisible(3, m_shallReturnToList);
+        m_assignmentInfoPanel.repaint();
     }
 
     private String hoursSince(Calendar aTime)
@@ -238,7 +265,7 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener, I
     {
         JLabel hl = m_unitAssignmentsPanel.getHeaderLabel();
         hl.setText(MessageFormat.format(m_wpModule.getText("AsgListInfoPanel_hdr.text"),
-                UnitTableModel.getSelectedAssignmentText(m_wpModule, m_displayedUnitSelection),
+                UnitTableModel.getSelectedAssignmentText(m_wpModule, m_displayedUnitSelection).toLowerCase(),
                 m_displayedUnit.getUnitNumber()));
         m_unitAssignmentsPanel.setSelectedUnit(m_displayedUnit);
         m_unitAssignmentsPanel.setSelectedStatus(UnitTableModel.getSelectedAssignmentStatus(m_displayedUnitSelection));
@@ -265,33 +292,44 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener, I
 
     void renderUnit()
     {
-        m_unitInfoPanel.setTopText(0, m_displayedUnit.getUnitNumber() + " " + m_displayedUnit.getStatusText());
-        m_unitInfoPanel.setTopText(1, m_displayedUnit.getCallSign());
-        IAssignmentIf activeAsg = m_displayedUnit.getActiveAssignment();
-        if (activeAsg != null)
+        if (m_displayedUnit != null)
         {
-            m_unitInfoPanel.setTopText(2, Integer.toString(activeAsg.getNumber()));
-            m_unitInfoPanel.setTopText(3, hoursSince(activeAsg.getTimeAssigned()));
-        } else
-        {
-            m_unitInfoPanel.setTopText(2, "");
-            m_unitInfoPanel.setTopText(3, "");
-        }
-        IPersonnelIf person = m_displayedUnit.getUnitLeader();
-        if (person != null)
-        {
-            m_unitInfoPanel.setCenterText(1, person.getFirstname() + " " + person.getLastname());
-        } else
-        {
-            m_unitInfoPanel.setTopText(4, " ");
-        }
+            m_unitInfoPanel.setTopText(0, m_displayedUnit.getUnitNumber() + " " + m_displayedUnit.getStatusText());
+            m_unitInfoPanel.setTopText(1, m_displayedUnit.getCallSign());
+            IAssignmentIf activeAsg = m_displayedUnit.getActiveAssignment();
+            if (activeAsg != null)
+            {
+                m_unitInfoPanel.setTopText(2, Integer.toString(activeAsg.getNumber()));
+                m_unitInfoPanel.setTopText(3, hoursSince(activeAsg.getTimeAssigned()));
+            } else
+            {
+                m_unitInfoPanel.setTopText(2, "");
+                m_unitInfoPanel.setTopText(3, "");
+            }
+            IPersonnelIf person = m_displayedUnit.getUnitLeader();
+            if (person != null)
+            {
+                m_unitInfoPanel.setCenterText(0, person.getFirstname() + " " + person.getLastname());
+            } else
+            {
+                m_unitInfoPanel.setCenterText(0, " ");
+            }
 
-        Vector<String> memberNames = new Vector<String>();
-        for (IPersonnelIf p : m_displayedUnit.getUnitPersonnelItems())
+            Vector<String> memberNames = new Vector<String>();
+            for (IPersonnelIf p : m_displayedUnit.getUnitPersonnelItems())
+            {
+                memberNames.add(p.getFirstname() + " " + p.getLastname());
+            }
+            m_unitInfoPanel.setCenterText(1, memberNames);
+            m_unitInfoPanel.setButtonEnabled(0, true);
+            m_unitInfoPanel.setButtonEnabled(1, true);
+        } else
         {
-            memberNames.add(p.getFirstname() + " " + p.getLastname());
+            m_unitInfoPanel.clearTopTexts();
+            m_unitInfoPanel.clearCenterTexts();
         }
-        m_unitInfoPanel.setCenterText(2, memberNames);
+        m_unitInfoPanel.setButtonEnabled(0, m_displayedUnit != null);
+        m_unitInfoPanel.setButtonEnabled(1, m_displayedUnit != null);
         m_unitInfoPanel.repaint();
     }
 
@@ -321,9 +359,9 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener, I
                 role.selectDiskoWpModule(calledModule);
                 calledModule.setCallingWp(m_wpModule.getName());
                 calledUnitModule.setOverviewPanel(1);
-                calledUnitModule.setUnit(m_displayedUnit);                       
+                calledUnitModule.setUnit(m_displayedUnit);
                 calledUnitModule.setLeftView(IDiskoWpUnit.UNIT_VIEW_ID);
-                
+
             } else
             {
                 m_wpModule.showWarning("ChangeWPNotFound_Tactics.text");

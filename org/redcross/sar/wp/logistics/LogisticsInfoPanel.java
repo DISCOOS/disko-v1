@@ -234,6 +234,22 @@ public class LogisticsInfoPanel extends JPanel
         }
     }
 
+    public void clearTopTexts()
+    {
+        for (InternalInfoPanel p: m_topPanelElements)
+        {
+            p.setText("");
+        }
+    }
+
+    public void clearCenterTexts()
+    {
+        for (InternalInfoPanel p: m_centerPanelElements)
+        {
+            p.setText("");
+        }
+    }
+
     public static class InternalInfoPanel extends JPanel
     {
         final static String lineSeparator = System.getProperty("line.separator");
