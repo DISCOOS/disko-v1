@@ -159,6 +159,11 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
             return;
         }
 
+        if (m_owner != null)
+        {
+            ((AbstractMsoObject) m_owner).registerRemovedReference(updateServer);
+        }
+
         Collection<String> tmpList = aList.keySet();
         while (tmpList.size() > 0)
         {
@@ -271,10 +276,6 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
             m_items.put(refObj.getObjectId(), refObj);
             ((AbstractMsoObject) refObj).addDeleteListener(this);
             ((AbstractMsoObject) refObj).registerCreatedObject();
-            if (m_owner != null)
-            {
-                ((AbstractMsoObject) m_owner).registerAddedReference();
-            }
         }
     }
 
@@ -287,6 +288,12 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         {
             reInsert(refObj);
         }
+
+        if (m_owner != null && m_deleted.size() > 0)
+        {
+            ((AbstractMsoObject) m_owner).registerAddedReference();
+        }
+
         m_deleted.clear();
     }
 

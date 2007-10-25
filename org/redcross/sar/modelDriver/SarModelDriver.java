@@ -137,6 +137,7 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
     boolean setActiveOperation(SarOperation soper)
     {
         MsoModelImpl.getInstance().setRemoteUpdateMode();
+        MsoModelImpl.getInstance().suspendClientUpdate();
         //CREATE MSO operation
         createMsoOperation(soper);
         // ADD ALL CO
@@ -174,12 +175,12 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
                 {
                     try
                     {
-                    SarObjectImpl sarBaseObject = (SarObjectImpl) entry.getValue().get(i);
-                    //    SarBaseObject sarBaseObject =  entry.getValue().get(i);
+                        SarObjectImpl sarBaseObject = (SarObjectImpl) entry.getValue().get(i);
+                        //    SarBaseObject sarBaseObject =  entry.getValue().get(i);
 
-                    updateMsoReference(so, sarBaseObject, entry.getKey(), SarBaseObjectImpl.ADD_REL_FIELD);
+                        updateMsoReference(so, sarBaseObject, entry.getKey(), SarBaseObjectImpl.ADD_REL_FIELD);
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         Log.printStackTrace(e);
                     }
@@ -188,6 +189,7 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
             }
 
         }
+        MsoModelImpl.getInstance().resumeClientUpdate();
         MsoModelImpl.getInstance().restoreUpdateMode();
 
         return true;
@@ -267,7 +269,7 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
 
     private HashMap<String, SarObject> tmpObjects = new HashMap();
 
-    public void handleMsoCommitEvent(MsoEvent.Commit e)  throws CommitException
+    public void handleMsoCommitEvent(MsoEvent.Commit e) throws CommitException
     {
         tmpObjects.clear();
         //Check that operation is added
@@ -313,7 +315,7 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
         //Handle delete object last
         for (ICommittableIf.ICommitObjectIf ico : objectList)
         {
-            if(ico.getType().equals(CommitManager.CommitType.COMMIT_DELETED))
+            if (ico.getType().equals(CommitManager.CommitType.COMMIT_DELETED))
             {
                 //if deleted remove Sara object
                 deleteSaraObject(ico);
@@ -385,7 +387,7 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
                 msoObj.getObjectId().substring(msoObj.getObjectId().indexOf(".") + 1) :
                 msoObj.getObjectId();
         SarObject sbo = (SarObject) sarSess.createInstance(
-                className,sarOperation.getID(),
+                className, sarOperation.getID(),
                 SarBaseObjectFactory.TYPE_OBJECT, objId);
 
         //TODO sett attributter og tilordne til hendelse
@@ -505,6 +507,7 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
                     //To change body of implemented methods use File | Settings | File Templates.
 
                     MsoModelImpl.getInstance().setRemoteUpdateMode();
+                    MsoModelImpl.getInstance().suspendClientUpdate();
                     try
                     {
                         if (change.getChangeType() == SaraChangeEvent.TYPE_ADD)
@@ -534,6 +537,7 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
                     {
                         Log.printStackTrace("Unable to update msomodel " + e.getMessage(), e);
                     }
+                    MsoModelImpl.getInstance().resumeClientUpdate();
                     MsoModelImpl.getInstance().restoreUpdateMode();
                 }
             });
@@ -675,9 +679,9 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
         {
             try
             {
-            source.addObjectReference(relObj, relName);
+                source.addObjectReference(relObj, relName);
             }
-            catch(DuplicateIdException die)
+            catch (DuplicateIdException die)
             {
                 //Do nothing will occure when object is created by this client
             }
@@ -687,9 +691,8 @@ public class SarModelDriver implements IModelDriverIf, IMsoCommitListenerIf, Sar
             IMsoReferenceIf refObj = (IMsoReferenceIf) source.getReferenceObjects().get(relName.toLowerCase());
             if (refObj == null)
             {
-                source.getReferenceObjects().put(relName,relObj);
-            }
-            else
+                source.getReferenceObjects().put(relName, relObj);
+            } else
             {
 
                 refObj.setReference(relObj);
