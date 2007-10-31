@@ -6,29 +6,29 @@
 <fact comp="n" edit="y" id="00000000264" label="MaxSpeed" pos1="999" pos2="999" relTo="00000000262" version="1">
 <num_fact antdec="0" max="1.0E8" min="0.0"/>
 </fact>
-<fact comp="n" edit="y" id="00000000265" label="Bearing" pos1="999" pos2="999" relTo="00000000262" version="1">
-<num_fact antdec="0" max="1.0E8" min="0.0"/>
-</fact>
-<fact comp="n" edit="y" id="00000000266" label="CallSign" pos1="999" pos2="999" relTo="00000000262" version="1">
+<fact comp="n" edit="y" id="00000000265" label="Status" pos1="999" pos2="999" relTo="00000000262" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000267" label="Remarks" pos1="999" pos2="999" relTo="00000000262" version="1">
-<str_fact/>
-</fact>
-<fact comp="n" edit="y" id="00000000268" label="Speed" pos1="999" pos2="999" relTo="00000000262" version="1">
+<fact comp="n" edit="y" id="00000000266" label="Bearing" pos1="999" pos2="999" relTo="00000000262" version="1">
 <num_fact antdec="0" max="1.0E8" min="0.0"/>
 </fact>
-<fact comp="n" edit="y" id="00000000269" label="ToneID" pos1="999" pos2="999" relTo="00000000262" version="1">
+<fact comp="n" edit="y" id="00000000267" label="CallSign" pos1="999" pos2="999" relTo="00000000262" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000270" label="Number" pos1="999" pos2="999" relTo="00000000262" version="1">
-<num_fact antdec="0" max="1.0E8" min="0.0"/>
-</fact>
-<fact comp="n" edit="y" id="00000000271" label="Position" pos1="999" pos2="999" relTo="00000000262" version="1">
+<fact comp="n" edit="y" id="00000000268" label="Position" pos1="999" pos2="999" relTo="00000000262" version="1">
 <loc_fact lat_value="" locationType="1" long_value=""/>
 </fact>
-<fact comp="n" edit="y" id="00000000272" label="Status" pos1="999" pos2="999" relTo="00000000262" version="1">
+<fact comp="n" edit="y" id="00000000269" label="Remarks" pos1="999" pos2="999" relTo="00000000262" version="1">
 <str_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000270" label="Speed" pos1="999" pos2="999" relTo="00000000262" version="1">
+<num_fact antdec="0" max="1.0E8" min="0.0"/>
+</fact>
+<fact comp="n" edit="y" id="00000000271" label="ToneID" pos1="999" pos2="999" relTo="00000000262" version="1">
+<str_fact/>
+</fact>
+<fact comp="n" edit="y" id="00000000272" label="Number" pos1="999" pos2="999" relTo="00000000262" version="1">
+<num_fact antdec="0" max="1.0E8" min="0.0"/>
 </fact>
 <fact comp="n" edit="y" id="00000000273" label="Identifier" pos1="999" pos2="999" relTo="00000000262" version="1">
 <str_fact/>

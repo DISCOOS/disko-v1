@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<object id="00000000148" name="Operation" objectType="test" pos="24">
-<fact comp="n" edit="y" id="00000000149" label="Number" pos1="999" pos2="999" relTo="00000000148" version="1">
+<object id="00000000156" name="Operation" objectType="test" pos="24">
+<fact comp="n" edit="y" id="00000000157" label="OpNumber" pos1="999" pos2="999" relTo="00000000156" version="1">
 <str_fact/>
 </fact>
-<fact comp="n" edit="y" id="00000000150" label="NumberPrefix" pos1="999" pos2="999" relTo="00000000148" version="1">
+<fact comp="n" edit="y" id="00000000158" label="OpNumberPrefix" pos1="999" pos2="999" relTo="00000000156" version="1">
 <str_fact/>
 </fact>
 </object>
