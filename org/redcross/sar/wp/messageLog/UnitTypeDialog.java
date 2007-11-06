@@ -13,6 +13,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -28,12 +29,6 @@ public class UnitTypeDialog extends DiskoDialog implements IEditMessageComponent
 
 	private JPanel m_contentsPanel = null;
 
-	private JButton m_aircraftButton = null;
-	private JButton m_boatButton = null;
-	private JButton m_dogButton = null;
-	private JButton m_vehicleButton = null;
-	private JButton m_teamButton = null;
-	private JButton m_commandPostButton = null;
 	private JTextField m_textField = null;
 	private LinkedList<JButton> m_buttons;
 
@@ -61,6 +56,12 @@ public class UnitTypeDialog extends DiskoDialog implements IEditMessageComponent
 	private void initButtons()
 	{
 		m_buttons = new LinkedList<JButton>();
+        JButton m_aircraftButton = null;
+        JButton m_boatButton = null;
+        JButton m_dogButton = null;
+        JButton m_vehicleButton = null;
+        JButton m_teamButton = null;
+        JButton m_commandPostButton = null;
 
 		try
 		{
@@ -138,7 +139,7 @@ public class UnitTypeDialog extends DiskoDialog implements IEditMessageComponent
 		return button;
 	}
 
-	public LinkedList<JButton> getButtons()
+	public Collection<JButton> getButtons()
 	{
 		return m_buttons;
 	}

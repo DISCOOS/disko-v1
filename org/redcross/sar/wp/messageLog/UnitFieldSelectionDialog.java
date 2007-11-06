@@ -9,7 +9,6 @@ import org.redcross.sar.mso.data.AbstractDerivedList;
 import org.redcross.sar.mso.data.ICommunicatorIf;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IUnitIf;
-import org.redcross.sar.mso.data.IUnitIf.UnitType;
 import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.mso.Selector;
 
@@ -19,8 +18,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.*;
+import java.util.Comparator;
 import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  * The dialog for selecting unit type and number.
@@ -243,55 +243,58 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		}
 	}
 
-	/**
-	 * @param unitTypeString The text string containing the unit type code
-	 * @return The unit type
-	 */
-	protected UnitType getUnitType(String unitTypeString)
-	{
-		try
-		{
-			if(unitTypeString.equals(m_unitResources.getString("UnitType.VEHICLE.letter")))
-			{
-				return UnitType.VEHICLE;
-			}
-			else if(unitTypeString.equals(m_unitResources.getString("UnitType.BOAT.letter")))
-			{
-				return UnitType.BOAT;
-			}
-			else if(unitTypeString.equals(m_unitResources.getString("UnitType.COMMAND_POST.letter")))
-			{
-				return UnitType.COMMAND_POST;
-			}
-			else if(unitTypeString.equals(m_unitResources.getString("UnitType.TEAM.letter")))
-			{
-				return UnitType.TEAM;
-			}
-			else if(unitTypeString.equals(m_unitResources.getString("UnitType.AIRCRAFT.letter")))
-			{
-				return UnitType.AIRCRAFT;
-			}
-			else if(unitTypeString.equals(m_unitResources.getString("UnitType.DOG.letter")))
-			{
-				return UnitType.DOG;
-			}
-		}
-		catch(MissingResourceException e)
-		{
-			Log.error("Error getting unit resource");
-		}
-
-
-		return null;
-	}
+// todo remove or improve
+//	/**
+//	 * @param unitTypeString The text string containing the unit type code
+//	 * @return The unit type
+//	 */
+//	protected UnitType getUnitType(String unitTypeString)
+//	{
+//		try
+//		{
+//			if(unitTypeString.equals(m_unitResources.getString("UnitType.VEHICLE.letter")))
+//			{
+//				return UnitType.VEHICLE;
+//			}
+//			else if(unitTypeString.equals(m_unitResources.getString("UnitType.BOAT.letter")))
+//			{
+//				return UnitType.BOAT;
+//			}
+//			else if(unitTypeString.equals(m_unitResources.getString("UnitType.COMMAND_POST.letter")))
+//			{
+//				return UnitType.COMMAND_POST;
+//			}
+//			else if(unitTypeString.equals(m_unitResources.getString("UnitType.TEAM.letter")))
+//			{
+//				return UnitType.TEAM;
+//			}
+//			else if(unitTypeString.equals(m_unitResources.getString("UnitType.AIRCRAFT.letter")))
+//			{
+//				return UnitType.AIRCRAFT;
+//			}
+//			else if(unitTypeString.equals(m_unitResources.getString("UnitType.DOG.letter")))
+//			{
+//				return UnitType.DOG;
+//			}
+//		}
+//		catch(MissingResourceException e)
+//		{
+//			Log.error("Error getting unit resource");
+//		}
+//
+//
+//		return null;
+//	}
 
 //  todo rwmove?
 //	protected String getUnitTypeString(UnitType unitType)
 //	{
 //		try
 //		{
+    // Possible improvement
 //            String unitTypeString = "UnitType." + unitType.name() + ".letter";
 //            String s = Internationalization.getFullBundleText(m_unitResources,unitTypeString);
+    // End of possible improvement
 //            if(unitType == UnitType.AIRCRAFT)
 //			{
 //				return m_unitResources.getString("UnitType.AIRCRAFT.letter");
@@ -481,10 +484,10 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		return m_unitTypeField.getText() + " " + m_unitNumberField.getText();
 	}
 
-	public UnitType getUnitType()
-	{
-		return getUnitType(m_unitTypeField.getText());
-	}
+//	public UnitType getUnitType()
+//	{
+//		return getUnitType(m_unitTypeField.getText());
+//	}
 
 	public int getUnitNumber()
 	{
@@ -518,8 +521,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 	 */
 	public void addActionListener(SingleUnitListSelectionDialog fromDialog)
 	{
-		LinkedList<JButton> buttons = m_unitTypePad.getButtons();
-		for(JButton button : buttons)
+		for(JButton button : m_unitTypePad.getButtons())
 		{
 			button.addActionListener(fromDialog);
 		}
