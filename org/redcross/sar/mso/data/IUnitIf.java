@@ -14,6 +14,8 @@ import java.util.List;
  */
 public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf, ISerialNumberedIf, IEnumStatusHolder<IUnitIf.UnitStatus>
 {
+    public static final String bundleName  = "org.redcross.sar.mso.data.properties.Unit";
+
     public enum UnitType
     {
         COMMAND_POST,
@@ -35,7 +37,7 @@ public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf, ISerialNu
         RELEASED
     }
 
-    public final static Comparator<IUnitIf> UNIT_TYPE_AND_NUMBER_COMPARATOR = new Comparator<IUnitIf>()
+    public static final Comparator<IUnitIf> UNIT_TYPE_AND_NUMBER_COMPARATOR = new Comparator<IUnitIf>()
     {
         public int compare(IUnitIf u1, IUnitIf u2)
         {

@@ -1,22 +1,21 @@
 package org.redcross.sar.wp.messageLog;
 
-import java.util.Calendar;
-
-import javax.swing.JOptionPane;
-
 import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.mso.data.IAssignmentIf;
+import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf;
-import org.redcross.sar.mso.data.IUnitIf;
-import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
+import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.util.AssignmentTransferUtilities;
+
+import javax.swing.*;
+import java.util.Calendar;
 
 /**
  * Dialog for setting assignment to complete
  * See {@link AbstractAssignmentPanel} for details
- * 
+ *
  * @author thomasl
  */
 public class CompletedAssignmentPanel extends AbstractAssignmentPanel
@@ -29,13 +28,13 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 	public CompletedAssignmentPanel(IDiskoWpMessageLog wp)
 	{
 		super(wp);
-		
+
 		m_timeLabel.setText(m_wpMessageLog.getText("CompletedTimeLabel.text") + ": ");
 	}
 
 	/**
-	 * Removes completed lines added to message since last commit. 
-	 * If assign and/or started lines were added, these will be removed as well 
+	 * Removes completed lines added to message since last commit.
+	 * If assign and/or started lines were added, these will be removed as well
 	 */
 	public void cancelUpdate()
 	{
@@ -59,9 +58,9 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 	 */
 	@Override
 	protected void updateMessageLine()
-	{	
+	{
 		super.updateMessageLine();
-		
+
 		// Perform action show in list
 		MessageLogBottomPanel.showListPanel();
 	}
@@ -86,8 +85,8 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 		IAssignmentIf assignedAssignment = unit.getAssignedAssignment();
 		IAssignmentIf executingAssignment = unit.getExecutingAssigment();
 		IAssignmentIf assignment = executingAssignment == null ? assignedAssignment : executingAssignment;
-		
-		
+
+
 		if(assignment != null)
 		{
 			this.hideComponent();
@@ -101,15 +100,15 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 				this.hideComponent();
 				return;
 			}
-			
+
 			Object[] options = {m_wpMessageLog.getText("yes.text"), m_wpMessageLog.getText("no.text")};
-			int n = JOptionPane.showOptionDialog(m_wpMessageLog.getApplication().getFrame(), 
+			int n = JOptionPane.showOptionDialog(m_wpMessageLog.getApplication().getFrame(),
 					String.format(m_wpMessageLog.getText("UnitCompletedAssignment.text"), unit.getTypeAndNumber(), assignment.getTypeAndNumber()),
-					m_wpMessageLog.getText("UnitCompletedAssignment.header"), 
-					JOptionPane.YES_NO_OPTION, 
-					JOptionPane.QUESTION_MESSAGE, 
-					null, 
-					options, 
+					m_wpMessageLog.getText("UnitCompletedAssignment.header"),
+					JOptionPane.YES_NO_OPTION,
+					JOptionPane.QUESTION_MESSAGE,
+					null,
+					options,
 					options[0]);
 
 			if(n == JOptionPane.YES_OPTION)
@@ -126,9 +125,9 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 					AssignmentTransferUtilities.createAssignmentChangeMessageLines(message, MessageLineType.COMPLETE, MessageLineType.COMPLETE,
 							Calendar.getInstance(), assignment);
 				}
-				
+
 				m_addedLines.add(message.findMessageLine(MessageLineType.COMPLETE, assignment, false));
-				
+
 				MessageLogBottomPanel.showCompletePanel();
 			}
 		}
@@ -157,12 +156,12 @@ public class CompletedAssignmentPanel extends AbstractAssignmentPanel
 					MessageLineType.COMPLETE,
 					Calendar.getInstance(),
 					m_selectedAssignment);
-			
+
 			m_addedLines.add(message.findMessageLine(MessageLineType.ASSIGNED, m_selectedAssignment, false));
 			m_addedLines.add(message.findMessageLine(MessageLineType.STARTED, m_selectedAssignment, false));
 			m_addedLines.add(message.findMessageLine(MessageLineType.COMPLETE, m_selectedAssignment, false));
 		}
-		
+
 		MessageLogBottomPanel.showCompletePanel();
 	}
 }

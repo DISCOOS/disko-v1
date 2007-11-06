@@ -31,15 +31,15 @@ public class VehicleImpl extends AbstractTransportUnit implements IVehicleIf
     }
 
     @Override
-    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean addObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
-        super.addObjectReference(anObject, aReferenceName);
+        return super.addObjectReference(anObject, aReferenceName);
     }
 
     @Override
-    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
-        super.removeObjectReference(anObject, aReferenceName);
+        return super.removeObjectReference(anObject, aReferenceName);
     }
 
     protected UnitType getTypeBySubclass()

@@ -1,30 +1,26 @@
 package org.redcross.sar.wp.tasks;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.util.Calendar;
-
-import javax.swing.JLabel;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.table.TableCellRenderer;
-
-import org.redcross.sar.mso.data.TaskImpl;
 import org.redcross.sar.mso.data.ITaskIf.TaskPriority;
 import org.redcross.sar.mso.data.ITaskIf.TaskStatus;
+import org.redcross.sar.mso.data.TaskImpl;
 import org.redcross.sar.util.mso.DTG;
+
+import javax.swing.*;
+import javax.swing.table.TableCellRenderer;
+import java.awt.*;
+import java.util.Calendar;
 
 /**
  * Renders task table
  * - Due time reached and status not finished: red
  * - Untreated tasks in bold
- * 
+ *
  * @author thomasl
  */
 public class TaskTableRenderer extends JLabel implements TableCellRenderer
 {
 	private static final long serialVersionUID = 1L;
-	
+
 	public TaskTableRenderer()
 	{
 		JTextArea area = new JTextArea();
@@ -34,10 +30,10 @@ public class TaskTableRenderer extends JLabel implements TableCellRenderer
 
 	public Component getTableCellRendererComponent(JTable table, Object value,
 			boolean isSelected, boolean hasFocus, int row, int column)
-	{		
+	{
 		TaskStatus taskStatus = (TaskStatus)table.getValueAt(row, 5);
 		Calendar dueTime = (Calendar)table.getValueAt(row, 4);
-		
+
 		String cellText = null;
 		switch(column)
 		{
@@ -70,7 +66,7 @@ public class TaskTableRenderer extends JLabel implements TableCellRenderer
 			}
 			break;
 		}
-		
+
 		// Set background to pink for expired tasks
 		if(isSelected)
 		{
@@ -78,7 +74,7 @@ public class TaskTableRenderer extends JLabel implements TableCellRenderer
 		}
 		else
 		{
-			
+
 			if(taskStatus != TaskStatus.FINISHED && dueTime != null &&
 					dueTime.before(Calendar.getInstance()))
 			{

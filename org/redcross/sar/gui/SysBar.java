@@ -2,6 +2,7 @@ package org.redcross.sar.gui;
 
 import org.redcross.sar.app.IDiskoApplication;
 import org.redcross.sar.app.Utils;
+import org.redcross.sar.util.Internationalization;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,7 +11,8 @@ import java.util.ResourceBundle;
 
 public class SysBar extends JPanel {
 
-private static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.gui.properties.SysBar");
+    public final static String bundleName = "org.redcross.sar.gui.properties.SysBar";
+private static final ResourceBundle bundle = Internationalization.getBundle(SysBar.class);
    private static final long serialVersionUID = 1L;
 	private IDiskoApplication app = null;
 	private ButtonGroup bgroup = null;
@@ -32,7 +34,7 @@ private static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcr
 	public SysBar() {
 		super(null);
 	}
-	
+
 	public SysBar(IDiskoApplication app) {
 		super();
 		this.app = app;
@@ -41,7 +43,7 @@ private static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcr
 
 	/**
 	 * This method initializes this
-	 * 
+	 *
 	 * @return void
 	 */
 	private void initialize() {
@@ -193,9 +195,9 @@ private static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcr
 		}
 		return changeRolleButton;
 	}
-	
+
 	private JButton getMapOptionButton() {
-		
+
 		if (mapOptionButton == null) {
 			try {
 				mapOptionButton = new JButton();
@@ -217,14 +219,14 @@ private static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcr
 		}
 		return mapOptionButton;
 	}
-	
+
 	public void addButton(AbstractButton button) {
 		add(button);
 		if (button instanceof JToggleButton) {
 			bgroup.add(button);
 		}
 	}
-	
+
 	public void removeButton(AbstractButton button) {
 		remove(button);
 		if (button instanceof JToggleButton) {

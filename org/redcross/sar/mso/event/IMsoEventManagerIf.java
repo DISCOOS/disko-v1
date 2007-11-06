@@ -2,7 +2,6 @@ package org.redcross.sar.mso.event;
 
 import org.redcross.sar.mso.committer.CommitWrapper;
 import org.redcross.sar.mso.committer.ICommitWrapperIf;
-import org.redcross.sar.mso.data.IAttributeIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.util.except.CommitException;
 
@@ -78,27 +77,6 @@ public interface IMsoEventManagerIf
      * @throws org.redcross.sar.util.except.CommitException when the commit fails.
      */
     public void notifyCommit(ICommitWrapperIf aSource) throws CommitException;
-
-    /**
-     * Add a listener in the Gis Update Listeners queue.
-     *
-     * @param aListener The listener
-     */
-    public void addGisUpdateListener(IMsoGisListenerIf aListener);
-
-    /**
-     * Remove a listener in the Gis Update Listeners queue.
-     *
-     * @param aListener The listener
-     */
-    public void removeGisUpdateListener(IMsoGisListenerIf aListener);
-
-    /**
-     * Notify a gis update.
-     *
-     * @param aSource The source object
-     */
-    public void notifyGisUpdate(IAttributeIf aSource);
 
     public void addDerivedUpdateListener(IMsoDerivedUpdateListenerIf aListener);
 

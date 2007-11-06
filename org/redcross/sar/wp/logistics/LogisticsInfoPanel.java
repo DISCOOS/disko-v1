@@ -12,7 +12,7 @@ import java.awt.event.ActionListener;
  */
 public class LogisticsInfoPanel extends JPanel
 {
-    private final static Dimension m_buttonDimension = new Dimension(60, 60);
+    private static final Dimension m_buttonDimension = new Dimension(60, 60);
     private JPanel m_topInfoPanel;
     private ScrollInfoPanel m_centerScrollPanel;
     private JPanel m_lowButtonPanel;
@@ -252,7 +252,7 @@ public class LogisticsInfoPanel extends JPanel
 
     public static class InternalInfoPanel extends JPanel
     {
-        final static String lineSeparator = System.getProperty("line.separator");
+        static final String lineSeparator = System.getProperty("line.separator");
 
         private JLabel m_headerLabel;
         private String m_headerText = "";

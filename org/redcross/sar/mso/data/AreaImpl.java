@@ -39,42 +39,47 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
     {
     }
 
-    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean addObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
         if (anObject instanceof IRouteIf || anObject instanceof ITrackIf)
         {
             m_areaGeodata.add(anObject);
-            return;
+            return true;
         }
         if (anObject instanceof IPOIIf)
         {
             if ("AreaPOIs".equals(aReferenceName))
             {
                 m_areaPOIs.add((IPOIIf) anObject);
-            } else if ("AreaGeodata".equals(aReferenceName))
+                return true;
+            }
+            if ("AreaGeodata".equals(aReferenceName))
             {
                 m_areaGeodata.add(anObject);
+                return true;
             }
         }
+        return false;
     }
 
-    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
         if (anObject instanceof IRouteIf || anObject instanceof ITrackIf)
         {
-            m_areaGeodata.removeReference(anObject);
-            return;
+            return m_areaGeodata.removeReference(anObject);
         }
         if (anObject instanceof IPOIIf)
         {
             if ("AreaPOIs".equals(aReferenceName))
             {
-                m_areaPOIs.removeReference((IPOIIf) anObject);
-            } else if ("AreaGeodata".equals(aReferenceName))
+                return m_areaPOIs.removeReference((IPOIIf) anObject);
+            }
+            if ("AreaGeodata".equals(aReferenceName))
             {
-                m_areaGeodata.removeReference(anObject);
+                return m_areaGeodata.removeReference(anObject);
             }
         }
+        return false;
     }
 
 
@@ -94,7 +99,6 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
     {
         return IMsoManagerIf.MsoClassCode.CLASSCODE_AREA;
     }
-
 
 
     public void setRemarks(String aRemarks)
@@ -205,7 +209,7 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
     * Other specified methods
     *-------------------------------------------------------------------------------------------*/
 
-    private final SelfSelector<IAreaIf, IAssignmentIf> owningAssigmentSelector = new SelfSelector<IAreaIf, IAssignmentIf>(this)
+    private final static SelfSelector<IAreaIf, IAssignmentIf> owningAssigmentSelector = new SelfSelector<IAreaIf, IAssignmentIf>()
     {
         public boolean select(IAssignmentIf anObject)
         {
@@ -215,6 +219,7 @@ public class AreaImpl extends AbstractMsoObject implements IAreaIf
 
     public IAssignmentIf getOwningAssignment()
     {
+        owningAssigmentSelector.setSelfObject(this);
         return MsoModelImpl.getInstance().getMsoManager().getCmdPost().getAssignmentList().selectSingleItem(owningAssigmentSelector);
     }
 

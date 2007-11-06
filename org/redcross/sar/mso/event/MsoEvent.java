@@ -1,7 +1,6 @@
 package org.redcross.sar.mso.event;
 
 import org.redcross.sar.mso.committer.ICommitWrapperIf;
-import org.redcross.sar.mso.data.IAttributeIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 
 /**
@@ -33,11 +32,11 @@ public class MsoEvent extends java.util.EventObject
         /**
          * Constructof of Enum members
          *
-         * @param value Value relatee to member.
+         * @param value Value related to member.
          */
         EventType(int value)
         {
-            this.m_maskValue = value;
+            m_maskValue = value;
         }
 
         /**
@@ -74,17 +73,17 @@ public class MsoEvent extends java.util.EventObject
     {
         return m_eventTypeMask;
     }
-    
+
     public boolean isDeleteObjectEvent()
     {
     	return (m_eventTypeMask & EventType.DELETED_OBJECT_EVENT.maskValue()) != 0;
     }
-    
+
     public boolean isCreateObjectEvent()
     {
     	return (m_eventTypeMask & EventType.CREATED_OBJECT_EVENT.maskValue()) != 0;
     }
-    
+
     public boolean isModifyObjectEvent()
     {
     	return (m_eventTypeMask & EventType.MODIFIED_DATA_EVENT.maskValue()) != 0;
@@ -109,17 +108,6 @@ public class MsoEvent extends java.util.EventObject
         public Commit(ICommitWrapperIf aSource, int anEventTypeMask)
         {
             super(aSource, anEventTypeMask);
-        }
-    }
-
-    /**
-     * Event that triggers an update of the Gis model.
-     */
-    public static class Gis extends MsoEvent
-    {
-        public Gis(IAttributeIf aSource)
-        {
-            super(aSource, 0);
         }
     }
 

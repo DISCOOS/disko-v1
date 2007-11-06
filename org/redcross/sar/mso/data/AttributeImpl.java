@@ -307,7 +307,7 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
             m_isSequenceNumber = isSequenceNumber;
         }
 
-        public MsoInteger(AbstractMsoObject theOwner, String theName, int theIndexNo, Integer anInt)
+        public MsoInteger(AbstractMsoObject theOwner,  String theName, int theIndexNo, Integer anInt)
         {
             this(theOwner, theName,false, theIndexNo, anInt);
         }
@@ -322,26 +322,31 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
         public void set(Integer aValue)
         {
             super.set(aValue);
-            processSequenceNumberAttribute();
+            processSequenceNumberAttribute(aValue);
         }
 
         public void setValue(int aValue)
         {
             setAttrValue(aValue);
-            processSequenceNumberAttribute();
+            processSequenceNumberAttribute(aValue);
         }
 
         public void setValue(Integer aValue)
         {
             setAttrValue(aValue);
-            processSequenceNumberAttribute();
+            processSequenceNumberAttribute(aValue);
         }
 
-        private void processSequenceNumberAttribute()
+        private void processSequenceNumberAttribute(int aValue)
         {
-            if (m_isSequenceNumber)
+            /** Conditions for performning a duplicate renumbering are given in the next statement:
+             * - The attribute shal be a sequence number.
+             * - The update shall come from server.
+             * - The value shall be non-negative, i.e. not from the constructor.  
+             */
+            if (m_isSequenceNumber && MsoModelImpl.getInstance().getUpdateMode() == IMsoModelIf.UpdateMode.REMOTE_UPDATE_MODE && aValue >= 0)
             {
-                ISerialNumberedIf numberedOwner = (ISerialNumberedIf)m_owner;
+                m_owner.renumberDuplicateNumbers();
             }
         }
 
@@ -809,7 +814,7 @@ public abstract class AttributeImpl<T> implements IAttributeIf<T>, Comparable<At
         {
             return false;
         }
-        if (m_owner != null ? !m_owner.equals(attribute.m_owner) : attribute.m_owner != null)
+        if (m_owner != null ? !m_owner.getObjectId().equals(attribute.m_owner.getObjectId()) : attribute.m_owner != null)
         {
             return false;
         }

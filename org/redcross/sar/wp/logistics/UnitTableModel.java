@@ -299,7 +299,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         }
     }
 
-    public final static Comparator<IconRenderer.AssignmentIcon> ListLengthComparator = new Comparator<IconRenderer.AssignmentIcon>()
+    public static final Comparator<IconRenderer.AssignmentIcon> ListLengthComparator = new Comparator<IconRenderer.AssignmentIcon>()
     {
         public int compare(IconRenderer.AssignmentIcon o1, IconRenderer.AssignmentIcon o2)
         {
@@ -309,7 +309,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         }
     };
 
-    public final static Comparator<IconRenderer.AssignmentIcon> PriorityComparator = new Comparator<IconRenderer.AssignmentIcon>()
+    public static final Comparator<IconRenderer.AssignmentIcon> PriorityComparator = new Comparator<IconRenderer.AssignmentIcon>()
     {
         public int compare(IconRenderer.AssignmentIcon o1, IconRenderer.AssignmentIcon o2)
         {
@@ -419,7 +419,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         protected abstract Calendar getCompareTime(java.util.List<IAssignmentIf> aList);
     }
 
-    public final static TimeComparator AssignmentTimeComparator = new TimeComparator()
+    public static final TimeComparator AssignmentTimeComparator = new TimeComparator()
     {
         protected Calendar getCompareTime(java.util.List<IAssignmentIf> aList)
         {
@@ -431,7 +431,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         }
     };
 
-    public final static TimeComparator StartTimeComparator = new TimeComparator()
+    public static final TimeComparator StartTimeComparator = new TimeComparator()
     {
         protected Calendar getCompareTime(java.util.List<IAssignmentIf> aList)
         {
@@ -443,7 +443,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         }
     };
 
-    public final static TimeComparator EstimatedEndTimeComparator = new TimeComparator()
+    public static final TimeComparator EstimatedEndTimeComparator = new TimeComparator()
     {
         protected Calendar getCompareTime(java.util.List<IAssignmentIf> aList)
         {
@@ -455,7 +455,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         }
     };
 
-    public final static Comparator<IconRenderer.UnitIcon> UnitTypeAndNumberComparator = new Comparator<IconRenderer.UnitIcon>()
+    public static final Comparator<IconRenderer.UnitIcon> UnitTypeAndNumberComparator = new Comparator<IconRenderer.UnitIcon>()
     {
         public int compare(IconRenderer.UnitIcon o1, IconRenderer.UnitIcon o2)
         {
@@ -473,7 +473,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         }
     };
 
-    public final static Comparator<IconRenderer.UnitIcon> UnitSpeedComparator = new Comparator<IconRenderer.UnitIcon>()
+    public static final Comparator<IconRenderer.UnitIcon> UnitSpeedComparator = new Comparator<IconRenderer.UnitIcon>()
     {
         public int compare(IconRenderer.UnitIcon o1, IconRenderer.UnitIcon o2)
         {
@@ -481,7 +481,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         }
     };
 
-    public final static Comparator<IconRenderer.UnitIcon> UnitPauseTimeComparator = new Comparator<IconRenderer.UnitIcon>()
+    public static final Comparator<IconRenderer.UnitIcon> UnitPauseTimeComparator = new Comparator<IconRenderer.UnitIcon>()
     {
         public int compare(IconRenderer.UnitIcon o1, IconRenderer.UnitIcon o2)
         {
@@ -489,7 +489,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         }
     };
 
-    public final static Comparator<IconRenderer.UnitIcon> UnitWorkTimeComparator = new Comparator<IconRenderer.UnitIcon>()
+    public static final Comparator<IconRenderer.UnitIcon> UnitWorkTimeComparator = new Comparator<IconRenderer.UnitIcon>()
     {
         public int compare(IconRenderer.UnitIcon o1, IconRenderer.UnitIcon o2)
         {
@@ -497,7 +497,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         }
     };
 
-    public final static Comparator<IconRenderer.UnitIcon> UnitIdleTimeComparator = new Comparator<IconRenderer.UnitIcon>()
+    public static final Comparator<IconRenderer.UnitIcon> UnitIdleTimeComparator = new Comparator<IconRenderer.UnitIcon>()
     {
         public int compare(IconRenderer.UnitIcon o1, IconRenderer.UnitIcon o2)
         {

@@ -12,6 +12,8 @@ import java.util.Calendar;
  */
 public interface IMsoManagerIf
 {
+    public static final String bundleName = "org.redcross.sar.mso.properties.MsoManager";
+
     /**
      * ClassCodes .
      */
@@ -567,10 +569,10 @@ public interface IMsoManagerIf
      * @return The Created object.
      */
     public IDogIf createDog(IMsoObjectIf.IObjectIdIf objectId);
-    
+
     /**
      * Create a new {@link org.redcross.sar.mso.data.IDogIf} object and add it to the collection of Unit objects.
-     * 
+     *
      * @param anIdentifier
      * @return The created object
      */
@@ -582,7 +584,7 @@ public interface IMsoManagerIf
      * @return The Created object.
      */
     public IAircraftIf createAircraft(IMsoObjectIf.IObjectIdIf objectId);
-    
+
     /**
      * Create a new {@link org.redcross.sar.mso.data.IAircraftIf} object and add it to the collection of Unit objects.
      * @param anIdentifier
@@ -596,7 +598,7 @@ public interface IMsoManagerIf
      * @return The Created object.
      */
     public ITeamIf createTeam(IMsoObjectIf.IObjectIdIf objectId);
-    
+
     /**
      * Create a new {@link org.redcross.sar.mso.data.ITeamIf} object and add it to the collection of Unit objects.
      * @param anIdentifier

@@ -18,7 +18,6 @@ import org.redcross.sar.util.mso.DTG;
 
 import javax.swing.*;
 import javax.swing.table.JTableHeader;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,17 +36,17 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 {
 	private static final long serialVersionUID = 1L;
 
-	public final static int PANEL_HEIGHT = (DiskoButtonFactory.SMALL_BUTTON_SIZE.height) * 3 + 24;
-	public final static int SMALL_PANEL_WIDTH = DiskoButtonFactory.SMALL_BUTTON_SIZE.width;
+	public static final int PANEL_HEIGHT = (DiskoButtonFactory.SMALL_BUTTON_SIZE.height) * 3 + 24;
+	public static final int SMALL_PANEL_WIDTH = DiskoButtonFactory.SMALL_BUTTON_SIZE.width;
 
-	private final static String EMPTY_PANEL_ID = "EMPTY_PANEL";
-	private final static String TEXT_PANEL_ID = "TEXT_PANEL";
-	private final static String POSITION_PANEL_ID = "POSITION_PANEL";
-	private final static String FINDING_PANEL_ID = "FINDING_PANEL";
-	private final static String ASSIGNED_PANEL_ID = "ASSIGNED_PANEL";
-	private final static String STARTED_PANEL_ID = "STARTED_PANEL";
-	private final static String COMPLETED_PANEL_ID = "COMPLETED_PANEL";
-	private final static String LIST_PANEL_ID = "LIST_PANEL";
+	private static final String EMPTY_PANEL_ID = "EMPTY_PANEL";
+	private static final String TEXT_PANEL_ID = "TEXT_PANEL";
+	private static final String POSITION_PANEL_ID = "POSITION_PANEL";
+	private static final String FINDING_PANEL_ID = "FINDING_PANEL";
+	private static final String ASSIGNED_PANEL_ID = "ASSIGNED_PANEL";
+	private static final String STARTED_PANEL_ID = "STARTED_PANEL";
+	private static final String COMPLETED_PANEL_ID = "COMPLETED_PANEL";
+	private static final String LIST_PANEL_ID = "LIST_PANEL";
 
 	private static IDiskoWpMessageLog m_wpMessageLog;
 
@@ -55,11 +54,11 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 	private static boolean m_newMessage;
 	private static IMessageIf m_currentMessage = null;
 	private static boolean m_messageDirty = false;
-	
+
 	/**
 	 * Get current message. Singleton
 	 * @return The message
-	 * @param Whether to create new or not if current message is {@code null}
+	 * @param createNew Whether to create new or not if current message is {@code null}
 	 */
 	public static IMessageIf getCurrentMessage(boolean createNew)
 	{
@@ -141,7 +140,6 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 
     /**
      * Constructor
-     * @param messageLog Message log reference
      */
     public MessageLogBottomPanel()
     {
@@ -200,7 +198,7 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 					m_fieldFromDialog.hideComponent();
 					m_listFromDialog.hideComponent();
 				}
-    			
+
     		});
     		m_editComponents.add(m_fieldFromDialog);
     	}
@@ -340,7 +338,7 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
     	gbc.weighty = 0.0;
     	gbc.gridx = 0;
     	gbc.gridy = 0;
-    	
+
     	// Add table header
     	gbc.gridwidth = 15;
     	JTableHeader header = logTable.getTableHeader();
@@ -351,7 +349,7 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
     	}
     	this.add(header, gbc);
     	logTable.setTableHeader(null);
-    	
+
     	gbc.gridwidth = 1;
     	gbc.weighty = 1.0;
     	gbc.weightx = 0.0;
@@ -375,7 +373,7 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
         this.add(m_dtgPanel, gbc);
         gbc.gridx++;
         this.add(new JSeparator(JSeparator.VERTICAL), gbc);
-        
+
         // From panel
         m_fromPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT - header.getHeight());
         m_fromLabel = new JLabel();
@@ -385,7 +383,7 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
         this.add(m_fromPanel, gbc);
         gbc.gridx++;
         this.add(new JSeparator(JSeparator.VERTICAL), gbc);
-        
+
         // To panel
         m_toPanel = createPanel(SMALL_PANEL_WIDTH, PANEL_HEIGHT - header.getHeight());
         m_toLabel = new JLabel();
@@ -411,7 +409,7 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
         m_messagePanel.add(m_cardsPanel);
 
         m_buttonRow.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-        m_buttonRow.setMaximumSize(new Dimension(SMALL_PANEL_WIDTH*9, 
+        m_buttonRow.setMaximumSize(new Dimension(SMALL_PANEL_WIDTH*9,
         		(int)DiskoButtonFactory.SMALL_BUTTON_SIZE.getHeight()));
         m_buttonRow.setAlignmentX(0.0f);
         m_messagePanel.add(m_buttonRow);
@@ -435,11 +433,11 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
         this.add(m_taskPanel, gbc);
         gbc.gridx++;
         this.add(new JSeparator(JSeparator.VERTICAL), gbc);
-        
+
         // Fill to match table scroll-bar
         gbc.gridx++;
         this.add(Box.createRigidArea(new Dimension(43, 10)), gbc);
-        
+
         // Status panel
         m_statusPanel = createPanel(SMALL_PANEL_WIDTH + 2, PANEL_HEIGHT - header.getHeight());
         JPanel actionButtonPanel = new JPanel();
@@ -466,7 +464,7 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
     	getCompletedPanel();
     	getChangeTasksDialog();
     	getMessageListPanel();
-    	
+
     	// Register listeners
 		m_fieldFromDialog.addActionListener(m_listFromDialog);
     }
@@ -495,12 +493,12 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 
     /**
      * An existing message is selected in the message log for editing.
-     * @param messageNr The number of the selected message
+     * @param aMessage The selected message
      */
-	public void newMessageSelected(int messageNr)
+	public void newMessageSelected(IMessageIf aMessage)
 	{
 		// Have user confirm message overwrite
-		if(m_currentMessage != null && m_currentMessage.getNumber() != messageNr && m_messageDirty)
+		if(m_currentMessage != null && (m_currentMessage != aMessage) && m_messageDirty)
 		{
 
 			Object[] options = {m_wpMessageLog.getText("yes.text"), m_wpMessageLog.getText("no.text")};
@@ -530,21 +528,10 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 				}
 			}
 		}
-		m_messageDirty = false;
-		m_newMessage = false;
-
-		// Get the message
-		IMessageLogIf messageLog = m_wpMessageLog.getCmdPost().getMessageLog();
-		for(IMessageIf message : messageLog.getItems())
-		{
-			if(message.getNumber() == messageNr)
-			{
-				m_currentMessage = message;
-				break;
-			}
-		}
-
-		updateMessageGUI();
+        m_messageDirty = false;
+        m_newMessage = false;
+        m_currentMessage = aMessage;
+        updateMessageGUI();
 	}
 
 	private void updateMessageGUI()
@@ -723,14 +710,14 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 
 						// Handle assignments
 						updateAssignments();
-						
+
 						// Commit changes
 						m_wpMessageLog.getMsoModel().commit();
 
 						m_currentMessage = null;
 						m_messageDirty = false;
 
-						
+
 						// GUI clean-up
 						clearPanelContents();
 
@@ -827,7 +814,7 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 					else
 					{
 						hideEditPanels();
-						
+
 						// Initialize fields
 						if(m_currentMessage != null)
 						{
@@ -838,12 +825,12 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 								m_fieldFromDialog.setCommunicatorNumberPrefix(sender.getCommunicatorNumberPrefix());
 							}
 						}
-						
+
 						Point location = m_changeFromButton.getLocationOnScreen();
 						location.y -= m_fieldFromDialog.getHeight();
 						m_fieldFromDialog.setLocation(location);
 						m_fieldFromDialog.showComponent();
-						
+
 						location = m_changeFromButton.getLocationOnScreen();
 						location.y -= m_listFromDialog.getHeight();
 						location.x += m_fieldFromDialog.getWidth();
@@ -1131,7 +1118,7 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -1146,7 +1133,7 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 		{
 			return false;
 		}
-		
+
 		MessageStatus status = m_currentMessage.getStatus();
 		return (status == MessageStatus.UNCONFIRMED || status == MessageStatus.POSTPONED);
 	}
@@ -1378,13 +1365,13 @@ public class MessageLogBottomPanel extends JPanel implements IMsoUpdateListenerI
 		{
 			m_currentMessage.deleteObject();
 		}
-		
+
 		m_currentMessage = null;
 		m_messageDirty = false;
 		m_buttonGroup.clearSelection();
 
 		clearPanelContents();
-		
+
 		m_wpMessageLog.getMsoModel().rollback();
 	}
 }

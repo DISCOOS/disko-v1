@@ -1,19 +1,5 @@
 package org.redcross.sar.wp.messageLog;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JPanel;
-import javax.swing.JToggleButton;
-import javax.swing.SwingConstants;
-
 import org.redcross.sar.event.DialogEvent;
 import org.redcross.sar.event.IDialogEventListener;
 import org.redcross.sar.gui.DiskoButtonFactory;
@@ -21,39 +7,44 @@ import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.mso.data.ICommunicatorIf;
 import org.redcross.sar.mso.data.IMessageIf;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 /**
- * Provides a dialog for selecting broadcast or non-broadcast receiver. This dialog also handles sub-dialogs 
+ * Provides a dialog for selecting broadcast or non-broadcast receiver. This dialog also handles sub-dialogs
  * such as field based unit selection, list unit selection and the broadcast dialogs
- * 
+ *
  * @author thomasl
  */
 public class ChangeToDialog extends DiskoDialog implements IEditMessageComponentIf, IDialogEventListener
 {
 	private static final long serialVersionUID = 1L;
-	
+
 	protected JToggleButton m_broadcastButton;
 	protected JToggleButton m_nonBroadcastButton;
 	protected ButtonGroup m_buttonGroup;
 	protected JPanel m_contentsPanel;
-	
+
 	protected UnitFieldSelectionDialog m_nbFieldDialog;
 	protected SingleUnitListSelectionDialog m_nbListDialog;
-	
+
 	protected BroadcastToDialog m_broadcastDialog;
-	
+
 	protected boolean m_broadcast = false;
-	
+
 	protected IDiskoWpMessageLog m_wpMessageLog;
-	
+
 	/**
 	 * @param wp Message log work process reference
 	 */
 	public ChangeToDialog(IDiskoWpMessageLog wp)
 	{
 		super(wp.getApplication().getFrame());
-		
+
 		m_wpMessageLog = wp;
-		
+
 		initialize();
 	}
 
@@ -64,7 +55,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 		initDialogs();
 		this.pack();
 	}
-	
+
 	private void initDialogs()
 	{
 		m_nbFieldDialog = new UnitFieldSelectionDialog(m_wpMessageLog, false);
@@ -80,15 +71,15 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 					message.setSingleReceiver(singleReceiver);
 				}
 				fireDialogFinished();
-			}	
+			}
 		});
 		m_nbListDialog = new SingleUnitListSelectionDialog(m_wpMessageLog, false);
 		m_broadcastDialog = new BroadcastToDialog(m_wpMessageLog);
-		
+
 		m_nbFieldDialog.addDialogListener(this);
 		m_nbListDialog.addDialogListener(this);
 		m_broadcastDialog.addDialogListener(this);
-		
+
 		m_nbFieldDialog.addActionListener(m_nbListDialog);
 	}
 
@@ -101,7 +92,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 				DiskoButtonFactory.LARGE_BUTTON_SIZE.height));
 		this.add(m_contentsPanel);
 	}
-	
+
 	private void initButtons()
 	{
 		m_buttonGroup = new ButtonGroup();
@@ -113,16 +104,16 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 			{
 				m_broadcast = false;
 				MessageLogBottomPanel.getCurrentMessage(true).setBroadcast(false);
-				
+
 				m_broadcastDialog.hideComponent();
 				m_broadcastDialog.clearSelection();
 				showNonBroadcast();
-			}	
+			}
 		});
 		m_nonBroadcastButton.setSelected(true);
 		m_buttonGroup.add(m_nonBroadcastButton);
 		m_contentsPanel.add(m_nonBroadcastButton);
-		
+
 		m_broadcastButton = DiskoButtonFactory.createLargeToggleButton(m_wpMessageLog.getText("BroadcastButton.text"));
 		m_broadcastButton.setHorizontalAlignment(SwingConstants.LEFT);
 		m_broadcastButton.addActionListener(new ActionListener()
@@ -131,20 +122,20 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 			{
 				m_broadcast = true;
 				MessageLogBottomPanel.getCurrentMessage(true).setBroadcast(true);
-				
+
 				m_nbFieldDialog.hideComponent();
 				m_nbListDialog.hideComponent();
 				m_nbListDialog.clearSelection();
-				
+
 				showBroadcast();
 			}
 		});
 		m_buttonGroup.add(m_broadcastButton);
 		m_contentsPanel.add(m_broadcastButton);
-		
+
 		m_contentsPanel.add(Box.createHorizontalGlue());
 	}
-	
+
 	/**
 	 * Hides dialogs
 	 */
@@ -170,12 +161,12 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 		{
 			m_nonBroadcastButton.setSelected(true);
 		}
-		
+
 		m_nbListDialog.newMessageSelected(message);
 		m_nbFieldDialog.newMessageSelected(message);
 		m_broadcastDialog.newMessageSelected(message);
 	}
-	
+
 	public String getCommunicatorText()
 	{
 		if(m_broadcast)
@@ -217,12 +208,12 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 				m_nbFieldDialog.setCommunicatorNumberPrefix(receiver.getCommunicatorNumberPrefix());
 			}
 		}
-		
+
 		Point location = m_nonBroadcastButton.getLocationOnScreen();
 		location.y -= m_nbFieldDialog.getHeight();
 		m_nbFieldDialog.setLocation(location);
 		m_nbFieldDialog.showComponent();
-		
+
 		location = m_nonBroadcastButton.getLocationOnScreen();
 		location.y -= m_nbListDialog.getHeight();
 		location.x += m_nbFieldDialog.getWidth();
@@ -237,7 +228,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 		m_broadcastDialog.setLocation(location);
 		m_broadcastDialog.showComponent();
 	}
-	
+
 	/**
 	 * {@link IEditMessageComponentIf#clearContents()}
 	 */
@@ -272,7 +263,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 	{
 		fireDialogStateChanged();
 	}
-	
+
 	/**
 	 * Keep track of broadcast or not
 	 * @param broadcast
@@ -281,7 +272,7 @@ public class ChangeToDialog extends DiskoDialog implements IEditMessageComponent
 	{
 		m_broadcast = broadcast;
 	}
-	
+
 	/**
 	 * @return Whether in broadcast mode or not
 	 */

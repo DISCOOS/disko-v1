@@ -4,7 +4,6 @@ import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.mso.Position;
 
 import java.util.Calendar;
-import java.util.ResourceBundle;
 
 public abstract class AbstractPerson extends AbstractMsoObject implements IPersonIf
 {
@@ -20,8 +19,6 @@ public abstract class AbstractPerson extends AbstractMsoObject implements IPerso
     private final AttributeImpl.MsoString m_telephone3 = new AttributeImpl.MsoString(this, "Telephone3");
 
     private final AttributeImpl.MsoEnum<PersonGender> m_gender = new AttributeImpl.MsoEnum<PersonGender>(this, "Gender", PersonGender.UNKNOWN);
-
-    private final static ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Person");
 
     public AbstractPerson(IMsoObjectIf.IObjectIdIf anObjectId)
     {
@@ -51,12 +48,14 @@ public abstract class AbstractPerson extends AbstractMsoObject implements IPerso
     {
     }
 
-    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean addObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
+        return true;
     }
 
-    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
+        return true;
     }
 
     public void setBirthdate(Calendar aBirthdate)

@@ -33,7 +33,7 @@ public class DiskoWpLogisticsImpl extends AbstractDiskoWpModule implements IDisk
     private void initialize()
     {
         loadProperties("properties");
-        assignWpBundle("org.redcross.sar.wp.logistics.logistics");
+        assignWpBundle(IDiskoWpLogistics.class);
 
         m_logisticsPanel = new LogisticsPanel(this);
         layoutComponent(m_logisticsPanel.getPanel());

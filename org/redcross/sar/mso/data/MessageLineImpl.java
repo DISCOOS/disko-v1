@@ -9,7 +9,6 @@ import org.redcross.sar.util.mso.DTG;
 
 import java.text.MessageFormat;
 import java.util.Calendar;
-import java.util.ResourceBundle;
 /**
  * Created by IntelliJ IDEA.
  * User: vinjar
@@ -30,11 +29,9 @@ public class MessageLineImpl extends AbstractMsoObject implements IMessageLineIf
     private final MsoReferenceImpl<IPOIIf> m_linePOI = new MsoReferenceImpl<IPOIIf>(this, "LinePOI", true);
     private final MsoReferenceImpl<IAssignmentIf> m_lineAssignment = new MsoReferenceImpl<IAssignmentIf>(this, "LineAssignment", true);
 
-    private static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.MessageLine");
-
     public static String getText(String aKey)
     {
-        return Internationalization.getFullBundleText(bundle, aKey);
+        return Internationalization.getFullBundleText(Internationalization.getBundle(IMessageLineIf.class), aKey);
     }
 
     public String getLineTypeText()
@@ -82,12 +79,14 @@ public class MessageLineImpl extends AbstractMsoObject implements IMessageLineIf
         return IMsoManagerIf.MsoClassCode.CLASSCODE_MESSAGELINE;
     }
 
-    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean addObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
+        return true;
     }
 
-    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
+        return true;
     }
 
     /*-------------------------------------------------------------------------------------------
@@ -266,7 +265,7 @@ public class MessageLineImpl extends AbstractMsoObject implements IMessageLineIf
         }
     }
 
-    private final SelfSelector<IMessageLineIf, IMessageIf> owningMessageSelector = new SelfSelector<IMessageLineIf, IMessageIf>(this)
+    private final static SelfSelector<IMessageLineIf, IMessageIf> owningMessageSelector = new SelfSelector<IMessageLineIf, IMessageIf>()
     {
         public boolean select(IMessageIf anObject)
         {
@@ -276,6 +275,7 @@ public class MessageLineImpl extends AbstractMsoObject implements IMessageLineIf
 
     public IMessageIf getOwningMessage()
     {
+        owningMessageSelector.setSelfObject(this);
         return MsoModelImpl.getInstance().getMsoManager().getCmdPost().getMessageLog().selectSingleItem(owningMessageSelector);
     }
 

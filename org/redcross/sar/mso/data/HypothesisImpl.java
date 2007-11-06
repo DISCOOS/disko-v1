@@ -4,8 +4,6 @@ import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.MsoCastException;
 
-import java.util.ResourceBundle;
-
 public class HypothesisImpl extends AbstractMsoObject implements IHypothesisIf
 {
     private final AttributeImpl.MsoString m_description = new AttributeImpl.MsoString(this, "Description");
@@ -13,8 +11,6 @@ public class HypothesisImpl extends AbstractMsoObject implements IHypothesisIf
     private final AttributeImpl.MsoInteger m_priorityIndex = new AttributeImpl.MsoInteger(this, "PriorityIndex");
 
     private final AttributeImpl.MsoEnum<HypothesisStatus> m_status = new AttributeImpl.MsoEnum<HypothesisStatus>(this, "Status", HypothesisStatus.ACTIVE);
-
-    private final static ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Hypothesis");
 
     public HypothesisImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
     {
@@ -38,12 +34,14 @@ public class HypothesisImpl extends AbstractMsoObject implements IHypothesisIf
     {
     }
 
-    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean addObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
+        return true;
     }
 
-    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
+        return true;
     }
 
     public static HypothesisImpl implementationOf(IHypothesisIf anInterface) throws MsoCastException
@@ -57,15 +55,6 @@ public class HypothesisImpl extends AbstractMsoObject implements IHypothesisIf
             throw new MsoCastException("Illegal cast to HypothesisImpl");
         }
     }
-
-    /**
-     * Renumber duplicate numbers
-     */
-    public void renumberDuplicateNumbers()
-    {
-        //Todo Code
-    }
-
 
     public IMsoManagerIf.MsoClassCode getMsoClassCode()
     {

@@ -8,6 +8,7 @@ import org.redcross.sar.mso.data.IPersonnelIf;
 import org.redcross.sar.mso.data.IPersonnelIf.PersonnelStatus;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
+import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.mso.DTG;
 import org.redcross.sar.util.mso.Selector;
 import org.redcross.sar.wp.IDiskoWpModule;
@@ -47,7 +48,7 @@ public class CalloutDetailsPanel extends JPanel
 
 	private IDiskoWpUnit m_wpUnit;
 
-	private final static ResourceBundle m_resources = ResourceBundle.getBundle("org.redcross.sar.wp.unit.unit");
+	private static final ResourceBundle m_resources = Internationalization.getBundle(IDiskoWpUnit.class);
 
 	public CalloutDetailsPanel(IDiskoWpUnit wp)
 	{

@@ -15,17 +15,20 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.*;
+import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.Enumeration;
+import java.util.HashMap;
 
 /**
  * Dialog containing a list of all units  in command post communicator list
- * 
+ *
  * @author thomasl
  */
 public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditMessageComponentIf, IMsoUpdateListenerIf, ActionListener
 {
 	private static final long serialVersionUID = 1L;
-	
+
 	protected JPanel m_contentsPanel = null;
 	protected JScrollPane m_scrollPane = null;
 	protected IDiskoWpMessageLog m_wpMessageLog;
@@ -60,10 +63,10 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 		m_buttonGroup = new ButtonGroup();
 
 		initContentsPanel();
-		
+
 		m_dirtyList = true;
 		buildList();
-		
+
 		this.pack();
 	}
 
@@ -72,7 +75,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	 */
 	private Comparator<ICommunicatorIf> m_communicatorComparator = new Comparator<ICommunicatorIf>()
 	{
-		
+
 		public int compare(ICommunicatorIf arg0, ICommunicatorIf arg1)
 		{
 			if(arg0.getCommunicatorNumberPrefix() == arg1.getCommunicatorNumberPrefix())
@@ -120,23 +123,23 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	private void initContentsPanel()
 	{
 		m_contentsPanel = new JPanel();
-		m_contentsPanel.setLayout(new BoxLayout(m_contentsPanel, BoxLayout.LINE_AXIS));		
-		
+		m_contentsPanel.setLayout(new BoxLayout(m_contentsPanel, BoxLayout.LINE_AXIS));
+
 		m_scrollPane = new JScrollPane(m_contentsPanel);
 		m_scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		m_scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
 		m_scrollPane.setPreferredSize(new Dimension(PANEL_WIDTH,
 				DiskoButtonFactory.SMALL_BUTTON_SIZE.height*NUMBER_OF_ROWS + 20));
-//		
+//
 		this.add(m_scrollPane);
-		
+
 		buildList();
-		
+
 		this.pack();
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public void clearContents()
 	{
@@ -164,7 +167,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public void showComponent()
 	{
@@ -172,7 +175,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 		updateButtonSelection();
 		this.setVisible(true);
 	}
-	
+
 	private void updateButtonSelection()
 	{
 		IMessageIf message = MessageLogBottomPanel.getCurrentMessage(false);
@@ -200,7 +203,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 					}
 				}
 			}
-			
+
 			if(button != null)
 			{
 				m_buttonGroup.setSelected(button.getModel(), true);
@@ -209,7 +212,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 		}
 	}
 
-	private final EnumSet<IMsoManagerIf.MsoClassCode> myInterests = 
+	private final EnumSet<IMsoManagerIf.MsoClassCode> myInterests =
 		EnumSet.of(IMsoManagerIf.MsoClassCode.CLASSCODE_CMDPOST,
 				IMsoManagerIf.MsoClassCode.CLASSCODE_UNIT);
 	/**
@@ -219,15 +222,15 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 	{
 		return myInterests.contains(msoObject.getMsoClassCode());
 	}
-	
+
 	/**
 	 * Updates unit list based on MSO communicator events
-	 * 
+	 *
 	 * @see org.redcross.sar.mso.event.IMsoUpdateListenerIf#handleMsoUpdateEvent(org.redcross.sar.mso.event.MsoEvent.Update)
 	 */
 	public void handleMsoUpdateEvent(Update e)
 	{
-		IMsoManagerIf mng = m_wpMessageLog.getMsoManager(); 
+		IMsoManagerIf mng = m_wpMessageLog.getMsoManager();
 		if(mng!=null) {
 			ICmdPostIf cmd = mng.getCmdPost();
 			if(cmd!=null) {
@@ -294,7 +297,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 				addUnitButton(commnicator, panel);
 				i++;
 			}
-			
+
 			m_dirtyList = false;
 		}
 	}
@@ -334,7 +337,7 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 				{
 					// Select communicator
 					m_currentButton = sourceButton;
-					
+
 					if(m_senderList)
 					{
 						message.setSender(communicator);
@@ -343,13 +346,13 @@ public class SingleUnitListSelectionDialog extends DiskoDialog implements IEditM
 					{
 						message.setSingleReceiver(communicator);
 					}
-				}				
-				
+				}
+
 				fireDialogFinished();
 			}
 		});
-		
-		button.setActionCommand(communicator.getCommunicatorNumberPrefix() 
+
+		button.setActionCommand(communicator.getCommunicatorNumberPrefix()
 				+ " " + communicator.getCommunicatorNumber());
 
 		buttonPanel.add(button);

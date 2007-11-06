@@ -28,7 +28,7 @@ import java.util.Stack;
 public class MsoModelImpl implements IMsoModelIf
 {
     private static MsoModelImpl ourInstance = new MsoModelImpl();
-    private final MsoManagerImpl m_IMsoManager;
+    private final MsoManagerImpl m_msoManager;
     private final MsoEventManagerImpl m_msoEventManager;
     private final CommitManager m_commitManager;
 
@@ -56,7 +56,7 @@ public class MsoModelImpl implements IMsoModelIf
     private MsoModelImpl()
     {
         m_msoEventManager = new MsoEventManagerImpl();
-        m_IMsoManager = new MsoManagerImpl(m_msoEventManager);
+        m_msoManager = new MsoManagerImpl(m_msoEventManager);
         m_commitManager = new CommitManager(this);
         m_updateModeStack.push(UpdateMode.LOCAL_UPDATE_MODE);
         m_modelDriver = System.getProperty("integrate.sara", "false").equalsIgnoreCase("true") ||
@@ -67,7 +67,7 @@ public class MsoModelImpl implements IMsoModelIf
 
     public IMsoManagerIf getMsoManager()
     {
-        return m_IMsoManager;
+        return m_msoManager;
     }
 
     public IMsoEventManagerIf getEventManager()
@@ -145,7 +145,7 @@ public class MsoModelImpl implements IMsoModelIf
     public void resumeClientUpdate()
     {
         m_suspendClientUpdate = false;
-        m_IMsoManager.resumeClientUpdate();
+        m_msoManager.resumeClientUpdate();
     }
 
     public boolean updateSuspended()
@@ -167,7 +167,7 @@ public class MsoModelImpl implements IMsoModelIf
         }
         suspendClientUpdate();
         setLoopbackUpdateMode();
-        m_IMsoManager.postProcessCommit();
+        m_msoManager.postProcessCommit();
         restoreUpdateMode();
         resumeClientUpdate();
     }
@@ -178,7 +178,7 @@ public class MsoModelImpl implements IMsoModelIf
         suspendClientUpdate();
         setRemoteUpdateMode();
         m_commitManager.rollback();
-        m_IMsoManager.rollback();
+        m_msoManager.rollback();
         restoreUpdateMode();
         resumeClientUpdate();
     }

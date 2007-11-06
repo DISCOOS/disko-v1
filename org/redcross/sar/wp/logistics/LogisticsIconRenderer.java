@@ -15,9 +15,9 @@ import java.awt.*;
 public class LogisticsIconRenderer extends JLabel implements TableCellRenderer
 {
 
-    private final static Border firstCellBorder = new DiskoBorder(2, 8, true, true, true, false);
-    private final static Border middleCellBorder = new DiskoBorder(2, 8, true, false, true, false);
-    private final static Border lastCellBorder = new DiskoBorder(2, 8, true, false, true, true);
+    private static final Border firstCellBorder = new DiskoBorder(2, 8, true, true, true, false);
+    private static final Border middleCellBorder = new DiskoBorder(2, 8, true, false, true, false);
+    private static final Border lastCellBorder = new DiskoBorder(2, 8, true, false, true, true);
 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
     {

@@ -5,7 +5,7 @@ import org.redcross.sar.mso.IMsoModelIf;
 /**
  * Interface for objects with serial numbers
  */
-public interface ISerialNumberedIf
+public interface ISerialNumberedIf extends IMsoObjectIf
 {
     /**
      * Set serial number
@@ -34,11 +34,4 @@ public interface ISerialNumberedIf
      * @return The serial number attribute
      */
     public IAttributeIf.IMsoIntegerIf getNumberAttribute();
-
-    /**
-     * Renumber duplicate numbers caused by simultaneous creation of objects by different users.
-     *
-     * The method is called by event handler that handles updates from server.
-     */
-    public void renumberDuplicateNumbers();
 }

@@ -107,8 +107,6 @@ public class UnitTypeDialog extends DiskoDialog
 	{
 		private static final long serialVersionUID = 1L;
 
-//		private ResourceBundle m_resources = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Unit");
-
 		public UnitTypeCellRenderer()
 		{
 			this.setOpaque(true);

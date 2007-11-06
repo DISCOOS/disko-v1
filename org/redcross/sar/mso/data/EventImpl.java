@@ -51,26 +51,25 @@ public class EventImpl extends AbstractTimeItem implements IEventIf
 
 
     @Override
-    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean addObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
         if (anObject instanceof ITaskIf)
         {
             m_eventTasks.add((ITaskIf)anObject);
-            return;
+            return true;
         }
-        super.addObjectReference(anObject,aReferenceName);
+        return super.addObjectReference(anObject,aReferenceName);
 
     }
 
     @Override
-    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
         if (anObject instanceof ITaskIf)
         {
-            m_eventTasks.removeReference((ITaskIf) anObject);
-            return;
+            return m_eventTasks.removeReference((ITaskIf) anObject);
         }
-        super.removeObjectReference(anObject,aReferenceName);
+        return super.removeObjectReference(anObject,aReferenceName);
     }
 
     public static EventImpl implementationOf(IEventIf anInterface) throws MsoCastException
@@ -83,14 +82,6 @@ public class EventImpl extends AbstractTimeItem implements IEventIf
         {
             throw new MsoCastException("Illegal cast to EventImpl");
         }
-    }
-
-    /**
-     * Renumber duplicate numbers
-     */
-    public void renumberDuplicateNumbers()
-    {
-        //Todo Code
     }
 
     public IMsoManagerIf.MsoClassCode getMsoClassCode()

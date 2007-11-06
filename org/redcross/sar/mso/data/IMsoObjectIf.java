@@ -101,9 +101,9 @@ public interface IMsoObjectIf
      * The type of object (class) determines which list to use
      * @param anObject The object to add
      * @param aReferenceName
-     * @return <code><code/> if the object has been successfully added, <code>false<code/> otherwise.
+     * @return <code>true<code/> if the object has been successfully added, <code>false<code/> otherwise.
      */
-    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName);
+    public boolean addObjectReference(IMsoObjectIf anObject, String aReferenceName);
 
     /**
      * Remove a reference to an IMsoObjectIf object.
@@ -111,9 +111,9 @@ public interface IMsoObjectIf
      * The type of object (class) determines which list to use
      * @param anObject The object to remove
      * @param aReferenceName
-     * @return <code><code/> if the object has been successfully removed, <code>false<code/> otherwise.
+     * @return <code>true<code/> if the object has been successfully removed, <code>false<code/> otherwise.
      */
-    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName);
+    public boolean removeObjectReference(IMsoObjectIf anObject, String aReferenceName);
 
 
     /**

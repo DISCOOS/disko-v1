@@ -118,7 +118,9 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         {
             //throw new MsoRuntimeException(getName() + ": Cannot add null object");
         }
-        if (m_items.containsKey(anObject.getObjectId()) || m_added.containsKey(anObject.getObjectId()) || m_deleted.containsKey(anObject.getObjectId()))
+        String objectId = anObject.getObjectId();
+        MsoModelImpl.UpdateMode updateMode = MsoModelImpl.getInstance().getUpdateMode();
+        if ((m_items.containsKey(objectId) || m_added.containsKey(objectId)) && updateMode == IMsoModelIf.UpdateMode.LOCAL_UPDATE_MODE)
         {
             throw new DuplicateIdException("ObjectId already added to list");
         }
@@ -128,7 +130,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         }
 
 
-        if (MsoModelImpl.getInstance().getUpdateMode() == MsoModelImpl.UpdateMode.LOCAL_UPDATE_MODE)
+        if (updateMode == MsoModelImpl.UpdateMode.LOCAL_UPDATE_MODE)
         {
             m_added.put(anObject.getObjectId(), anObject);
         } else
@@ -379,8 +381,18 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
 
     public List<M> selectItems(Selector<M> aSelector, Comparator<M> aComparator)
     {
-        ArrayList<M> retVal = new ArrayList<M>();
-        for (M item : getItems())
+        return selectItems(aSelector,aComparator,getItems());
+    }
+
+    public M selectSingleItem(Selector<M> aSelector)
+    {
+        return selectSingleItem(aSelector,getItems());
+    }
+
+    public static <T extends IMsoObjectIf> List <T> selectItems(Selector<? super T> aSelector, Comparator<? super T> aComparator, Collection<T> theItems)
+    {
+        ArrayList<T> retVal = new ArrayList<T>();
+        for (T item : theItems)
         {
             if (aSelector.select(item))
             {
@@ -394,9 +406,9 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         return retVal;
     }
 
-    public M selectSingleItem(Selector<M> aSelector)
+    public static <T extends IMsoObjectIf> T selectSingleItem(Selector<? super T> aSelector, Collection<T> theItems)
     {
-        for (M item : getItems())
+        for (T item : theItems)
         {
             if (aSelector.select(item))
             {
@@ -406,10 +418,10 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         return null;
     }
 
-
     protected M createdItem(M anObject)
     {
         ((AbstractMsoObject) anObject).setupReferences();
+        ((AbstractMsoObject) anObject).setOwningMainList(this);
         add(anObject);
         return anObject;
     }
@@ -562,5 +574,87 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
             retVal.m_deleted.put(item.getObjectId(), item);
         }
         return retVal;
+    }
+
+    public void renumberItems(M anItem)
+    {
+        List<M> candidates = selectCandidates(getRenumberSelector(anItem));
+        if (candidates.size() != 0)
+        {
+            renumberCandidates(candidates);
+        }
+    }
+
+    protected Selector<M> getRenumberSelector(M anItem)
+    {
+        renumberSelector.setSelectionItem(anItem);
+        return renumberSelector;
+    }
+
+    private List<M> selectCandidates(Selector<M> aSelector)
+    {
+        return selectItems(aSelector, descendingNumberComparator);
+    }
+
+    // Loop through all items with a number higher than
+    private void renumberCandidates(List<M> candidates)
+    {
+        MsoModelImpl.getInstance().setLocalUpdateMode();
+        int nextNumber = -1;
+        for (M item : candidates)
+        {
+            if (item instanceof ISerialNumberedIf)
+            {
+                ISerialNumberedIf numberedItem = (ISerialNumberedIf) item;
+                if (numberedItem.getNumberState() != IMsoModelIf.ModificationState.STATE_SERVER)
+                {
+                    if (nextNumber < 0)
+                    {
+                        nextNumber = numberedItem.getNumber() + 1;
+                    }
+                    int tmpNumber = numberedItem.getNumber();
+                    numberedItem.setNumber(nextNumber);
+                    nextNumber = tmpNumber;
+                }
+            }
+        }
+        MsoModelImpl.getInstance().restoreUpdateMode();
+    }
+
+    private final Comparator<M> descendingNumberComparator = new Comparator<M>()
+    {
+        public int compare(M o1, M o2)
+        {
+            if (o1 instanceof ISerialNumberedIf && o2 instanceof ISerialNumberedIf)
+            {
+                return -(((ISerialNumberedIf) o1).getNumber() - ((ISerialNumberedIf) o2).getNumber()); // sort descending
+            }
+            return 0;
+        }
+    };
+
+    private final RenumberSelector<M> renumberSelector = new RenumberSelector<M>();
+
+    protected class RenumberSelector<T extends M> implements Selector<T>
+    {
+        protected M m_selectionItem;
+
+        void setSelectionItem(M anItem)
+        {
+            m_selectionItem = anItem;
+        }
+
+        public boolean select(T anObject)
+        {
+            if (anObject == m_selectionItem)
+            {
+                return false;
+            }
+            if (anObject instanceof ISerialNumberedIf)
+            {
+                return ((ISerialNumberedIf) anObject).getNumber() >= ((ISerialNumberedIf) m_selectionItem).getNumber();
+            }
+            return false;
+        }
     }
 }

@@ -5,7 +5,6 @@ import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.MsoCastException;
 
 import java.util.Calendar;
-import java.util.ResourceBundle;
 
 public class IntelligenceImpl extends AbstractMsoObject implements IIntelligenceIf
 {
@@ -20,8 +19,6 @@ public class IntelligenceImpl extends AbstractMsoObject implements IIntelligence
     private final MsoReferenceImpl<IRouteIf> m_intelligenceRoute = new MsoReferenceImpl<IRouteIf>(this, "IntelligenceRoute", true);
     private final MsoReferenceImpl<ISubjectIf> m_intelligenceSubject = new MsoReferenceImpl<ISubjectIf>(this, "IntelligenceSubject", true);
     private final MsoReferenceImpl<ITrackIf> m_intelligenceTrack = new MsoReferenceImpl<ITrackIf>(this, "IntelligenceTrack", true);
-
-    private final static ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Intelligence");
 
     public IntelligenceImpl(IMsoObjectIf.IObjectIdIf anObjectId)
     {
@@ -58,12 +55,14 @@ public class IntelligenceImpl extends AbstractMsoObject implements IIntelligence
         addReference(m_intelligenceTrack);
     }
 
-    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean addObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
+        return true;
     }
 
-    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
+        return true;
     }
 
     public static IntelligenceImpl implementationOf(IIntelligenceIf anInterface) throws MsoCastException

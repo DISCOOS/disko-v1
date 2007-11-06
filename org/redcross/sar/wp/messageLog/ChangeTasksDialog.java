@@ -58,8 +58,6 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	protected HashMap<TaskSubType, JToggleButton> m_typeButtonMap = null;
 	protected HashMap<JToggleButton, TaskSubType> m_buttonTypeMap = null;
 
-//	protected static final ResourceBundle m_taskBundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Task");
-
 	protected enum TaskSubType
 	{
 		SEND_TRANSPORT,
@@ -187,7 +185,7 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 	private void initTaskValues(ITaskIf task, TaskSubType type)
 	{
 		IMessageIf message = MessageLogBottomPanel.getCurrentMessage(false);
-		
+
 		task.setCreated(Calendar.getInstance());
 
 		if(type == TaskSubType.FINDING)
@@ -243,7 +241,7 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 		{
 			task.setSourceClass(message.getMsoClassCode());
 		}
-		
+
 		// Progress
 		task.setProgress(0);
 

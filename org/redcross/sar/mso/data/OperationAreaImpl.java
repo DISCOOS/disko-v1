@@ -35,12 +35,14 @@ public class OperationAreaImpl extends AbstractMsoObject implements IOperationAr
     {
     }
 
-    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean addObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
+        return true;
     }
 
-    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
+        return true;
     }
 
     public static OperationAreaImpl implementationOf(IOperationAreaIf anInterface) throws MsoCastException

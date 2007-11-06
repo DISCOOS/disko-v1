@@ -42,12 +42,14 @@ public class TrackImpl extends AbstractMsoObject implements ITrackIf
     {
     }
 
-    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean addObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
+        return true;
     }
 
-    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
+        return true;
     }
 
     public static TrackImpl implementationOf(ITrackIf anInterface) throws MsoCastException

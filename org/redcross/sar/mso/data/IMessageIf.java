@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface IMessageIf extends ITimeItemIf, ISerialNumberedIf
 {
+    public static final String bundleName  = "org.redcross.sar.mso.data.properties.Message";
+
     public enum MessageStatus
     {
         UNCONFIRMED,
@@ -16,7 +18,7 @@ public interface IMessageIf extends ITimeItemIf, ISerialNumberedIf
         POSTPONED
     }
 
-    public final static Comparator<IMessageIf> MESSAGE_NUMBER_COMPARATOR = new Comparator<IMessageIf>()
+    public static final Comparator<IMessageIf> MESSAGE_NUMBER_COMPARATOR = new Comparator<IMessageIf>()
     {
         public int compare(IMessageIf m1, IMessageIf m2)
         {

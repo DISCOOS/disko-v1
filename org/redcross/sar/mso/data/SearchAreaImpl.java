@@ -5,8 +5,6 @@ import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.mso.Polygon;
 
-import java.util.ResourceBundle;
-
 public class SearchAreaImpl extends AbstractMsoObject implements ISearchAreaIf
 {
     private final AttributeImpl.MsoPolygon m_geodata = new AttributeImpl.MsoPolygon(this, "Geodata");
@@ -16,8 +14,6 @@ public class SearchAreaImpl extends AbstractMsoObject implements ISearchAreaIf
     private final AttributeImpl.MsoEnum<SearchAreaStatus> m_status = new AttributeImpl.MsoEnum<SearchAreaStatus>(this, "Status", SearchAreaStatus.PROCESSING);
 
     private final MsoReferenceImpl<IHypothesisIf> m_searchAreaHypothesis = new MsoReferenceImpl<IHypothesisIf>(this, "SearchAreaHypothesis", false);
-
-    private final static ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.SearchArea");
 
     public SearchAreaImpl(IMsoObjectIf.IObjectIdIf anObjectId)
     {
@@ -41,12 +37,14 @@ public class SearchAreaImpl extends AbstractMsoObject implements ISearchAreaIf
         addReference(m_searchAreaHypothesis);
     }
 
-    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean addObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
+        return true;
     }
 
-    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
+        return true;
     }
 
     public static SearchAreaImpl implementationOf(ISearchAreaIf anInterface) throws MsoCastException

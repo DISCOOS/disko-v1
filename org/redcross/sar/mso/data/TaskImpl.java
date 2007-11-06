@@ -9,7 +9,6 @@ import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.util.except.MsoCastException;
 
 import java.util.Calendar;
-import java.util.ResourceBundle;
 
 public class TaskImpl extends AbstractTimeItem implements ITaskIf
 {
@@ -30,11 +29,9 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
     private final MsoReferenceImpl<IEventIf> m_createdEvent = new MsoReferenceImpl<IEventIf>(this, "CreatedEvent", true);
     private final MsoReferenceImpl<IMsoObjectIf> m_dependentObject = new MsoReferenceImpl<IMsoObjectIf>(this, "DependentObject", true);
 
-    private static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Task");
-
     public static String getText(String aKey)
     {
-        return Internationalization.getFullBundleText(bundle, aKey);
+        return Internationalization.getFullBundleText(Internationalization.getBundle(ITaskIf.class), aKey);
     }
 
     public static String getEnumText(Enum anEnum)
@@ -86,15 +83,15 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
     }
 
     @Override
-    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean addObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
-        super.addObjectReference(anObject, aReferenceName);
+        return super.addObjectReference(anObject, aReferenceName);
     }
 
     @Override
-    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
-        super.removeObjectReference(anObject, aReferenceName);
+        return super.removeObjectReference(anObject, aReferenceName);
     }
 
     public static TaskImpl implementationOf(ITaskIf anInterface) throws MsoCastException
@@ -107,14 +104,6 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
         {
             throw new MsoCastException("Illegal cast to TaskImpl");
         }
-    }
-
-    /**
-     * Renumber duplicate numbers
-     */
-    public void renumberDuplicateNumbers()
-    {
-        //Todo Code
     }
 
     public IMsoManagerIf.MsoClassCode getMsoClassCode()
@@ -485,7 +474,7 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
         }
     }
 
-    private final SelfSelector<ITaskIf, IMessageIf> referringMessageSelector = new SelfSelector<ITaskIf, IMessageIf>(this)
+    private final static SelfSelector<ITaskIf, IMessageIf> referringMessageSelector = new SelfSelector<ITaskIf, IMessageIf>()
     {
         public boolean select(IMessageIf anObject)
         {
@@ -495,6 +484,7 @@ public class TaskImpl extends AbstractTimeItem implements ITaskIf
 
     private IMessageIf getOwningMessage()
     {
+        referringMessageSelector.setSelfObject(this);
         return  MsoModelImpl.getInstance().getMsoManager().getCmdPost().getMessageLog().selectSingleItem(referringMessageSelector);
     }
 }

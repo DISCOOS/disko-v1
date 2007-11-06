@@ -7,6 +7,7 @@ import org.redcross.sar.mso.data.IPersonnelIf;
 import org.redcross.sar.mso.data.IPersonnelIf.PersonnelStatus;
 import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IUnitIf.UnitStatus;
+import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.wp.IDiskoWpModule;
 
@@ -20,7 +21,7 @@ import java.util.ResourceBundle;
  */
 public class UnitUtilities
 {
-	private final static ResourceBundle m_resources = ResourceBundle.getBundle("org.redcross.sar.wp.unit.unit");
+    private static final ResourceBundle m_resources = Internationalization.getBundle(IDiskoWpUnit.class);
 
 	/**
 	 * Toggles pause status for given unit
@@ -118,7 +119,7 @@ public class UnitUtilities
 		{
 			throw new IllegalOperationException();
 		}
-		
+
 		// Check message log
 		for(IMessageIf message : wp.getCmdPost().getMessageLogItems())
 		{
@@ -127,11 +128,11 @@ public class UnitUtilities
 				throw new IllegalOperationException();
 			}
 		}
-		
+
 		// TODO Check finding?
-		// TODO Check intelligence?	
+		// TODO Check intelligence?
 		// TODO Check tasks?
-		
+
 		// Release personnel
 		for(IPersonnelIf personnel : unit.getUnitPersonnelItems())
 		{

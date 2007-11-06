@@ -18,16 +18,14 @@ public class POIImpl extends AbstractMsoObject implements IPOIIf
     private final AttributeImpl.MsoEnum<POIType> m_type = new AttributeImpl.MsoEnum<POIType>(this, "Type", POIType.GENERAL);
     private final AttributeImpl.MsoInteger m_areaSequenceNumber = new AttributeImpl.MsoInteger(this, "AreaSequenceNumber");
 
-    private static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.POI");
-
     public static ResourceBundle getBundle()
     {
-        return bundle;
+        return Internationalization.getBundle(IPOIIf.class);
     }
 
     public static String getText(String aKey)
     {
-        return Internationalization.getFullBundleText(bundle,aKey);
+        return Internationalization.getFullBundleText(Internationalization.getBundle(IPOIIf.class),aKey);
     }
 
     public String getTypeText()
@@ -64,12 +62,14 @@ public class POIImpl extends AbstractMsoObject implements IPOIIf
     }
 
 
-    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean addObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
+        return true;
     }
 
-    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
+        return true;
     }
 
     public static POIImpl implementationOf(IPOIIf anInterface) throws MsoCastException

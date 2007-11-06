@@ -58,15 +58,15 @@ public class BoatImpl extends AbstractTransportUnit implements IBoatIf
     }
 
     @Override
-    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean addObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
-        super.addObjectReference(anObject, aReferenceName);
+        return super.addObjectReference(anObject, aReferenceName);
     }
 
     @Override
-    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
-        super.removeObjectReference(anObject, aReferenceName);
+        return super.removeObjectReference(anObject, aReferenceName);
     }
 
     protected UnitType getTypeBySubclass()
@@ -117,7 +117,7 @@ public class BoatImpl extends AbstractTransportUnit implements IBoatIf
 
     public String getSubTypeName()
     {
-        return Internationalization.translate( m_subType.getValue());
+        return Internationalization.translate(m_subType.getValue());
     }
 
     /*-------------------------------------------------------------------------------------------

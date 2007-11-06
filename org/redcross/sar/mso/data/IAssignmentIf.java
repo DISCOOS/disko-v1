@@ -13,6 +13,8 @@ import java.util.EnumSet;
  */
 public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumStatusHolder<IAssignmentIf.AssignmentStatus>, IEnumPriorityHolder<IAssignmentIf.AssignmentPriority>
 {
+    public static final String bundleName = "org.redcross.sar.mso.data.properties.Assignment";
+
     public enum AssignmentStatus
     {
         EMPTY,
@@ -21,7 +23,6 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
         ALLOCATED,
         ASSIGNED,
         EXECUTING,
-//        PAUSED,
         ABORTED,
         FINISHED,
         REPORTED
@@ -192,17 +193,17 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
 
     int getTypenr();
 
-    //    public final static EnumSet<AssignmentStatus> CAN_START_SET = EnumSet.of(AssignmentStatus.ALLOCATED, AssignmentStatus.ASSIGNED);
-    public final static EnumSet<AssignmentStatus> ACTIVE_SET = EnumSet.of(AssignmentStatus.ALLOCATED, AssignmentStatus.ASSIGNED, AssignmentStatus.EXECUTING);
-    public final static EnumSet<AssignmentStatus> FINISHED_SET = EnumSet.of(AssignmentStatus.ABORTED, AssignmentStatus.FINISHED);
-    public final static EnumSet<AssignmentStatus> FINISHED_AND_REPORTED_SET = EnumSet.of(AssignmentStatus.ABORTED, AssignmentStatus.FINISHED, AssignmentStatus.REPORTED);
-    public final static AbstractMsoObject.StatusSelector<IAssignmentIf, AssignmentStatus> READY_SELECTOR = new AbstractMsoObject.StatusSelector<IAssignmentIf, AssignmentStatus>(AssignmentStatus.READY);
-    public final static AbstractMsoObject.StatusSelector<IAssignmentIf, AssignmentStatus> ALLOCATED_SELECTOR = new AbstractMsoObject.StatusSelector<IAssignmentIf, AssignmentStatus>(AssignmentStatus.ALLOCATED);
-    public final static AbstractMsoObject.StatusSelector<IAssignmentIf, AssignmentStatus> ASSIGNED_SELECTOR = new AbstractMsoObject.StatusSelector<IAssignmentIf, AssignmentStatus>(AssignmentStatus.ASSIGNED);
-    public final static AbstractMsoObject.StatusSelector<IAssignmentIf, AssignmentStatus> EXECUTING_SELECTOR = new AbstractMsoObject.StatusSelector<IAssignmentIf, AssignmentStatus>(AssignmentStatus.EXECUTING);
-    public final static AbstractMsoObject.StatusSetSelector<IAssignmentIf, AssignmentStatus> FINISHED_SELECTOR = new AbstractMsoObject.StatusSetSelector<IAssignmentIf, AssignmentStatus>(FINISHED_AND_REPORTED_SET);
+    //    public static final EnumSet<AssignmentStatus> CAN_START_SET = EnumSet.of(AssignmentStatus.ALLOCATED, AssignmentStatus.ASSIGNED);
+    public static final EnumSet<AssignmentStatus> ACTIVE_SET = EnumSet.of(AssignmentStatus.ALLOCATED, AssignmentStatus.ASSIGNED, AssignmentStatus.EXECUTING);
+    public static final EnumSet<AssignmentStatus> FINISHED_SET = EnumSet.of(AssignmentStatus.ABORTED, AssignmentStatus.FINISHED);
+    public static final EnumSet<AssignmentStatus> FINISHED_AND_REPORTED_SET = EnumSet.of(AssignmentStatus.ABORTED, AssignmentStatus.FINISHED, AssignmentStatus.REPORTED);
+    public static final AbstractMsoObject.StatusSelector<IAssignmentIf, AssignmentStatus> READY_SELECTOR = new AbstractMsoObject.StatusSelector<IAssignmentIf, AssignmentStatus>(AssignmentStatus.READY);
+    public static final AbstractMsoObject.StatusSelector<IAssignmentIf, AssignmentStatus> ALLOCATED_SELECTOR = new AbstractMsoObject.StatusSelector<IAssignmentIf, AssignmentStatus>(AssignmentStatus.ALLOCATED);
+    public static final AbstractMsoObject.StatusSelector<IAssignmentIf, AssignmentStatus> ASSIGNED_SELECTOR = new AbstractMsoObject.StatusSelector<IAssignmentIf, AssignmentStatus>(AssignmentStatus.ASSIGNED);
+    public static final AbstractMsoObject.StatusSelector<IAssignmentIf, AssignmentStatus> EXECUTING_SELECTOR = new AbstractMsoObject.StatusSelector<IAssignmentIf, AssignmentStatus>(AssignmentStatus.EXECUTING);
+    public static final AbstractMsoObject.StatusSetSelector<IAssignmentIf, AssignmentStatus> FINISHED_SELECTOR = new AbstractMsoObject.StatusSetSelector<IAssignmentIf, AssignmentStatus>(FINISHED_AND_REPORTED_SET);
 
-    public final static Comparator<IAssignmentIf> PRIORITY_SEQUENCE_COMPARATOR = new Comparator<IAssignmentIf>()
+    public static final Comparator<IAssignmentIf> PRIORITY_SEQUENCE_COMPARATOR = new Comparator<IAssignmentIf>()
     {
         public int compare(IAssignmentIf o1, IAssignmentIf o2)
         {
@@ -210,7 +211,7 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
         }
     };
 
-    public final static Comparator<IAssignmentIf> PRIORITY_COMPARATOR = new Comparator<IAssignmentIf>()
+    public static final Comparator<IAssignmentIf> PRIORITY_COMPARATOR = new Comparator<IAssignmentIf>()
     {
         public int compare(IAssignmentIf o1, IAssignmentIf o2)
         {
@@ -218,7 +219,7 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
         }
     };
 
-    public final static Comparator<IAssignmentIf> PRIORITY_AND_NUMBER_COMPARATOR = new Comparator<IAssignmentIf>()
+    public static final Comparator<IAssignmentIf> PRIORITY_AND_NUMBER_COMPARATOR = new Comparator<IAssignmentIf>()
     {
         public int compare(IAssignmentIf o1, IAssignmentIf o2)
         {

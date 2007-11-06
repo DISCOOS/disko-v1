@@ -4,9 +4,8 @@ import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.gui.NavBar;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
 
+import javax.swing.*;
 import java.util.EnumSet;
-
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -24,7 +23,7 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
     private void initialize()
     {
         loadProperties("properties");
-        assignWpBundle("org.redcross.sar.wp.messageLog.messageLog");
+        assignWpBundle(IDiskoWpMessageLog.class);
 
         m_logPanel = new MessageLogPanel(this);
         layoutComponent(m_logPanel.getPanel());
@@ -46,18 +45,18 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
         navBar.showButtons(myInterests);
     }
 
-    @Override 
+    @Override
 	public void deactivated()
     {
     	super.deactivated();
     	m_logPanel.hidePanels();
     	m_logPanel.clearSelection();
-    	
+
     	// Delete current message
     	MessageLogBottomPanel.clearCurrentMessage();
     }
-    	
-    	
+
+
     @Override
     public boolean confirmDeactivate()
     {
@@ -65,13 +64,13 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
     	if(MessageLogBottomPanel.isMessageDirty())
     	{
     		Object[] dialogOptions = {getText("yes.text"), getText("no.text")};
-    		int n = JOptionPane.showOptionDialog(this.getApplication().getFrame(), 
-    				getText("DirtyMessageWarning.text"), 
-    				getText("DirtyMessageWarning.header"), 
-    				JOptionPane.YES_NO_OPTION, 
-    				JOptionPane.QUESTION_MESSAGE, 
-    				null, 
-    				dialogOptions, 
+    		int n = JOptionPane.showOptionDialog(this.getApplication().getFrame(),
+    				getText("DirtyMessageWarning.text"),
+    				getText("DirtyMessageWarning.header"),
+    				JOptionPane.YES_NO_OPTION,
+    				JOptionPane.QUESTION_MESSAGE,
+    				null,
+    				dialogOptions,
     				dialogOptions[0]);
     		return (n == JOptionPane.YES_OPTION);
     	}
@@ -107,7 +106,7 @@ public class DiskoWpMessageLogImpl extends AbstractDiskoWpModule implements IDis
 	public void reInitWP()
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

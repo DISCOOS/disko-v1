@@ -4,7 +4,6 @@ import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.IllegalOperationException;
 
 import java.util.Calendar;
-import java.util.ResourceBundle;
 
 /**
  * Subject search assignment
@@ -25,8 +24,6 @@ public class SearchImpl extends AssignmentImpl implements ISearchIf
     private final AttributeImpl.MsoCalendar m_stop = new AttributeImpl.MsoCalendar(this, "Stop");
 
     private final AttributeImpl.MsoEnum<SearchSubType> m_subType = new AttributeImpl.MsoEnum<SearchSubType>(this,"SubType", SearchSubType.LINE);
-
-    private final static ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Search");
 
     public static String getSubTypeText(ISearchIf.SearchSubType aType)
     {
@@ -70,15 +67,15 @@ public class SearchImpl extends AssignmentImpl implements ISearchIf
     }
 
     @Override
-    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean addObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
-        super.addObjectReference(anObject, aReferenceName);
+        return super.addObjectReference(anObject, aReferenceName);
     }
 
     @Override
-    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
-        super.removeObjectReference(anObject, aReferenceName);
+        return super.removeObjectReference(anObject, aReferenceName);
     }
 
     @Override

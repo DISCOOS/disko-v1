@@ -37,22 +37,15 @@ public abstract class AbstractDerivedList<M extends IMsoObjectIf> implements IMs
 
     public List<M> selectItems(Selector<M> aSelector, Comparator<M> aComparator)
     {
-        ArrayList<M> retVal = new ArrayList<M>();
-        for (M item : getItems())
-        {
-            if (aSelector.select(item))
-            {
-                retVal.add(item);
-            }
-        }
-        if (aComparator != null)
-        {
-            Collections.sort(retVal, aComparator);
-        }
-        return retVal;
+        return MsoListImpl.selectItems(aSelector,aComparator,getItems());
     }
 
-    final static int mask = MsoEvent.EventType.CREATED_OBJECT_EVENT.maskValue()
+    public M selectSingleItem(Selector<M> aSelector)
+    {
+        return MsoListImpl.selectSingleItem(aSelector,getItems());
+    }
+
+    static final int mask = MsoEvent.EventType.CREATED_OBJECT_EVENT.maskValue()
                 | MsoEvent.EventType.DELETED_OBJECT_EVENT.maskValue()
                 | MsoEvent.EventType.MODIFIED_DATA_EVENT.maskValue();
 
@@ -87,4 +80,4 @@ public abstract class AbstractDerivedList<M extends IMsoObjectIf> implements IMs
 
     public abstract void handleItemModify(Object anObject);
 
-}
+    }

@@ -9,6 +9,7 @@ import org.redcross.sar.mso.event.MsoEvent;
 import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.IllegalDeleteException;
 import org.redcross.sar.util.except.MsoNullPointerException;
+import org.redcross.sar.util.except.MsoRuntimeException;
 import org.redcross.sar.util.except.UnknownAttributeException;
 import org.redcross.sar.util.mso.*;
 
@@ -23,7 +24,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     /**
      * The Object ID, must exist for all MSO Objects .
      */
-    private IObjectIdIf m_MsoObjectId;
+    private final IObjectIdIf m_MsoObjectId;
 
     /**
      * Reference to common EventImpl Manager.
@@ -82,6 +83,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
 
     private boolean m_hasBeenDeleted;
 
+    private MsoListImpl m_owningMainList;
 
     /**
      * Constructor
@@ -92,7 +94,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     {
         if (anObjectId == null || anObjectId.getId() == null || anObjectId.getId().length() == 0)
         {
-            //throw new MsoException("Try to create object with no well defined object id.");
+            throw new MsoRuntimeException("Try to create object with no well defined object id.");
         }
         m_MsoObjectId = anObjectId;
         m_eventManager = MsoModelImpl.getInstance().getEventManager();
@@ -114,6 +116,32 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         defineReferences();
         resumeDerivedUpdate();
         resumeClientUpdate();
+    }
+
+    void setOwningMainList(MsoListImpl aList)
+    {
+        if (aList == null)
+        {
+            throw new MsoRuntimeException("Try to assign a null main list.");
+        }
+        if (m_owningMainList != null && aList != m_owningMainList)
+        {
+            throw new MsoRuntimeException("Try to assign another main list.");
+        }
+        m_owningMainList = aList;
+    }
+
+    /**
+     * Renumber duplicate numbers
+     *
+     * This method is also called by from some constructors. In these cases, {@link #m_owningMainList} is null.
+     */
+    protected void renumberDuplicateNumbers()
+    {
+        if (m_owningMainList != null)
+        {
+            m_owningMainList.renumberItems(this);
+        }
     }
 
     protected abstract void defineAttributes();
@@ -298,9 +326,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         {
             throw attributeCast(aName, aClass);
         }
-
-
-        return m_attributeMap.get(aName.toLowerCase());
+        return retVal;
     }
 
     private AttributeImpl getAttribute(int anIndex) throws UnknownAttributeException
@@ -331,9 +357,21 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         return m_referenceLists;
     }
 
-    public abstract void addObjectReference(IMsoObjectIf anObject, String aReferenceName);
+    /**
+     * Add a list reference to a given object in a given reference list
+     * @param anObject The object to add
+     * @param aReferenceName The reference list
+     * @return <code>true</code> if successfully added, <code>false</code> otherwise
+     */
+    public abstract boolean addObjectReference(IMsoObjectIf anObject, String aReferenceName);
 
-    public abstract void removeObjectReference(IMsoObjectIf anObject, String aReferenceName);
+    /**
+     * Remove a list reference to a given object in a given reference list
+     * @param anObject The object to remove
+     * @param aReferenceName The reference list
+     * @return <code>true</code> if successfully removed, <code>false</code> otherwise
+     */
+    public abstract boolean removeObjectReference(IMsoObjectIf anObject, String aReferenceName);
 
     public IAttributeIf.IMsoBooleanIf getBooleanAttribute(int anIndex) throws UnknownAttributeException
     {
@@ -382,30 +420,6 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
             throw attributeCast(aName, Integer.class);
         }
     }
-
-//    public IAttributeIf.IMsoLongIf getLongAttribute(int anIndex) throws UnknownAttributeException
-//    {
-//        try
-//        {
-//            return (IAttributeIf.IMsoLongIf) getAttribute(anIndex);
-//        }
-//        catch (ClassCastException e)
-//        {
-//            throw attributeCast(anIndex, Long.class);
-//        }
-//    }
-//
-//    public IAttributeIf.IMsoLongIf getLongAttribute(String aName) throws UnknownAttributeException
-//    {
-//        try
-//        {
-//            return (IAttributeIf.IMsoLongIf) getAttribute(aName);
-//        }
-//        catch (ClassCastException e)
-//        {
-//            throw attributeCast(aName, Long.class);
-//        }
-//    }
 
     public IAttributeIf.IMsoDoubleIf getDoubleAttribute(int anIndex) throws UnknownAttributeException
     {
@@ -955,7 +969,7 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
     {
         T m_object;
 
-        public SelfSelector(T myObject)
+        public void setSelfObject(T myObject)
         {
             m_object = myObject;
         }

@@ -35,7 +35,6 @@ public interface IMsoModelIf
     {
         STATE_UNDEFINED,
         STATE_SERVER,
-//        STATE_SERVER_MODIFIED,
         STATE_CONFLICTING,
         STATE_LOCAL
     }

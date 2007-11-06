@@ -3,6 +3,7 @@ package org.redcross.sar.mso.data;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.IUnitIf.UnitStatus;
+import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.mso.Selector;
 
@@ -51,14 +52,17 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     private final TrackListImpl m_trackList = new TrackListImpl(this, "TrackList", true, 100);
     private final UnitListImpl m_unitList = new UnitListImpl(this, "UnitList", true, 100);
 
-    private final static ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.CmdPost");
-
     public CmdPostImpl(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         super(anObjectId);
         m_status.setValue(CmdPostStatus.IDLE);
 
-        m_communicatorList = new AbstractDerivedList<ICommunicatorIf>()
+        m_communicatorList = createCommunicatorList();
+    }
+
+    AbstractDerivedList<ICommunicatorIf> createCommunicatorList()
+    {
+        return new AbstractDerivedList<ICommunicatorIf>()
         {
             public boolean hasInterestIn(Object anObject)
             {
@@ -130,38 +134,40 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
 
     public char getCommunicatorNumberPrefix()
     {
-    	try
-    	{
-    		// Get unit resources
-    		ResourceBundle unitResource = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Unit");
-    		String letter = unitResource.getString("UnitType.COMMAND_POST.letter");
-    		if(letter.length() == 1)
-    		{
-    			return letter.charAt(0);
-    		}
-    		else
-    		{
-    			return 'C';
-    		}
-    	}
-    	catch(MissingResourceException e)
-    	{}
+        try
+        {
+            // Get unit resources
+            ResourceBundle unitResource = Internationalization.getBundle(IUnitIf.class);
+            String letter = unitResource.getString("UnitType.COMMAND_POST.letter");
+            if (letter.length() == 1)
+            {
+                return letter.charAt(0);
+            } else
+            {
+                return 'C';
+            }
+        }
+        catch (MissingResourceException e)
+        {
+        }
 
-    	return 'C';
+        return 'C';
     }
 
     public int getCommunicatorNumber()
     {
-    	// TODO update when multiple command posts
-    	return 1;
+        // TODO update when multiple command posts
+        return 1;
     }
 
-    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean addObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
+        return true;
     }
 
-    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
+        return true;
     }
 
     public static CmdPostImpl implementationOf(ICmdPostIf anInterface) throws MsoCastException
@@ -202,7 +208,7 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
 
     public String getStatusText()
     {
-    	return m_status.getInternationalName();
+        return m_status.getInternationalName();
     }
 
     public IMsoModelIf.ModificationState getStatusState()
@@ -261,22 +267,22 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
 
     public void setToneID(String toneId)
     {
-    	m_toneId.setValue(toneId);
+        m_toneId.setValue(toneId);
     }
 
     public String getToneID()
     {
-    	return m_toneId.getString();
+        return m_toneId.getString();
     }
 
     public IMsoModelIf.ModificationState getToneIDState()
     {
-    	return m_toneId.getState();
+        return m_toneId.getState();
     }
 
     public IAttributeIf.IMsoStringIf getToneIDAttribute()
     {
-    	return m_toneId;
+        return m_toneId;
     }
 
     public void setReleased(Calendar aReleased)
@@ -763,43 +769,39 @@ public class CmdPostImpl extends AbstractMsoObject implements ICmdPostIf, IHiera
     private final EnumSet<CmdPostStatus> m_activeCmdPostStatusSet = EnumSet.of(CmdPostStatus.IDLE, CmdPostStatus.OPERATING, CmdPostStatus.PAUSED);
     private Selector<ICommunicatorIf> m_activeCommunicatorsSelector = new Selector<ICommunicatorIf>()
     {
-		public boolean select(ICommunicatorIf anObject)
-		{
-			if(anObject instanceof ICmdPostIf)
-			{
-				ICmdPostIf cmdPost = (ICmdPostIf)anObject;
-				if(m_activeCmdPostStatusSet.contains(cmdPost.getStatus()))
-				{
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-			else if(anObject instanceof IUnitIf)
-			{
-				IUnitIf unit = (IUnitIf)anObject;
-				if(m_activeUnitStatusSet.contains(unit.getStatus()))
-				{
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-			else
-			{
-				return false;
-			}
-		}
+        public boolean select(ICommunicatorIf anObject)
+        {
+            if (anObject instanceof ICmdPostIf)
+            {
+                ICmdPostIf cmdPost = (ICmdPostIf) anObject;
+                if (m_activeCmdPostStatusSet.contains(cmdPost.getStatus()))
+                {
+                    return true;
+                } else
+                {
+                    return false;
+                }
+            } else if (anObject instanceof IUnitIf)
+            {
+                IUnitIf unit = (IUnitIf) anObject;
+                if (m_activeUnitStatusSet.contains(unit.getStatus()))
+                {
+                    return true;
+                } else
+                {
+                    return false;
+                }
+            } else
+            {
+                return false;
+            }
+        }
     };
 
     public List<ICommunicatorIf> getActiveCommunicators()
-	{
-		return m_communicatorList.selectItems(m_activeCommunicatorsSelector, COMMUNICATOR_COMPARATOR);
-	}
+    {
+        return m_communicatorList.selectItems(m_activeCommunicatorsSelector, COMMUNICATOR_COMPARATOR);
+    }
 
     /*-------------------------------------------------------------------------------------------
     *  Methods from IHierarchicalUnitIf

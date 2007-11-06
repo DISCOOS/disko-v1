@@ -8,15 +8,18 @@ import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.except.MsoRuntimeException;
 import org.redcross.sar.util.mso.Selector;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.List;
 
 /**
  * Communication message
  */
 public class MessageImpl extends AbstractTimeItem implements IMessageIf
 {
-    private final static String CONFIRMED_RECEIVERS_NAME = "ConfirmedReceivers";
-    private final static String UNCONFIRMED_RECEIVERS_NAME = "UnconfirmedReceivers";
+    private static final String CONFIRMED_RECEIVERS_NAME = "ConfirmedReceivers";
+    private static final String UNCONFIRMED_RECEIVERS_NAME = "UnconfirmedReceivers";
     private final AttributeImpl.MsoBoolean m_broadcast = new AttributeImpl.MsoBoolean(this, "Broadcast");
     private final AttributeImpl.MsoCalendar m_created = new AttributeImpl.MsoCalendar(this, "Created");
     private final AttributeImpl.MsoInteger m_number = new AttributeImpl.MsoInteger(this, "Number",true);
@@ -30,11 +33,9 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
 
     private final MsoReferenceImpl<ICommunicatorIf> m_sender = new MsoReferenceImpl<ICommunicatorIf>(this, "Sender", true);
 
-    private static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Message");
-
     public static String getText(String aKey)
     {
-        return Internationalization.getFullBundleText(bundle, aKey);
+        return Internationalization.getFullBundleText(Internationalization.getBundle(IMessageIf.class), aKey);
     }
 
     public String getStatusText()
@@ -83,60 +84,56 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
     }
 
     @Override
-    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean addObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
         if (anObject instanceof ITaskIf)
         {
             m_messageTasks.add((ITaskIf) anObject);
-            return;
+            return true;
         }
         if (anObject instanceof IMessageLineIf)
         {
             m_messageLines.add((IMessageLineIf) anObject);
-            return;
+            return true;
         }
         if (anObject instanceof ICommunicatorIf)
         {
             if (CONFIRMED_RECEIVERS_NAME.equals(aReferenceName))
             {
                 m_confirmedReceivers.add((ICommunicatorIf) anObject);
-                return;
+                return true;
             }
             if (UNCONFIRMED_RECEIVERS_NAME.equals(aReferenceName))
             {
                 m_unconfirmedReceivers.add((ICommunicatorIf) anObject);
-                return;
+                return true;
             }
         }
-        super.addObjectReference(anObject, aReferenceName);
+        return super.addObjectReference(anObject, aReferenceName);
     }
 
-    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
         if (anObject instanceof ITaskIf)
         {
-            m_messageTasks.removeReference((ITaskIf) anObject);
-            return;
+            return m_messageTasks.removeReference((ITaskIf) anObject);
         }
         if (anObject instanceof IMessageLineIf)
         {
-            m_messageLines.removeReference((IMessageLineIf) anObject);
-            return;
+            return m_messageLines.removeReference((IMessageLineIf) anObject);
         }
         if (anObject instanceof ICommunicatorIf)
         {
             if (CONFIRMED_RECEIVERS_NAME.equals(aReferenceName))
             {
-                m_confirmedReceivers.removeReference((ICommunicatorIf) anObject);
-                return;
+                return m_confirmedReceivers.removeReference((ICommunicatorIf) anObject);
             }
             if (UNCONFIRMED_RECEIVERS_NAME.equals(aReferenceName))
             {
-                m_unconfirmedReceivers.removeReference((ICommunicatorIf) anObject);
-                return;
+                return m_unconfirmedReceivers.removeReference((ICommunicatorIf) anObject);
             }
         }
-        super.removeObjectReference(anObject, aReferenceName);
+        return super.removeObjectReference(anObject, aReferenceName);
     }
 
     public static MessageImpl implementationOf(IMessageIf anInterface) throws MsoCastException
@@ -149,14 +146,6 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
         {
             throw new MsoCastException("Illegal cast to MessageImpl");
         }
-    }
-
-    /**
-     * Renumber duplicate numbers
-     */
-    public void renumberDuplicateNumbers()
-    {
-        //Todo Code
     }
 
     public IMsoManagerIf.MsoClassCode getMsoClassCode()
@@ -202,7 +191,7 @@ public class MessageImpl extends AbstractTimeItem implements IMessageIf
     	// Clear receiver lists when changing broadcast state
     	m_unconfirmedReceivers.deleteAll();
     	m_confirmedReceivers.deleteAll();
-    	
+
         m_broadcast.setValue(aBroadcast);
     }
 

@@ -9,6 +9,8 @@ import java.util.Calendar;
  */
 public interface IPersonnelIf extends IPersonIf
 {
+    public static final String bundleName  = "org.redcross.sar.mso.data.properties.Personnel";
+
     public enum PersonnelStatus
     {
         IDLE,
@@ -27,7 +29,7 @@ public interface IPersonnelIf extends IPersonIf
         FIREFIGHTER,
         OTHER
     }
-    
+
     public enum PersonnelImportStatus
     {
     	IMPORTED,
@@ -130,8 +132,8 @@ public interface IPersonnelIf extends IPersonIf
     public IMsoModelIf.ModificationState getTypeState();
 
     public IAttributeIf.IMsoEnumIf<PersonnelType> getTypeAttribute();
-    
-    
+
+
     public void setImportStatus(PersonnelImportStatus status);
 
     public void setImportStatus(String status);

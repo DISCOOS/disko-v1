@@ -11,6 +11,7 @@ import org.redcross.sar.mso.data.IPersonnelIf.PersonnelStatus;
 import org.redcross.sar.mso.data.IPersonnelIf.PersonnelType;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
+import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.mso.DTG;
 
 import javax.swing.*;
@@ -27,7 +28,7 @@ public class PersonnelDetailsBottomPanel extends JPanel implements IMsoUpdateLis
 {
     private static final long serialVersionUID = 1L;
 
-    private static final ResourceBundle m_resources = ResourceBundle.getBundle("org.redcross.sar.wp.unit.unit");
+    private static final ResourceBundle m_resources = Internationalization.getBundle(IDiskoWpUnit.class);
 
     private JTextField m_nameTextField;
     private JTextField m_calloutTextField;
@@ -42,7 +43,7 @@ public class PersonnelDetailsBottomPanel extends JPanel implements IMsoUpdateLis
 
     private IPersonnelIf m_currentPersonnel;
 
-    private final static int UPDATE_INTERVAL = 60000;
+    private static final int UPDATE_INTERVAL = 60000;
     private long m_timeCounter;
 
     IDiskoWpUnit m_wpModule;
@@ -74,7 +75,7 @@ public class PersonnelDetailsBottomPanel extends JPanel implements IMsoUpdateLis
         m_cellularTextField.setEditable(false);
         layoutComponent(0, m_resources.getString("CellularPhone.text"), m_cellularTextField, gbc, 0);
 
-        ResourceBundle personnelResources = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Personnel");
+        ResourceBundle personnelResources = Internationalization.getBundle(IPersonnelIf.class);
         m_propertyComboBox = new JComboBox(PersonnelType.values());
         m_propertyComboBox.setEnabled(false);
         m_propertyComboBox.setRenderer(new SimpleListCellRenderer(personnelResources));

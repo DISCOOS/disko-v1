@@ -8,6 +8,7 @@ import java.util.Comparator;
 
 public interface ITaskIf extends ITimeItemIf, ISerialNumberedIf, IEnumStatusHolder<ITaskIf.TaskStatus>, IEnumPriorityHolder<ITaskIf.TaskPriority>
 {
+    public static final String bundleName  = "org.redcross.sar.mso.data.properties.Task";
 
     public enum TaskStatus
     {
@@ -34,7 +35,7 @@ public interface ITaskIf extends ITimeItemIf, ISerialNumberedIf, IEnumStatusHold
         GENERAL
     }
 
-    public final static Comparator<ITaskIf> PRIORITY_COMPARATOR = new Comparator<ITaskIf>()
+    public static final Comparator<ITaskIf> PRIORITY_COMPARATOR = new Comparator<ITaskIf>()
     {
         public int compare(ITaskIf o1, ITaskIf o2)
         {

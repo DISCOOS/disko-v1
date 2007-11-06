@@ -18,6 +18,11 @@ public interface IMsoDerivedListIf<M extends IMsoObjectIf>
      */
     public Collection<M> getItems();
 
+    /**
+     * Get the number of items in the list.
+     *
+     * @return The number of items.
+     */
     public int size();
 
 
@@ -30,4 +35,12 @@ public interface IMsoDerivedListIf<M extends IMsoObjectIf>
      * @return The generated list
      */
     public List<M> selectItems(Selector<M> aSelector, Comparator<M> aComparator);
+
+    /**
+     * Find an item in the list.
+     *
+     * @param aSelector A {@link org.redcross.sar.util.mso.Selector} that is used for selecting items.
+     * @return The found item, or null if not found;
+     */
+    public M selectSingleItem(Selector<M> aSelector);
 }

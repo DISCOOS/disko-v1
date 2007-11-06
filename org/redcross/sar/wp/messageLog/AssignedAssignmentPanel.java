@@ -1,13 +1,13 @@
 package org.redcross.sar.wp.messageLog;
 
-import java.util.Calendar;
-
 import org.redcross.sar.gui.ErrorDialog;
-import org.redcross.sar.mso.data.IMessageIf;
-import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
+import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageLineIf.MessageLineType;
+import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.util.AssignmentTransferUtilities;
+
+import java.util.Calendar;
 
 /**
  * Dialog for assigning unit an assignment
@@ -25,7 +25,7 @@ public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 	public AssignedAssignmentPanel(IDiskoWpMessageLog wp)
 	{
 		super(wp);
-		
+
 		m_timeLabel.setText(m_wpMessageLog.getText("AssignedTimeLabel.text") + ": ");
 	}
 
@@ -39,13 +39,13 @@ public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 		{
 			m_addedLines.get(i).deleteObject();
 		}
-		
+
 		m_addedLines.clear();
 	}
 
 
 	/**
-	 * 
+	 *
 	 */
 	@Override
 	protected void updateMessageLine()
@@ -64,14 +64,14 @@ public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 	}
 
 	/**
-	 * Adds a new assigned message line to message. If unit has assignments in buffer these are shown, 
+	 * Adds a new assigned message line to message. If unit has assignments in buffer these are shown,
 	 * else all available assignments are shown
 	 */
 	protected void addNewMessageLine()
 	{
 		IMessageIf message = MessageLogBottomPanel.getCurrentMessage(true);
 		IUnitIf unit = (IUnitIf)message.getSingleReceiver();
-		
+
 		// Assure that unit can accept assignment
 		if(AssignmentTransferUtilities.unitCanAccept(unit, AssignmentStatus.ASSIGNED))
 		{
@@ -103,15 +103,15 @@ public class AssignedAssignmentPanel extends AbstractAssignmentPanel
 		{
 			IMessageIf message = MessageLogBottomPanel.getCurrentMessage(true);
 			AssignmentTransferUtilities.createAssignmentChangeMessageLines(
-					message, 
-					MessageLineType.ASSIGNED, 
-					MessageLineType.ASSIGNED, 
+					message,
+					MessageLineType.ASSIGNED,
+					MessageLineType.ASSIGNED,
 					Calendar.getInstance(),
 					m_selectedAssignment);
-			
+
 			m_addedLines.add(message.findMessageLine(MessageLineType.ASSIGNED, m_selectedAssignment, false));
 		}
-		
+
 		MessageLogBottomPanel.showAssignPanel();
 	}
 }

@@ -18,7 +18,7 @@ import java.awt.event.ActionListener;
  */
 public class DeleteTaskDialog extends DiskoDialog
 {
-	private static final long serialVersionUID = 1L;
+	private final static long serialVersionUID = 1L;
 
 	protected IDiskoWpTasks m_wpTasks;
 

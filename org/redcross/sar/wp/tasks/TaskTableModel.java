@@ -1,84 +1,73 @@
 package org.redcross.sar.wp.tasks;
 
-import java.awt.Component;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JTable;
-import javax.swing.RowFilter;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableRowSorter;
-
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.gui.AbstractPopupHandler;
 import org.redcross.sar.gui.PopupListener;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.ITaskIf;
-import org.redcross.sar.mso.data.ITaskListIf;
-import org.redcross.sar.mso.data.TaskImpl;
 import org.redcross.sar.mso.data.ITaskIf.TaskPriority;
 import org.redcross.sar.mso.data.ITaskIf.TaskStatus;
+import org.redcross.sar.mso.data.ITaskListIf;
+import org.redcross.sar.mso.data.TaskImpl;
 import org.redcross.sar.mso.event.IMsoUpdateListenerIf;
 import org.redcross.sar.mso.event.MsoEvent.Update;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableRowSorter;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.util.*;
 
 /**
  * Provides task table with data. Updates contents on MSO taks update. Also contains nested classes for
  * sorting and filtering.
- * 
+ *
  * @author thomasl
  *
  */
 @SuppressWarnings("unchecked")
 public class TaskTableModel extends AbstractTableModel implements IMsoUpdateListenerIf
 {
-	private static final long serialVersionUID = 1L;
+	private final static long serialVersionUID = 1L;
 
 //	protected ITaskListIf m_tasks;
 	protected IDiskoWpTasks m_wpTasks;
 
 	protected JTable m_table;
 	protected TaskTableRowSorter m_rowSorter;
-	
+
 	protected static EnumSet<TaskPriority> m_priorityFilter = EnumSet.of(
 			TaskPriority.HIGH,
-			TaskPriority.NORMAL, 
+			TaskPriority.NORMAL,
 			TaskPriority.LOW);
-	
+
 	protected static EnumSet<TaskStatus> m_statusFilter = EnumSet.of(
 			TaskStatus.FINISHED,
 			TaskStatus.UNPROCESSED,
 			TaskStatus.POSTPONED,
 			TaskStatus.STARTED);
-	
+
 	protected static Set<String> m_responsibleRoleFilter = new HashSet<String>();
-	
-	protected HashMap<JCheckBoxMenuItem, Enum> m_menuItemEnumMap = null; 
+
+	protected HashMap<JCheckBoxMenuItem, Enum> m_menuItemEnumMap = null;
 
 	/**
 	 * Compares task numbers
 	 */
 	private final static Comparator<Integer> m_numberComparator = new Comparator<Integer>()
-	{	
+	{
 		public int compare(Integer o1, Integer o2)
 		{
 			return o1 - o2;
 		}
 	};
-	
+
 	/**
 	 * Order priorities
 	 */
@@ -89,16 +78,16 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 			return o1.ordinal() - o2.ordinal();
 		}
 	};
-	
-	private final static Comparator<Calendar> m_dueComparator = new Comparator<Calendar>()
+
+	private static final Comparator<Calendar> m_dueComparator = new Comparator<Calendar>()
 	{
 		public int compare(Calendar o1, Calendar o2)
 		{
 			return o1.compareTo(o2);
 		}
 	};
-	
-	private final static Comparator<TaskStatus> m_statusComparator = new Comparator<TaskStatus>()
+
+	private static final Comparator<TaskStatus> m_statusComparator = new Comparator<TaskStatus>()
 	{
 		public int compare(TaskStatus o1, TaskStatus o2)
 		{
@@ -110,9 +99,9 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 	{
 		m_wpTasks = wp;
 		m_table = table;
-		
+
 		wp.getMmsoEventManager().addClientUpdateListener(this);
-		
+
 		m_menuItemEnumMap = new HashMap<JCheckBoxMenuItem, Enum>();
 
 		m_rowSorter = new TaskTableRowSorter(this);
@@ -152,7 +141,7 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 		{
 			return null;
 		}
-		
+
 		ITaskIf task = (ITaskIf)taskList.getItems().toArray()[row];
 		switch(column)
 		{
@@ -198,7 +187,7 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 		public TaskTableRowSorter(TaskTableModel model)
 		{
 			super(model);
-			
+
 			RowFilter<TaskTableModel, Object> rf = new RowFilter<TaskTableModel, Object>()
 			{
 				public boolean include(	javax.swing.RowFilter.Entry<? extends TaskTableModel,
@@ -207,19 +196,19 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 					TaskPriority priority = (TaskPriority)entry.getValue(1);
 					String responsible = (String)entry.getValue(3);
 					TaskStatus status = (TaskStatus)entry.getValue(5);
-					
+
 					return isRowSelected(priority, responsible, status);
 				}
 			};
 			this.setRowFilter(rf);
-			
+
 			this.setComparator(0, m_numberComparator);
 			this.sort();
 		}
 
 		@Override
 		 public Comparator<?> getComparator(int column)
-		 {			
+		 {
 			switch (column)
 			{
 			case 0:
@@ -238,13 +227,13 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 				return m_numberComparator;
 			}
 		 }
-		
+
 		@Override
         public boolean useToString(int column)
         {
             return column == 2 || column == 3;
         }
-		
+
 		public boolean isRowSelected(TaskPriority priority, String responsible, TaskStatus status)
 		{
 			return m_priorityFilter.contains(priority) &&
@@ -280,7 +269,7 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 				String[] roles = m_wpTasks.getApplication().getDiskoModuleLoader().getRoleTitles();
 				IDiskoRole role = m_wpTasks.getDiskoRole();
 	        	String roleName = role.getTitle();
-	        	
+
 	        	// Show own item
 	        	JMenuItem showOwnItem = new JMenuItem();
 	        	showOwnItem.setText(m_wpTasks.getText("OwnTasksMenuItem.text"));
@@ -292,7 +281,7 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 						String name = currentRole.getTitle();
 						m_responsibleRoleFilter.clear();
 						m_responsibleRoleFilter.add(name);
-						
+
 						// Set other filters to unselected
 						for(Component item : m_menus[3].getComponents())
 						{
@@ -301,13 +290,13 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 								((JCheckBoxMenuItem)item).setSelected(false);
 							}
 						}
-							
+
 						fireTableDataChanged();
 					}
 	        	});
 	        	m_menus[3].add(showOwnItem);
-	        	
-	        	
+
+
 	        	// Handle responsible item selections, update filter
 	        	ActionListener responsibleListener = new ActionListener()
 	        	{
@@ -323,11 +312,11 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 						{
 							m_responsibleRoleFilter.add(itemText);
 						}
-						
-			        	fireTableDataChanged();			
+
+			        	fireTableDataChanged();
 					}
 	        	};
-	        	
+
 	        	for(int i=0; i<roles.length; i++)
 	        	{
 	        		// Don't add own role to selection filter, should always view own tasks
@@ -341,7 +330,7 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 	        		}
 	        		m_responsibleRoleFilter.add(roles[i]);
 	        	}
-	        	
+
 	        	// Show all item
 	        	JMenuItem showAllItem = new JMenuItem();
 	        	showAllItem.setText(m_wpTasks.getText("AllRolesMenuItem.text"));
@@ -358,13 +347,13 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 								((JCheckBoxMenuItem)item).setSelected(true);
 							}
 						}
-						
+
 						// Add all roles to set
 						String[] allRoles = null;
 						try
 						{
 							allRoles = m_wpTasks.getApplication().getDiskoModuleLoader().getRoleTitles();
-						} 
+						}
 						catch (Exception e1)
 						{
 							e1.printStackTrace();
@@ -378,7 +367,7 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 					}
 	        	});
 	        	m_menus[3].add(showAllItem);
-			} 
+			}
 			catch (Exception e)
 			{
 				e.printStackTrace();
@@ -398,7 +387,7 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
         	{
         		 m_menus[menu] = new JPopupMenu();
         	}
-        	
+
         	JCheckBoxMenuItem checkBox = new JCheckBoxMenuItem();
         	m_menuItemEnumMap.put(checkBox, taskEnum);
         	checkBox.setText(TaskImpl.getEnumText(taskEnum));
@@ -409,7 +398,7 @@ public class TaskTableModel extends AbstractTableModel implements IMsoUpdateList
 					// Add/remove item from filter enum set
 					JCheckBoxMenuItem item = (JCheckBoxMenuItem)arg0.getSource();
 					Enum itemEnum = m_menuItemEnumMap.get(item);
-					
+
 					switch(menu)
 					{
 					case 1:

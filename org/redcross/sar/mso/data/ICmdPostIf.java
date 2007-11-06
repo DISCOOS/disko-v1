@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface ICmdPostIf extends IMsoObjectIf
 {
+    public static final String bundleName = "org.redcross.sar.mso.data.properties.CmdPost";
+
     /**
      * Command post status enum
      */
@@ -28,7 +30,7 @@ public interface ICmdPostIf extends IMsoObjectIf
     public void setStatus(String aStatus);
 
     public CmdPostStatus getStatus();
-    
+
     public String getStatusText();
 
     public IMsoModelIf.ModificationState getStatusState();
@@ -248,7 +250,7 @@ public interface ICmdPostIf extends IMsoObjectIf
     *-------------------------------------------------------------------------------------------*/
 
     public AbstractDerivedList<ICommunicatorIf> getCommunicatorList();
-    
+
     public List<ICommunicatorIf> getActiveCommunicators();
 
     public ITimeLineIf getTimeLine();

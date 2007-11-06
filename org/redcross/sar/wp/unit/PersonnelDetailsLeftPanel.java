@@ -34,9 +34,8 @@ import java.util.ResourceBundle;
 public class PersonnelDetailsLeftPanel extends JPanel implements IMsoUpdateListenerIf, ITickEventListenerIf
 {
     private static final long serialVersionUID = 1L;
-    private final static ResourceBundle m_resources = ResourceBundle.getBundle("org.redcross.sar.wp.unit.unit");
-    private final static ResourceBundle m_personnelBundle =
-            ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Personnel");
+    private static final ResourceBundle m_resources = Internationalization.getBundle(IDiskoWpUnit.class);
+    private static final ResourceBundle m_personnelBundle = Internationalization.getBundle(IPersonnelIf.class);
 
     private IPersonnelIf m_currentPersonnel = null;
     private IDiskoWpUnit m_wpUnit;
@@ -127,7 +126,7 @@ public class PersonnelDetailsLeftPanel extends JPanel implements IMsoUpdateListe
 		// Property
 		m_propertyComboBox = new JComboBox(PersonnelType.values());
 		m_propertyComboBox.setSelectedItem(null);
-		ResourceBundle personnelResources = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Personnel");
+		ResourceBundle personnelResources = Internationalization.getBundle(IPersonnelIf.class);
 		m_propertyComboBox.setRenderer(new SimpleListCellRenderer(personnelResources));
 		gbc.gridwidth = 3;
 		layoutComponent(0, m_resources.getString("Property.text"), m_propertyComboBox, gbc, 1);

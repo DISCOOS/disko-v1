@@ -9,6 +9,7 @@ import org.redcross.sar.mso.data.ITaskIf.TaskPriority;
 import org.redcross.sar.mso.data.ITaskIf.TaskStatus;
 import org.redcross.sar.mso.data.ITaskIf.TaskType;
 import org.redcross.sar.mso.data.TaskImpl;
+import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.IllegalMsoArgumentException;
 import org.redcross.sar.util.mso.DTG;
 import org.redcross.sar.wp.tasks.TaskUtilities;
@@ -53,9 +54,10 @@ public class TaskDialog extends DiskoDialog
 	private JTextArea m_sourceTextArea = null;
 	private JTextField m_objectTextField = null;
 
-	private final static ResourceBundle m_resources = ResourceBundle.getBundle("org.redcross.sar.gui.properties.TaskDialog");
+    public final static String bundleName = "org.redcross.sar.gui.properties.TaskDialog";
+    private static final ResourceBundle m_resources = Internationalization.getBundle(TaskDialog.class);
 
-	public TaskDialog(IDiskoApplication application)
+    public TaskDialog(IDiskoApplication application)
 	{
 		super(application.getFrame());
 		m_application = application;

@@ -8,6 +8,8 @@ public class TimeLineImpl extends AbstractDerivedList<ITimeItemIf> implements IT
 {
     final List<ITimeItemIf> m_timeItems = new ArrayList<ITimeItemIf>();
 
+    // todo Sorting can be optimized by using a sorting algorithm that takes into account that only one object has been added/changed 
+
     public TimeLineImpl()
     {
         super();
@@ -20,7 +22,7 @@ public class TimeLineImpl extends AbstractDerivedList<ITimeItemIf> implements IT
 
     public boolean hasInterestIn(Object anObject)
     {
-        return anObject instanceof ITimeItemIf;
+        return anObject instanceof AbstractTimeItem;
     }
 
     public void handleItemCreate(Object anObject)
@@ -36,7 +38,7 @@ public class TimeLineImpl extends AbstractDerivedList<ITimeItemIf> implements IT
         ITimeItemIf item = (ITimeItemIf) anObject;
         m_items.remove(item.getObjectId());
         m_timeItems.remove(item);
-        Collections.sort(m_timeItems);
+//        Collections.sort(m_timeItems);
     }
 
     public void handleItemModify(Object anObject)

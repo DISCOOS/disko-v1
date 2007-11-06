@@ -30,12 +30,12 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener, I
     private final static String UNIT_PANEL_NAME = "UnitPanel";
     private final static String ASSIGNMENT_PANEL_NAME = "AssignmentPanel";
     private final static String ASSIGNMENT_LIST_PANEL_NAME = "AssignmentList";
-    private static final String ASG_RESULT = "AsgResult";
-    private static final String ASG_RETURN = "AsgReturn";
-    private static final String ASG_PRINT = "AsgPrint";
-    private static final String ASG_CHANGE = "AsgChange";
-    private static final String UNIT_PRINT = "UnitPrint";
-    private static final String UNIT_CHANGE = "UnitChange";
+    private final static String ASG_RESULT = "AsgResult";
+    private final static String ASG_RETURN = "AsgReturn";
+    private final static String ASG_PRINT = "AsgPrint";
+    private final static String ASG_CHANGE = "AsgChange";
+    private final static String UNIT_PRINT = "UnitPrint";
+    private final static String UNIT_CHANGE = "UnitChange";
 
     private final static int ASSIGNMENT_INFO_PANEL_TOP_ELEMENTS = 5;
     private final static int ASSIGNMENT_INFO_PANEL_CENTER_ELEMENTS = 1;
@@ -61,7 +61,7 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener, I
 
     private final AssignmentLabel.AssignmentLabelActionHandler m_assignmentLabelMouseListener;
 
-    private final static long m_timeInterval = 60 * 1000; // once every minute.
+    private static final long m_timeInterval = 60 * 1000; // once every minute.
 
     private long m_timeCounter;
 

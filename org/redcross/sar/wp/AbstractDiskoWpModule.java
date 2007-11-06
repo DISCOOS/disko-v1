@@ -15,6 +15,7 @@ import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.data.ICmdPostIf;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
+import org.redcross.sar.util.Internationalization;
 
 import javax.swing.*;
 import java.awt.*;
@@ -289,7 +290,7 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule
     {
         return getMsoModel().getEventManager();
     }
-    
+
     public ICmdPostIf getCmdPost()
     {
     	return getMsoManager().getCmdPost();
@@ -312,18 +313,9 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule
         }
     }
 
-    protected void assignWpBundle(String bundleName)
+    protected void assignWpBundle(Class aClass)
     {
-        try
-        {
-            wpBundle = ResourceBundle.getBundle(bundleName);
-        }
-        catch (java.util.MissingResourceException e)
-        {
-            System.out.println("Classname " + e.getClassName());
-            System.out.println("Key " + e.getKey());
-            e.printStackTrace();
-        }
+        wpBundle = Internationalization.getBundle(aClass);
     }
 
     private static final int TIMER_DELAY = 1000; // 1 second
@@ -410,7 +402,7 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule
             fireTick(m_elapsedTime);
         }
     }
-    
+
     public boolean confirmDeactivate()
     {
     	return true;

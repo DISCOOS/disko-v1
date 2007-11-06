@@ -15,6 +15,7 @@ import org.redcross.sar.mso.data.IPOIIf;
 import org.redcross.sar.mso.data.IPOIIf.POIType;
 import org.redcross.sar.mso.data.ITaskIf;
 import org.redcross.sar.mso.data.ITaskIf.TaskType;
+import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.mso.Position;
 
 import javax.swing.*;
@@ -31,7 +32,7 @@ import java.io.IOException;
  */
 public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 {
-	private static final long serialVersionUID = 1L;
+	private final static long serialVersionUID = 1L;
 
 	protected JButton m_okButton = null;
 	protected JButton m_cancelButton = null;
@@ -173,7 +174,7 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 		});
 	}
 
-	/**
+    /**
 	 * Set GUI according to POI types
 	 */
 	private void updatePOITypes()
@@ -190,7 +191,9 @@ public class MessagePOIPanel extends JPanel implements IEditMessageComponentIf
 			{
 				m_poiTypesComboBox.addItem(type);
 			}
-			m_poiTypeLabel.setVisible(true);
+            m_poiTypesComboBox.setRenderer(new SimpleListCellRenderer(Internationalization.getBundle(IPOIIf.class)));
+
+            m_poiTypeLabel.setVisible(true);
 			m_poiTypesComboBox.setSelectedItem(m_poiTypes[0]);
 			m_poiTypesComboBox.setVisible(true);
 		}

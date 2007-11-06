@@ -10,6 +10,7 @@ import java.util.Calendar;
  */
 public interface IPersonIf extends IMsoObjectIf
 {
+    public static final String bundleName  = "org.redcross.sar.mso.data.properties.Person";
 
     public enum PersonGender
     {
@@ -65,13 +66,13 @@ public interface IPersonIf extends IMsoObjectIf
     public IMsoModelIf.ModificationState getResidenceState();
 
     public IAttributeIf.IMsoPositionIf getResidenceAttribute();
-    
+
     public void setAddress(String address);
-    
+
     public String getAddress();
-    
+
     public IMsoModelIf.ModificationState getAddressState();
-    
+
     public IAttributeIf.IMsoStringIf getAddressAttribute();
 
     public void setTelephone1(String aTelephone1);
@@ -104,7 +105,7 @@ public interface IPersonIf extends IMsoObjectIf
     public void setGender(String aGender);
 
     public PersonGender getGender();
-    
+
     public String getGenderText();
 
     public IMsoModelIf.ModificationState getGenderState();

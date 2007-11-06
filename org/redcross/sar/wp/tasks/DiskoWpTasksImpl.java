@@ -42,7 +42,7 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 
     private ITaskIf m_currentTask;
 
-    private static final int TASK_ALERT_TIME = 10000;
+    private final static int TASK_ALERT_TIME = 10000;
     private long m_timeCounter = 0;
 
     public DiskoWpTasksImpl(IDiskoRole role)
@@ -59,7 +59,7 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
     private void initialize()
     {
         loadProperties("properties");
-        assignWpBundle("org.redcross.sar.wp.tasks.tasks");
+        assignWpBundle(IDiskoWpTasks.class);
 
         m_contentsPanel = new JPanel(new BorderLayout());
         initTable();
@@ -252,24 +252,24 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
         SubMenuPanel subMenu = this.getApplication().getUIFactory().getSubMenuPanel();
         subMenu.getFinishButton().setEnabled(true);
         subMenu.getCancelButton().setEnabled(true);
-        
+
         TaskDialog taskDialog = getApplication().getUIFactory().getTaskDialog();
         taskDialog.setVisible(false);
     }
-    
+
     @Override
     public boolean confirmDeactivate()
     {
     	if(getMsoModel().hasUncommitedChanges())
     	{
     		Object[] dialogOptions = {getText("Yes.text"), getText("No.text")};
-    		int n = JOptionPane.showOptionDialog(this.getApplication().getFrame(), 
-    				getText("UncommittedChanges.text"), 
-    				getText("UncommittedChanges.header"), 
-    				JOptionPane.YES_NO_OPTION, 
-    				JOptionPane.QUESTION_MESSAGE, 
-    				null, 
-    				dialogOptions, 
+    		int n = JOptionPane.showOptionDialog(this.getApplication().getFrame(),
+    				getText("UncommittedChanges.text"),
+    				getText("UncommittedChanges.header"),
+    				JOptionPane.YES_NO_OPTION,
+    				JOptionPane.QUESTION_MESSAGE,
+    				null,
+    				dialogOptions,
     				dialogOptions[0]);
     		return (n == JOptionPane.YES_OPTION);
     	}
@@ -367,6 +367,6 @@ public class DiskoWpTasksImpl extends AbstractDiskoWpModule implements IDiskoWpT
 	public void reInitWP()
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 }

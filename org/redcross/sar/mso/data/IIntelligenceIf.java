@@ -1,12 +1,12 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.util.except.MsoCastException;
 
 import java.util.Calendar;
 
 public interface IIntelligenceIf extends IMsoObjectIf
 {
+    public static final String bundleName  = "org.redcross.sar.mso.data.properties.Intelligence";
 
     /**
      * Status enum is
@@ -27,7 +27,7 @@ public interface IIntelligenceIf extends IMsoObjectIf
     public void setStatus(String aStatus);
 
     public IntelligenceStatus getStatus();
-    
+
     public String getStatusText();
 
     public IMsoModelIf.ModificationState getStatusState();

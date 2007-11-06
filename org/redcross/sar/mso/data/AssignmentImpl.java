@@ -11,7 +11,6 @@ import org.redcross.sar.util.except.MsoCastException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
-import java.util.ResourceBundle;
 
 /**
  * Unit assignments
@@ -38,11 +37,9 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
     private final MsoReferenceImpl<IAreaIf> m_plannedArea = new MsoReferenceImpl<IAreaIf>(this, "PlannedArea", true);
     private final MsoReferenceImpl<IAreaIf> m_reportedArea = new MsoReferenceImpl<IAreaIf>(this, "ReportedArea", true);
 
-    private static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Assignment");
-
     public static String getText(String aKey)
     {
-        return Internationalization.getFullBundleText(bundle, aKey);
+        return Internationalization.getFullBundleText(Internationalization.getBundle(IAssignmentIf.class), aKey);
     }
 
     public AssignmentImpl(IMsoObjectIf.IObjectIdIf anObjectId, int aNumber)
@@ -79,27 +76,32 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         addReference(m_reportedArea);
     }
 
-    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean addObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
         if (anObject instanceof IPOIIf)
         {
             m_assignmentFindings.add((IPOIIf) anObject);
-
-        } else if (anObject instanceof IEquipmentIf)
+            return true;
+        }
+        if (anObject instanceof IEquipmentIf)
         {
             m_assignmentEquipment.add((IEquipmentIf) anObject);
+            return true;
         }
+        return false;
     }
 
-    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
         if (anObject instanceof IPOIIf)
         {
-            m_assignmentFindings.removeReference((IPOIIf) anObject);
-        } else if (anObject instanceof IEquipmentIf)
-        {
-            m_assignmentEquipment.removeReference((IEquipmentIf) anObject);
+            return m_assignmentFindings.removeReference((IPOIIf) anObject);
         }
+        if (anObject instanceof IEquipmentIf)
+        {
+            return m_assignmentEquipment.removeReference((IEquipmentIf) anObject);
+        }
+        return false;
     }
 
     protected AssignmentType getTypeBySubclass()
@@ -126,20 +128,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         {
             ((AreaImpl) getReportedArea()).registerModifiedData();
         }
-        if (MsoModelImpl.getInstance().getUpdateMode() == IMsoModelIf.UpdateMode.REMOTE_UPDATE_MODE)
-        {
-            renumberDuplicateNumbers();
-        }
         super.registerModifiedData();
-    }
-
-
-    /**
-     * Renumber duplicate numbers
-     */
-    public void renumberDuplicateNumbers()
-    {
-        //Todo Code
     }
 
     public static AssignmentImpl implementationOf(IAssignmentIf anInterface) throws MsoCastException
@@ -604,7 +593,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         return getStatus().ordinal() >= AssignmentStatus.ABORTED.ordinal();
     }
 
-    private final SelfSelector<IAssignmentIf, IUnitIf> owningUnitSelector = new SelfSelector<IAssignmentIf, IUnitIf>(this)
+    private final static SelfSelector<IAssignmentIf, IUnitIf> owningUnitSelector = new SelfSelector<IAssignmentIf, IUnitIf>()
     {
         public boolean select(IUnitIf anObject)
         {
@@ -614,6 +603,7 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
 
     public IUnitIf getOwningUnit()
     {
+        owningUnitSelector.setSelfObject(this);
         return MsoModelImpl.getInstance().getMsoManager().getCmdPost().getUnitList().selectSingleItem(owningUnitSelector);
     }
 
@@ -644,11 +634,11 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
     }
 
 
-    private final TypeMessageLineSelector messageLineSelector = new TypeMessageLineSelector(this);
+    private final static TypeMessageLineSelector messageLineSelector = new TypeMessageLineSelector();
 
     public IMessageLineIf getLatestStatusChangeMessageLine(IMessageLineIf.MessageLineType aType)
     {
-        messageLineSelector.setSelectType(aType);
+        messageLineSelector.setSelectionCriteria(this, aType);
         List<IMessageLineIf> retVal = MsoModelImpl.getInstance().getMsoManager().getCmdPost().getMessageLines().selectItems(messageLineSelector,
                 IMessageLineIf.MESSAGE_LINE_TIME_COMPARATOR);
         return (retVal.size() == 0) ? null : retVal.get(0);
@@ -686,17 +676,13 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
         return owningMessage == null || owningMessage.getStatus().equals(IMessageIf.MessageStatus.CONFIRMED);
     }
 
-    class TypeMessageLineSelector extends SelfSelector<IAssignmentIf, IMessageLineIf>
+    static class TypeMessageLineSelector extends SelfSelector<IAssignmentIf, IMessageLineIf>
     {
         IMessageLineIf.MessageLineType m_type;
 
-        TypeMessageLineSelector(IAssignmentIf anObject)
+        void setSelectionCriteria(IAssignmentIf anAssignment,IMessageLineIf.MessageLineType aType)
         {
-            super(anObject);
-        }
-
-        void setSelectType(IMessageLineIf.MessageLineType aType)
-        {
+            setSelfObject(anAssignment);
             m_type = aType;
         }
 

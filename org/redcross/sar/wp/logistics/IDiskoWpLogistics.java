@@ -6,6 +6,8 @@ import org.redcross.sar.wp.IDiskoWpModule;
 
 public interface IDiskoWpLogistics extends IDiskoWpModule
 {
+    public final static String bundleName = "org.redcross.sar.wp.logistics.logistics";
+
     public boolean confirmTransfer(IAssignmentIf anAssignment, IAssignmentIf.AssignmentStatus aTargetStatus, IUnitIf aTargetUnit);
 
     public void showTransferWarning();

@@ -4,6 +4,7 @@ import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.IPersonnelIf;
 import org.redcross.sar.mso.data.IPersonnelIf.PersonnelStatus;
 import org.redcross.sar.mso.data.IUnitIf;
+import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.IllegalOperationException;
 
 import javax.swing.*;
@@ -15,7 +16,7 @@ import java.util.ResourceBundle;
  */
 public class PersonnelUtilities
 {
-	private final static ResourceBundle m_resources = ResourceBundle.getBundle("org.redcross.sar.wp.unit.unit");
+    private static final ResourceBundle m_resources = Internationalization.getBundle(IDiskoWpUnit.class);
 
 	private static IMsoManagerIf m_msoManager = null;
 

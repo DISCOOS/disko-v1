@@ -2,7 +2,6 @@ package org.redcross.sar.mso.event;
 
 import no.cmr.tools.Log;
 import org.redcross.sar.mso.committer.ICommitWrapperIf;
-import org.redcross.sar.mso.data.IAttributeIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.util.except.CommitException;
 
@@ -19,7 +18,6 @@ public class MsoEventManagerImpl implements IMsoEventManagerIf
     private final Collection<IMsoUpdateListenerIf> m_clientUpdateListeners = new Vector<IMsoUpdateListenerIf>();
     private final Collection<IMsoUpdateListenerIf> m_serverUpdateListeners = new Vector<IMsoUpdateListenerIf>();
     private final Collection<IMsoCommitListenerIf> m_commitListeners = new Vector<IMsoCommitListenerIf>();
-    private final Collection<IMsoGisListenerIf> m_gisListeners = new Vector<IMsoGisListenerIf>();
     private final Collection<IMsoDerivedUpdateListenerIf> m_derivedUpdateListeners = new Vector<IMsoDerivedUpdateListenerIf>();
 
     /**
@@ -122,36 +120,6 @@ public class MsoEventManagerImpl implements IMsoEventManagerIf
                 {
                     throw (CommitException)e;
                 }
-            }
-        }
-    }
-
-    public void addGisUpdateListener(IMsoGisListenerIf aListener)
-    {
-        m_gisListeners.add(aListener);
-    }
-
-    public void removeGisUpdateListener(IMsoGisListenerIf aListener)
-    {
-        m_gisListeners.remove(aListener);
-    }
-
-    public void notifyGisUpdate(IAttributeIf aSource)
-    {
-        if (m_gisListeners.size() == 0)
-        {
-            return;
-        }
-        MsoEvent.Gis event = new MsoEvent.Gis(aSource);
-        for (IMsoGisListenerIf listener : m_gisListeners)
-        {
-            try
-            {
-                listener.handleMsoGisEvent(event);
-            }
-            catch (Exception e)
-            {
-                Log.printStackTrace("Exception in notifyGisUpdate, listener: " + listener.toString(),e);
             }
         }
     }

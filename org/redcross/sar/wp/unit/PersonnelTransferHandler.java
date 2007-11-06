@@ -1,22 +1,19 @@
 package org.redcross.sar.wp.unit;
 
+import org.redcross.sar.mso.data.IPersonnelIf;
+import org.redcross.sar.mso.data.IPersonnelListIf;
+import org.redcross.sar.wp.unit.UnitDetailsPanel.UnitPersonnelTableModel;
+
+import javax.swing.*;
+import javax.swing.table.TableModel;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
-import javax.swing.JComponent;
-import javax.swing.JTable;
-import javax.swing.TransferHandler;
-import javax.swing.table.TableModel;
-
-import org.redcross.sar.mso.data.IPersonnelIf;
-import org.redcross.sar.mso.data.IPersonnelListIf;
-import org.redcross.sar.wp.unit.UnitDetailsPanel.UnitPersonnelTableModel;
-
 /**
  * Implements drag and drop for unit/personnel assignment
- * 
+ *
  * @author thomasl
  */
 public class PersonnelTransferHandler extends TransferHandler
@@ -24,7 +21,7 @@ public class PersonnelTransferHandler extends TransferHandler
 	private static final long serialVersionUID = 1L;
 
 	private static DataFlavor m_personnelFlavor;
-	
+
 	private static IDiskoWpUnit m_wpUnit;
 
 	public PersonnelTransferHandler(IDiskoWpUnit wp) throws ClassNotFoundException
@@ -33,7 +30,7 @@ public class PersonnelTransferHandler extends TransferHandler
 		{
 			m_personnelFlavor = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType + ";class=org.redcross.sar.mso.data.IPersonnelIf");
 		}
-		
+
 		m_wpUnit = wp;
 	}
 
@@ -60,7 +57,7 @@ public class PersonnelTransferHandler extends TransferHandler
 			UnitPersonnelTableModel unitModel = (UnitPersonnelTableModel)model;
 			personnel = unitModel.getPersonnel(selectedRow);
 		}
-		
+
 		PersonnelTransferable transferable = new PersonnelTransferable(personnel);
 		return transferable;
 	}
@@ -83,24 +80,24 @@ public class PersonnelTransferHandler extends TransferHandler
         {
             return false;
         }
-        
+
         // Always allowed to remove personnel from a unit (?)
         JTable targetTable = (JTable)support.getComponent();
         if(targetTable.getModel() instanceof PersonnelOverviewTableModel)
         {
         	return true;
         }
-        
+
 		// Check for valid personnel transfer. Only applicable when transferring to a unit
         try
 		{
 			IPersonnelIf personnel = (IPersonnelIf)support.getTransferable().getTransferData(m_personnelFlavor);
 			return PersonnelUtilities.canAssignPersonnelToUnit(personnel);
-		} 
+		}
         catch (UnsupportedFlavorException e)
 		{
 			e.printStackTrace();
-		} 
+		}
         catch (IOException e)
 		{
 			e.printStackTrace();
@@ -109,7 +106,7 @@ public class PersonnelTransferHandler extends TransferHandler
 	}
 
 	@Override
-	public int getSourceActions(JComponent c) 
+	public int getSourceActions(JComponent c)
 	{
 		return MOVE;
 	}
@@ -118,14 +115,14 @@ public class PersonnelTransferHandler extends TransferHandler
 	 * Imports personnel from personnel overview table to unit personnel table
 	 */
 	@Override
-	public boolean importData(TransferSupport support) 
+	public boolean importData(TransferSupport support)
 	{
 		if(canImport(support))
 		{
 			Transferable transferable = support.getTransferable();
 			JTable table = (JTable)support.getComponent();
 			TableModel model = table.getModel();
-			
+
 			if(model instanceof UnitPersonnelTableModel)
 			{
 				// Unit personnel table is transfer target
@@ -143,7 +140,7 @@ public class PersonnelTransferHandler extends TransferHandler
 					else
 					{
 						personnelList.add(personnel);
-						
+
 						// Commit if no new major changes exists
 						if(!(m_wpUnit.getNewCallOut() || m_wpUnit.getNewPersonnel() || m_wpUnit.getNewUnit()))
 						{
@@ -151,35 +148,35 @@ public class PersonnelTransferHandler extends TransferHandler
 						}
 					}
 					unitModel.fireTableDataChanged();
-				} 
+				}
 				catch (UnsupportedFlavorException e)
 				{
 					e.printStackTrace();
 					return false;
-				} 
+				}
 				catch (IOException e)
 				{
 					e.printStackTrace();
 					return false;
 				}
 			}
-			
+
 			return true;
 		}
-		return false; 
+		return false;
 	}
-	
+
 	/**
 	 * Removes personnel from unit if source of a completed drag was the unit personnel table
 	 */
 	@Override
-	protected void exportDone(JComponent c, Transferable data, int action) 
+	protected void exportDone(JComponent c, Transferable data, int action)
 	{
 		if(action == TransferHandler.NONE)
 		{
 			return;
 		}
-		
+
 		if(c instanceof JTable)
 		{
 			JTable table = (JTable)c;
@@ -193,18 +190,18 @@ public class PersonnelTransferHandler extends TransferHandler
 					IPersonnelIf personnel = (IPersonnelIf)data.getTransferData(m_personnelFlavor);
 					unitModel.getPersonnel().removeReference(personnel);
 					unitModel.fireTableDataChanged();
-				} 
+				}
 				catch (UnsupportedFlavorException e)
 				{
 					e.printStackTrace();
-				} 
+				}
 				catch (IOException e)
 				{
 					e.printStackTrace();
 				}
 			}
 		}
-		
+
 		// Commit changes right away
 		if(!(m_wpUnit.getNewCallOut() || m_wpUnit.getNewPersonnel() || m_wpUnit.getNewUnit()))
 		{
@@ -214,7 +211,7 @@ public class PersonnelTransferHandler extends TransferHandler
 
 	/**
 	 * Defines a transferable personnel class
-	 * 
+	 *
 	 * @author thomasl
 	 */
 	class PersonnelTransferable implements Transferable

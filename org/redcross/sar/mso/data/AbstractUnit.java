@@ -10,7 +10,6 @@ import org.redcross.sar.util.mso.Position;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.ResourceBundle;
 
 /**
  * Search or rescue unit.
@@ -35,11 +34,9 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
     private final MsoReferenceImpl<IHierarchicalUnitIf> m_superiorUnit = new MsoReferenceImpl<IHierarchicalUnitIf>(this, "SuperiorUnit", false);
     private final MsoReferenceImpl<IPersonnelIf> m_unitLeader = new MsoReferenceImpl<IPersonnelIf>(this, "UnitLeader", true);
 
-    protected static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Unit");
-
     public static String getText(String aKey)
     {
-        return Internationalization.getFullBundleText(bundle, aKey);
+        return Internationalization.getFullBundleText(Internationalization.getBundle(IUnitIf.class), aKey);
     }
 
     public static char getEnumLetter(Enum anEnum)
@@ -94,26 +91,32 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
         addReference(m_unitLeader);
     }
 
-    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean addObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
         if (anObject instanceof IAssignmentIf)
         {
             m_unitAssignments.add((IAssignmentIf) anObject);
-        } else if (anObject instanceof IPersonIf)
+            return true;
+        }
+        if (anObject instanceof IPersonIf)
         {
             m_unitPersonnel.add((IPersonnelIf) anObject);
+            return true;
         }
+        return false;
     }
 
-    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
         if (anObject instanceof IAssignmentIf)
         {
-            m_unitAssignments.removeReference((IAssignmentIf) anObject);
-        } else if (anObject instanceof IPersonIf)
-        {
-            m_unitPersonnel.removeReference((IPersonnelIf) anObject);
+            return m_unitAssignments.removeReference((IAssignmentIf) anObject);
         }
+        if (anObject instanceof IPersonIf)
+        {
+           return m_unitPersonnel.removeReference((IPersonnelIf) anObject);
+        }
+        return false;
     }
 
     public String getUnitNumber()
@@ -156,15 +159,6 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
         }
         super.registerModifiedData();
     }
-
-    /**
-     * Renumber duplicate numbers
-     */
-    public void renumberDuplicateNumbers()
-    {
-        //Todo Code
-    }
-
 
     /*-------------------------------------------------------------------------------------------
     * Methods for ENUM attributes

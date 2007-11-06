@@ -1,16 +1,15 @@
 package org.redcross.sar.wp.messageLog;
 
-import javax.swing.*;
-import javax.swing.table.TableCellRenderer;
-
 import org.redcross.sar.mso.data.IMessageIf;
 import org.redcross.sar.mso.data.IMessageIf.MessageStatus;
 
+import javax.swing.*;
+import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
 /**
  * Custom cell renderer for message log table
- * 
+ *
  * @author vinjar/thomasl
  */
 public class MessageTableRenderer extends JTextArea implements TableCellRenderer
@@ -25,21 +24,25 @@ public class MessageTableRenderer extends JTextArea implements TableCellRenderer
 	}
 
     /**
-     * Get cell component. Message lines with status postponed have pink background 
+     * Get cell component. Message lines with status postponed have pink background
      */
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
     {
 		LogTableModel model = (LogTableModel)table.getModel();
 		IMessageIf message = (IMessageIf)model.getValueAt(table.convertRowIndexToModel(row), 7);
-		
-		int messageNr = message.getNumber();
-		
-		// Set text
+
+		String messageId = message.getObjectId();
+        Boolean expanded = model.isMessageExpanded(messageId);
+        if (expanded == null)
+        {
+            expanded = false;
+        }
+
+        // Set text
 		switch(column)
 		{
 		case 0:
 			// Number cell
-			Boolean expanded = model.isMessageExpanded(message.getNumber());
         	StringBuilder string = new StringBuilder(Integer.toString(message.getNumber()));
         	if(model.numRows(row) > 1)
         	{
@@ -57,11 +60,10 @@ public class MessageTableRenderer extends JTextArea implements TableCellRenderer
 		case 4:
 		case 5:
 			// Message lines
-			Boolean extended = model.isMessageExpanded(messageNr);
         	StringBuilder messageString = new StringBuilder();
         	String[] messageLines = (String[]) value;
-      
-        	if(extended != null && extended)
+
+        	if(expanded)
         	{
         		// Show lines in expanded mode
         		for (int i = 0; i < messageLines.length; i++)
@@ -79,7 +81,7 @@ public class MessageTableRenderer extends JTextArea implements TableCellRenderer
                     messageString.append(" ");
                 }
         	}
-        	
+
             setText(messageString.toString());
 			break;
 		case 6:
@@ -93,10 +95,10 @@ public class MessageTableRenderer extends JTextArea implements TableCellRenderer
 			}
 			break;
 		}
-        
+
         // Colors
-        IMessageIf selectedMessage = MessageLogBottomPanel.getCurrentMessage(false); 
-        if(selectedMessage != null && selectedMessage.getNumber() == messageNr)
+        IMessageIf selectedMessage = MessageLogBottomPanel.getCurrentMessage(false);
+        if(selectedMessage != null && selectedMessage.getObjectId().equals(messageId))
         {
         	setForeground(table.getSelectionForeground());
         	setBackground(table.getSelectionBackground());
@@ -104,7 +106,7 @@ public class MessageTableRenderer extends JTextArea implements TableCellRenderer
         else
         {
         	setForeground(table.getForeground());
-        	
+
         	if(((MessageStatus)model.getValueAt(table.convertRowIndexToModel(row), 6)) == MessageStatus.POSTPONED)
         	{
         		setBackground(Color.pink);
@@ -114,7 +116,7 @@ public class MessageTableRenderer extends JTextArea implements TableCellRenderer
         		setBackground(table.getBackground());
         	}
         }
-        
+
         return this;
     }
 

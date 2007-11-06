@@ -2,6 +2,7 @@ package org.redcross.sar.wp.unit;
 
 import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.mso.data.IPersonnelIf;
+import org.redcross.sar.util.Internationalization;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,7 +17,8 @@ public class PersonnelAddressBottomPanel extends JPanel
 {
 	private static final long serialVersionUID = 1L;
 
-	private final static ResourceBundle m_resources = ResourceBundle.getBundle("org.redcross.sar.wp.unit.unit");
+    private static final ResourceBundle m_resources = Internationalization.getBundle(IDiskoWpUnit.class);
+
 
 	private IPersonnelIf m_currentPersonnel;
 

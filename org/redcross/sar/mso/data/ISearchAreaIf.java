@@ -1,10 +1,11 @@
 package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoModelIf;
-import org.redcross.sar.util.mso.*;
+import org.redcross.sar.util.mso.Polygon;
 
 public interface ISearchAreaIf extends IMsoObjectIf
 {
+    public static final String bundleName  = "org.redcross.sar.mso.data.properties.SearchArea";
 
     public enum SearchAreaStatus
     {
@@ -22,7 +23,7 @@ public interface ISearchAreaIf extends IMsoObjectIf
     public void setStatus(String aStatus);
 
     public SearchAreaStatus getStatus();
-    
+
     public String getStatusText();
 
     public IMsoModelIf.ModificationState getStatusState();

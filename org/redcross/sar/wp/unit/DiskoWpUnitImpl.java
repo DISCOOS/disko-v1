@@ -1,28 +1,5 @@
 package org.redcross.sar.wp.unit;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.table.TableColumn;
-
 import org.redcross.sar.app.IDiskoRole;
 import org.redcross.sar.event.DialogEvent;
 import org.redcross.sar.event.IDialogEventListener;
@@ -37,28 +14,38 @@ import org.redcross.sar.mso.data.IUnitIf.UnitType;
 import org.redcross.sar.util.except.IllegalOperationException;
 import org.redcross.sar.wp.AbstractDiskoWpModule;
 
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.table.TableColumn;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
 /**
  * Implementation of the Unit work process
- * 
+ *
  * @author thomasl
  */
 public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUnit, IDialogEventListener
 {
 	private JPanel m_contentsPanel;
-	
+
 	private PersonnelTransferHandler m_personnelTransferHandler;
-	
+
 	private static JTabbedPane m_overviewTabPane;
 	private static JTable m_personnelOverviewTable;
 	private static JTable m_unitOverviewTable;
 	private static JTable m_calloutOverviewTable;
-	
+
 	private static JPanel m_leftPanel;
 	private static PersonnelDetailsLeftPanel m_personnelLeftDetailsPanel;
 	private static UnitDetailsPanel m_unitDetailsLeftPanel;
 	private static CalloutDetailsPanel m_calloutDetailsPanel;
 	private static JLabel m_leftMessageLabel;
-	
+
 	private static JPanel m_bottomPanel;
 	private static PersonnelAddressBottomPanel m_personnelAddressBottomPanel;
 	private static PersonnelDetailsBottomPanel m_personnelBottomDetailsPanel;
@@ -68,16 +55,16 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 	private JButton m_newUnitButton;
 	private JButton m_importCalloutButton;
 	private JButton m_deleteButton;
-	
+
 	private static String m_leftViewId = PERSONNEL_DETAILS_VIEW_ID;
 //	private static String m_bottomViewId = PERSONNEL_DETAILS_VIEW_ID;
-	
+
 	UnitTypeDialog m_unitTypeDialog;
-	
+
 	ImportCalloutDialog m_importCalloutDialog;
-	
+
 	private static IMsoModelIf m_msoModel;
-	
+
 	private static boolean m_newPersonnel = false;
 	private static boolean m_newUnit = false;
 	private static boolean m_newCallOut = false;
@@ -85,35 +72,35 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 	public DiskoWpUnitImpl(IDiskoRole role)
 	{
 		super(role);
-		
+
 		// Initialize transfer handler
 		try
 		{
 			m_personnelTransferHandler = new PersonnelTransferHandler(this);
-		} 
+		}
 		catch (ClassNotFoundException e)
 		{
 			e.printStackTrace();
 		}
-		
+
 		initialize();
 		initButtons();
 		initTables();
-		
+
 		PersonnelUtilities.setMsoManager(this.getMsoManager());
 		m_msoModel = this.getMsoModel();
 	}
-	
+
 	private void initialize()
 	{
 		// Properties
 		loadProperties("properties");
-		assignWpBundle("org.redcross.sar.wp.unit.unit");
-		
+		assignWpBundle(IDiskoWpUnit.class);
+
 		// Main panels
 		m_contentsPanel = new JPanel(new BorderLayout());
 		layoutComponent(m_contentsPanel);
-		
+
 		// Left panels
 		m_leftPanel = new JPanel(new CardLayout());
 		m_leftPanel.setMinimumSize(new Dimension(300, 550));
@@ -128,8 +115,8 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		m_leftMessageLabel = new JLabel();
 		leftMessagePanel.add(m_leftMessageLabel);
 		m_leftPanel.add(leftMessagePanel, MESSAGE_VIEW_ID);
-		
-		
+
+
 		// Bottom panels
 		Dimension bottomPanelDimension = new Dimension(100, 150);
 		m_bottomPanel = new JPanel(new CardLayout());
@@ -142,14 +129,14 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		m_bottomMessageLabel = new JLabel();
 		bottomMessagePanel.add(m_bottomMessageLabel);
 		m_bottomPanel.add(bottomMessagePanel, MESSAGE_VIEW_ID);
-		
-		
+
+
 		// Overview panels
 		m_overviewTabPane = new JTabbedPane();
 		m_overviewTabPane.addChangeListener(new ChangeListener()
 		{
 			public void stateChanged(ChangeEvent ce)
-			{	
+			{
 				JTabbedPane pane = (JTabbedPane)ce.getSource();
 				int index = pane.getSelectedIndex();
 				CardLayout layout = null;
@@ -189,10 +176,10 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 					m_leftViewId = MESSAGE_VIEW_ID;
 					break;
 				}
-					
+
 			}
 		});
-			
+
 		// Set up splitters
 		JSplitPane horSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		horSplit.setDividerLocation(0.4);
@@ -204,10 +191,10 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 //		vertSplit.setDividerLocation(1.0);
 		vertSplit.setResizeWeight(1.0);
 		m_contentsPanel.add(vertSplit, BorderLayout.CENTER);
-		
+
 		m_unitTypeDialog = new UnitTypeDialog(this, m_overviewTabPane);
 		m_unitTypeDialog.addDialogListener(this);
-		
+
 		m_importCalloutDialog = new ImportCalloutDialog(this);
 		m_importCalloutDialog.addDialogListener(this);
 	}
@@ -223,22 +210,22 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		m_personnelOverviewTable.addMouseListener(new PersonnelTableMouseListener());
 		m_personnelOverviewTable.setTransferHandler(m_personnelTransferHandler);
 		m_personnelOverviewTable.setDragEnabled(true);
-		
+
 		PersonnelOverviewTableEditor personnelRenderer = new PersonnelOverviewTableEditor(this);
 		personnelRenderer.setTable(m_personnelOverviewTable);
-		
+
 		m_personnelOverviewTable.setRowHeight(DiskoButtonFactory.TABLE_BUTTON_SIZE.height + 10);
 		TableColumn column = m_personnelOverviewTable.getColumnModel().getColumn(1);
 		column.setMaxWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width + 10);
 		column = m_personnelOverviewTable.getColumnModel().getColumn(2);
 		column.setPreferredWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width * 3 + 20);
 		column.setMaxWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width * 3 + 20);
-	    
+
 		m_personnelOverviewTable.setTableHeader(null);
-		
+
 		JScrollPane personnelOverviewScrollPane = new JScrollPane(m_personnelOverviewTable);
 		m_overviewTabPane.addTab(getText("Personnel.text"), personnelOverviewScrollPane);
-		
+
 		// Unit
 		UnitOverviewTableModel unitModel = new UnitOverviewTableModel(this);
 		m_unitOverviewTable = new JTable(unitModel);
@@ -246,10 +233,10 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		m_unitOverviewTable.setRowSelectionAllowed(true);
 		m_unitOverviewTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		m_unitOverviewTable.addMouseListener(new UnitTableMouseListener());
-		
+
 		UnitOverviewTableEditor unitRenderer = new UnitOverviewTableEditor(this);
 		unitRenderer.setTable(m_unitOverviewTable);
-		
+
 		m_unitOverviewTable.setRowHeight(DiskoButtonFactory.TABLE_BUTTON_SIZE.height + 10);
 		column = m_unitOverviewTable.getColumnModel().getColumn(1);
 		column.setPreferredWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width + 10);
@@ -257,32 +244,32 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		column = m_unitOverviewTable.getColumnModel().getColumn(2);
 		column.setPreferredWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width * 2 + 15);
 		column.setMaxWidth(DiskoButtonFactory.TABLE_BUTTON_SIZE.width * 2 + 15);
-		
+
 		m_unitOverviewTable.setTableHeader(null);
-        
-		JScrollPane unitOverviewScrollPane = new JScrollPane(m_unitOverviewTable); 
+
+		JScrollPane unitOverviewScrollPane = new JScrollPane(m_unitOverviewTable);
 		m_overviewTabPane.addTab(getText("Unit.text"), unitOverviewScrollPane);
-		
+
 		// Call-out
 		CalloutOverviewTableModel calloutModel = new CalloutOverviewTableModel(this);
 		m_calloutOverviewTable = new JTable(calloutModel);
 		m_calloutOverviewTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		m_calloutOverviewTable.addMouseListener(new CalloutTableMouseListener());
-		
+
 		m_calloutOverviewTable.setRowHeight(DiskoButtonFactory.TABLE_BUTTON_SIZE.height + 10);
 		column = m_calloutOverviewTable.getColumnModel().getColumn(0);
 		column.setPreferredWidth(80);
 		column.setMaxWidth(80);
-		
+
 		m_calloutOverviewTable.setTableHeader(null);
-		
+
 		JScrollPane OverviewScrollPane = new JScrollPane(m_calloutOverviewTable);
 		m_overviewTabPane.addTab(getText("CallOut.text"), OverviewScrollPane);
 	}
-	
+
 	private void initButtons()
 	{
-		m_newPersonnelButton = DiskoButtonFactory.createSmallButton(getText("NewPersonnelButton.text")/*, 
+		m_newPersonnelButton = DiskoButtonFactory.createSmallButton(getText("NewPersonnelButton.text")/*,
 				getText("NewPersonnelButton.icon")*/);
 		m_newPersonnelButton.addActionListener(new ActionListener()
 		{
@@ -292,8 +279,8 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 			}
 		});
 		layoutButton(m_newPersonnelButton);
-		
-		m_newUnitButton = DiskoButtonFactory.createSmallButton(getText("NewUnitButton.text")/*, 
+
+		m_newUnitButton = DiskoButtonFactory.createSmallButton(getText("NewUnitButton.text")/*,
 				getText("NewUnitButton.icon")*/);
 		m_newUnitButton.addActionListener(new ActionListener()
 		{
@@ -303,8 +290,8 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 			}
 		});
 		layoutButton(m_newUnitButton);
-		
-		m_importCalloutButton = DiskoButtonFactory.createSmallButton(getText("ImportCalloutButton.text")/*, 
+
+		m_importCalloutButton = DiskoButtonFactory.createSmallButton(getText("ImportCalloutButton.text")/*,
 			getText("ImportAlertButton.icon")*/);
 		m_importCalloutButton.addActionListener(new ActionListener()
 		{
@@ -314,14 +301,14 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 			}
 		});
 		layoutButton(m_importCalloutButton);
-		
+
 		m_deleteButton = DiskoButtonFactory.createSmallButton("", getText("DeleteButton.icon"));
 		m_deleteButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
 				delete();
-			}	
+			}
 		});
 		layoutButton(m_deleteButton);
 	}
@@ -331,32 +318,32 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 	{
 		return "Enhet";
 	}
-	
+
 	@Override
 	public void activated()
 	{
 		super.activated();
 	}
-	
+
 	@Override
 	public void deactivated()
 	{
 		super.deactivated();
 	}
-	
+
 	@Override
 	public boolean confirmDeactivate()
 	{
 		if(getMsoModel().hasUncommitedChanges())
 		{
 			Object[] dialogOptions = {getText("Yes.text"), getText("No.text")};
-    		int n = JOptionPane.showOptionDialog(this.getApplication().getFrame(), 
-    				getText("UncommittedChanges.text"), 
-    				getText("UncommittedChanges.header"), 
-    				JOptionPane.YES_NO_OPTION, 
-    				JOptionPane.QUESTION_MESSAGE, 
-    				null, 
-    				dialogOptions, 
+    		int n = JOptionPane.showOptionDialog(this.getApplication().getFrame(),
+    				getText("UncommittedChanges.text"),
+    				getText("UncommittedChanges.header"),
+    				JOptionPane.YES_NO_OPTION,
+    				JOptionPane.QUESTION_MESSAGE,
+    				null,
+    				dialogOptions,
     				dialogOptions[0]);
     		return (n == JOptionPane.YES_OPTION);
 		}
@@ -375,39 +362,39 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		{
 			m_personnelLeftDetailsPanel.setPersonnel(null);
 			m_personnelLeftDetailsPanel.updateFieldContents();
-			
+
 			m_personnelBottomDetailsPanel.setPersonnel(null);
 			m_personnelBottomDetailsPanel.updateFieldContents();
-			
+
 			m_newPersonnel = false;
 			m_newPersonnelButton.setSelected(false);
-			
+
 			m_overviewTabPane.setEnabled(true);
 			m_personnelOverviewTable.setEnabled(true);
 		}
-		
+
 		if(m_newUnit)
 		{
 			m_unitDetailsLeftPanel.setUnit(null);
 			m_unitDetailsLeftPanel.updateFieldContents();
-			
+
 			m_newUnit = false;
 			m_newUnitButton.setSelected(false);
-			
+
 			m_overviewTabPane.setEnabled(true);
 		}
-		
+
 		if(m_newCallOut)
 		{
 			m_overviewTabPane.setEnabled(true);
-			
+
 			m_calloutDetailsPanel.setCallOut(null);
 			m_calloutDetailsPanel.updateFieldContents();
-			
+
 			m_newCallOut = false;
 			m_importCalloutButton.setSelected(false);
 		}
-		
+
 		this.getMsoModel().rollback();
 	}
 
@@ -421,7 +408,7 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 			m_personnelAddressBottomPanel.setPersonnel(personnel);
 			m_newPersonnel = false;
 			m_newPersonnelButton.setSelected(false);
-			
+
 			m_overviewTabPane.setEnabled(true);
 			m_personnelOverviewTable.setEnabled(true);
 		}
@@ -431,7 +418,7 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		m_personnelAddressBottomPanel.savePersonnel();
 		m_personnelAddressBottomPanel.setPersonnel(null);
 		m_personnelAddressBottomPanel.updateFieldContents();
-		
+
 		// Check for new unit
 		m_unitDetailsLeftPanel.saveUnit();
 		if(m_newUnit)
@@ -439,31 +426,31 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 			// Unit is set to ready on first commit
 			IUnitIf unit = m_unitDetailsLeftPanel.getUnit();
 			unit.setStatus(UnitStatus.READY);
-			
+
 			m_unitOverviewTable.setEnabled(true);
 			m_newUnitButton.setSelected(false);
 			m_newUnit = false;
 		}
 		m_unitDetailsLeftPanel.setUnit(null);
 		m_unitDetailsLeftPanel.updateFieldContents();
-		
+
 		// Check for new call-out
 		if(m_newCallOut)
 		{
 			m_overviewTabPane.setEnabled(true);
 			m_calloutDetailsPanel.setCallOut(null);
 			m_calloutDetailsPanel.updateFieldContents();
-			
+
 			m_newCallOut = false;
 			m_importCalloutButton.setSelected(false);
 		}
 		m_calloutDetailsPanel.saveCallOut();
 		m_calloutDetailsPanel.setCallOut(null);
 		m_calloutDetailsPanel.updateFieldContents();
-		
+
 		this.getMsoModel().commit();
 	}
-	
+
 	/**
 	 * Set up new personnel creation process
 	 */
@@ -476,27 +463,27 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 			CardLayout layout = (CardLayout)m_leftPanel.getLayout();
 			layout.show(m_leftPanel, PERSONNEL_DETAILS_VIEW_ID);
 			m_leftViewId = PERSONNEL_DETAILS_VIEW_ID;
-			
+
 			 // Personnel address in bottom panel
 			layout = (CardLayout)m_bottomPanel.getLayout();
 			layout.show(m_bottomPanel, PERSONNEL_ADDITIONAL_VIEW_ID);
 //			m_bottomViewId = PERSONNEL_ADDITIONAL_VIEW_ID;
-			
+
 			// View personnel table
 			m_overviewTabPane.setSelectedIndex(0);
-			
+
 			m_personnelLeftDetailsPanel.setPersonnel(null);
 			m_personnelLeftDetailsPanel.updateFieldContents();
 			m_personnelLeftDetailsPanel.setTopLabelText("(" + this.getText("New.text") + ")");
-			
+
 			m_newPersonnel = true;
 			m_newPersonnelButton.setSelected(true);
-			
+
 			m_overviewTabPane.setEnabled(false);
 			m_personnelOverviewTable.setEnabled(false);
 		}
 	}
-	
+
 	/**
 	 * Set up new unit creation process
 	 */
@@ -507,25 +494,25 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		{
 			// View unit table
 			m_overviewTabPane.setSelectedIndex(1);
-			
+
 			// Show message in left and bottom panels
 			m_leftMessageLabel.setText(this.getText("SelectUnitType.text"));
 			CardLayout layout = (CardLayout)m_leftPanel.getLayout();
 			layout.show(m_leftPanel, MESSAGE_VIEW_ID);
-			
+
 			m_bottomMessageLabel.setText(this.getText("SelectUnitType.text"));
 			layout = (CardLayout)m_bottomPanel.getLayout();
 			layout.show(m_bottomPanel, MESSAGE_VIEW_ID);
-			
+
 			// Show type dialog
 			m_unitTypeDialog.setVisible(true);
-			
+
 			m_newUnitButton.setSelected(true);
-			
+
 			m_unitOverviewTable.setEnabled(false);
 		}
 	}
-	
+
 	/**
 	 * Creates call-out and imports personnel
 	 */
@@ -537,7 +524,7 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		m_importCalloutButton.setSelected(true);
 		m_importCalloutDialog.setVisible(true);
 	}
-	
+
 	/**
 	 * Called when delete is pressed, determines what to delete based on the contents of the details panel
 	 */
@@ -552,12 +539,12 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 				//  Confirm delete
 				String[] options = {this.getText("Delete.text"), this.getText("Cancel.text")};
 				int n = JOptionPane.showOptionDialog(
-						this.getApplication().getFrame(), 
+						this.getApplication().getFrame(),
 						this.getText("DeletePersonnel.text"),
 						this.getText("DeletePersonnel.header"),
 						JOptionPane.YES_NO_OPTION,
-						JOptionPane.QUESTION_MESSAGE, 
-						null, 
+						JOptionPane.QUESTION_MESSAGE,
+						null,
 						options,
 						options[0]);
 
@@ -566,17 +553,17 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 					try
 					{
 						PersonnelUtilities.deletePersonnel(personnel);
-						
+
 						// Commit
 						this.getMsoModel().commit();
-					} 
+					}
 					catch (IllegalOperationException e)
 					{
 						//  Can not delete personnel, give error message
 						ErrorDialog error = new ErrorDialog(this.getApplication().getFrame());
 						error.showError(this.getText("CanNotDeletePersonnel.header"),
 								this.getText("CanNotDeletePersonnel.details"));
-					}					
+					}
 				}
 			}
 		}
@@ -589,21 +576,21 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 				//  Confirm delete
 				String[] options = {this.getText("Delete.text"), this.getText("Cancel.text")};
 				int n = JOptionPane.showOptionDialog(
-						this.getApplication().getFrame(), 
+						this.getApplication().getFrame(),
 						this.getText("DeleteUnit.text"),
 						this.getText("DeleteUnit.header"),
-						JOptionPane.YES_NO_OPTION, 
-						JOptionPane.QUESTION_MESSAGE, 
-						null, 
+						JOptionPane.YES_NO_OPTION,
+						JOptionPane.QUESTION_MESSAGE,
+						null,
 						options,
 						options[0]);
-				
+
 				if(n == JOptionPane.YES_OPTION)
 				{
 					try
 					{
 						UnitUtilities.deleteUnit(unit, this);
-						
+
 						m_msoModel.commit();
 					}
 					catch(IllegalOperationException e)
@@ -616,7 +603,7 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 			}
 		}
 	}
-	
+
 	/**
 	 * Sets personnel in detail view, table needs to repaint
 	 * @param personnel
@@ -627,15 +614,15 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		{
 			return;
 		}
-		
+
 		m_personnelLeftDetailsPanel.setPersonnel(personnel);
 		m_personnelLeftDetailsPanel.updateFieldContents();
 		m_personnelAddressBottomPanel.setPersonnel(personnel);
 		m_personnelAddressBottomPanel.updateFieldContents();
-		
+
 		m_personnelOverviewTable.repaint();
 	}
-	
+
 	/**
 	 * Sets personnel in bottom panel
 	 * @param personnel
@@ -646,13 +633,13 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		{
 			return;
 		}
-		
+
 		m_personnelBottomDetailsPanel.setPersonnel(personnel);
 		m_personnelBottomDetailsPanel.updateFieldContents();
 		m_personnelAddressBottomPanel.setPersonnel(personnel);
 		m_personnelAddressBottomPanel.updateFieldContents();
 	}
-	
+
 	/**
 	 * Sets unit in detail view, table needs to repaint
 	 * @param unit
@@ -661,13 +648,13 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 	{
 		m_unitDetailsLeftPanel.setUnit(unit);
 		m_unitDetailsLeftPanel.updateFieldContents();
-		
+
 		m_unitOverviewTable.repaint();
 	}
-	
+
 	/**
 	 * Sets whether personnel, unit or call out panels should be displayed in the left panel
-	 * 
+	 *
 	 * @param viewId
 	 */
 	public void setLeftView(String viewId)
@@ -676,7 +663,7 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		CardLayout layout = (CardLayout)m_leftPanel.getLayout();
 		layout.show(m_leftPanel, viewId);
 	}
-	
+
 	/**
 	 * Select which of the overview tabs that should be shown
 	 * 0 - Personnel
@@ -687,7 +674,7 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 	{
 		m_overviewTabPane.setSelectedIndex(index);
 	}
-	
+
 	/**
 	 * Sets the bottom view panel
 	 * @param viewId
@@ -698,16 +685,16 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		CardLayout layout = (CardLayout)m_bottomPanel.getLayout();
 		layout.show(m_bottomPanel, viewId);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return Personnel that is being edited, if any, otherwise null
 	 */
 	public IPersonnelIf getEditingPersonnel()
 	{
 		return m_leftViewId == PERSONNEL_DETAILS_VIEW_ID ? m_personnelLeftDetailsPanel.getPersonnel() : null;
 	}
-	
+
 	/**
 	 * @return Unit being edited, null if none
 	 */
@@ -715,25 +702,25 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 	{
 		return m_leftViewId == UNIT_VIEW_ID ? m_unitDetailsLeftPanel.getUnit() : null;
 	}
-	
+
 	/**
 	 * Updates personnel details panel based on user selection
-	 * 
+	 *
 	 * @author thomasl
 	 */
 	private class PersonnelTableMouseListener implements MouseListener
 	{
 		public void mouseClicked(MouseEvent e)
-		{	
+		{
 			Point clickedPoint = new Point(e.getX(), e.getY());
 			int clickedColumn = m_personnelOverviewTable.columnAtPoint(clickedPoint);
-			
+
 			int clickedRow = m_personnelOverviewTable.rowAtPoint(clickedPoint);
 			PersonnelOverviewTableModel model = (PersonnelOverviewTableModel)m_personnelOverviewTable.getModel();
 			IPersonnelIf clickedPersonnel = model.getPersonnel(clickedRow);
-			
+
 			int clickCount = e.getClickCount();
-			
+
 			switch(clickedColumn)
 			{
 			case 0:
@@ -747,7 +734,7 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 				}
 				else if(clickCount == 1)
 				{
-					
+
 					if(m_leftViewId.equals(PERSONNEL_DETAILS_VIEW_ID))
 					{
 						// Show personnel details only if personnel panel is showing on single click
@@ -775,10 +762,10 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		public void mousePressed(MouseEvent e){}
 		public void mouseReleased(MouseEvent e){}
 	}
-	
+
 	/**
 	 * Updates unit details panel based on user selection
-	 * 
+	 *
 	 * @author thomasl
 	 */
 	private class UnitTableMouseListener implements MouseListener
@@ -789,13 +776,13 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 			{
 				return;
 			}
-			
+
 			Point clickedPoint = new Point(e.getX(), e.getY());
 			int clickedColumn = m_unitOverviewTable.columnAtPoint(clickedPoint);
 			int clickedRow = m_unitOverviewTable.rowAtPoint(clickedPoint);
 			UnitOverviewTableModel model = (UnitOverviewTableModel)m_unitOverviewTable.getModel();
 			IUnitIf clickedUnit = model.getUnit(clickedRow);
-			
+
 			switch(clickedColumn)
 			{
 			case 0:
@@ -805,17 +792,17 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 					// Show personnel in left detail panel
 					setUnit(clickedUnit);
 					setLeftView(UNIT_VIEW_ID);
-					
+
 					m_bottomMessageLabel.setText(getText("SelectUnitPersonnel.text"));
 				}
 				else if(clickCount == 1)
 				{
-					// Show personnel details only if personnel panel is showing	
+					// Show personnel details only if personnel panel is showing
 					if(m_leftViewId.equals(UNIT_VIEW_ID) || m_leftViewId.equals(MESSAGE_VIEW_ID))
 					{
 						setUnit(clickedUnit);
 						setLeftView(UNIT_VIEW_ID);
-						
+
 						m_bottomMessageLabel.setText(getText("SelectUnitPersonnel.text"));
 					}
 				}
@@ -826,16 +813,16 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 				break;
 			}
 		}
-		
+
 		public void mouseEntered(MouseEvent arg0){}
 		public void mouseExited(MouseEvent arg0){}
 		public void mousePressed(MouseEvent arg0){}
 		public void mouseReleased(MouseEvent arg0){}
 	}
-	
+
 	/**
 	 * Updates callout details panel based on user selection
-	 * 
+	 *
 	 * @author thomasl
 	 */
 	private class CalloutTableMouseListener implements MouseListener
@@ -847,7 +834,7 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 			int index = m_calloutOverviewTable.convertRowIndexToModel(row);
 			CalloutOverviewTableModel model = (CalloutOverviewTableModel)m_calloutOverviewTable.getModel();
 			ICalloutIf callout = model.getCallout(index);
-			
+
 			int clickCount = e.getClickCount();
 			if(clickCount >= 2)
 			{
@@ -855,19 +842,19 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 				CardLayout layout = (CardLayout)m_leftPanel.getLayout();
 				layout.show(m_leftPanel, CALLOUT_VIEW_ID);
 				m_leftViewId = CALLOUT_VIEW_ID;
-				
+
 				m_calloutDetailsPanel.setCallOut(callout);
 				m_calloutDetailsPanel.updateFieldContents();
 			}
 			else if(clickCount == 1)
 			{
-				// Show personnel details only if personnel panel is showing	
+				// Show personnel details only if personnel panel is showing
 				if(m_leftViewId.equals(CALLOUT_VIEW_ID) || m_leftViewId.equals(MESSAGE_VIEW_ID))
 				{
 					CardLayout layout = (CardLayout)m_leftPanel.getLayout();
 					layout.show(m_leftPanel, CALLOUT_VIEW_ID);
 					m_leftViewId = CALLOUT_VIEW_ID;
-					
+
 					m_calloutDetailsPanel.setCallOut(callout);
 					m_calloutDetailsPanel.updateFieldContents();
 				}
@@ -879,7 +866,7 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 		public void mousePressed(MouseEvent e){}
 		public void mouseReleased(MouseEvent e){}
 	}
-	
+
 	/*
 	 * Getters and setters
 	 */
@@ -887,27 +874,27 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 	{
 		return m_newPersonnel;
 	}
-	
+
 	public void setNewPersonnel(boolean newPersonnel)
 	{
 		m_newPersonnel = newPersonnel;
 	}
-	
+
 	public boolean getNewUnit()
 	{
 		return m_newUnit;
 	}
-	
+
 	public void setNewUnit(boolean newUnit)
 	{
 		m_newUnit = newUnit;
 	}
-	
+
 	public boolean getNewCallOut()
 	{
 		return m_newCallOut;
 	}
-	
+
 	public void setNewCallOut(boolean newCallOut)
 	{
 		m_newCallOut = newCallOut;
@@ -933,9 +920,9 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 			m_newUnitButton.setSelected(false);
 			m_unitTypeDialog.setVisible(false);
 		}
-		
+
 	}
-	
+
 	/**
 	 *  Handles unit type selection when creating new unit
 	 */
@@ -972,23 +959,23 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 				newUnit = m_msoModel.getMsoManager().createTeam("");
 				break;
 			}
-			
+
 			if(newUnit != null)
 			{
 				m_newUnit = true;
-				
+
 				newUnit.setStatus(UnitStatus.EMPTY);
-				
+
 				m_unitDetailsLeftPanel.setUnit(newUnit);
 				m_unitDetailsLeftPanel.updateFieldContents();
 				CardLayout layout = (CardLayout)m_leftPanel.getLayout();
 				layout.show(m_leftPanel, UNIT_VIEW_ID);
-				
+
 				m_bottomMessageLabel.setText(this.getText("AddPersonnel.text"));
 				layout = (CardLayout)m_bottomPanel.getLayout();
 				layout.show(m_bottomPanel, MESSAGE_VIEW_ID);
 			}
-			
+
 			m_unitTypeDialog.setVisible(false);
 		}
 	}
@@ -998,6 +985,6 @@ public class DiskoWpUnitImpl extends AbstractDiskoWpModule implements IDiskoWpUn
 	public void reInitWP()
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 }

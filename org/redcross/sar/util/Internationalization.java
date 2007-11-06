@@ -4,10 +4,10 @@ import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IUnitIf;
 
+import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.regex.Pattern;
 /**
  * Created by IntelliJ IDEA.
  * User: vinjar
@@ -25,8 +25,8 @@ public class Internationalization
      * Get international text from a given java.util.ResourceBundle.
      *
      * @param aBundle The ResourceBundle to use
-     * @param aKey Lookup value
-     * @return The found value, or null if not found.
+     * @param aKey    Lookup value
+     * @return The found value, or <code>null</code> if not found.
      */
     public static String getBundleText(ResourceBundle aBundle, String aKey)
     {
@@ -48,7 +48,7 @@ public class Internationalization
      * Get international text from a given java.util.ResourceBundle.
      *
      * @param aBundle The ResourceBundle to use
-     * @param aKey Lookup value
+     * @param aKey    Lookup value
      * @return The found value, or aKey if not found.
      */
     public static String getFullBundleText(ResourceBundle aBundle, String aKey)
@@ -61,7 +61,7 @@ public class Internationalization
      * Get international Enum text from a given java.util.ResourceBundle.
      *
      * @param aBundle The ResourceBundle to use
-     * @param anEnum Lookup value
+     * @param anEnum  Lookup value
      * @return The found value, or Enum.name() if not found.
      */
     public static String getEnumText(ResourceBundle aBundle, Enum anEnum)
@@ -73,12 +73,12 @@ public class Internationalization
 
     /**
      * Translate international text from a given java.util.ResourceBundle.
-     *
+     * <p/>
      * The method shall give the same type of results as {@link org.redcross.sar.app.Utils#translate(Object)}.
      *
      * @param aBundle The ResourceBundle to use
-     * @param obj Lookup value
-     * @return Same as {@link #getEnumText(java.util.ResourceBundle, Enum)} or {@link #getBundleText(java.util.ResourceBundle, String)}, depending on type of obj.
+     * @param obj     Lookup value
+     * @return Same as {@link #getEnumText(java.util.ResourceBundle,Enum)} or {@link #getBundleText(java.util.ResourceBundle,String)}, depending on type of obj.
      */
     public static String translate(ResourceBundle aBundle, Object obj)
     {
@@ -88,42 +88,89 @@ public class Internationalization
         }
         if (obj instanceof Enum)
         {
-            Enum e = (Enum)obj;
-            String key = e.getClass().getSimpleName()+"."+e.name()+".text";
+            Enum e = (Enum) obj;
+            String key = e.getClass().getSimpleName() + "." + e.name() + ".text";
 
             return getEnumText(aBundle, (Enum) obj);
         }
-        String str = obj.toString();
-        String  key = str + ".text";
-        return getBundleText(aBundle,key);
+        return getBundleText(aBundle, obj.toString()+ ".text");
+    }
+
+
+    /**
+     * Get a java.util.ResourceBundle for a given class.
+     *
+     * @param aClass A class or interface that has a defined properties-file. The name of the file (including path) is defined in the public final static field <code>bundleName</code> in the class or interface.
+     * @return The ResourceBundle if defined, otherwise <code>null</code>.
+     *
+     * The loaded bundles are stored in a static Map for later use.
+     */
+    public static ResourceBundle getBundle(Class aClass)
+    {
+        if (aClass == null)
+        {
+            return null;
+        }
+        ResourceBundle retVal = resourceBundles.get(aClass);
+        if (retVal == null)
+        {
+            String bundleName = "";
+            try
+            {
+                Field f = aClass.getField("bundleName");
+                bundleName = (String)f.get(null);
+                retVal = ResourceBundle.getBundle(bundleName);
+            }
+            catch (NoSuchFieldException e)
+            {
+                System.out.println("getBundle: Field 'bundleName' not defined for class " + aClass);
+            }
+            catch (IllegalAccessException e)
+            {
+                System.out.println("getBundle: IllegalAccessException " + e + " for " + aClass);
+            }
+            catch (ClassCastException e)
+            {
+                System.out.println("getBundle: Field 'bundleName' in class " + aClass + " cannot be cast to String");
+            }
+            catch (Exception e)
+            {
+                System.out.println("getBundle: properties-file" + bundleName+ " for " + aClass + " not found or erroneous, error: " + e.getMessage());
+            }
+            finally
+            {
+                resourceBundles.put(aClass,retVal);
+            }
+        }
+        return retVal;
+    }
+
+    /**
+     * Get a java.util.ResourceBundle for a given Enum.
+     *
+     * @param anEnum An enum.
+     * @return The ResourceBundle if defined, otherwise <code>null</code>.
+     *
+     * It is assumed  that the enum is defined in declaring class or interface that has a defined properties-file. See {@link #getBundle(Class)}.
+     */
+    private static ResourceBundle getBundle(Enum anEnum)
+    {
+        return getBundle(anEnum.getClass().getDeclaringClass());
     }
 
     /**
      * Translate international text for an Enum
-     *
+     * <p/>
      * The method shall give the same type of results as {@link org.redcross.sar.app.Utils#translate(Object)}.
      *
      * @param anEnum Lookup value
-     * @return Same as {@link #getEnumText(java.util.ResourceBundle, Enum)} or {@link #getBundleText(java.util.ResourceBundle, String)}, depending on type of obj.
+     * @return Same as {@link #getEnumText(java.util.ResourceBundle,Enum)} or {@link #getBundleText(java.util.ResourceBundle,String)}, depending on type of obj.
      */
 
-    public static String translate (Enum anEnum)
+    public static String translate(Enum anEnum)
     {
-        Class enumClass = anEnum.getClass();
-        ResourceBundle bundle = resourceBundles.get(enumClass);
-        if (bundle == null)
-        { // Determine properties-file from class name. Requires certain naming rules.
-            String className = anEnum.getClass().getName();
-            String simpleName = anEnum.getClass().getSimpleName();
-            String regEx = ".*\\.I\\w*If\\$" + simpleName;
-            if (Pattern.matches(regEx,className))
-            {
-                String bundleName = className.replaceFirst("\\.I",".properties.").replaceFirst("If\\$" + simpleName,"");
-                bundle = ResourceBundle.getBundle(bundleName);
-                resourceBundles.put(enumClass,bundle);
-            }
-        }
-        return translate(bundle,anEnum);
+        ResourceBundle bundle = getBundle(anEnum);
+        return translate(bundle, anEnum);
     }
 
     public static void main(String[] args)
@@ -132,6 +179,5 @@ public class Internationalization
         System.out.println(translate(IAssignmentIf.AssignmentStatus.ABORTED));
         System.out.println(translate(IUnitIf.UnitStatus.INITIALIZING));
         System.out.println(translate(IMsoManagerIf.MsoClassCode.CLASSCODE_ENVIRONMENT));
-
     }
 }

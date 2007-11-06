@@ -5,7 +5,6 @@ import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.MsoCastException;
 
 import java.util.Calendar;
-import java.util.ResourceBundle;
 
 public class PersonnelImpl extends AbstractPerson implements IPersonnelIf
 {
@@ -25,8 +24,6 @@ public class PersonnelImpl extends AbstractPerson implements IPersonnelIf
     private final AttributeImpl.MsoEnum<PersonnelImportStatus> m_importStatus = new AttributeImpl.MsoEnum<PersonnelImportStatus>(this, "ImportStatus", PersonnelImportStatus.UPDATED);
 
     private final MsoReferenceImpl<IPersonnelIf> m_nextOccurence = new MsoReferenceImpl<IPersonnelIf>(this,"NextOccurence",true);
-
-    private final static ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Personnel");
 
     public PersonnelImpl(IMsoObjectIf.IObjectIdIf anObjectId)
     {
@@ -65,15 +62,15 @@ public class PersonnelImpl extends AbstractPerson implements IPersonnelIf
     }
 
     @Override
-    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean addObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
-        super.addObjectReference(anObject, aReferenceName);
+        return super.addObjectReference(anObject, aReferenceName);
     }
 
     @Override
-    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
-        super.removeObjectReference(anObject, aReferenceName);
+        return super.removeObjectReference(anObject, aReferenceName);
     }
 
     public static PersonnelImpl implementationOf(IPersonnelIf anInterface) throws MsoCastException

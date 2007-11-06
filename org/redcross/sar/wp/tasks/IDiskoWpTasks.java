@@ -5,5 +5,7 @@ import org.redcross.sar.wp.IDiskoWpModule;
 
 public interface IDiskoWpTasks extends IDiskoWpModule
 {
-	public void setCurrentTask(ITaskIf task);
+    public final static String bundleName = "org.redcross.sar.wp.tasks.tasks";
+
+    public void setCurrentTask(ITaskIf task);
 }

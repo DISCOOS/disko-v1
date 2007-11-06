@@ -15,6 +15,8 @@ import java.util.Comparator;
  */
 public interface IMessageLineIf extends IMsoObjectIf
 {
+    public static final String bundleName  = "org.redcross.sar.mso.data.properties.MessageLine";
+
     public enum MessageLineType
     {
         TEXT,
@@ -25,7 +27,7 @@ public interface IMessageLineIf extends IMsoObjectIf
         COMPLETE
     }
 
-    public final static Comparator<IMessageLineIf> MESSAGE_LINE_TIME_COMPARATOR = new Comparator<IMessageLineIf>()
+    public static final Comparator<IMessageLineIf> MESSAGE_LINE_TIME_COMPARATOR = new Comparator<IMessageLineIf>()
     {
         public int compare(IMessageLineIf o1, IMessageLineIf o2)
         {
@@ -33,7 +35,7 @@ public interface IMessageLineIf extends IMsoObjectIf
         }
     };
 
-    public final static Comparator<IMessageLineIf> LINE_NUMBER_COMPARATOR = new Comparator<IMessageLineIf>()
+    public static final Comparator<IMessageLineIf> LINE_NUMBER_COMPARATOR = new Comparator<IMessageLineIf>()
     {
         public int compare(IMessageLineIf m1, IMessageLineIf m2)
         {

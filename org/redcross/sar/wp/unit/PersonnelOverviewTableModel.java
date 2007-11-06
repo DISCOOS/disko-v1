@@ -1,12 +1,5 @@
 package org.redcross.sar.wp.unit;
 
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.swing.table.AbstractTableModel;
-
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.IMsoObjectIf;
 import org.redcross.sar.mso.data.IPersonnelIf;
@@ -16,9 +9,15 @@ import org.redcross.sar.mso.event.MsoEvent.Update;
 import org.redcross.sar.util.mso.Selector;
 import org.redcross.sar.wp.IDiskoWpModule;
 
+import javax.swing.table.AbstractTableModel;
+import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Table model for the personnel overview panel
- * 
+ *
  * @author thomasl
  */
 public class PersonnelOverviewTableModel extends AbstractTableModel implements IMsoUpdateListenerIf
@@ -26,7 +25,7 @@ public class PersonnelOverviewTableModel extends AbstractTableModel implements I
 	private static final long serialVersionUID = 1L;
 	private List<IPersonnelIf> m_displayPersonnel;
 	private IDiskoWpModule m_wpModule;
-	
+
 	/**
 	 * Select personnel at the end of the history chain
 	 */
@@ -37,7 +36,7 @@ public class PersonnelOverviewTableModel extends AbstractTableModel implements I
 			return personnel.getNextOccurence() == null;
 		}
 	};
-	
+
 	/**
 	 * Sort personnel on name
 	 */
@@ -48,7 +47,7 @@ public class PersonnelOverviewTableModel extends AbstractTableModel implements I
 			return o1.getFirstname().compareTo(o2.getFirstname());
 		}
 	};
-	
+
 	public PersonnelOverviewTableModel(IDiskoWpUnit wp)
 	{
 		m_wpModule = wp;
@@ -63,7 +62,7 @@ public class PersonnelOverviewTableModel extends AbstractTableModel implements I
     {
     	return null;
     }
-	
+
 	public int getColumnCount()
 	{
 		return 3;
@@ -84,9 +83,9 @@ public class PersonnelOverviewTableModel extends AbstractTableModel implements I
 		}
 		return null;
 	}
-	
+
 	@Override
-	public boolean isCellEditable(int rowIndex, int columnIndex) 
+	public boolean isCellEditable(int rowIndex, int columnIndex)
 	{
 		return columnIndex == 1 || columnIndex == 2;
 	}

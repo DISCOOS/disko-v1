@@ -9,10 +9,8 @@ import org.redcross.sar.util.except.DuplicateIdException;
 import org.redcross.sar.util.except.MsoNullPointerException;
 import org.redcross.sar.util.mso.Position;
 import org.redcross.sar.util.mso.Route;
-import org.redcross.sar.util.mso.Track;
 
 import java.util.Calendar;
-import java.util.ResourceBundle;
 
 /**
  * An implementation of {@link IMsoManagerIf} interface
@@ -20,7 +18,6 @@ import java.util.ResourceBundle;
 public class MsoManagerImpl implements IMsoManagerIf
 {
     OperationImpl m_operation = null;
-    private static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.mso.properties.MsoManager");
 
     public static String getClasscodeText(MsoClassCode aClassCode)
     {
@@ -435,16 +432,6 @@ public class MsoManagerImpl implements IMsoManagerIf
     public ITrackIf createTrack(IMsoObjectIf.IObjectIdIf anObjectId)
     {
         return getExistingCmdPost().getTrackList().createTrack(anObjectId);
-    }
-
-    public ITrackIf createTrack(Track aTrack)
-    {
-        return getExistingCmdPost().getTrackList().createTrack(aTrack);
-    }
-
-    public ITrackIf createTrack(IMsoObjectIf.IObjectIdIf anObjectId, Track aTrack)
-    {
-        return getExistingCmdPost().getTrackList().createTrack(anObjectId, aTrack);
     }
 
     public IVehicleIf createVehicle(String anIdentifier)

@@ -67,38 +67,41 @@ public class BriefingImpl extends AbstractMsoObject implements IBriefingIf
         addReference(m_briefingHypothesis);
     }
 
-    public void addObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean addObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
         if (anObject instanceof IForecastIf)
         {
             m_briefingForecasts.add((IForecastIf) anObject);
-
-        } else
+            return true;
+        }
         if (anObject instanceof IEnvironmentIf)
         {
             m_briefingEnvironments.add((IEnvironmentIf) anObject);
-
-        } else
+            return true;
+        }
         if (anObject instanceof ISubjectIf)
         {
             m_briefingSubjects.add((ISubjectIf) anObject);
+            return true;
         }
+        return false;
     }
 
-    public void removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
+    public boolean removeObjectReference(IMsoObjectIf anObject, String aReferenceName)
     {
         if (anObject instanceof IForecastIf)
         {
-            m_briefingForecasts.removeReference((IForecastIf) anObject);
-        } else
+            return m_briefingForecasts.removeReference((IForecastIf) anObject);
+        }
         if (anObject instanceof IEquipmentIf)
         {
-            m_briefingEnvironments.removeReference((IEnvironmentIf) anObject);
-        } else
+            return m_briefingEnvironments.removeReference((IEnvironmentIf) anObject);
+        }
         if (anObject instanceof ISubjectIf)
         {
-            m_briefingSubjects.removeReference((ISubjectIf) anObject);
+            return m_briefingSubjects.removeReference((ISubjectIf) anObject);
         }
+        return false;
     }
 
     public static BriefingImpl implementationOf(IBriefingIf anInterface) throws MsoCastException
@@ -466,7 +469,7 @@ public class BriefingImpl extends AbstractMsoObject implements IBriefingIf
         return m_briefingEnvironments.getItems();
     }
 
-    public void addBriefingSubject(ISubjectIf anISubjectIf) 
+    public void addBriefingSubject(ISubjectIf anISubjectIf)
     {
         m_briefingSubjects.add(anISubjectIf);
     }

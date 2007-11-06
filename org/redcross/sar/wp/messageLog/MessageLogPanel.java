@@ -51,7 +51,7 @@ public class MessageLogPanel
         m_splitter1.setOrientation(0);
 
         WorkspacePanel.add(m_splitter1, BorderLayout.CENTER);
-        
+
         initTablePanel();
         initMessagePanel();
 
@@ -98,13 +98,13 @@ public class MessageLogPanel
         m_messagePanel = new MessageLogBottomPanel();
         m_messagePanel.setWp(m_wpModule);
         m_messagePanel.initialize(m_logTable);
-        
+
         m_messagePanel.setMinimumSize(new Dimension(PANEL_WIDTH, MessageLogBottomPanel.PANEL_HEIGHT));
         m_messagePanel.setPreferredSize(new Dimension(PANEL_WIDTH, MessageLogBottomPanel.PANEL_HEIGHT));
 
         // Message panel should be informed of updates to MSO-model
         m_wpModule.getMmsoEventManager().addClientUpdateListener(m_messagePanel);
-        
+
         // Let row selection listener update message panel
         m_rowSelectionListener.setPanel(m_messagePanel);
 
@@ -116,7 +116,7 @@ public class MessageLogPanel
     private void initTablePanel()
     {
     	m_tablePanel = new JPanel();
-    	CardLayout layout = new CardLayout();	
+    	CardLayout layout = new CardLayout();
     	m_tablePanel.setLayout(layout);
     	m_tablePanel.setFocusCycleRoot(true);
     	m_splitter1.setLeftComponent(m_tablePanel);
@@ -129,7 +129,7 @@ public class MessageLogPanel
 
         m_logTable = new JTable();
         m_scrollPane1.setViewportView(m_logTable);
-        
+
         m_rowSelectionListener = new MessageRowSelectionListener();
         m_logTable.getSelectionModel().addListSelectionListener(m_rowSelectionListener);
 

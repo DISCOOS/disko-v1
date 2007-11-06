@@ -35,7 +35,7 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 	private JLabel m_timeLabel;
 	private JTextField m_timeTextField;
 	private IDiskoWpMessageLog m_wp;
-	
+
 	private NumPadDialog m_numpad = null;
 	private static final boolean NOTEBOOK_MODE = true;
 
@@ -61,7 +61,7 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 			m_timeTextField.requestFocus();
 		}
 		catch (java.lang.Throwable e){}
-		
+
 		// Initialize numpad
 		if(NOTEBOOK_MODE)
 		{
@@ -193,7 +193,7 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 	public void hideComponent()
 	{
 		this.setVisible(false);
-		
+
 		if(NOTEBOOK_MODE)
 		{
 			m_numpad.setVisible(false);
@@ -206,12 +206,12 @@ public class ChangeDTGDialog extends DiskoDialog implements KeyListener, IEditMe
 	public void showComponent()
 	{
 		this.setVisible(true);
-		
+
 		if(m_createdTextField.getText().isEmpty())
 		{
 			setCreated(Calendar.getInstance());
 		}
-		
+
 		if(NOTEBOOK_MODE)
 		{
 			Point location = m_contentsPanel.getLocationOnScreen();

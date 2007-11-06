@@ -1,45 +1,42 @@
 package org.redcross.sar.wp.unit;
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ResourceBundle;
-
-import javax.swing.AbstractCellEditor;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.JTable;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-
 import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.ErrorDialog;
 import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IUnitIf.UnitStatus;
+import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.IllegalOperationException;
+
+import javax.swing.*;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ResourceBundle;
 
 /**
  * The renderer for unit overview table
- * 
+ *
  * @author thomasl
  */
 public class UnitOverviewTableEditor
 {
-	private static ResourceBundle m_resources = ResourceBundle.getBundle("org.redcross.sar.wp.unit.unit");
+    private static final ResourceBundle m_resources = Internationalization.getBundle(IDiskoWpUnit.class);
+
 	private JTable m_table;
-	
+
 	private IDiskoWpUnit m_wpUnit;
-	
+
 	public UnitOverviewTableEditor(IDiskoWpUnit wp)
 	{
 		m_wpUnit = wp;
 	}
-	
+
 	/**
 	 * Set column renderer and editor. Column widths, as well as table row height
-	 * 
+	 *
 	 * @param unitTable
 	 */
 	public void setTable(JTable unitTable)
@@ -58,26 +55,26 @@ public class UnitOverviewTableEditor
 		column.setCellEditor(unitStatusEditor);
 		column.setCellRenderer(unitStatusEditor);
 	}
-	
+
 	/**
 	 * Cell editor and renderer for the change unit cell in table
-	 * 
+	 *
 	 * @author thomasl
 	 */
 	public class EditUnitCellEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer
 	{
 		private static final long serialVersionUID = 1L;
-		
+
 		private int m_editingRow = -1;
-		
+
 		private JPanel m_panel;
 		private JButton m_editButton;
-		
+
 		public EditUnitCellEditor()
 		{
 			m_panel = new JPanel();
 			m_panel.setBackground(m_table.getBackground());
-			
+
 			m_editButton = DiskoButtonFactory.createTableButton(m_resources.getString("EditButton.letter"));
 			m_editButton.addActionListener(new ActionListener()
 			{
@@ -115,36 +112,36 @@ public class UnitOverviewTableEditor
 			int index = m_table.convertRowIndexToModel(row);
 			UnitOverviewTableModel model = (UnitOverviewTableModel)m_table.getModel();
 			IUnitIf rowUnit = model.getUnit(index);
-			
+
 			// Get editing unit
 			IUnitIf editingUnit = m_wpUnit.getEditingUnit();
-			
+
 			m_editButton.setSelected(editingUnit == rowUnit);
-			
+
 			return m_panel;
 		}
 	}
-	
+
 	/**
 	 * Cell editor and renderer for unit status in the unit table
-	 * 
+	 *
 	 * @author thomasl
 	 */
 	public class UnitStatusCellEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer
 	{
 		private static final long serialVersionUID = 1L;
-		
+
 		private int m_editingRow = -1;
-		
+
 		private JPanel m_panel;
 		private JButton m_pauseButton;
 		private JCheckBox m_releaseCheckButton;
-		
+
 		public UnitStatusCellEditor()
 		{
 			m_panel = new JPanel();
 			m_panel.setBackground(m_table.getBackground());
-			
+
 			m_pauseButton = DiskoButtonFactory.createTableButton(m_resources.getString("PauseButton.letter"));
 			m_pauseButton.addActionListener(new ActionListener()
 			{
@@ -154,7 +151,7 @@ public class UnitOverviewTableEditor
 					int index = m_table.convertRowIndexToModel(m_editingRow);
 					UnitOverviewTableModel model = (UnitOverviewTableModel)m_table.getModel();
 					IUnitIf unit = model.getUnit(index);
-					
+
 					try
 					{
 						UnitUtilities.toggleUnitPause(unit);
@@ -164,19 +161,19 @@ public class UnitOverviewTableEditor
 						{
 							m_wpUnit.getMsoModel().commit();
 						}
-					} 
+					}
 					catch (IllegalOperationException e)
 					{
 						ErrorDialog error = new ErrorDialog(null);
-						error.showError(m_resources.getString("PauseUnitError.header"), 
+						error.showError(m_resources.getString("PauseUnitError.header"),
 								m_resources.getString("PauseUnitError.text"));
-					}	
-					
+					}
+
 					fireEditingStopped();
 				}
 			});
 			m_panel.add(m_pauseButton);
-			
+
 			m_releaseCheckButton = new JCheckBox();
 			m_releaseCheckButton.addActionListener(new ActionListener()
 			{
@@ -186,24 +183,24 @@ public class UnitOverviewTableEditor
 					int index = m_table.convertRowIndexToModel(m_editingRow);
 					UnitOverviewTableModel model = (UnitOverviewTableModel)m_table.getModel();
 					IUnitIf unit = model.getUnit(index);
-			
-					try 
+
+					try
 					{
 						UnitUtilities.releaseUnit(unit);
-						
+
 						// Commit
 						if(!m_wpUnit.getNewUnit())
 						{
 							m_wpUnit.getMsoModel().commit();
 						}
-					} 
+					}
 					catch (IllegalOperationException e1)
 					{
 						ErrorDialog error = new ErrorDialog(null);
-						error.showError(m_resources.getString("ReleaseUnitError.header"), 
+						error.showError(m_resources.getString("ReleaseUnitError.header"),
 								m_resources.getString("ReleaseUnitError.text"));
 					}
-					
+
 					fireEditingStopped();
 				}
 			});
@@ -230,13 +227,13 @@ public class UnitOverviewTableEditor
 			updateCell(row);
 			return m_panel;
 		}
-		
+
 		private void updateCell(int row)
 		{
 			int index = m_table.convertRowIndexToModel(row);
 			UnitOverviewTableModel model = (UnitOverviewTableModel)m_table.getModel();
 			IUnitIf unit = model.getUnit(index);
-			
+
 			// Update buttons
 			m_pauseButton.setSelected(unit.getStatus() == UnitStatus.PAUSED);
 			m_releaseCheckButton.setSelected(unit.getStatus() != UnitStatus.RELEASED);

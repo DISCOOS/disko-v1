@@ -10,6 +10,7 @@ import java.util.Calendar;
  */
 public interface ISearchIf extends IAssignmentIf
 {
+    public static final String bundleName  = "org.redcross.sar.mso.data.properties.Search";
 
     public enum SearchSubType
     {
@@ -31,7 +32,7 @@ public interface ISearchIf extends IAssignmentIf
     public void setSubType(String aSubType);
 
     public SearchSubType getSubType();
-    
+
     public String getSubTypeText();
 
     public IMsoModelIf.ModificationState getSubTypeState();

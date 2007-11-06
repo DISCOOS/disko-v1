@@ -6,7 +6,7 @@ import org.redcross.sar.wp.IDiskoWp;
 import org.redcross.sar.wp.IDiskoWpModule;
 
 public interface IDiskoWpUnit extends IDiskoWpModule, IDiskoWp
-{	
+{
 	/*
 	 * View related
 	 */
@@ -15,20 +15,22 @@ public interface IDiskoWpUnit extends IDiskoWpModule, IDiskoWp
 	public static final String UNIT_VIEW_ID = "UNIT_VIEW";
 	public static final String CALLOUT_VIEW_ID = "CALLOUT_VIEW";
 	public static final String MESSAGE_VIEW_ID = "MESSAGE_VIEW";
-	
-	public void setPersonnelLeft(IPersonnelIf personnel);
+
+    public final static String bundleName = "org.redcross.sar.wp.unit.unit";
+
+    public void setPersonnelLeft(IPersonnelIf personnel);
 	public void setPersonnelBottom(IPersonnelIf personnel);
 	public void setUnit(IUnitIf unit);
 	public void setOverviewPanel(int index);
 	public void setLeftView(String viewId);
 	public void setBottomView(String viewId);
-	
+
 	/*
 	 * Editor objects
 	 */
 	public IPersonnelIf getEditingPersonnel();
 	public IUnitIf getEditingUnit();
-	
+
 	/*
 	 * Getters and setters
 	 */

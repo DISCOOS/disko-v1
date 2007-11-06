@@ -5,6 +5,8 @@ import org.redcross.sar.util.mso.Position;
 
 public interface IPOIIf extends IMsoObjectIf
 {
+    public static final String bundleName  = "org.redcross.sar.mso.data.properties.POI";
+
     public enum POIType
     {
         GENERAL,

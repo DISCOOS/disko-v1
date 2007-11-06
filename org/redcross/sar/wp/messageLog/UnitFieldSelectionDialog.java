@@ -7,7 +7,9 @@ import org.redcross.sar.gui.NumPadDialog;
 import org.redcross.sar.mso.data.AbstractDerivedList;
 import org.redcross.sar.mso.data.ICommunicatorIf;
 import org.redcross.sar.mso.data.IMessageIf;
+import org.redcross.sar.mso.data.IUnitIf;
 import org.redcross.sar.mso.data.IUnitIf.UnitType;
+import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.mso.Selector;
 
 import javax.swing.*;
@@ -47,7 +49,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 
 	private boolean m_senderUnit = true;
 
-	protected ResourceBundle m_unitResources;
+	protected static final ResourceBundle m_unitResources = Internationalization.getBundle(IUnitIf.class);
 
 	/**
 	 * @param messageLog Message log work process
@@ -76,15 +78,6 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		m_contentsPanel.add(Box.createVerticalGlue(), gbc);
 		gbc.gridx++;
 		m_contentsPanel.add(Box.createVerticalGlue(), gbc);
-
-		try
-		{
-			m_unitResources = ResourceBundle.getBundle("org.redcross.sar.mso.data.properties.Unit");
-		}
-		catch(MissingResourceException e)
-		{
-			System.err.println("Unable to load unit resources in UnitSelectionDialog");
-		}
 
 		//this.setModalityType(ModalityType.MODELESS);
 		this.add(m_contentsPanel);
@@ -554,7 +547,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		return m_unitTypeField.getText() + " " + m_unitNumberField.getText();
 	}
 
-	
+
 	/**
 	 * @return Communicator matching fields in dialog, {@code null} otherwise
 	 */
@@ -565,10 +558,10 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		{
 			char prefix = m_unitTypeField.getText().charAt(0);
 			int number = Integer.valueOf(m_unitNumberField.getText());
-			
+
 			for(ICommunicatorIf communicator : m_wp.getMsoManager().getCmdPost().getActiveCommunicators())
 			{
-				if(communicator.getCommunicatorNumber() == number && 
+				if(communicator.getCommunicatorNumber() == number &&
 						communicator.getCommunicatorNumberPrefix() == prefix)
 				{
 					sender = communicator;

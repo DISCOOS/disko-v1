@@ -1,29 +1,24 @@
 package org.redcross.sar.wp.messageLog;
 
-import java.util.LinkedList;
-import java.util.List;
+import org.redcross.sar.map.MapUtil;
+import org.redcross.sar.mso.data.*;
+import org.redcross.sar.util.mso.DTG;
+import org.redcross.sar.util.mso.Position;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
-
-import org.redcross.sar.mso.data.IAssignmentIf;
-import org.redcross.sar.mso.data.ICommunicatorIf;
-import org.redcross.sar.mso.data.IMessageIf;
-import org.redcross.sar.mso.data.IMessageLineIf;
-import org.redcross.sar.mso.data.IPOIIf;
-import org.redcross.sar.util.mso.DTG;
-import org.redcross.sar.util.mso.Position;
-import org.redcross.sar.map.MapUtil;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Table model for displaying message lines at top level edit panel
- * 
+ *
  * @author thomasl
  */
 public class LineListTableModel extends AbstractTableModel
 {
-	private static final long serialVersionUID = 1L;
-	
+	private final static long serialVersionUID = 1L;
+
 	protected List<IMessageLineIf> m_messageLines = null;
 	protected IDiskoWpMessageLog m_wpMessageLog = null;
 
@@ -33,20 +28,20 @@ public class LineListTableModel extends AbstractTableModel
 	public LineListTableModel(IDiskoWpMessageLog wp)
 	{
 		m_messageLines = new LinkedList<IMessageLineIf>();
-		
+
 		m_wpMessageLog = wp;
 	}
-	
+
 	/**
 	 * Returns number of columns, always 1
 	 */
-	public int getColumnCount() 
+	public int getColumnCount()
 	{
 		return 1;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	@Override
 	public String getColumnName(int column)
@@ -57,7 +52,7 @@ public class LineListTableModel extends AbstractTableModel
 	/**
 	 * Returns number of rows, which is the number of message lines in the model
 	 */
-	public int getRowCount() 
+	public int getRowCount()
 	{
 		return m_messageLines.size();
 	}
@@ -65,7 +60,7 @@ public class LineListTableModel extends AbstractTableModel
 	/**
 	 * {@link TableModel#getValueAt(int, int)}
 	 */
-	public Object getValueAt(int rowIndex, int coulumnIndex) 
+	public Object getValueAt(int rowIndex, int coulumnIndex)
 	{
 		if(m_messageLines.isEmpty())
 		{
@@ -103,7 +98,7 @@ public class LineListTableModel extends AbstractTableModel
 							String x = mgrs.subSequence(5, 10).toString();
 							String y = mgrs.subSequence(10, 15).toString();
 							// get text
-							lineText = String.format(m_wpMessageLog.getText("ListItemPOI.text"), 
+							lineText = String.format(m_wpMessageLog.getText("ListItemPOI.text"),
 									receiver, zone, square, x, y, DTG.CalToDTG(line.getOperationTime()));
 						}
 						catch (Exception e) {
@@ -130,7 +125,7 @@ public class LineListTableModel extends AbstractTableModel
 							String x = mgrs.subSequence(5, 10).toString();
 							String y = mgrs.subSequence(10, 15).toString();
 							// get text
-							lineText = String.format(m_wpMessageLog.getText("ListItemFinding.text"), 
+							lineText = String.format(m_wpMessageLog.getText("ListItemFinding.text"),
 									type, zone, square, x, y);
 						}
 						catch (Exception e) {
@@ -163,7 +158,7 @@ public class LineListTableModel extends AbstractTableModel
 			}
 			break;
 			}
-			
+
 			return lineText;
 		}
 	}
@@ -184,7 +179,7 @@ public class LineListTableModel extends AbstractTableModel
 	{
 		m_messageLines.add(messageLine);
 	}
-	
+
 	/**
 	 * Get a message line from the list model
 	 * @param index Line number
@@ -194,5 +189,5 @@ public class LineListTableModel extends AbstractTableModel
 	{
 		return m_messageLines.get(index);
 	}
-	
+
 }

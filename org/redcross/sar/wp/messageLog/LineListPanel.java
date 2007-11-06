@@ -15,7 +15,7 @@ import java.awt.*;
  */
 public class LineListPanel extends JPanel implements IEditMessageComponentIf
 {
-	private static final long serialVersionUID = 1L;
+	private final static long serialVersionUID = 1L;
 
 	private JTable m_messageListTable;
 	private LineListTableModel m_messageTableModel;

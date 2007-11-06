@@ -20,7 +20,7 @@ public class UnitOverviewTableModel extends AbstractTableModel implements IMsoUp
 	private static final long serialVersionUID = 1L;
 
 	private List<IUnitIf> m_units;
-	
+
 	private IDiskoWpModule m_wpModule;
 
 	private static final Selector<IUnitIf> m_unitSelector = new Selector<IUnitIf>()
@@ -49,7 +49,7 @@ public class UnitOverviewTableModel extends AbstractTableModel implements IMsoUp
 	public UnitOverviewTableModel(IDiskoWpUnit wp)
 	{
 		m_wpModule = wp;
-		
+
 		m_wpModule.getMsoModel().getEventManager().addClientUpdateListener(this);
 		m_units = new LinkedList<IUnitIf>();
 		// todo use linked list directly

@@ -11,12 +11,13 @@ import org.redcross.sar.map.IDiskoMapManager;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.output.DiskoReport;
+import org.redcross.sar.util.Internationalization;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -30,9 +31,10 @@ import java.util.ResourceBundle;
 /**
  * @author geira
  */
-public class DiskoApplicationImpl extends JFrame implements IDiskoApplication, WindowListener 
+public class DiskoApplicationImpl extends JFrame implements IDiskoApplication, WindowListener
 {
-   private static final ResourceBundle bundle = ResourceBundle.getBundle("org.redcross.sar.app.properties.DiskoApplication");
+   public final static String bundleName ="org.redcross.sar.app.properties.DiskoApplication";
+   private static final ResourceBundle bundle = Internationalization.getBundle(DiskoApplicationImpl.class);
    private static final String CONFIRMATION_TEXT = "CONFIRMATION.TEXT";
    private static final String CONFIRMATION_TITLE = "CONFIRMATION.HEADER";
    private static final String CHOOSEOPDESC = "CHOOSE.OP.DESC";
@@ -276,7 +278,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication, W
       }
       return m_msoModel;
    }
-   
+
    public DiskoReport getDiskoReport(){
  	   return this.diskoReport;
    }
@@ -320,7 +322,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication, W
    public void windowStateChanged(WindowEvent e) {
        // NOP
    }
-   
+
    /* (non-Javadoc)
    * @see org.redcross.sar.app.IDiskoApplication#chooseActiveOperation()
    */
@@ -376,7 +378,7 @@ public class DiskoApplicationImpl extends JFrame implements IDiskoApplication, W
                 options[0]);
 
         if(ans==JOptionPane.YES_OPTION) {
-            shutdown();        	
+            shutdown();
         }
         else {
         	if(ans==JOptionPane.NO_OPTION) {
