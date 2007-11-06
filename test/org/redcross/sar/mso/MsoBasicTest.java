@@ -3,6 +3,7 @@ package org.redcross.sar.mso;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.redcross.sar.mso.data.*;
+import org.redcross.sar.mso.data.IAssignmentIf.AssignmentStatus;
 import org.redcross.sar.mso.event.IMsoEventManagerIf;
 import org.redcross.sar.util.except.DuplicateIdException;
 import org.redcross.sar.util.except.IllegalOperationException;
@@ -14,6 +15,7 @@ import org.redcross.sar.util.mso.Selector;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Vector;
 
 /**
  *
@@ -50,19 +52,20 @@ public class MsoBasicTest
         msoTestUnits();
         msoTestLists();
         msoTestSubLists();
-        msoTestReferences();
         msoTestTimeLine();
         msoTestAssignments();
         msoTestRollbackOrCommit(true);
         msoTestRollbackOrCommit(false);
         m_msoModel.restoreUpdateMode();
+        msoTestReferences();
+        msoTestObjectNumbering();
     }
 
     public void msoModelTestCreate()
     {
         try
         {
-            IOperationIf operationA = m_msoManager.createOperation("2007-TEST","0001");
+            IOperationIf operationA = m_msoManager.createOperation("2007-TEST", "0001");
             assertNotNull(operationA);
             IOperationIf operationB = m_msoManager.getOperation();
             assertEquals(operationA, operationB);
@@ -292,7 +295,7 @@ public class MsoBasicTest
         UnitListImpl myUnitList = new UnitListImpl(null, "MyTestList", false);
         UnitListImpl myOtherUnitList = new UnitListImpl(null, "MyTestList", false);
 
-        assertEquals(myUnitList,myOtherUnitList);
+        assertEquals(myUnitList, myOtherUnitList);
 
         IAssignmentListIf assignmentList = cmdPost.getAssignmentList();
         assertNotNull(assignmentList);
@@ -325,20 +328,20 @@ public class MsoBasicTest
             myUnitList.add(vUnit1);
             assertFalse(myUnitList.equals(myOtherUnitList));
             myOtherUnitList.add(vUnit1);
-            assertEquals(myUnitList,myOtherUnitList);
+            assertEquals(myUnitList, myOtherUnitList);
             myCount++;
 
             AbstractUnit aUnit1 = (AbstractUnit) vUnit1;
 
             IAssignmentIf assign11 = assignmentList.createAssignment();
-            assign11.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY,null);
-            vUnit1.addUnitAssignment(assign11,IAssignmentIf.AssignmentStatus.ALLOCATED);
+            assign11.setStatusAndOwner(AssignmentStatus.READY, null);
+            vUnit1.addUnitAssignment(assign11, IAssignmentIf.AssignmentStatus.ALLOCATED);
             assertEquals(assign11.getOwningUnit(), vUnit1);
             int vmCount1 = 1;
             IAssignmentIf assign12 = assignmentList.createAssignment();
-            assign12.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY,null);
+            assign12.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY, null);
             assertNull(assign12.getOwningUnit());
-            vUnit1.addUnitAssignment(assign12,IAssignmentIf.AssignmentStatus.ALLOCATED);
+            vUnit1.addUnitAssignment(assign12, IAssignmentIf.AssignmentStatus.ALLOCATED);
             assertEquals(assign12.getOwningUnit(), vUnit1);
             vmCount1++;
             assertEquals(aUnit1.getUnitAssignmentsItems().size(), vmCount1);
@@ -350,8 +353,8 @@ public class MsoBasicTest
 
             IAssignmentIf assign13 = assignmentList.createAssignment();
             AssignmentImpl misImpl13 = (AssignmentImpl) assign13;
-            assign13.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY,null);
-            vUnit1.addUnitAssignment(assign13,IAssignmentIf.AssignmentStatus.ALLOCATED);
+            assign13.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY, null);
+            vUnit1.addUnitAssignment(assign13, IAssignmentIf.AssignmentStatus.ALLOCATED);
             vmCount1++;
             assertEquals(aUnit1.getUnitAssignmentsItems().size(), vmCount1);
             assertEquals(misImpl13.listenerCount(), 2);
@@ -445,8 +448,8 @@ public class MsoBasicTest
 
         try
         {
-            assign11.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY,null);
-            vUnit1.addUnitAssignment(assign11,IAssignmentIf.AssignmentStatus.ALLOCATED);
+            assign11.setStatusAndOwner(IAssignmentIf.AssignmentStatus.READY, null);
+            vUnit1.addUnitAssignment(assign11, IAssignmentIf.AssignmentStatus.ALLOCATED);
         }
         catch (DuplicateIdException e)
         {
@@ -584,7 +587,6 @@ public class MsoBasicTest
         vUnit2.setStatus(IUnitIf.UnitStatus.READY);
 
 
-
         try
         {
             assign11.setPlannedArea(area11);
@@ -600,10 +602,10 @@ public class MsoBasicTest
 
         try
         {
-            assign11.setStatusAndOwner("DRAFT",null);
-            assign11.setStatusAndOwner("READY",null);
-            vUnit1.addUnitAssignment(assign11,IAssignmentIf.AssignmentStatus.ALLOCATED);
-            vUnit2.addUnitAssignment(assign11,IAssignmentIf.AssignmentStatus.ASSIGNED);
+            assign11.setStatusAndOwner("DRAFT", null);
+            assign11.setStatusAndOwner("READY", null);
+            vUnit1.addUnitAssignment(assign11, IAssignmentIf.AssignmentStatus.ALLOCATED);
+            vUnit2.addUnitAssignment(assign11, IAssignmentIf.AssignmentStatus.ASSIGNED);
         }
         catch (IllegalOperationException e)
         {
@@ -614,9 +616,9 @@ public class MsoBasicTest
         assertFalse(assign11.hasBeenFinished());
         try
         {
-            assign11.setStatusAndOwner("EXECUTING",vUnit1);
-            assign11.setStatusAndOwner("FINISHED",vUnit1);
-            assign11.setStatusAndOwner("REPORTED",vUnit1);
+            assign11.setStatusAndOwner("EXECUTING", vUnit1);
+            assign11.setStatusAndOwner("FINISHED", vUnit1);
+            assign11.setStatusAndOwner("REPORTED", vUnit1);
         }
         catch (IllegalOperationException e)
         {
@@ -744,4 +746,110 @@ public class MsoBasicTest
             }
         }
     }
+
+    public void msoTestObjectNumbering()
+    {
+        final int vehicleCount = 10;
+        final int dogCount = 15;
+        final int commonCount = 15;
+        ICmdPostIf cmdPost = m_msoManager.getCmdPost();
+        IHierarchicalUnitIf koUnit = m_msoManager.getCmdPostUnit();
+        IUnitListIf unitList = cmdPost.getUnitList();
+        UnitListImpl unitListImpl = (UnitListImpl) unitList;
+        assertNotNull(unitList);
+
+        unitListImpl.clear();
+
+        m_msoModel.setLocalUpdateMode();
+        Vector<IUnitIf> unitVector1 = new Vector<IUnitIf>();
+        for (int i = 0; i < vehicleCount; i++)
+        {
+            unitVector1.add(unitList.createVehicle("V" + i));
+            assertEquals(unitVector1.get(i).getNumber(), i + 1);
+        }
+
+        for (int i = 0; i < dogCount; i++)
+        {
+            unitVector1.add(unitList.createDog("D" + i));
+            assertEquals(unitVector1.get(i + vehicleCount).getNumber(), i + 1);
+        }
+        m_msoModel.setRemoteUpdateMode();
+        int Vx = 2;
+        IUnitIf vUnitX = unitList.createVehicle("VX");
+        vUnitX.setNumber(Vx + 1);
+        int Dx = 5;
+        IUnitIf dUnitX = unitList.createDog("DX");
+        dUnitX.setNumber(Dx + 1);
+        m_msoModel.restoreUpdateMode();
+        assertEquals(vUnitX.getNumber(), Vx + 1);
+        assertEquals(dUnitX.getNumber(), Dx + 1);
+        for (int i = 0; i < vehicleCount; i++)
+        {
+            if (i < Vx)
+            {
+                assertEquals(unitVector1.get(i).getNumber(), i + 1);
+            } else
+            {
+                assertEquals(unitVector1.get(i).getNumber(), i + 2);
+            }
+        }
+        for (int i = 0; i < dogCount; i++)
+        {
+            if (i < Dx)
+            {
+                assertEquals(unitVector1.get(i + vehicleCount).getNumber(), i + 1);
+            } else
+            {
+                assertEquals(unitVector1.get(i + vehicleCount).getNumber(), i + 2);
+            }
+        }
+        m_msoModel.restoreUpdateMode();
+        m_msoModel.commit();
+
+        unitListImpl.clear();
+
+        m_msoModel.setLocalUpdateMode();
+        Vector<IUnitIf> unitVector2 = new Vector<IUnitIf>();
+        for (int i = 0; i < commonCount; i++)
+        {
+            unitVector2.add(unitList.createVehicle("V" + i));
+            assertEquals(unitVector2.get(i * 2).getNumber(), i + 1);
+            unitVector2.add(unitList.createDog("D" + i));
+            assertEquals(unitVector2.get(i * 2 + 1).getNumber(), i + 1);
+        }
+
+        m_msoModel.setRemoteUpdateMode();
+        int Vy = 2;
+        IUnitIf vUnitY = unitList.createVehicle("VX");
+        vUnitY.setNumber(Vy + 1);
+        int Dy = 5;
+        IUnitIf dUnitY = unitList.createDog("DX");
+        dUnitY.setNumber(Dy + 1);
+        m_msoModel.restoreUpdateMode();
+        assertEquals(vUnitY.getNumber(), Vy + 1);
+        assertEquals(dUnitY.getNumber(), Dy + 1);
+        for (int i = 0; i < commonCount; i++)
+        {
+            if (i < Vy)
+            {
+                assertEquals(unitVector2.get(i * 2).getNumber(), i + 1);
+            } else
+            {
+                assertEquals(unitVector2.get(i * 2).getNumber(), i + 2);
+            }
+            if (i < Dy)
+            {
+                assertEquals(unitVector2.get(i * 2 + 1).getNumber(), i + 1);
+            } else
+            {
+                assertEquals(unitVector2.get(i * 2 + 1).getNumber(), i + 2);
+            }
+        }
+        m_msoModel.restoreUpdateMode();
+        m_msoModel.commit();
+
+
+    }
+
+
 }
