@@ -1,5 +1,6 @@
 package org.redcross.sar.wp.messageLog;
 
+import no.cmr.tools.Log;
 import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.DiskoButtonFactory.ButtonType;
 import org.redcross.sar.gui.NumPadDialog;
@@ -535,7 +536,7 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
         m_editingLine = (IMessageLineIf) model.getElementAt(selectedAssignment);
         if (m_editingLine == null)
         {
-            System.err.println("edit line null");
+            Log.error("showEditAssignment: edit line null");
             return;
         }
         IAssignmentIf assignment = m_editingLine.getLineAssignment();

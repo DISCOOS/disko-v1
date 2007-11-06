@@ -1,5 +1,6 @@
 package org.redcross.sar.wp.messageLog;
 
+import no.cmr.tools.Log;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.DiskoDialog;
@@ -63,51 +64,46 @@ public class UnitTypeDialog extends DiskoDialog implements IEditMessageComponent
 
 		try
 		{
-			ResourceBundle resources = Internationalization.getBundle(IUnitIf.class);
+            ResourceBundle bundle = Internationalization.getBundle(IUnitIf.class);
+            if (bundle == null)
+            {
+                return;
+            }
 
-			m_aircraftButton = addButton(resources.getString("UnitType.AIRCRAFT.text"),
-					resources.getString("UnitType.AIRCRAFT.letter"),
-					resources.getString("UnitType.AIRCRAFT.icon"),
-					UnitType.AIRCRAFT);
+            m_aircraftButton = addButton(bundle,UnitType.AIRCRAFT);
 			m_buttons.add(m_aircraftButton);
 
-			m_boatButton = addButton(resources.getString("UnitType.BOAT.text"),
-					resources.getString("UnitType.BOAT.letter"),
-					resources.getString("UnitType.BOAT.icon"),
-					UnitType.BOAT);
+			m_boatButton = addButton(bundle, UnitType.BOAT);
 			m_buttons.add(m_boatButton);
 
-			m_dogButton = addButton(resources.getString("UnitType.DOG.text"),
-					resources.getString("UnitType.DOG.letter"),
-					resources.getString("UnitType.DOG.icon"),
-					UnitType.DOG);
+			m_dogButton = addButton(bundle, UnitType.DOG);
 			m_buttons.add(m_dogButton);
 
-			m_vehicleButton = addButton(resources.getString("UnitType.VEHICLE.text"),
-					resources.getString("UnitType.VEHICLE.letter"),
-					resources.getString("UnitType.VEHICLE.icon"),
-					UnitType.VEHICLE);
+			m_vehicleButton = addButton(bundle, UnitType.VEHICLE);
 			m_buttons.add(m_vehicleButton);
 
-			m_teamButton = addButton(resources.getString("UnitType.TEAM.text"),
-					resources.getString("UnitType.TEAM.letter"),
-					resources.getString("UnitType.TEAM.icon"),
-					UnitType.TEAM);
+			m_teamButton = addButton(bundle, UnitType.TEAM);
 			m_buttons.add(m_teamButton);
 
-			m_commandPostButton = addButton(resources.getString("UnitType.COMMAND_POST.text"),
-					resources.getString("UnitType.COMMAND_POST.letter"),
-					resources.getString("UnitType.COMMAND_POST.icon"),
-					UnitType.COMMAND_POST);
+			m_commandPostButton = addButton(bundle, UnitType.COMMAND_POST);
 			m_buttons.add(m_commandPostButton);
 		}
 		catch(MissingResourceException e)
 		{
-			System.err.println("Could not find unit resource file");
+			Log.error("Could not find unit properties file");
 		}
 	}
 
-	private JButton addButton(String name, final String unitTypeLetter, String iconPath, UnitType unitType)
+    private JButton addButton(ResourceBundle bundle, UnitType unitType) throws MissingResourceException
+    {
+        String unitName = unitType.name();
+        String unitText = bundle.getString("UnitType." +unitName + ".text");
+        String unitLetter = bundle.getString("UnitType." +unitName + ".letter");
+        String unitIcon = bundle.getString("UnitType." +unitName + ".icon");
+        return addButton(unitText,unitLetter,unitIcon,unitType);
+    }
+
+    private JButton addButton(String name, final String unitTypeLetter, String iconPath, UnitType unitType)
 	{
 		JButton button = DiskoButtonFactory.createSmallButton();
 		button.setActionCommand(unitType.name());
@@ -118,7 +114,7 @@ public class UnitTypeDialog extends DiskoDialog implements IEditMessageComponent
 		}
 		catch (Exception e)
 		{
-			System.err.println("Error getting icon: " + iconPath + " in UnitTypeDialog");
+			Log.error("Error getting icon: " + iconPath + " in UnitTypeDialog");
 		}
 
 		// Let the buttons manipulate the text field, setting the contents to the unit type code
@@ -132,7 +128,7 @@ public class UnitTypeDialog extends DiskoDialog implements IEditMessageComponent
 				}
 				else
 				{
-					System.err.println("Text-field not set");
+					Log.error(" UnitTypeDialog.addButton: Text-field not set");
 				}
 			}
 		});

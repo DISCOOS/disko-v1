@@ -372,8 +372,6 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
 			IMessageIf message = m_messageList.get(i);
 			Boolean expanded = m_rowExpandedMap.get(message.getObjectId());
 
-            System.out.println("rowh" + i + " " + expanded);
-
             if(expanded)
 			{
 				setRowExpanded(i);
@@ -395,7 +393,6 @@ public class LogTableModel extends AbstractTableModel implements IMsoUpdateListe
 		int defaultRowHeight = 18; //m_messageTable.getRowHeight();
 		int numRows = numRows(rowIndex);
 		int rowHeight = defaultRowHeight * numRows + (numRows - 1) * 2 + 4;
-        System.out.println("rowExp" + rowIndex + " " + rowHeight);
         m_table.setRowHeight(rowIndex, rowHeight);
 	}
 

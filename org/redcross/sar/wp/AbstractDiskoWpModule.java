@@ -298,19 +298,7 @@ public abstract class AbstractDiskoWpModule implements IDiskoWpModule
 
     public String getText(String aKey)
     {
-        if (wpBundle == null)
-        {
-            return aKey;
-        }
-        try
-        {
-            String retVal = wpBundle.getString(aKey);
-            return retVal != null ? retVal : aKey;
-        }
-        catch (Exception e)
-        {
-            return aKey;
-        }
+        return Internationalization.getFullBundleText(wpBundle,aKey);
     }
 
     protected void assignWpBundle(Class aClass)

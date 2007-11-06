@@ -1,5 +1,6 @@
 package org.redcross.sar.util;
 
+import no.cmr.tools.Log;
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IUnitIf;
@@ -123,19 +124,19 @@ public class Internationalization
             }
             catch (NoSuchFieldException e)
             {
-                System.out.println("getBundle: Field 'bundleName' not defined for class " + aClass);
+                Log.error("getBundle: Field 'bundleName' not defined for class " + aClass);
             }
             catch (IllegalAccessException e)
             {
-                System.out.println("getBundle: IllegalAccessException " + e + " for " + aClass);
+                Log.error("getBundle: IllegalAccessException " + e + " for " + aClass);
             }
             catch (ClassCastException e)
             {
-                System.out.println("getBundle: Field 'bundleName' in class " + aClass + " cannot be cast to String");
+                Log.error("getBundle: Field 'bundleName' in class " + aClass + " cannot be cast to String");
             }
             catch (Exception e)
             {
-                System.out.println("getBundle: properties-file" + bundleName+ " for " + aClass + " not found or erroneous, error: " + e.getMessage());
+                Log.error("getBundle: properties-file" + bundleName+ " for " + aClass + " not found or erroneous, error: " + e.getMessage());
             }
             finally
             {

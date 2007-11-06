@@ -54,43 +54,6 @@ public class MessageLogPanel
 
         initTablePanel();
         initMessagePanel();
-
-// todo delete-test. shall be removed.
-
-//        IMessageIf m = m_messageLog.selectSingleItem(new Selector<IMessageIf>()
-//        {
-//            public boolean select(IMessageIf anObject)
-//            {
-//                return anObject.getNumber() == 82;
-//            }
-//        });
-//
-//        if (m != null)
-//        {
-//            boolean  d;
-//            IMessageLineIf ml  = m.getMessageLines().getItem();
-//            while (ml != null)
-//            {
-//                d = ml.deleteObject();
-//                System.out.println("Deleted line" + ml + ":" + d);
-//                ml  = m.getMessageLines().getItem();
-//            }
-//
-//            ITaskIf t = m.getMessageTasks().getItem();
-//            while (t != null)
-//            {
-//                d = t.deleteObject();
-//                System.out.println("Deleted task" + t + ":" + d);
-//                t = m.getMessageTasks().getItem();
-//            }
-//
-//            d = m.deleteObject();
-//            System.out.println("Deleted message" + m + ":" + d);
-//            m_wpModule.getMsoModel().commit();
-//        }
-
-
-//        m_splitter1.setDividerLocation(m_topPanel.getHeight());
     }
 
     private void initMessagePanel()

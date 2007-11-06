@@ -1,5 +1,6 @@
 package org.redcross.sar.wp.messageLog;
 
+import no.cmr.tools.Log;
 import org.redcross.sar.gui.DiskoButtonFactory;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.TaskDialog;
@@ -167,7 +168,7 @@ public class ChangeTasksDialog extends DiskoDialog implements IEditMessageCompon
 				{
 					if(!task.deleteObject())
 					{
-						System.err.println("Error removing task");
+						Log.error("Error removing task " + task);
 					}
 				}
 			}

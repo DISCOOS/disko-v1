@@ -1,5 +1,6 @@
 package org.redcross.sar.wp.messageLog;
 
+import no.cmr.tools.Log;
 import org.redcross.sar.app.Utils;
 import org.redcross.sar.gui.DiskoDialog;
 import org.redcross.sar.gui.ErrorDialog;
@@ -277,53 +278,56 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 		}
 		catch(MissingResourceException e)
 		{
-			System.err.println("Error getting unit resource");
+			Log.error("Error getting unit resource");
 		}
 
 
 		return null;
 	}
 
-	protected String getUnitTypeString(UnitType unitType)
-	{
-		try
-		{
-			if(unitType == UnitType.AIRCRAFT)
-			{
-				return m_unitResources.getString("UnitType.AIRCRAFT.letter");
-			}
-			else if(unitType == UnitType.BOAT)
-			{
-				return m_unitResources.getString("UnitType.BOAT.letter");
-			}
-			else if(unitType == UnitType.COMMAND_POST)
-			{
-				return m_unitResources.getString("UnitType.COMMAND_POST.letter");
-			}
-			else if(unitType == UnitType.DOG)
-			{
-				return m_unitResources.getString("UnitType.DOG.letter");
-			}
-			else if(unitType == UnitType.TEAM)
-			{
-				return m_unitResources.getString("UnitType.TEAM.letter");
-			}
-			else if(unitType == UnitType.VEHICLE)
-			{
-				return m_unitResources.getString("UnitType.VEHICLE.letter");
-			}
-			else
-			{
-				return null;
-			}
-		}
-		catch(MissingResourceException e)
-		{
-			System.err.println("Missing unit resource file");
-			return null;
-		}
-	}
-
+//  todo rwmove?
+//	protected String getUnitTypeString(UnitType unitType)
+//	{
+//		try
+//		{
+//            String unitTypeString = "UnitType." + unitType.name() + ".letter";
+//            String s = Internationalization.getFullBundleText(m_unitResources,unitTypeString);
+//            if(unitType == UnitType.AIRCRAFT)
+//			{
+//				return m_unitResources.getString("UnitType.AIRCRAFT.letter");
+//			}
+//			else if(unitType == UnitType.BOAT)
+//			{
+//				return m_unitResources.getString("UnitType.BOAT.letter");
+//			}
+//			else if(unitType == UnitType.COMMAND_POST)
+//			{
+//				return m_unitResources.getString("UnitType.COMMAND_POST.letter");
+//			}
+//			else if(unitType == UnitType.DOG)
+//			{
+//				return m_unitResources.getString("UnitType.DOG.letter");
+//			}
+//			else if(unitType == UnitType.TEAM)
+//			{
+//				return m_unitResources.getString("UnitType.TEAM.letter");
+//			}
+//			else if(unitType == UnitType.VEHICLE)
+//			{
+//				return m_unitResources.getString("UnitType.VEHICLE.letter");
+//			}
+//			else
+//			{
+//				return null;
+//			}
+//		}
+//		catch(MissingResourceException e)
+//		{
+//			Log.error("Missing unit resource file");
+//			return null;
+//		}
+//	}
+//
 	public void showComponent()
 	{
 		this.setVisible(true);
@@ -409,7 +413,7 @@ public class UnitFieldSelectionDialog extends DiskoDialog implements IEditMessag
 			}
 			else
 			{
-				System.err.println("Unit type or unit number is invalid");
+				Log.error("Unit type or unit number is invalid");
 			}
 		}
 	}
