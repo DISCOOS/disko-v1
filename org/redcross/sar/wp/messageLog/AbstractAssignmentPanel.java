@@ -407,7 +407,7 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
         {
             return;
         }
-        Collection<IAssignmentIf> assignments = cmdPost.getAssignmentList().selectItems(m_assignmentPoolSelector, null);
+        Collection<IAssignmentIf> assignments = cmdPost.getAssignmentList().selectItems(m_assignmentPoolSelector);
         int i = 0;
         int numButtonsInRow = m_assignmentPoolButtonPanel.getWidth() / DiskoButtonFactory.SMALL_BUTTON_SIZE.width;
         for (final IAssignmentIf assignment : assignments)
@@ -642,14 +642,7 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
         if (message != null)
         {
             IUnitIf unit = (IUnitIf) message.getSingleReceiver();
-            List<IAssignmentIf> assignments = unit.getAssignedAssignments();
-            try
-            {
-                assignment = assignments.get(0);
-            }
-            catch (Exception e)
-            {
-            }
+            assignment = unit.getAssignedAssignment();
         }
 
         return assignment;
@@ -679,6 +672,6 @@ public abstract class AbstractAssignmentPanel extends JPanel implements IEditMes
         } else
         {
             m_addedLines.remove(line);
-		}
-	}
+        }
+    }
 }

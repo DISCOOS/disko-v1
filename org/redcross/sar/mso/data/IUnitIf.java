@@ -8,6 +8,7 @@ import org.redcross.sar.util.mso.Position;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -181,13 +182,13 @@ public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf, ISerialNu
 
     public IAssignmentIf getAssignedAssignment();
 
-    public List<IAssignmentIf> getAssignedAssignments();
+    public Set<IAssignmentIf> getAssignedAssignments();
 
     public IAssignmentIf getExecutingAssigment();
 
-    public List<IAssignmentIf> getExecutingAssigments();
+    public Set<IAssignmentIf> getExecutingAssigments();
 
-    public List<IAssignmentIf> getFinishedAssigments();
+    public Set<IAssignmentIf> getFinishedAssigments();
 
     public IAssignmentIf getActiveAssignment();
 
@@ -206,4 +207,8 @@ public interface IUnitIf extends IHierarchicalUnitIf, ICommunicatorIf, ISerialNu
     public long getWorkTimeInMillis();
 
     public long getIdleTimeInMillis();
+
+    public Set<IMessageIf> getReferringMessages();
+
+    public Set<IMessageIf> getReferringMessages(Collection<IMessageIf> aCollection);
 }

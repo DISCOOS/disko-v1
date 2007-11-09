@@ -3,6 +3,9 @@ package org.redcross.sar.mso.data;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.mso.Position;
 
+import java.util.Collection;
+import java.util.Set;
+
 public interface IPOIIf extends IMsoObjectIf
 {
     public static final String bundleName  = "org.redcross.sar.mso.data.properties.POI";
@@ -63,4 +66,8 @@ public interface IPOIIf extends IMsoObjectIf
     public IMsoModelIf.ModificationState getAreaSequenceNumberState();
 
     public IAttributeIf.IMsoIntegerIf getAreaSequenceNumberAttribute();
+
+    public Set<IMessageLineIf> getReferringMessageLines();
+
+    public Set<IMessageLineIf> getReferringMessageLines(Collection<IMessageLineIf> aCollection);
 }

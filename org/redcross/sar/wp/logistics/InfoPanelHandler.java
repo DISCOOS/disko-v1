@@ -18,6 +18,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Vector;
 
@@ -278,8 +279,8 @@ public class InfoPanelHandler implements IMsoUpdateListenerIf, ActionListener, I
 
     private void renderAssignmentList()
     {
-        java.util.List<IAssignmentIf> l = UnitTableModel.getSelectedAssignments(m_displayedUnit, m_displayedUnitSelection);
-        m_unitAssignmentsPanel.setAssignmentList(l);
+        Collection<IAssignmentIf> assigments = UnitTableModel.getSelectedAssignments(m_displayedUnit, m_displayedUnitSelection);
+        m_unitAssignmentsPanel.setAssignmentList(assigments);
         m_unitAssignmentsPanel.renderPanel();
     }
 

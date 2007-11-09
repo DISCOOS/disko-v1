@@ -1,17 +1,6 @@
 package org.redcross.sar.wp.tactics;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.io.IOException;
-import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.border.BevelBorder;
-
+import com.esri.arcgis.interop.AutomationException;
 import org.redcross.sar.event.IMsoLayerEventListener;
 import org.redcross.sar.event.MsoLayerEvent;
 import org.redcross.sar.gui.DiskoDialog;
@@ -23,7 +12,12 @@ import org.redcross.sar.mso.data.IAreaIf;
 import org.redcross.sar.mso.data.IAssignmentIf;
 import org.redcross.sar.mso.data.IUnitIf;
 
-import com.esri.arcgis.interop.AutomationException;
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import java.awt.*;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 
 public class UnitSelectionDialog extends DiskoDialog implements IMsoLayerEventListener {
 
@@ -32,7 +26,7 @@ public class UnitSelectionDialog extends DiskoDialog implements IMsoLayerEventLi
 	private JPanel contentPanel = null;
 	private JScrollPane jScrollPane = null;
 	private UnitTable unitTable = null;
-	
+
 	public UnitSelectionDialog(DiskoWpTacticsImpl wp) {
 		super(wp.getApplication().getFrame());
 		this.msoModel = wp.getMsoModel();
@@ -45,7 +39,7 @@ public class UnitSelectionDialog extends DiskoDialog implements IMsoLayerEventLi
 
 	/**
 	 * This method initializes this
-	 * 
+	 *
 	 */
 	private void initialize() {
 		try {
@@ -57,7 +51,7 @@ public class UnitSelectionDialog extends DiskoDialog implements IMsoLayerEventLi
 			//  Do Something
 		}
 	}
-	
+
 	public IUnitIf getSelectedUnit() {
 		JTable table = getUnitTable();
 		if(table != null) {
@@ -69,7 +63,7 @@ public class UnitSelectionDialog extends DiskoDialog implements IMsoLayerEventLi
 		}
 		return null;
 	}
-	
+
 	public void selectedAssignedUnit(IAssignmentIf assignment) {
 		JTable table = getUnitTable();
 		if(table != null) {
@@ -77,8 +71,8 @@ public class UnitSelectionDialog extends DiskoDialog implements IMsoLayerEventLi
 				for (int col = 0; col < table.getColumnCount(); col++) {
 					IUnitIf unit = (IUnitIf)table.getValueAt(row, col);
 					if (unit != null) {
-						List list = unit.getAssignedAssignments();
-						if (list != null && list.contains(assignment)) {
+						Collection assignments = unit.getAssignedAssignments();
+						if (assignments != null && assignments.contains(assignment)) {
 							table.setRowSelectionInterval(row, row);
 							table.setColumnSelectionInterval(col, col);
 							return;
@@ -88,13 +82,13 @@ public class UnitSelectionDialog extends DiskoDialog implements IMsoLayerEventLi
 			}
 		}
 	}
-	
-	
+
+
 
 	/**
-	 * This method initializes contentPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
+	 * This method initializes contentPanel
+	 *
+	 * @return javax.swing.JPanel
 	 */
 	private JPanel getContentPanel() {
 		if (contentPanel == null) {
@@ -111,9 +105,9 @@ public class UnitSelectionDialog extends DiskoDialog implements IMsoLayerEventLi
 	}
 
 	/**
-	 * This method initializes jScrollPane	
-	 * 	
-	 * @return javax.swing.JScrollPane	
+	 * This method initializes jScrollPane
+	 *
+	 * @return javax.swing.JScrollPane
 	 */
 	private JScrollPane getJScrollPane() {
 		if (jScrollPane == null) {
@@ -129,9 +123,9 @@ public class UnitSelectionDialog extends DiskoDialog implements IMsoLayerEventLi
 	}
 
 	/**
-	 * This method initializes unitTable	
-	 * 	
-	 * @return javax.swing.JTable	
+	 * This method initializes unitTable
+	 *
+	 * @return javax.swing.JTable
 	 */
 	private UnitTable getUnitTable() {
 		if (unitTable == null) {

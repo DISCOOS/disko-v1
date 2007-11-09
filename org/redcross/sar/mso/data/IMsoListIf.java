@@ -11,6 +11,7 @@ import org.redcross.sar.util.mso.Selector;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 public interface IMsoListIf<M extends IMsoObjectIf>
 {
@@ -87,6 +88,9 @@ public interface IMsoListIf<M extends IMsoObjectIf>
      * @return The generated list
      */
     public List<M> selectItems(Selector<M> aSelector, Comparator<M> aComparator);
+
+
+    public Set<M> selectItems(Selector<M> aSelector);
 
     /**
      * Find an item in the list.

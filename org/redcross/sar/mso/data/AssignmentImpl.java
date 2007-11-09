@@ -11,6 +11,7 @@ import org.redcross.sar.util.except.MsoCastException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Unit assignments
@@ -634,12 +635,12 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
     }
 
 
-    private final static TypeMessageLineSelector messageLineSelector = new TypeMessageLineSelector();
+    private final static TypeMessageLineSelector messageLineTypeSelector = new TypeMessageLineSelector();
 
     public IMessageLineIf getLatestStatusChangeMessageLine(IMessageLineIf.MessageLineType aType)
     {
-        messageLineSelector.setSelectionCriteria(this, aType);
-        List<IMessageLineIf> retVal = MsoModelImpl.getInstance().getMsoManager().getCmdPost().getMessageLines().selectItems(messageLineSelector,
+        messageLineTypeSelector.setSelectionCriteria(this, aType);
+        List<IMessageLineIf> retVal = MsoModelImpl.getInstance().getMsoManager().getCmdPost().getMessageLines().selectItems(messageLineTypeSelector,
                 IMessageLineIf.MESSAGE_LINE_TIME_COMPARATOR);
         return (retVal.size() == 0) ? null : retVal.get(0);
     }
@@ -691,4 +692,25 @@ public class AssignmentImpl extends AbstractMsoObject implements IAssignmentIf
             return (anObject.getLineAssignment() == m_object && anObject.getLineType() == m_type && anObject.getOperationTime() != null);
         }
     }
+
+    private final static SelfSelector<IAssignmentIf, IMessageLineIf> referringMesssageLineSelector = new SelfSelector<IAssignmentIf, IMessageLineIf>()
+    {
+        public boolean select(IMessageLineIf anObject)
+        {
+            return (m_object.equals(anObject.getLineAssignment()));
+        }
+    };
+
+    public Set<IMessageLineIf> getReferringMessageLines()
+    {
+        referringMesssageLineSelector.setSelfObject(this);
+        return MsoModelImpl.getInstance().getMsoManager().getCmdPost().getMessageLines().selectItems(referringMesssageLineSelector);
+    }
+
+    public Set<IMessageLineIf> getReferringMessageLines(Collection<IMessageLineIf> aCollection)
+    {
+        referringMesssageLineSelector.setSelfObject(this);
+        return MsoListImpl.selectItemsInCollection(referringMesssageLineSelector,aCollection);
+    }
+
 }

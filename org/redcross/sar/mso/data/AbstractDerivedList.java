@@ -37,7 +37,7 @@ public abstract class AbstractDerivedList<M extends IMsoObjectIf> implements IMs
 
     public List<M> selectItems(Selector<M> aSelector, Comparator<M> aComparator)
     {
-        return MsoListImpl.selectItems(aSelector,aComparator,getItems());
+        return MsoListImpl.selectItemsInCollection(aSelector,aComparator,getItems());
     }
 
     public M selectSingleItem(Selector<M> aSelector)

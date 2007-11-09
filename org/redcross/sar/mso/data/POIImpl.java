@@ -2,11 +2,14 @@ package org.redcross.sar.mso.data;
 
 import org.redcross.sar.mso.IMsoManagerIf;
 import org.redcross.sar.mso.IMsoModelIf;
+import org.redcross.sar.mso.MsoModelImpl;
 import org.redcross.sar.util.Internationalization;
 import org.redcross.sar.util.except.MsoCastException;
 import org.redcross.sar.util.mso.Position;
 
+import java.util.Collection;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 /**
  * Point of interest
@@ -182,5 +185,23 @@ public class POIImpl extends AbstractMsoObject implements IPOIIf
         return m_areaSequenceNumber;
     }
 
+    private final static SelfSelector<IPOIIf, IMessageLineIf> referringMesssageLineSelector = new SelfSelector<IPOIIf, IMessageLineIf>()
+    {
+        public boolean select(IMessageLineIf anObject)
+        {
+            return (m_object.equals(anObject.getLinePOI()));
+        }
+    };
 
+    public Set<IMessageLineIf> getReferringMessageLines()
+    {
+        referringMesssageLineSelector.setSelfObject(this);
+        return MsoModelImpl.getInstance().getMsoManager().getCmdPost().getMessageLines().selectItems(referringMesssageLineSelector);
+    }
+
+    public Set<IMessageLineIf> getReferringMessageLines(Collection<IMessageLineIf> aCollection)
+    {
+        referringMesssageLineSelector.setSelfObject(this);
+        return MsoListImpl.selectItemsInCollection(referringMesssageLineSelector,aCollection);
+    }
 }

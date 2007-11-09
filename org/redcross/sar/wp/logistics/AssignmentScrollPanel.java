@@ -9,10 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Scroll panel for assignments.
@@ -24,7 +21,7 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
     /**
      * List of assignments to show.
      */
-    private List<IAssignmentIf> m_assignmentList;
+    private Collection<IAssignmentIf> m_assignmentCollection;
 
     /**
      * Index of first item to show.
@@ -157,13 +154,13 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
     }
 
     /**
-     * Set list of assignments to show
+     * Set collection of assignments to show
      *
-     * @param anAssignmentList The actual list.
+     * @param anAssignmentCollection The actual collection.
      */
-    public void setAssignmentList(List<IAssignmentIf> anAssignmentList)
+    public void setAssignmentList(Collection<IAssignmentIf> anAssignmentCollection)
     {
-        m_assignmentList = anAssignmentList;
+        m_assignmentCollection = anAssignmentCollection;
     }
 
     /**
@@ -171,9 +168,9 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
      *
      * @return The actual list.
      */
-    public List<IAssignmentIf> getAssignmentList()
+    public Collection<IAssignmentIf> getAssignmens()
     {
-        return m_assignmentList;
+        return m_assignmentCollection;
     }
 
     /**
@@ -268,19 +265,29 @@ public class AssignmentScrollPanel extends DiskoScrollPanel
     public void renderPanel()
     {
         removeAll();
-        if (m_assignmentList == null)
+        if (m_assignmentCollection == null)
         {
             return;
         }
 
         int firstIndex = Math.max(m_firstIndex, 0);
-        int lastIndex = m_lastIndex < 0 ? m_assignmentList.size() - 1 : Math.min(m_assignmentList.size() - 1, m_lastIndex);
+        int lastIndex = m_lastIndex < 0 ? m_assignmentCollection.size() - 1 : Math.min(m_assignmentCollection.size() - 1, m_lastIndex);
         int iv = 0;
         IconRenderer.AssignmentIcon icon;
 
-        for (int i = firstIndex; i <= lastIndex; i++)
+        IAssignmentIf[] assignmentArray = new IAssignmentIf[m_assignmentCollection.size()];
+        m_assignmentCollection.toArray(assignmentArray);
+
+        Iterator<IAssignmentIf> iterator = m_assignmentCollection.iterator();
+        int i = -1;
+//        for (int i = firstIndex; i <= lastIndex; i++)
+        while (iterator.hasNext())
         {
-            IAssignmentIf asg = m_assignmentList.get(i);
+            i++;
+            IAssignmentIf asg = assignmentArray[i];
+            asg = iterator.next();
+            if (i < firstIndex) continue;
+            if (i > lastIndex) break;
 
             if (m_showIcons)
             {

@@ -352,7 +352,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         m_added.clear();
     }
 
-    public boolean postProcessCommit()
+    boolean postProcessCommit()
     {
         boolean retVal = m_added.size() > 0;
         clearDeleted(m_deleted);
@@ -379,19 +379,54 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         }
     }
 
+    public Set<M> selectItems(Selector<M> aSelector)
+    {
+        return selectItemsInCollection(aSelector, getItems());
+    }
+
     public List<M> selectItems(Selector<M> aSelector, Comparator<M> aComparator)
     {
-        return selectItems(aSelector,aComparator,getItems());
+        return selectItemsInCollection(aSelector, aComparator, getItems());
     }
 
     public M selectSingleItem(Selector<M> aSelector)
     {
-        return selectSingleItem(aSelector,getItems());
+        return selectSingleItem(aSelector, getItems());
     }
 
-    public static <T extends IMsoObjectIf> List <T> selectItems(Selector<? super T> aSelector, Comparator<? super T> aComparator, Collection<T> theItems)
+    /**
+     * Insert an item into a list.
+     *
+     * @param aList       The list to insert into
+     * @param anItem      The item to add
+     * @param aComparator A comparator. If null, the item is appended to the list, if not null, used as a comparator to sort the list.
+     */
+    private static <T extends IMsoObjectIf> void addSorted(ArrayList<T> aList, T anItem, Comparator<? super T> aComparator)
     {
-        ArrayList<T> retVal = new ArrayList<T>();
+        if (aComparator == null)
+        {
+            aList.add(anItem);
+        } else
+        {
+            int size = aList.size();
+            int location = Collections.binarySearch(aList, anItem, aComparator);
+            if (location < 0)
+            {
+                location = -location - 1;
+            } else
+            {
+                while (location < size && aComparator.compare(anItem, aList.get(location)) <= 0)
+                {
+                    location++;
+                }
+            }
+            aList.add(location, anItem);
+        }
+    }
+
+    public static <T extends IMsoObjectIf> Set<T> selectItemsInCollection(Selector<? super T> aSelector, Collection<T> theItems)
+    {
+        Set<T> retVal = new LinkedHashSet<T>();
         for (T item : theItems)
         {
             if (aSelector.select(item))
@@ -399,9 +434,20 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
                 retVal.add(item);
             }
         }
-        if (aComparator != null)
+        return retVal;
+    }
+
+
+
+    public static <T extends IMsoObjectIf> List<T> selectItemsInCollection(Selector<? super T> aSelector, Comparator<? super T> aComparator, Collection<T> theItems)
+    {
+        ArrayList<T> retVal = new ArrayList<T>();
+        for (T item : theItems)
         {
-            Collections.sort(retVal, aComparator);
+            if (aSelector.select(item))
+            {
+                addSorted(retVal,item,aComparator);
+            }
         }
         return retVal;
     }

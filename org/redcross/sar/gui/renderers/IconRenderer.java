@@ -6,10 +6,7 @@ import org.redcross.sar.wp.logistics.UnitTableModel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Properties;
+import java.util.*;
 
 /**
  *
@@ -243,13 +240,13 @@ public class IconRenderer implements Icon
         private void initImageMap()
         {
             String[] unitIconNames = new String[]{
-                    "CmdUnit.icon", 
+                    "CmdUnit.icon",
                     "ManUnit.icon",
                     "DogUnit.icon",
-                    "AirUnit.icon",  
-                    "BoatUnit.icon", 
+                    "AirUnit.icon",
+                    "BoatUnit.icon",
                     "CarUnit.icon"
-                    
+
             };
             IUnitIf.UnitType[] unitTypes = new IUnitIf.UnitType[]{
                     IUnitIf.UnitType.COMMAND_POST,
@@ -351,7 +348,7 @@ public class IconRenderer implements Icon
         IconRenderer.LogisticsIconActionHandler m_actionHandler;
 
         IAssignmentIf m_assignment;
-        java.util.List<IAssignmentIf> m_assignments;
+        Collection<IAssignmentIf> m_assignments;
         IUnitIf m_actUnit;
         int m_selectorIndex;
 
@@ -465,14 +462,16 @@ public class IconRenderer implements Icon
                 setHasBorder(false);
             } else
             {
-                setIconText(Integer.toString(m_assignments.get(0).getNumber()));
-                setAssignmentIcon(m_assignments.get(0), m_assignments.size() > 1);
+                Iterator<IAssignmentIf> iterator = m_assignments.iterator();
+                IAssignmentIf asg = iterator.next();
+                setIconText(Integer.toString(asg.getNumber()));
+                setAssignmentIcon(asg, m_assignments.size() > 1);
                 setHasBorder(true);
 //            m_buttonListListener.setAssignmentList(theAssignments);
             }
         }
 
-        public java.util.List<IAssignmentIf> getAssignmentList()
+        public Collection<IAssignmentIf> getAssignmentList()
         {
             return m_assignments;
         }
@@ -490,7 +489,7 @@ public class IconRenderer implements Icon
             }
             if (m_assignments != null && m_assignments.size() > 0)
             {
-                return m_assignments.get(0);
+                return m_assignments.iterator().next();
             }
             return null;
         }
@@ -513,7 +512,7 @@ public class IconRenderer implements Icon
                     return;
                 } else if (m_assignments.size() == 1)
                 {
-                    m_actionHandler.handleClick(m_assignments.get(0));
+                    m_actionHandler.handleClick(m_assignments.iterator().next());
                 } else
                 {
                     m_actionHandler.handleClick(m_actUnit, m_selectorIndex);

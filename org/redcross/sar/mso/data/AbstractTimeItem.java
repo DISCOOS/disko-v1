@@ -90,10 +90,10 @@ public abstract class AbstractTimeItem extends AbstractMsoObject implements ITim
                 return 0;
             } else if (aTimeObject.getTimeStamp() == null)
             {
-                return 1;
+                return -1;
             } else
             {
-                return -1;
+                return 1;
             }
         }
         return 1;

@@ -3,10 +3,7 @@ package org.redcross.sar.mso.data;
 import org.redcross.sar.mso.IMsoModelIf;
 import org.redcross.sar.util.except.IllegalOperationException;
 
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.EnumSet;
+import java.util.*;
 
 /**
  *
@@ -240,5 +237,7 @@ public interface IAssignmentIf extends IMsoObjectIf, ISerialNumberedIf, IEnumSta
 
     public boolean transferMessageConfirmed(AssignmentStatus aStatus);
 
+    public Set<IMessageLineIf> getReferringMessageLines();
 
+    public Set<IMessageLineIf> getReferringMessageLines(Collection<IMessageLineIf> aCollection);
 }

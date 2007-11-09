@@ -169,7 +169,7 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
         }
     }
 
-    public static List<IAssignmentIf> getSelectedAssignments(IUnitIf aUnit, int aSelectorIndex)
+    public static Collection<IAssignmentIf> getSelectedAssignments(IUnitIf aUnit, int aSelectorIndex)
     {
         switch (aSelectorIndex)
         {
@@ -318,12 +318,12 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
             return p1.compareTo(p2);
         }
 
-        private IAssignmentIf.AssignmentPriority getHighestPriority(java.util.List<IAssignmentIf> aList)
+        private IAssignmentIf.AssignmentPriority getHighestPriority(Collection<IAssignmentIf> theAssignments)
         {
             IAssignmentIf.AssignmentPriority retVal = IAssignmentIf.AssignmentPriority.NONE;
-            if (aList != null)
+            if (theAssignments != null)
             {
-                for (IAssignmentIf asg : aList)
+                for (IAssignmentIf asg : theAssignments)
                 {
                     if (asg.getPriority().ordinal() < retVal.ordinal())
                     {
@@ -416,16 +416,16 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
             }
         }
 
-        protected abstract Calendar getCompareTime(java.util.List<IAssignmentIf> aList);
+        protected abstract Calendar getCompareTime(Collection<IAssignmentIf> aCollection);
     }
 
     public static final TimeComparator AssignmentTimeComparator = new TimeComparator()
     {
-        protected Calendar getCompareTime(java.util.List<IAssignmentIf> aList)
+        protected Calendar getCompareTime(Collection<IAssignmentIf> aCollection)
         {
-            if (aList.size() > 0)
+            if (aCollection.size() > 0)
             {
-                return aList.get(0).getTimeAssigned();
+                return aCollection.iterator().next().getTimeAssigned();
             }
             return null;
         }
@@ -433,11 +433,11 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
 
     public static final TimeComparator StartTimeComparator = new TimeComparator()
     {
-        protected Calendar getCompareTime(java.util.List<IAssignmentIf> aList)
+        protected Calendar getCompareTime(Collection<IAssignmentIf> aCollection)
         {
-            if (aList.size() > 0)
+            if (aCollection.size() > 0)
             {
-                return aList.get(0).getTimeStarted();
+                return aCollection.iterator().next().getTimeStarted();
             }
             return null;
         }
@@ -445,11 +445,11 @@ public class UnitTableModel extends AbstractTableModel implements IMsoUpdateList
 
     public static final TimeComparator EstimatedEndTimeComparator = new TimeComparator()
     {
-        protected Calendar getCompareTime(java.util.List<IAssignmentIf> aList)
+        protected Calendar getCompareTime(Collection<IAssignmentIf> aCollection)
         {
-            if (aList.size() > 0)
+            if (aCollection.size() > 0)
             {
-                return aList.get(0).getTimeEstimatedFinished();
+                return aCollection.iterator().next().getTimeEstimatedFinished();
             }
             return null;
         }

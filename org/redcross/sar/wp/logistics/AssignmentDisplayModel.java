@@ -17,6 +17,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Vector;
 
@@ -132,7 +133,7 @@ public class AssignmentDisplayModel implements IMsoUpdateListenerIf, ComponentLi
      */
     private void setSelectableList()
     {
-        java.util.List<IAssignmentIf> selectionList = m_assigmentSelection == IAssignmentIf.AssignmentStatus.READY ? m_priAssignments.getAssignmentList() : selectAssignments(m_selectableSelector);
+        Collection<IAssignmentIf> selectionList = m_assigmentSelection == IAssignmentIf.AssignmentStatus.READY ? m_priAssignments.getAssignmens() : selectAssignments(m_selectableSelector);
         m_selectableAssignments.setAssignmentList(selectionList);
         m_selectableAssignments.setSelectedStatus(m_selectableStatus);
     }

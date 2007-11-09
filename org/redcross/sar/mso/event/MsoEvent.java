@@ -89,6 +89,15 @@ public class MsoEvent extends java.util.EventObject
     	return (m_eventTypeMask & EventType.MODIFIED_DATA_EVENT.maskValue()) != 0;
     }
 
+    public boolean isChangeReferenceEvent()
+    {
+    	return (m_eventTypeMask & 
+                (EventType.MODIFIED_REFERENCE_EVENT.maskValue()) |
+                EventType.ADDED_REFERENCE_EVENT.maskValue() |
+                EventType.REMOVED_REFERENCE_EVENT.maskValue())  != 0;
+    }
+
+
     /**
      * Event that triggers an update of the user interface and/or the server handler.
      */

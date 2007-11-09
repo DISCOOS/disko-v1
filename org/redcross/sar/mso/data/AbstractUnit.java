@@ -10,6 +10,7 @@ import org.redcross.sar.util.mso.Position;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Search or rescue unit.
@@ -21,7 +22,7 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
     private final AttributeImpl.MsoString m_callSign = new AttributeImpl.MsoString(this, "CallSign");
     private final AttributeImpl.MsoString m_toneId = new AttributeImpl.MsoString(this, "ToneID");
     private final AttributeImpl.MsoInteger m_maxSpeed = new AttributeImpl.MsoInteger(this, "MaxSpeed");
-    private final AttributeImpl.MsoInteger m_number = new AttributeImpl.MsoInteger(this, "Number",true);
+    private final AttributeImpl.MsoInteger m_number = new AttributeImpl.MsoInteger(this, "Number", true);
     private final AttributeImpl.MsoPosition m_position = new AttributeImpl.MsoPosition(this, "Position");
     private final AttributeImpl.MsoString m_remarks = new AttributeImpl.MsoString(this, "Remarks");
     private final AttributeImpl.MsoInteger m_speed = new AttributeImpl.MsoInteger(this, "Speed");
@@ -114,7 +115,7 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
         }
         if (anObject instanceof IPersonIf)
         {
-           return m_unitPersonnel.removeReference((IPersonnelIf) anObject);
+            return m_unitPersonnel.removeReference((IPersonnelIf) anObject);
         }
         return false;
     }
@@ -126,19 +127,19 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
 
     public String getTypeAndNumber()
     {
-    	return getTypeText() + " " + getUnitNumber();
+        return getTypeText() + " " + getUnitNumber();
     }
 
     protected abstract UnitType getTypeBySubclass();
 
     public char getCommunicatorNumberPrefix()
     {
-    	return getUnitNumberPrefix();
+        return getUnitNumberPrefix();
     }
 
     public int getCommunicatorNumber()
     {
-    	return getNumber();
+        return getNumber();
     }
 
     public char getUnitNumberPrefix()
@@ -292,22 +293,22 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
 
     public void setToneID(String toneId)
     {
-    	m_toneId.setValue(toneId);
+        m_toneId.setValue(toneId);
     }
 
     public String getToneID()
     {
-    	return m_toneId.getString();
+        return m_toneId.getString();
     }
 
     public IMsoModelIf.ModificationState getToneIDState()
     {
-    	return m_toneId.getState();
+        return m_toneId.getState();
     }
 
     public IAttributeIf.IMsoStringIf getToneIDAttribute()
     {
-    	return m_toneId;
+        return m_toneId;
     }
 
     public void setMaxSpeed(int aMaxSpeed)
@@ -581,7 +582,7 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
     @Override
     public String shortDescriptor()
     {
-    	return getTypeText() + " " + getNumber();
+        return getTypeText() + " " + getNumber();
     }
 
 
@@ -629,9 +630,9 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
         return m_unitAssignments.selectSingleItem(IAssignmentIf.ASSIGNED_SELECTOR);
     }
 
-    public List<IAssignmentIf> getAssignedAssignments()
+    public Set<IAssignmentIf> getAssignedAssignments()
     {
-        return m_unitAssignments.selectItems(IAssignmentIf.ASSIGNED_SELECTOR, null);
+        return m_unitAssignments.selectItems(IAssignmentIf.ASSIGNED_SELECTOR);
     }
 
     public IAssignmentIf getExecutingAssigment()
@@ -639,14 +640,14 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
         return m_unitAssignments.selectSingleItem(IAssignmentIf.EXECUTING_SELECTOR);
     }
 
-    public List<IAssignmentIf> getExecutingAssigments()
+    public Set<IAssignmentIf> getExecutingAssigments()
     {
-        return m_unitAssignments.selectItems(IAssignmentIf.EXECUTING_SELECTOR, null);
+        return m_unitAssignments.selectItems(IAssignmentIf.EXECUTING_SELECTOR);
     }
 
-    public List<IAssignmentIf> getFinishedAssigments()
+    public Set<IAssignmentIf> getFinishedAssigments()
     {
-        return m_unitAssignments.selectItems(IAssignmentIf.FINISHED_SELECTOR, null);
+        return m_unitAssignments.selectItems(IAssignmentIf.FINISHED_SELECTOR);
     }
 
     public IAssignmentIf getActiveAssignment()
@@ -720,6 +721,27 @@ public abstract class AbstractUnit extends AbstractMsoObject implements IUnitIf
     {
         return 0; // todo find something better
     }
+
+    private final static SelfSelector<IUnitIf, IMessageIf> simpleReferringMesssageSelector = new SelfSelector<IUnitIf, IMessageIf>()
+    {
+        public boolean select(IMessageIf anObject)
+        {
+            return (m_object.equals(anObject.getSingleReceiver()) || m_object.equals(anObject.getSender()));
+        }
+    };
+
+    public Set<IMessageIf> getReferringMessages()
+    {
+        simpleReferringMesssageSelector.setSelfObject(this);
+        return MsoModelImpl.getInstance().getMsoManager().getCmdPost().getMessageLog().selectItems(simpleReferringMesssageSelector);
+    }
+
+    public Set<IMessageIf> getReferringMessages(Collection<IMessageIf> aCollection)
+    {
+        simpleReferringMesssageSelector.setSelfObject(this);
+        return MsoListImpl.selectItemsInCollection(simpleReferringMesssageSelector,aCollection);
+    }
+
 }
 
 

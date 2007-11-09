@@ -65,7 +65,7 @@ public class AssignmentListModel extends AbstractListModel
 
 				}
 			};
-			m_messageLines.addAll(message.getMessageLines().selectItems(lineSelector, null));
+			m_messageLines.addAll(message.getMessageLines().selectItems(lineSelector));
 			fireContentsChanged(this, 0, m_messageLines.size()-1);
 		}
 	}
