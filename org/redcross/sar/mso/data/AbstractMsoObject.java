@@ -115,7 +115,6 @@ public abstract class AbstractMsoObject implements IMsoObjectIf
         defineLists();
         defineReferences();
         resumeDerivedUpdate();
-        resumeClientUpdate();
     }
 
     void setOwningMainList(MsoListImpl aList)

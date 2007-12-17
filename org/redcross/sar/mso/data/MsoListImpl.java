@@ -469,6 +469,7 @@ public class MsoListImpl<M extends IMsoObjectIf> implements IMsoListIf<M>, IMsoO
         ((AbstractMsoObject) anObject).setupReferences();
         ((AbstractMsoObject) anObject).setOwningMainList(this);
         add(anObject);
+        anObject.resumeClientUpdate();
         return anObject;
     }
 
